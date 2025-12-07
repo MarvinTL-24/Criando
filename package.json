@@ -1,0 +1,9 @@
+{
+  "homepage": "https://marvinTL-24.github.io/CRIANDO"
+}
+
+{
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
+  }
+}
