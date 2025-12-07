@@ -1,0 +1,101 @@
+import React from "react";
+import { motion } from "framer-motion";
+import PageHeader from "@/components/rpg/PageHeader";
+import SectionCard from "@/components/rpg/SectionCard";
+import { CheckCircle2, Circle } from "lucide-react";
+
+export default function ResponsabilidadeTemplate({ 
+  titulo, 
+  subtitulo, 
+  icon: Icon, 
+  color,
+  descricao,
+  funcoes,
+  habilidadesChave,
+  bonusPassivos
+}) {
+  return (
+    <div className="min-h-screen pb-12">
+      <PageHeader 
+        title={titulo}
+        subtitle={subtitulo}
+        icon={Icon}
+        color={color}
+      />
+
+      <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+        {/* Descrição */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-[#0f0f12] border border-[#2a2a2e] p-6"
+          style={{ borderLeftColor: color, borderLeftWidth: '4px' }}
+        >
+          <p className="text-[#a0a0a0] leading-relaxed text-lg">{descricao}</p>
+        </motion.div>
+
+        {/* Funções no Grupo */}
+        <SectionCard title="Funções no Grupo" icon={Icon} color={color} delay={0.1}>
+          <div className="grid md:grid-cols-2 gap-4">
+            {funcoes.map((funcao, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 + idx * 0.1 }}
+                className="flex items-start gap-3 p-4 bg-[#0a0a0c] border border-[#2a2a2e]"
+              >
+                <CheckCircle2 className="w-5 h-5 mt-0.5 flex-shrink-0" style={{ color }} />
+                <div>
+                  <h4 className="text-[#e8e4dc] font-medium">{funcao.titulo}</h4>
+                  <p className="text-[#606060] text-sm mt-1">{funcao.descricao}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* Habilidades-Chave */}
+        <SectionCard title="Habilidades Recomendadas" icon={Icon} color={color} delay={0.2}>
+          <div className="flex flex-wrap gap-3">
+            {habilidadesChave.map((hab, idx) => (
+              <motion.span
+                key={idx}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 + idx * 0.05 }}
+                className="px-4 py-2 text-sm border"
+                style={{ 
+                  borderColor: `${color}50`,
+                  color: color,
+                  backgroundColor: `${color}10`
+                }}
+              >
+                {hab}
+              </motion.span>
+            ))}
+          </div>
+        </SectionCard>
+
+        {/* Bônus Passivos */}
+        <SectionCard title="Bônus Passivos da Função" icon={Icon} color={color} delay={0.3}>
+          <div className="space-y-3">
+            {bonusPassivos.map((bonus, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 + idx * 0.1 }}
+                className="flex items-center gap-3 p-3 border-l-2"
+                style={{ borderColor: color }}
+              >
+                <Circle className="w-2 h-2 flex-shrink-0" style={{ color, fill: color }} />
+                <span className="text-[#a0a0a0]">{bonus}</span>
+              </motion.div>
+            ))}
+          </div>
+        </SectionCard>
+      </div>
+    </div>
+  );
+}
