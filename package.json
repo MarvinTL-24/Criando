@@ -1,8 +1,9 @@
 {
   "name": "criando",
   "version": "1.0.0",
-  "homepage": "https://marvinTL-24.github.io/CRIANDO/layout.js",
+  "homepage": "https://marvinTL-24.github.io/CRIANDO",
   "scripts": {
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d ."
   },
   "devDependencies": {
