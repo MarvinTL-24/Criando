@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Habilidades</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            muted: '#606060',
+                            blue: '#4a9eff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Modal Transitions */
+        #modal-overlay { transition: opacity 0.3s ease; }
+        #modal-overlay.hidden { pointer-events: none; opacity: 0; }
+        #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
+
+        /* Custom Scrollbar for Textarea */
+        textarea::-webkit-scrollbar { width: 6px; }
+        textarea::-webkit-scrollbar-track { background: #0f0f12; }
+        textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-red-600">Habilidades de Combate</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-red-600 to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-6 anim-entry">
+            <div class="p-3 rounded-lg bg-red-600/10 border border-red-600/20">
+                <i data-lucide="sword" class="w-8 h-8 text-red-600"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Habilidades de Combate</h1>
+                <p class="text-gray-400">Skills ativas para batalha</p>
+            </div>
+        </header>
+
+        <div id="filter-container" class="flex flex-wrap gap-2 justify-center mb-8 anim-entry" style="animation-delay: 0.1s;">
+            </div>
+
+        <div id="skills-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry" style="animation-delay: 0.2s;">
+            </div>
+
+    </div>
+
+    <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
+        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modal-title" class="font-cinzel text-xl text-white">Nova Habilidade</h2>
+                <button onclick="closeModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form id="form-skill" onsubmit="saveSkill(event)" class="space-y-4">
+                <input type="hidden" id="skill-id">
+                
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nome</label>
+                    <input type="text" id="skill-nome" required placeholder="Nome da habilidade" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Tipo</label>
+                        <select id="skill-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none cursor-pointer">
+                            <option value="dano">Dano</option>
+                            <option value="cura">Cura</option>
+                            <option value="buff">Buff</option>
+                            <option value="debuff">Debuff</option>
+                            <option value="utilidade">Utilidade</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nível</label>
+                        <input type="number" id="skill-nivel" min="1" max="10" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Custo Mana</label>
+                        <input type="number" id="skill-mana" value="10" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Cooldown</label>
+                        <input type="number" id="skill-cd" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
+                    <textarea id="skill-desc" placeholder="O que essa habilidade faz?" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none h-24 resize-none transition-colors"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuração de Tipos (Cores e Ícones)
+        const typesConfig = {
+            'dano': { label: "Dano", icon: "sword", color: "#dc2626" },
+            'cura': { label: "Cura", icon: "heart", color: "#22c55e" },
+            'buff': { label: "Buff", icon: "zap", color: "#f59e0b" },
+            'debuff': { label: "Debuff", icon: "shield", color: "#8b5cf6" },
+            'utilidade': { label: "Utilidade", icon: "wind", color: "#3b82f6" }
+        };
+
+        // Estado Inicial
+        let skills = [
+            { id: 1, nome: "Golpe Devastador", tipo: "dano", custoMana: 20, cooldown: 2, descricao: "Um golpe poderoso que causa 150% do dano base.", nivel: 3 },
+            { id: 2, nome: "Cura Menor", tipo: "cura", custoMana: 15, cooldown: 1, descricao: "Restaura 30 HP do alvo.", nivel: 2 },
+            { id: 3, nome: "Fúria do Guerreiro", tipo: "buff", custoMana: 30, cooldown: 5, descricao: "Aumenta o dano em 25% por 3 turnos.", nivel: 1 },
+        ];
+
+        let currentFilter = 'todos';
+
+        // --- Renderização ---
+
+        function renderFilters() {
+            const container = document.getElementById('filter-container');
+            let html = `
+                <button onclick="setFilter('todos')" 
+                    class="px-4 py-2 text-sm font-cinzel transition-all border rounded border-theme-border ${currentFilter === 'todos' ? 'bg-theme-blue text-[#0a0a0c] border-theme-blue' : 'bg-[#0f0f12] text-[#606060] hover:text-white'}">
+                    Todas
+                </button>
+            `;
+
+            for (const [key, config] of Object.entries(typesConfig)) {
+                const isActive = currentFilter === key;
+                // Se ativo, usa a cor do tipo como fundo. Se não, usa estilo padrão dark.
+                const style = isActive ? `background-color: ${config.color}; color: #0a0a0c; border-color: ${config.color}` : ``;
+                
+                html += `
+                    <button onclick="setFilter('${key}')" 
+                        class="px-4 py-2 text-sm font-cinzel flex items-center gap-2 transition-all border border-theme-border rounded ${!isActive ? 'bg-[#0f0f12] text-[#606060] hover:text-white' : ''}"
+                        style="${style}">
+                        <i data-lucide="${config.icon}" class="w-4 h-4"></i>
+                        ${config.label}
+                    </button>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('skills-grid');
+            const filteredSkills = currentFilter === 'todos' ? skills : skills.filter(s => s.tipo === currentFilter);
+
+            let html = '';
+
+            // Gerar Cards
+            filteredSkills.forEach(skill => {
+                const config = typesConfig[skill.tipo] || typesConfig['dano'];
+                
+                html += `
+                    <div class="bg-theme-panel border border-theme-border p-4 group hover:border-opacity-50 transition-all rounded relative anim-entry"
+                         style="border-left: 3px solid ${config.color};">
+                        
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded" style="background-color: ${config.color}20">
+                                    <i data-lucide="${config.icon}" class="w-5 h-5" style="color: ${config.color}"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-medium">${skill.nome}</h4>
+                                    <p class="text-xs text-[#606060]">Nível ${skill.nivel}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="openModal(${skill.id})" class="p-1.5 hover:bg-theme-blue/20 rounded transition-colors">
+                                    <i data-lucide="edit-2" class="w-3 h-3 text-theme-blue"></i>
+                                </button>
+                                <button onclick="deleteSkill(${skill.id})" class="p-1.5 hover:bg-red-600/20 rounded transition-colors">
+                                    <i data-lucide="trash-2" class="w-3 h-3 text-red-600"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="text-[#808080] text-sm mb-4 min-h-[40px]">${skill.descricao}</p>
+
+                        <div class="flex gap-4 text-xs">
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="flame" class="w-3 h-3 text-blue-500"></i>
+                                <span class="text-[#606060]">${skill.custoMana} Mana</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="zap" class="w-3 h-3 text-yellow-500"></i>
+                                <span class="text-[#606060]">${skill.cooldown} turnos</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Botão Adicionar (Sempre no final)
+            html += `
+                <button onclick="openModal()" 
+                    class="bg-[#0f0f12] border-2 border-dashed border-theme-border p-8 flex flex-col items-center justify-center gap-3 hover:border-theme-blue transition-colors group min-h-[200px] rounded anim-entry">
+                    <i data-lucide="plus" class="w-8 h-8 text-[#606060] group-hover:text-theme-blue transition-colors"></i>
+                    <span class="text-[#606060] group-hover:text-theme-blue font-cinzel transition-colors">Nova Habilidade</span>
+                </button>
+            `;
+
+            grid.innerHTML = html;
+            lucide.createIcons();
+        }
+
+        // --- Lógica de Filtro ---
+        function setFilter(filter) {
+            currentFilter = filter;
+            renderFilters();
+            renderGrid();
+            lucide.createIcons(); // Recriar ícones nos filtros
+        }
+
+        // --- CRUD e Modal ---
+
+        function openModal(id = null) {
+            const modal = document.getElementById('modal-overlay');
+            const title = document.getElementById('modal-title');
+            
+            if (id) {
+                const skill = skills.find(s => s.id === id);
+                title.innerText = "Editar Habilidade";
+                document.getElementById('skill-id').value = skill.id;
+                document.getElementById('skill-nome').value = skill.nome;
+                document.getElementById('skill-tipo').value = skill.tipo;
+                document.getElementById('skill-nivel').value = skill.nivel;
+                document.getElementById('skill-mana').value = skill.custoMana;
+                document.getElementById('skill-cd').value = skill.cooldown;
+                document.getElementById('skill-desc').value = skill.descricao;
+            } else {
+                title.innerText = "Nova Habilidade";
+                document.getElementById('form-skill').reset();
+                document.getElementById('skill-id').value = "";
+                // Default values reset
+                document.getElementById('skill-nivel').value = 1;
+                document.getElementById('skill-mana').value = 10;
+                document.getElementById('skill-cd').value = 1;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        function saveSkill(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('skill-id').value;
+            const newSkill = {
+                id: id ? parseInt(id) : Date.now(),
+                nome: document.getElementById('skill-nome').value,
+                tipo: document.getElementById('skill-tipo').value,
+                nivel: parseInt(document.getElementById('skill-nivel').value) || 1,
+                custoMana: parseInt(document.getElementById('skill-mana').value) || 0,
+                cooldown: parseInt(document.getElementById('skill-cd').value) || 0,
+                descricao: document.getElementById('skill-desc').value
+            };
+
+            if (id) {
+                const index = skills.findIndex(s => s.id == id);
+                if (index !== -1) skills[index] = newSkill;
+            } else {
+                skills.push(newSkill);
+            }
+
+            closeModal();
+            renderGrid();
+        }
+
+        function deleteSkill(id) {
+            if(confirm("Deseja esquecer esta habilidade?")) {
+                skills = skills.filter(s => s.id !== id);
+                renderGrid();
+            }
+        }
+
+        // Inicialização
+        window.addEventListener('load', () => {
+            renderFilters();
+            renderGrid();
+        });
+
+    </script>
+</body>
+</html>

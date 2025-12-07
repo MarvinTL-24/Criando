@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Proficiências</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            orange: '#f59e0b',
+                            red: '#dc2626',
+                            muted: '#606060',
+                            blue: '#4a9eff',
+                            green: '#22c55e'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Barra de Progresso */
+        .progress-fill { width: 0; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-orange transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Proficiências</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-6 anim-entry">
+            <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
+                <i data-lucide="wrench" class="w-8 h-8 text-theme-orange"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Proficiências</h1>
+                <p class="text-gray-400">Ofícios e Maestria com Armas</p>
+            </div>
+        </header>
+
+        <div class="flex flex-wrap justify-center gap-6 text-sm anim-entry mb-8">
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#606060]"></div><span class="text-[#606060]">Aprendiz (1-2)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#22c55e]"></div><span class="text-[#606060]">Iniciante (3-4)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#3b82f6]"></div><span class="text-[#606060]">Competente (5-6)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#f59e0b]"></div><span class="text-[#606060]">Experiente (7-8)</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#dc2626]"></div><span class="text-[#606060]">Mestre (9-10)</span>
+            </div>
+        </div>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1" style="border-left: 3px solid #f59e0b;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
+                <i data-lucide="hammer" class="w-4 h-4"></i> Ofícios & Crafting
+            </h3>
+            
+            <div id="grid-oficios" class="grid md:grid-cols-2 gap-4">
+                </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2" style="border-left: 3px solid #dc2626;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
+                <i data-lucide="swords" class="w-4 h-4"></i> Maestria com Armas
+            </h3>
+            
+            <div id="grid-armas" class="grid md:grid-cols-2 gap-4">
+                </div>
+        </section>
+
+        <div class="bg-theme-panel border border-theme-border p-6 rounded anim-entry delay-3">
+            <h3 class="font-cinzel text-lg text-theme-blue mb-4">Resumo de Progressão</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                
+                <div>
+                    <p id="total-oficios" class="text-3xl font-bold text-theme-orange">0</p>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Ofícios</p>
+                </div>
+                
+                <div>
+                    <p id="total-armas" class="text-3xl font-bold text-theme-red">0</p>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Armas</p>
+                </div>
+                
+                <div>
+                    <p id="dominio-oficios" class="text-3xl font-bold text-theme-blue">0</p>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Ofícios Dominados</p>
+                </div>
+                
+                <div>
+                    <p id="dominio-armas" class="text-3xl font-bold text-theme-green">0</p>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Armas Dominadas</p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Dados
+        const proficienciasOficio = [
+            { id: "ferreiro", label: "Ferreiro", icon: "hammer", descricao: "Forja armas e armaduras de metal", nivel: 3, maxNivel: 10 },
+            { id: "alquimia", label: "Alquimia", icon: "flask-conical", descricao: "Cria poções e elixires mágicos", nivel: 5, maxNivel: 10 },
+            { id: "culinaria", label: "Culinária", icon: "utensils", descricao: "Prepara refeições com buffs especiais", nivel: 2, maxNivel: 10 },
+            { id: "joalheria", label: "Joalheria", icon: "gem", descricao: "Cria anéis e amuletos encantados", nivel: 1, maxNivel: 10 },
+            { id: "escriba", label: "Escriba", icon: "scroll", descricao: "Copia e cria pergaminhos mágicos", nivel: 4, maxNivel: 10 },
+        ];
+
+        const proficienciasArmas = [
+            { id: "espadas", label: "Espadas", icon: "swords", nivel: 7, maxNivel: 10 },
+            { id: "machados", label: "Machados", icon: "axe", nivel: 4, maxNivel: 10 },
+            { id: "arcos", label: "Arcos", icon: "crosshair", nivel: 6, maxNivel: 10 },
+            { id: "cajados", label: "Cajados", icon: "wand-2", nivel: 3, maxNivel: 10 },
+        ];
+
+        // Função para gerar o HTML de um Card
+        function createCard(item, color) {
+            const percentage = (item.nivel / item.maxNivel) * 100;
+            
+            // Gerar bolinhas (dots)
+            let dotsHtml = '';
+            for(let i = 0; i < 10; i++) {
+                const isActive = i < item.nivel;
+                dotsHtml += `<div class="w-1 h-1 rounded-full ${isActive ? '' : 'bg-[#2a2a2e]'}" style="${isActive ? `background-color: ${color}` : ''}"></div>`;
+            }
+
+            return `
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 hover:border-opacity-50 transition-all rounded" style="border-color: ${color}40">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 rounded-lg" style="background-color: ${color}15">
+                            <i data-lucide="${item.icon}" class="w-6 h-6" style="color: ${color}"></i>
+                        </div>
+                        
+                        <div class="flex-1">
+                            <div class="flex justify-between items-center mb-2">
+                                <h4 class="text-white font-medium">${item.label}</h4>
+                                <span class="text-sm font-mono" style="color: ${color}">${item.nivel}/${item.maxNivel}</span>
+                            </div>
+                            
+                            ${item.descricao ? `<p class="text-[#606060] text-xs mb-2">${item.descricao}</p>` : ''}
+                            
+                            <div class="h-2 bg-[#1a1a1e] rounded-full overflow-hidden mb-2">
+                                <div class="progress-fill h-full rounded-full" 
+                                     style="background-color: ${color}; box-shadow: 0 0 10px ${color}50; width: 0%" 
+                                     data-width="${percentage}%">
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between mt-1">
+                                ${dotsHtml}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Renderização
+        window.addEventListener('load', () => {
+            const oficiosGrid = document.getElementById('grid-oficios');
+            const armasGrid = document.getElementById('grid-armas');
+            
+            // Render Ofícios
+            oficiosGrid.innerHTML = proficienciasOficio.map(p => createCard(p, '#f59e0b')).join('');
+            
+            // Render Armas
+            armasGrid.innerHTML = proficienciasArmas.map(p => createCard(p, '#dc2626')).join('');
+
+            // Calcular Resumo
+            const totalOficios = proficienciasOficio.reduce((acc, p) => acc + p.nivel, 0);
+            const totalArmas = proficienciasArmas.reduce((acc, p) => acc + p.nivel, 0);
+            const domOficios = proficienciasOficio.filter(p => p.nivel >= 5).length;
+            const domArmas = proficienciasArmas.filter(p => p.nivel >= 5).length;
+
+            document.getElementById('total-oficios').innerText = totalOficios;
+            document.getElementById('total-armas').innerText = totalArmas;
+            document.getElementById('dominio-oficios').innerText = domOficios;
+            document.getElementById('dominio-armas').innerText = domArmas;
+
+            // Inicializar Ícones
+            lucide.createIcons();
+
+            // Animar Barras (delay pequeno para o CSS transition funcionar)
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    bar.style.width = bar.getAttribute('data-width');
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>

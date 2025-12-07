@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Inventário</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                            red: '#dc2626',
+                            green: '#22c55e',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            pink: '#ec4899',
+                            muted: '#606060'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Utilitários */
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Estilo do Modal */
+        #modal-overlay { transition: opacity 0.3s ease; }
+        #modal-overlay.hidden { pointer-events: none; opacity: 0; }
+        #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
+
+        /* Select Customizado */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8e4dc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1em;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-blue">Inventário</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-6 anim-entry">
+            <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
+                <i data-lucide="backpack" class="w-8 h-8 text-theme-blue"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Inventário</h1>
+                <p class="text-gray-400">Seus pertences e recursos</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.1s;">
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="package" class="w-8 h-8 text-theme-blue"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Itens</p>
+                    <p id="stat-total-itens" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="weight" class="w-8 h-8 text-theme-orange"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Peso Total</p>
+                    <p id="stat-peso-total" class="text-2xl font-bold text-white">0.0 kg</p>
+                </div>
+            </div>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 col-span-2 rounded">
+                <i data-lucide="coins" class="w-8 h-8 text-theme-yellow"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Valor Total</p>
+                    <p id="stat-valor-total" class="text-2xl font-bold text-theme-yellow">0 moedas</p>
+                </div>
+            </div>
+        </div>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s;">
+            <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="relative flex-1">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted"></i>
+                    <input type="text" id="input-busca" placeholder="Buscar item..." oninput="renderItems()" 
+                           class="w-full pl-10 bg-transparent border border-theme-border rounded h-10 text-theme-text focus:border-theme-blue outline-none transition-colors">
+                </div>
+                <select id="select-filtro" onchange="renderItems()" 
+                        class="w-full md:w-48 bg-[#0a0a0c] border border-theme-border rounded h-10 text-theme-text px-3 focus:border-theme-blue outline-none cursor-pointer">
+                    <option value="todos">Todas Categorias</option>
+                    <option value="arma">Armas</option>
+                    <option value="armadura">Armaduras</option>
+                    <option value="consumivel">Consumíveis</option>
+                    <option value="material">Materiais</option>
+                    <option value="chave">Itens-Chave</option>
+                    <option value="outro">Outros</option>
+                </select>
+                <button onclick="openModal()" 
+                        class="flex items-center justify-center gap-2 bg-theme-blue hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors font-medium">
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    Adicionar
+                </button>
+            </div>
+
+            <div id="lista-itens" class="space-y-3 min-h-[200px]">
+                </div>
+        </section>
+    </div>
+
+    <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
+        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
+            
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modal-title" class="font-cinzel text-xl text-white">Novo Item</h2>
+                <button onclick="closeModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+
+            <form id="form-item" onsubmit="salvarItem(event)" class="space-y-4">
+                <input type="hidden" id="item-id">
+                
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nome</label>
+                    <input type="text" id="item-nome" required placeholder="Nome do item" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Categoria</label>
+                    <select id="item-categoria" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                        <option value="outro">Outros</option>
+                        <option value="arma">Armas</option>
+                        <option value="armadura">Armaduras</option>
+                        <option value="consumivel">Consumíveis</option>
+                        <option value="material">Materiais</option>
+                        <option value="chave">Itens-Chave</option>
+                    </select>
+                </div>
+
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Qtd</label>
+                        <input type="number" id="item-qtd" required min="1" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Peso</label>
+                        <input type="number" id="item-peso" step="0.1" value="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Valor</label>
+                        <input type="number" id="item-valor" value="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
+                    <input type="text" id="item-desc" placeholder="Breve descrição" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Configuração de Categorias e Cores
+        const categoriasMap = {
+            "arma": { label: "Armas", color: "#dc2626" },
+            "armadura": { label: "Armaduras", color: "#f59e0b" },
+            "consumivel": { label: "Consumíveis", color: "#22c55e" },
+            "material": { label: "Materiais", color: "#8b5cf6" },
+            "chave": { label: "Itens-Chave", color: "#ec4899" },
+            "outro": { label: "Outros", color: "#606060" }
+        };
+
+        // Estado Inicial (Dados de Exemplo)
+        let inventario = [
+            { id: 1, nome: "Espada Longa", categoria: "arma", quantidade: 1, peso: 3, valor: 50, descricao: "Uma espada comum de aço." },
+            { id: 2, nome: "Poção de Vida", categoria: "consumivel", quantidade: 5, peso: 0.5, valor: 25, descricao: "Restaura 50 HP." },
+            { id: 3, nome: "Armadura de Couro", categoria: "armadura", quantidade: 1, peso: 10, valor: 100, descricao: "Proteção básica." },
+        ];
+
+        // --- Funções Principais ---
+
+        function renderItems() {
+            const listaEl = document.getElementById('lista-itens');
+            const busca = document.getElementById('input-busca').value.toLowerCase();
+            const filtro = document.getElementById('select-filtro').value;
+            
+            listaEl.innerHTML = '';
+
+            // Filtragem
+            const itensFiltrados = inventario.filter(item => {
+                const matchBusca = item.nome.toLowerCase().includes(busca);
+                const matchCat = filtro === 'todos' || item.categoria === filtro;
+                return matchBusca && matchCat;
+            });
+
+            // Atualizar Stats
+            const totalPeso = inventario.reduce((acc, i) => acc + (i.peso * i.quantidade), 0);
+            const totalValor = inventario.reduce((acc, i) => acc + (i.valor * i.quantidade), 0);
+
+            document.getElementById('stat-total-itens').innerText = inventario.length;
+            document.getElementById('stat-peso-total').innerText = `${totalPeso.toFixed(1)} kg`;
+            document.getElementById('stat-valor-total').innerText = `${totalValor} moedas`;
+
+            // Renderizar Lista
+            if (itensFiltrados.length === 0) {
+                listaEl.innerHTML = `
+                    <div class="text-center py-12 text-[#606060]">
+                        <i data-lucide="package-open" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
+                        <p>Nenhum item encontrado</p>
+                    </div>
+                `;
+            } else {
+                itensFiltrados.forEach(item => {
+                    const cor = categoriasMap[item.categoria]?.color || '#606060';
+                    
+                    const itemHtml = `
+                        <div class="bg-[#0a0a0c] border border-theme-border p-4 flex items-center gap-4 group hover:border-[#4a9eff]/30 transition-all rounded anim-entry">
+                            <div class="w-2 h-12 rounded-full" style="background-color: ${cor}"></div>
+                            <div class="flex-1">
+                                <h4 class="text-white font-medium text-lg">${item.nome}</h4>
+                                <p class="text-[#606060] text-sm">${item.descricao}</p>
+                            </div>
+                            <div class="text-right mr-4">
+                                <p class="text-white font-mono">x${item.quantidade}</p>
+                                <p class="text-[#606060] text-xs">${item.peso}kg • ${item.valor}g</p>
+                            </div>
+                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="openModal(${item.id})" class="p-2 hover:bg-[#4a9eff]/20 rounded transition-colors text-[#4a9eff]">
+                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="deletarItem(${item.id})" class="p-2 hover:bg-[#dc2626]/20 rounded transition-colors text-[#dc2626]">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    listaEl.insertAdjacentHTML('beforeend', itemHtml);
+                });
+            }
+            
+            lucide.createIcons();
+        }
+
+        // --- CRUD e Modal ---
+
+        function openModal(id = null) {
+            const modal = document.getElementById('modal-overlay');
+            const title = document.getElementById('modal-title');
+            
+            // Limpar/Preencher Form
+            if (id) {
+                const item = inventario.find(i => i.id === id);
+                title.innerText = "Editar Item";
+                document.getElementById('item-id').value = item.id;
+                document.getElementById('item-nome').value = item.nome;
+                document.getElementById('item-categoria').value = item.categoria;
+                document.getElementById('item-qtd').value = item.quantidade;
+                document.getElementById('item-peso').value = item.peso;
+                document.getElementById('item-valor').value = item.valor;
+                document.getElementById('item-desc').value = item.descricao;
+            } else {
+                title.innerText = "Novo Item";
+                document.getElementById('form-item').reset();
+                document.getElementById('item-id').value = "";
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        function salvarItem(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('item-id').value;
+            const novoItem = {
+                id: id ? parseInt(id) : Date.now(), // Gera ID se for novo
+                nome: document.getElementById('item-nome').value,
+                categoria: document.getElementById('item-categoria').value,
+                quantidade: parseInt(document.getElementById('item-qtd').value) || 1,
+                peso: parseFloat(document.getElementById('item-peso').value) || 0,
+                valor: parseInt(document.getElementById('item-valor').value) || 0,
+                descricao: document.getElementById('item-desc').value
+            };
+
+            if (id) {
+                // Editar existente
+                const index = inventario.findIndex(i => i.id == id);
+                if (index !== -1) inventario[index] = novoItem;
+            } else {
+                // Adicionar novo
+                inventario.push(novoItem);
+            }
+
+            closeModal();
+            renderItems();
+        }
+
+        function deletarItem(id) {
+            if(confirm('Tem certeza que deseja remover este item?')) {
+                inventario = inventario.filter(i => i.id !== id);
+                renderItems();
+            }
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            renderItems();
+            lucide.createIcons();
+        });
+
+    </script>
+</body>
+</html>

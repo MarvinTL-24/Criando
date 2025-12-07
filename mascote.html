@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Mascote</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            pink: '#ec4899',
+                            red: '#dc2626',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            blue: '#4a9eff',
+                            green: '#22c55e',
+                            muted: '#606060'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Custom Range Input */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: #ec4899;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 10px rgba(236, 72, 153, 0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #2a2a2e;
+            border-radius: 2px;
+        }
+        input[type=range]:focus { outline: none; }
+
+        /* Custom Scrollbar for Textarea */
+        textarea::-webkit-scrollbar { width: 6px; }
+        textarea::-webkit-scrollbar-track { background: #0f0f12; }
+        textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
+
+        /* Select Customizado */
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8e4dc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.7rem center;
+            background-size: 1em;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Mascote</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-6 anim-entry">
+            <div class="p-3 rounded-lg bg-theme-pink/10 border border-theme-pink/20">
+                <i data-lucide="dog" class="w-8 h-8 text-theme-pink"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Mascote</h1>
+                <p class="text-gray-400">Seu companheiro fiel</p>
+            </div>
+        </header>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 3px solid #ec4899;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-pink mb-6">
+                <i data-lucide="dog" class="w-4 h-4"></i> Identidade
+            </h3>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2 font-cinzel">Nome do Mascote</label>
+                    <input type="text" id="mascote-nome" placeholder="Como se chama seu companheiro?" class="w-full bg-transparent border-b-2 border-theme-border text-white px-0 py-2 focus:border-theme-pink outline-none transition-colors">
+                </div>
+                
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2 font-cinzel">Tipo de Criatura</label>
+                    <select id="mascote-tipo" class="w-full bg-transparent border-b-2 border-theme-border text-white px-0 py-2 focus:border-theme-pink outline-none cursor-pointer transition-colors">
+                        <option value="canino">Canino (Lobo, Cão)</option>
+                        <option value="felino">Felino (Gato, Pantera)</option>
+                        <option value="ave">Ave (Falcão, Corvo)</option>
+                        <option value="reptil">Réptil (Lagarto, Serpente)</option>
+                        <option value="fantastico">Fantástico (Dragão, Fênix)</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2 font-cinzel">Nível</label>
+                    <div class="flex items-center gap-2 border-b-2 border-theme-border py-2 focus-within:border-theme-pink transition-colors">
+                        <i data-lucide="star" class="w-4 h-4 text-theme-muted"></i>
+                        <input type="number" id="mascote-nivel" value="1" min="1" class="w-full bg-transparent outline-none text-white">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 3px solid #dc2626;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
+                <i data-lucide="heart" class="w-4 h-4"></i> Status
+            </h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-theme-red font-medium">Vida</span>
+                        <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden">
+                        <div id="bar-vida" class="h-full bg-theme-red transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                    <div class="flex gap-2 justify-center items-center mt-2">
+                        <input type="number" id="vida-atual" value="50" oninput="updateVida()" class="w-16 bg-transparent text-center border-b border-theme-border text-white text-sm focus:outline-none focus:border-theme-red">
+                        <span class="text-theme-muted">/</span>
+                        <input type="number" id="vida-max" value="50" oninput="updateVida()" class="w-16 bg-transparent text-center border-b border-theme-border text-white text-sm focus:outline-none focus:border-theme-red">
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-theme-pink font-medium">Lealdade</span>
+                        <i data-lucide="heart-handshake" class="w-4 h-4 text-theme-pink"></i>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden">
+                        <div id="bar-lealdade" class="h-full bg-theme-pink transition-all duration-500" style="width: 80%"></div>
+                    </div>
+                    <input type="range" id="input-lealdade" min="0" max="100" value="80" oninput="updateLealdade()" class="w-full mt-2">
+                    <p id="lealdade-texto" class="text-theme-muted text-sm text-center">Leal</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-6 anim-entry" style="animation-delay: 0.3s;">
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-purple"></div>
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple mb-4">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i> Aparência
+                </h3>
+                <textarea placeholder="Descreva a aparência do seu mascote: pelagem, olhos, marcas distintivas..." class="w-full bg-transparent border border-theme-border rounded p-3 text-white focus:border-theme-purple outline-none h-[150px] resize-none transition-colors"></textarea>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-yellow"></div>
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-4">
+                    <i data-lucide="brain-circuit" class="w-4 h-4"></i> Personalidade
+                </h3>
+                <textarea placeholder="Como seu mascote se comporta? É bravo? Tímido? Protetor?" class="w-full bg-transparent border border-theme-border rounded p-3 text-white focus:border-theme-yellow outline-none h-[150px] resize-none transition-colors"></textarea>
+            </section>
+        </div>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.4s; border-left: 3px solid #4a9eff;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
+                <i data-lucide="zap" class="w-4 h-4"></i> Habilidade Especial
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 border-b-2 border-theme-border py-2 focus-within:border-theme-blue transition-colors">
+                    <i data-lucide="zap" class="w-4 h-4 text-theme-muted"></i>
+                    <input type="text" placeholder="Nome da Habilidade (Ex: Faro Aguçado)" class="w-full bg-transparent outline-none text-white">
+                </div>
+                
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 rounded">
+                    <p class="text-theme-muted text-sm">
+                        A habilidade especial do seu mascote é única e pode ser usada em combate ou exploração. 
+                        Converse com o mestre para definir os efeitos mecânicos.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.5s; border-left: 3px solid #22c55e;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-4">
+                <i data-lucide="book-open" class="w-4 h-4"></i> História
+            </h3>
+            <textarea placeholder="Como você encontrou seu mascote? Qual a história de vocês juntos?" class="w-full bg-transparent border border-theme-border rounded p-3 text-white focus:border-theme-green outline-none h-[120px] resize-none transition-colors"></textarea>
+        </section>
+
+        <div class="flex justify-end gap-4 pt-6 border-t border-theme-border anim-entry" style="animation-delay: 0.6s;">
+            <button onclick="window.location.reload()" class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+                Cancelar
+            </button>
+            <button onclick="saveMascote()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg hover:shadow-pink-500/20 transition-all font-cinzel text-sm font-bold">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                <span>Salvar Mascote</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Inicializar ícones
+        lucide.createIcons();
+
+        // Atualiza Barra de Vida
+        function updateVida() {
+            const atual = parseInt(document.getElementById('vida-atual').value) || 0;
+            const max = parseInt(document.getElementById('vida-max').value) || 1;
+            
+            let pct = (atual / max) * 100;
+            if(pct > 100) pct = 100;
+            if(pct < 0) pct = 0;
+            
+            document.getElementById('bar-vida').style.width = `${pct}%`;
+        }
+
+        // Atualiza Lealdade (Slider + Texto)
+        function updateLealdade() {
+            const val = parseInt(document.getElementById('input-lealdade').value);
+            const bar = document.getElementById('bar-lealdade');
+            const txt = document.getElementById('lealdade-texto');
+
+            bar.style.width = `${val}%`;
+
+            if (val < 30) txt.innerText = "Desconfiado";
+            else if (val < 60) txt.innerText = "Amigável";
+            else if (val < 90) txt.innerText = "Leal";
+            else txt.innerText = "Devoto";
+        }
+
+        // Simulação de Salvamento
+        function saveMascote() {
+            const btn = document.getElementById('btn-save');
+            const originalHTML = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                    lucide.createIcons();
+                }, 2000);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

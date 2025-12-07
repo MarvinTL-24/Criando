@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Hub Central</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        theme: {
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                            dark: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            muted: '#a0a0a0'
+                        }
+                    },
+                    boxShadow: {
+                        'glow-blue': '0 0 15px rgba(74, 158, 255, 0.1)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Utilitários de Texto */
+        .text-shadow-glow {
+            text-shadow: 0 0 20px rgba(232, 228, 220, 0.3);
+        }
+
+        /* Animações Keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleX {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* Classes de Animação com Delays */
+        .anim-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+            opacity: 0;
+        }
+        
+        .anim-hero-title {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            animation-delay: 0.3s;
+        }
+        
+        .anim-hero-line {
+            animation: scaleX 0.8s ease-out forwards;
+            transform: scaleX(0);
+            animation-delay: 0.6s;
+        }
+
+        .anim-hero-subtitle {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            animation-delay: 0.8s;
+        }
+
+        /* Grid Items Animation Staggering */
+        .anim-item-1 { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; animation-delay: 0.2s; }
+        .anim-item-2 { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; animation-delay: 0.3s; }
+        .anim-item-3 { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; animation-delay: 0.4s; }
+        .anim-item-4 { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; animation-delay: 0.5s; }
+        
+        /* Info Cards Staggering */
+        .anim-card-1 { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; animation-delay: 0.4s; }
+        .anim-card-2 { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; animation-delay: 0.55s; }
+        .anim-card-3 { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; animation-delay: 0.7s; }
+        .anim-card-4 { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; animation-delay: 0.85s; }
+    </style>
+</head>
+<body class="bg-[#050507] text-gray-300 min-h-screen">
+
+    <div class="min-h-screen flex flex-col">
+        
+        <div class="relative w-full h-[25vh] min-h-[200px] overflow-hidden anim-fade-in">
+            <div 
+                class="absolute inset-0 bg-cover bg-center"
+                style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&q=80');"
+            ></div>
+            
+            <div class="absolute inset-0 bg-gradient-to-t from-theme-dark via-theme-dark/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-theme-dark/80 via-transparent to-theme-dark/80"></div>
+            
+            <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-theme-text tracking-widest text-shadow-glow anim-hero-title">
+                    SISTEMA RPG
+                </h1>
+                <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mt-4 anim-hero-line"></div>
+                <p class="text-theme-muted mt-3 tracking-[0.3em] text-sm font-light anim-hero-subtitle">
+                    HUB CENTRAL
+                </p>
+            </div>
+
+            <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-theme-blue/50 to-transparent"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 py-8 w-full">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                
+                <div class="anim-item-1">
+                    <a href="ficha.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-theme-blue/50 transition-all duration-300 hover:shadow-glow-blue cursor-pointer">
+                        <div class="p-2 rounded transition-colors duration-300" style="background-color: rgba(74, 158, 255, 0.125);">
+                            <i data-lucide="scroll-text" class="w-5 h-5 text-[#4a9eff]"></i>
+                        </div>
+                        <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-blue transition-colors">Criar Ficha</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-blue group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                </div>
+
+                <div class="anim-item-2">
+                    <a href="status.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-theme-blue/50 transition-all duration-300 hover:shadow-glow-blue cursor-pointer">
+                        <div class="p-2 rounded transition-colors duration-300" style="background-color: rgba(255, 107, 53, 0.125);">
+                            <i data-lucide="zap" class="w-5 h-5 text-[#ff6b35]"></i>
+                        </div>
+                        <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-blue transition-colors">Ver Status</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-blue group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                </div>
+
+                <div class="anim-item-3">
+                    <a href="inventario.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-theme-blue/50 transition-all duration-300 hover:shadow-glow-blue cursor-pointer">
+                        <div class="p-2 rounded transition-colors duration-300" style="background-color: rgba(74, 158, 255, 0.125);">
+                            <i data-lucide="backpack" class="w-5 h-5 text-[#4a9eff]"></i>
+                        </div>
+                        <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-blue transition-colors">Inventário</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-blue group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                </div>
+
+                <div class="anim-item-4">
+                    <a href="habilidades.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-theme-blue/50 transition-all duration-300 hover:shadow-glow-blue cursor-pointer">
+                        <div class="p-2 rounded transition-colors duration-300" style="background-color: rgba(255, 107, 53, 0.125);">
+                            <i data-lucide="sword" class="w-5 h-5 text-[#ff6b35]"></i>
+                        </div>
+                        <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-blue transition-colors">Habilidades</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-blue group-hover:translate-x-1 transition-all"></i>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 pb-12 w-full">
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div class="anim-card-1 bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded" style="background-color: rgba(74, 158, 255, 0.1);">
+                            <i data-lucide="scroll-text" class="w-5 h-5 text-[#4a9eff]"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#4a9eff]">Personagem & Ficha</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium">Ficha:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Onde reside a alma e o corpo. Foco em aparência detalhada (slots de corpo), história, personalidade e identidade visual.</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium">Status:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">A matemática do poder. Força, agilidade, mana e cálculos de combate puro.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-card-2 bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded" style="background-color: rgba(255, 107, 53, 0.1);">
+                            <i data-lucide="shield" class="w-5 h-5 text-[#ff6b35]"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#ff6b35]">Responsabilidades</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium">Papel Tático:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Define seu papel em grupo. Desde a Vanguarda que abre caminho, até o Doméstico que gerencia a base, ou o Domador que controla feras.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-card-3 bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded" style="background-color: rgba(74, 158, 255, 0.1);">
+                            <i data-lucide="backpack" class="w-5 h-5 text-[#4a9eff]"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#4a9eff]">Inventário & Mascote</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium">Recursos:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Gerenciamento de armas, itens e equipamentos.</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium">Mascote:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Seu companheiro possui sua própria mini-ficha de evolução.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="anim-card-4 bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded" style="background-color: rgba(255, 107, 53, 0.1);">
+                            <i data-lucide="sparkles" class="w-5 h-5 text-[#ff6b35]"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#ff6b35]">Habilidades</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium">Combate:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Skills usadas em batalha (Dano, Cura, Buff).</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium">Proficiências:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Talentos de vida (Ferreiro, Alquimia, Culinária) e maestria com armas.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="border-t border-theme-border py-8 mt-auto">
+            <div class="flex justify-center items-center gap-4">
+                <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-theme-blue/50"></div>
+                <i data-lucide="sword" class="w-4 h-4 text-[#4a9eff]/50"></i>
+                <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-theme-blue/50"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

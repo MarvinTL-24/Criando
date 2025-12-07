@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Ficha</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações de Entrada */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .anim-entry { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
+
+        /* Estilos de Input Customizados */
+        .custom-input {
+            width: 100%;
+            background: transparent;
+            border-bottom: 1px solid #2a2a2e;
+            color: #e8e4dc;
+            padding: 0.5rem 0;
+            transition: all 0.3s;
+        }
+        .custom-input:focus {
+            border-bottom-color: #4a9eff;
+            outline: none;
+        }
+        .custom-textarea {
+            width: 100%;
+            background: #0a0a0c;
+            border: 1px solid #2a2a2e;
+            color: #e8e4dc;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            resize: none;
+            transition: all 0.3s;
+        }
+        .custom-textarea:focus {
+            border-color: #4a9eff;
+            outline: none;
+        }
+        .custom-textarea.orange:focus {
+            border-color: #ff6b35;
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-blue">Ficha de Personagem</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-8 anim-entry">
+            <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
+                <i data-lucide="scroll-text" class="w-8 h-8 text-theme-blue"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Ficha do Personagem</h1>
+                <p class="text-gray-400">Lore & Corpo</p>
+            </div>
+        </header>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                <i data-lucide="user" class="w-4 h-4"></i> Identidade
+            </h3>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Nome</label>
+                    <input type="text" placeholder="Nome do personagem" class="custom-input">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Título / Epíteto</label>
+                    <input type="text" placeholder="O Destemido, A Sombra..." class="custom-input">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Idade</label>
+                    <input type="text" placeholder="25 anos" class="custom-input">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Raça</label>
+                    <input type="text" placeholder="Humano, Elfo, Anão..." class="custom-input">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Classe</label>
+                    <input type="text" placeholder="Guerreiro, Mago..." class="custom-input">
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-2">
+                <i data-lucide="palette" class="w-4 h-4"></i> Aparência Física
+            </h3>
+            <p class="text-[#606060] text-sm mb-6">Descreva cada parte do corpo do seu personagem para criar uma imagem detalhada.</p>
+
+            <div class="grid md:grid-cols-2 gap-4">
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Cabeça</label>
+                    <textarea placeholder="Corte de cabelo, cicatrizes faciais..." class="custom-textarea orange h-20"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Olhos</label>
+                    <textarea placeholder="Cor, formato, expressão..." class="custom-textarea orange h-20"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Torso</label>
+                    <textarea placeholder="Tatuagens, cicatrizes, estrutura..." class="custom-textarea orange h-20"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Braços</label>
+                    <textarea placeholder="Marcas, músculos, adornos..." class="custom-textarea orange h-20"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Mãos</label>
+                    <textarea placeholder="Calosidades, anéis, garras..." class="custom-textarea orange h-20"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Pernas</label>
+                    <textarea placeholder="Próteses, armaduras, marcas..." class="custom-textarea orange h-20"></textarea>
+                </div>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Pés</label>
+                    <textarea placeholder="Botas, descalço, garras..." class="custom-textarea orange h-20"></textarea>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                <i data-lucide="book-open" class="w-4 h-4"></i> História & Passado
+            </h3>
+
+            <div class="space-y-2">
+                <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">História de Fundo</label>
+                <textarea placeholder="De onde veio seu personagem? Qual sua origem? O que o levou a essa vida de aventuras?" class="custom-textarea min-h-[150px]"></textarea>
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-6 anim-entry delay-4">
+            
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
+                    <i data-lucide="heart" class="w-4 h-4"></i> Personalidade
+                </h3>
+
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Traços de Personalidade</label>
+                        <textarea placeholder="Como seu personagem age? É corajoso? Tímido?" class="custom-textarea orange h-24"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Medos & Fraquezas</label>
+                        <textarea placeholder="O que seu personagem teme?" class="custom-textarea orange h-24"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                    <i data-lucide="brain" class="w-4 h-4"></i> Motivações & Objetivos
+                </h3>
+
+                <div class="space-y-2 h-full">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">O que move seu personagem?</label>
+                    <textarea placeholder="Quais são os objetivos do seu personagem? Vingança? Riqueza? Proteção? Conhecimento?" class="custom-textarea h-[calc(100%-2rem)] min-h-[180px]"></textarea>
+                </div>
+            </section>
+        </div>
+
+        <div class="flex justify-end gap-4 pt-6 border-t border-theme-border anim-entry delay-5 mt-6">
+            <button class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+                Cancelar
+            </button>
+            <button onclick="saveFicha()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-[#4a9eff] hover:bg-[#3b82f6] rounded text-white shadow-lg hover:shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                <span>Salvar Ficha</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Inicializa Ícones
+        lucide.createIcons();
+
+        // Função de Salvar (Simulação)
+        function saveFicha() {
+            const btn = document.getElementById('btn-save');
+            const originalContent = btn.innerHTML;
+            const originalBg = btn.className;
+            
+            // Estado de Loading
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
+            // Redefine ícones dentro do botão alterado
+            lucide.createIcons();
+
+            setTimeout(() => {
+                // Estado de Sucesso
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
+                btn.className = "group flex items-center gap-2 px-6 py-2 bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold";
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    // Voltar ao normal
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    btn.className = originalBg; // Restaura classes originais
+                    lucide.createIcons();
+                }, 2000);
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Status</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                            red: '#dc2626',
+                            green: '#22c55e',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            pink: '#ec4899'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos Globais */
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Inputs numéricos sem setinhas */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Animações */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .anim-entry { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        /* Transições de barra */
+        .stat-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Status</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-8 anim-entry">
+            <div class="p-3 rounded-lg bg-[#ff6b35]/10 border border-[#ff6b35]/20">
+                <i data-lucide="zap" class="w-8 h-8 text-theme-orange"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Status</h1>
+                <p class="text-gray-400">Atributos & Cálculos</p>
+            </div>
+        </header>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
+                <i data-lucide="zap" class="w-4 h-4"></i> Progressão
+            </h3>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nível</label>
+                    <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-orange transition-colors">
+                        <i data-lucide="crown" class="w-4 h-4 text-theme-orange mr-2"></i>
+                        <input type="number" id="input-nivel" value="1" min="1" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Experiência</label>
+                    <div class="h-4 bg-[#0a0a0c] rounded-full overflow-hidden border border-theme-border mb-2">
+                        <div id="bar-xp" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="flex justify-between items-center text-sm">
+                        <input type="number" id="input-xp" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
+                        <span class="text-[#606060]">/ <span id="display-xp-max">1000</span> XP</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-red"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
+                <i data-lucide="heart" class="w-4 h-4"></i> Recursos Vitais
+            </h3>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="resource-group">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-theme-red">Vida</span>
+                        <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                        <div id="bar-vida" class="h-full bg-theme-red stat-bar-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="flex justify-center gap-2 items-center">
+                        <input type="number" id="input-vida-atual" value="100" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" oninput="recalc()">
+                        <span class="text-gray-600">/</span>
+                        <input type="number" id="input-vida-max" value="100" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" oninput="recalc()">
+                    </div>
+                </div>
+
+                <div class="resource-group">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-theme-blue">Mana</span>
+                        <i data-lucide="flame" class="w-4 h-4 text-theme-blue"></i>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                        <div id="bar-mana" class="h-full bg-theme-blue stat-bar-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="flex justify-center gap-2 items-center">
+                        <input type="number" id="input-mana-atual" value="50" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" oninput="recalc()">
+                        <span class="text-gray-600">/</span>
+                        <input type="number" id="input-mana-max" value="50" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" oninput="recalc()">
+                    </div>
+                </div>
+
+                <div class="resource-group">
+                    <div class="flex justify-between mb-1">
+                        <span class="text-sm font-medium text-theme-green">Estamina</span>
+                        <i data-lucide="wind" class="w-4 h-4 text-theme-green"></i>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                        <div id="bar-estamina" class="h-full bg-theme-green stat-bar-fill" style="width: 100%"></div>
+                    </div>
+                    <div class="flex justify-center gap-2 items-center">
+                        <input type="number" id="input-estamina-atual" value="80" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" oninput="recalc()">
+                        <span class="text-gray-600">/</span>
+                        <input type="number" id="input-estamina-max" value="80" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" oninput="recalc()">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                <i data-lucide="sword" class="w-4 h-4"></i> Atributos Base
+            </h3>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-red/50 transition-colors group">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-red/10 flex items-center justify-center">
+                        <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
+                    </div>
+                    <label class="text-xs uppercase text-[#606060] font-cinzel">Força</label>
+                    <input type="number" id="attr-forca" value="10" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-red py-2" oninput="recalc()">
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-green/10 flex items-center justify-center">
+                        <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
+                    </div>
+                    <label class="text-xs uppercase text-[#606060] font-cinzel">Destreza</label>
+                    <input type="number" id="attr-destreza" value="10" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-green py-2" oninput="recalc()">
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-yellow/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-yellow/10 flex items-center justify-center">
+                        <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
+                    </div>
+                    <label class="text-xs uppercase text-[#606060] font-cinzel">Constituição</label>
+                    <input type="number" id="attr-constituicao" value="10" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-yellow py-2" oninput="recalc()">
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-blue/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-blue/10 flex items-center justify-center">
+                        <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
+                    </div>
+                    <label class="text-xs uppercase text-[#606060] font-cinzel">Inteligência</label>
+                    <input type="number" id="attr-inteligencia" value="10" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-blue py-2" oninput="recalc()">
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-purple/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-purple/10 flex items-center justify-center">
+                        <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
+                    </div>
+                    <label class="text-xs uppercase text-[#606060] font-cinzel">Sabedoria</label>
+                    <input type="number" id="attr-sabedoria" value="10" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-purple py-2" oninput="recalc()">
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-pink/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-pink/10 flex items-center justify-center">
+                        <i data-lucide="flame" class="w-5 h-5 text-theme-pink"></i>
+                    </div>
+                    <label class="text-xs uppercase text-[#606060] font-cinzel">Carisma</label>
+                    <input type="number" id="attr-carisma" value="10" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-pink py-2" oninput="recalc()">
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-purple"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple mb-6">
+                <i data-lucide="calculator" class="w-4 h-4"></i> Valores Derivados (Automático)
+            </h3>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <i data-lucide="sword" class="w-6 h-6 mx-auto mb-2 text-theme-red"></i>
+                    <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Dano Base</p>
+                    <p id="calc-dano" class="text-3xl font-bold text-theme-red font-mono mt-2">0</p>
+                </div>
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <i data-lucide="shield" class="w-6 h-6 mx-auto mb-2 text-theme-yellow"></i>
+                    <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Defesa</p>
+                    <p id="calc-defesa" class="text-3xl font-bold text-theme-yellow font-mono mt-2">0</p>
+                </div>
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <i data-lucide="wind" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                    <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Evasão</p>
+                    <p id="calc-evasao" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                </div>
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <i data-lucide="brain" class="w-6 h-6 mx-auto mb-2 text-theme-purple"></i>
+                    <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Poder Mágico</p>
+                    <p id="calc-magia" class="text-3xl font-bold text-theme-purple font-mono mt-2">0</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex justify-end gap-4 pt-6 border-t border-theme-border anim-entry delay-4">
+            <button onclick="resetStats()" class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+                Resetar
+            </button>
+            <button onclick="saveStats()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-theme-orange to-red-600 rounded text-white shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
+                <i data-lucide="save" class="w-4 h-4"></i>
+                <span>Salvar Status</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Inicializa Ícones
+        lucide.createIcons();
+
+        // Helpers para pegar valor numérico de inputs
+        const val = (id) => parseInt(document.getElementById(id).value) || 0;
+        const setTxt = (id, txt) => document.getElementById(id).innerText = txt;
+
+        // Função Principal de Recálculo
+        function recalc() {
+            // Pegar valores dos inputs
+            const nivel = val('input-nivel');
+            const xp = val('input-xp');
+            
+            // Atributos
+            const str = val('attr-forca');
+            const dex = val('attr-destreza');
+            const con = val('attr-constituicao');
+            const int = val('attr-inteligencia');
+            const wis = val('attr-sabedoria');
+
+            // --- Cálculos Matemáticos (Baseados no seu código React) ---
+            const dano = Math.floor(str * 1.5 + nivel * 2);
+            const defesa = Math.floor(con * 1.2 + dex * 0.5);
+            const evasao = Math.floor(dex * 1.5 + wis * 0.3);
+            const magia = Math.floor(int * 1.5 + wis * 0.5);
+
+            // --- Atualizar DOM (Textos) ---
+            setTxt('calc-dano', dano);
+            setTxt('calc-defesa', defesa);
+            setTxt('calc-evasao', evasao);
+            setTxt('calc-magia', magia);
+
+            // --- Atualizar Barras de Progresso ---
+            
+            // XP (Max = Nivel * 1000)
+            const xpMax = nivel * 1000;
+            setTxt('display-xp-max', xpMax);
+            updateBar('bar-xp', xp, xpMax);
+
+            // Vida
+            updateBar('bar-vida', val('input-vida-atual'), val('input-vida-max'));
+            
+            // Mana
+            updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
+            
+            // Estamina
+            updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
+        }
+
+        function updateBar(elementId, current, max) {
+            const el = document.getElementById(elementId);
+            if(max <= 0) max = 1; // Evitar divisão por zero
+            let pct = (current / max) * 100;
+            if (pct > 100) pct = 100;
+            if (pct < 0) pct = 0;
+            el.style.width = `${pct}%`;
+        }
+
+        // Função de Reset
+        function resetStats() {
+            if(confirm("Deseja resetar todos os valores para o padrão?")) {
+                const defaults = {
+                    'input-nivel': 1, 'input-xp': 0,
+                    'input-vida-atual': 100, 'input-vida-max': 100,
+                    'input-mana-atual': 50, 'input-mana-max': 50,
+                    'input-estamina-atual': 80, 'input-estamina-max': 80,
+                    'attr-forca': 10, 'attr-destreza': 10, 'attr-constituicao': 10,
+                    'attr-inteligencia': 10, 'attr-sabedoria': 10, 'attr-carisma': 10
+                };
+
+                for(const [id, value] of Object.entries(defaults)) {
+                    document.getElementById(id).value = value;
+                }
+                recalc(); // Recalcular tudo após resetar
+            }
+        }
+
+        // Função Simular Salvamento
+        function saveStats() {
+            const btn = document.getElementById('btn-save');
+            const originalContent = btn.innerHTML;
+            
+            // Estado de carregando
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
+            lucide.createIcons();
+
+            setTimeout(() => {
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    lucide.createIcons();
+                }, 2000);
+            }, 1000);
+        }
+
+        // Rodar cálculo inicial ao carregar a página
+        window.addEventListener('load', recalc);
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Scrollbar Customizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
+
+        /* Utilitários de Glow */
+        .text-shadow-glow { text-shadow: 0 0 10px rgba(74, 158, 255, 0.5); }
+        .glow-blue { box-shadow: 0 0 20px rgba(74, 158, 255, 0.3); }
+
+        /* Classes para Dropdown (Substituindo Framer Motion) */
+        .dropdown-content {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .dropdown-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .chevron {
+            transition: transform 0.3s ease;
+        }
+        .chevron.rotate {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-theme-bg text-theme-text min-h-screen font-sans">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center flex-wrap" id="nav-container">
+                
+                <div class="relative group dropdown-container">
+                    <button onclick="toggleMenu('menu-personagem', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
+                        <i data-lucide="user" class="w-4 h-4"></i>
+                        <span class="font-cinzel">Personagem</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
+                    </button>
+                    <div id="menu-personagem" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
+                        <a href="ficha.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
+                            <i data-lucide="scroll-text" class="w-3 h-3"></i> Ficha (Lore & Corpo)
+                        </a>
+                        <a href="status.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
+                            <i data-lucide="zap" class="w-3 h-3"></i> Status (Atributos)
+                        </a>
+                    </div>
+                </div>
+
+                <div class="relative group dropdown-container">
+                    <button onclick="toggleMenu('menu-resp', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
+                        <i data-lucide="shield" class="w-4 h-4"></i>
+                        <span class="font-cinzel">Responsabilidade</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
+                    </button>
+                    <div id="menu-resp" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
+                        <a href="vanguarda.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">🛡️ Vanguarda</a>
+                        <a href="defesa.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">🏰 Defesa</a>
+                        <a href="suporte.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">💉 Suporte</a>
+                        <a href="explorador.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">🗺️ Explorador</a>
+                        <a href="domestico.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">🏠 Doméstico</a>
+                        <a href="domador.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">🐾 Domador</a>
+                    </div>
+                </div>
+
+                <a href="inventario.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
+                    <i data-lucide="backpack" class="w-4 h-4"></i>
+                    <span class="font-cinzel">Inventário</span>
+                </a>
+
+                <a href="mascote.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
+                    <i data-lucide="dog" class="w-4 h-4"></i>
+                    <span class="font-cinzel">Mascote</span>
+                </a>
+
+                <div class="relative group dropdown-container">
+                    <button onclick="toggleMenu('menu-habil', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                        <span class="font-cinzel">Habilidades</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
+                    </button>
+                    <div id="menu-habil" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
+                        <a href="habilidades-combate.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">⚔️ Combate (Ativas)</a>
+                        <a href="proficiencias.html" class="block px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">🔨 Proficiências (Passivas)</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+        <div class="h-[2px] bg-gradient-to-r from-transparent via-[#4a9eff] to-transparent"></div>
+    </nav>
+
+    <main class="min-h-screen">
+        <div class="relative w-full h-[25vh] min-h-[200px] overflow-hidden">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&q=80');"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-theme-bg via-theme-bg/60 to-transparent"></div>
+            <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
+                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-theme-text tracking-widest text-shadow-glow">SISTEMA RPG</h1>
+                <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mt-4"></div>
+                <p class="text-[#a0a0a0] mt-3 tracking-[0.3em] text-sm font-light">HUB CENTRAL</p>
+            </div>
+            <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-theme-blue/50 to-transparent"></div>
+        </div>
+        
+        <div class="max-w-6xl mx-auto px-4 py-12 text-center">
+            <p class="text-gray-400">Selecione uma opção no menu acima para navegar.</p>
+        </div>
+    </main>
+
+    <script>
+        // 1. Inicializar Ícones Lucide
+        lucide.createIcons();
+
+        // 2. Lógica dos Dropdowns
+        function toggleMenu(menuId, btnElement) {
+            const menu = document.getElementById(menuId);
+            const chevron = btnElement.querySelector('.chevron');
+            const isActive = menu.classList.contains('active');
+
+            // Fechar todos os outros menus abertos antes de abrir este
+            closeAllMenus();
+
+            // Se não estava aberto, abrimos agora
+            if (!isActive) {
+                menu.classList.add('active');
+                if(chevron) chevron.classList.add('rotate');
+            }
+        }
+
+        function closeAllMenus() {
+            // Fecha todos os conteúdos
+            document.querySelectorAll('.dropdown-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Reseta todas as setinhas
+            document.querySelectorAll('.chevron').forEach(el => {
+                el.classList.remove('rotate');
+            });
+        }
+
+        // 3. Fechar menus ao clicar fora
+        window.addEventListener('click', function(e) {
+            // Se o clique NÃO foi dentro de um container de dropdown
+            if (!e.target.closest('.dropdown-container')) {
+                closeAllMenus();
+            }
+        });
+    </script>
+</body>
+</html>
