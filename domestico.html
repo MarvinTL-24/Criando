@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema RPG - Doméstico</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            muted: '#606060',
+                            purple: '#8b5cf6', // Cor Principal desta página (Doméstico)
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-purple transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-purple">Responsabilidade</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-purple to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-8">
+
+        <header class="flex items-center gap-4 anim-entry">
+            <div class="p-4 rounded-lg bg-theme-purple/10 border border-theme-purple/20 shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+                <i data-lucide="home" class="w-10 h-10 text-theme-purple"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-cinzel font-bold text-white">Doméstico</h1>
+                <p class="text-gray-400 text-lg">O coração da base de operações</p>
+            </div>
+        </header>
+
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-purple"></div>
+            <p class="text-gray-300 leading-relaxed text-lg">
+                O Doméstico gerencia a base, os recursos e o bem-estar do grupo fora de combate. Responsável por manter suprimentos, cozinhar, organizar equipamentos e criar um ambiente seguro para descanso. Seu trabalho nos bastidores permite que o grupo opere em máxima eficiência.
+            </p>
+        </section>
+
+        <section class="anim-entry delay-2">
+            <h2 class="flex items-center gap-2 font-cinzel text-xl font-bold text-theme-purple mb-6">
+                <i data-lucide="layout-grid" class="w-5 h-5"></i> Funções Principais
+            </h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded hover:border-theme-purple/40 transition-colors group">
+                    <h3 class="font-bold text-white mb-2 group-hover:text-theme-purple transition-colors">Gestor de Recursos</h3>
+                    <p class="text-theme-muted text-sm">Controla inventário, rações e suprimentos essenciais do grupo.</p>
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded hover:border-theme-purple/40 transition-colors group">
+                    <h3 class="font-bold text-white mb-2 group-hover:text-theme-purple transition-colors">Cozinheiro</h3>
+                    <p class="text-theme-muted text-sm">Prepara refeições que conferem buffs e restauram moral.</p>
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded hover:border-theme-purple/40 transition-colors group">
+                    <h3 class="font-bold text-white mb-2 group-hover:text-theme-purple transition-colors">Artesão de Campo</h3>
+                    <p class="text-theme-muted text-sm">Repara equipamentos e cria itens básicos durante viagens.</p>
+                </div>
+
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded hover:border-theme-purple/40 transition-colors group">
+                    <h3 class="font-bold text-white mb-2 group-hover:text-theme-purple transition-colors">Organizador</h3>
+                    <p class="text-theme-muted text-sm">Mantém a base organizada e funcional, otimizando espaço.</p>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8 anim-entry delay-3">
+            
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <h2 class="flex items-center gap-2 font-cinzel text-xl font-bold text-theme-purple mb-6">
+                    <i data-lucide="sparkles" class="w-5 h-5"></i> Habilidades Chave
+                </h2>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 bg-theme-purple/10 border border-theme-purple/30 text-theme-purple rounded text-sm">Culinária Avançada</span>
+                    <span class="px-3 py-1 bg-theme-purple/10 border border-theme-purple/30 text-theme-purple rounded text-sm">Reparo de Equipamento</span>
+                    <span class="px-3 py-1 bg-theme-purple/10 border border-theme-purple/30 text-theme-purple rounded text-sm">Gestão de Estoque</span>
+                    <span class="px-3 py-1 bg-theme-purple/10 border border-theme-purple/30 text-theme-purple rounded text-sm">Acampamento Eficiente</span>
+                    <span class="px-3 py-1 bg-theme-purple/10 border border-theme-purple/30 text-theme-purple rounded text-sm">Negociação</span>
+                    <span class="px-3 py-1 bg-theme-purple/10 border border-theme-purple/30 text-theme-purple rounded text-sm">Primeiros Socorros</span>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <h2 class="flex items-center gap-2 font-cinzel text-xl font-bold text-theme-purple mb-6">
+                    <i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Bônus Passivos
+                </h2>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="check" class="w-5 h-5 text-theme-purple shrink-0 mt-0.5"></i>
+                        <span class="text-gray-300">Comidas preparadas têm +25% de duração de buff</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="check" class="w-5 h-5 text-theme-purple shrink-0 mt-0.5"></i>
+                        <span class="text-gray-300">Reparo de equipamentos custa menos materiais</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="check" class="w-5 h-5 text-theme-purple shrink-0 mt-0.5"></i>
+                        <span class="text-gray-300">Acampamentos restauram mais vida/mana durante descanso</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                        <i data-lucide="check" class="w-5 h-5 text-theme-purple shrink-0 mt-0.5"></i>
+                        <span class="text-gray-300">Desconto em compras de suprimentos básicos</span>
+                    </li>
+                </ul>
+            </section>
+
+        </div>
+
+        <div class="flex justify-center pt-8 anim-entry delay-4">
+            <a href="index.html" class="flex items-center gap-2 px-8 py-3 bg-[#0a0a0c] border border-theme-border hover:border-theme-purple text-theme-muted hover:text-theme-purple transition-all rounded group">
+                <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-1 transition-transform"></i>
+                <span class="font-cinzel">Voltar ao Hub</span>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>
