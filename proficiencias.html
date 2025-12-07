@@ -203,7 +203,8 @@
             document.getElementById('dominio-oficios').innerText = proficienciasOficio.filter(p => p.nivel >= 5).length;
             document.getElementById('dominio-armas').innerText = proficienciasArmas.filter(p => p.nivel >= 5).length;
 
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
+            
             setTimeout(() => {
                 document.querySelectorAll('.progress-fill').forEach(bar => {
                     bar.style.width = bar.getAttribute('data-width');
@@ -219,7 +220,7 @@
             
             // Estado de loading
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
-            lucide.createIcons();
+            if(window.lucide) lucide.createIcons();
 
             const opt = {
                 margin:       [10, 10, 10, 10],
@@ -231,7 +232,7 @@
 
             html2pdf().set(opt).from(element).save().then(() => {
                 btn.innerHTML = oldContent;
-                lucide.createIcons();
+                if(window.lucide) lucide.createIcons();
             });
         }
 
