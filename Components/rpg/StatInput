@@ -1,0 +1,55 @@
+import React from "react";
+import { motion } from "framer-motion";
+
+export default function StatInput({ 
+  label, 
+  value, 
+  onChange, 
+  type = "text", 
+  placeholder = "",
+  icon: Icon,
+  color = "#4a9eff",
+  readonly = false,
+  className = ""
+}) {
+  return (
+    <div className={`relative ${className}`}>
+      {label && (
+        <label className="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">
+          {label}
+        </label>
+      )}
+      <div className="relative group">
+        {Icon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2">
+            <Icon className="w-4 h-4 text-[#404040] group-focus-within:text-[#4a9eff] transition-colors" />
+          </div>
+        )}
+        <input
+          type={type}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          readOnly={readonly}
+          className={`
+            w-full bg-transparent border-b-2 border-[#2a2a2e] 
+            py-3 ${Icon ? 'pl-10' : 'pl-0'} pr-3
+            text-[#e8e4dc] placeholder-[#404040]
+            focus:outline-none focus:border-[#4a9eff]
+            transition-all duration-300
+            ${readonly ? 'cursor-default opacity-70' : ''}
+          `}
+          style={{
+            fontFamily: type === 'number' ? 'monospace' : 'inherit'
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-0 left-0 h-[2px] bg-[#4a9eff]"
+          initial={{ scaleX: 0 }}
+          whileFocus={{ scaleX: 1 }}
+          style={{ transformOrigin: 'left' }}
+        />
+      </div>
+    </div>
+  );
+}
