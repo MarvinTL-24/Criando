@@ -11,6 +11,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -48,7 +49,7 @@
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
         #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
 
-        /* Custom Scrollbar for Textarea */
+        /* Scrollbar */
         textarea::-webkit-scrollbar { width: 6px; }
         textarea::-webkit-scrollbar-track { background: #0f0f12; }
         textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
@@ -82,31 +83,38 @@
         <div id="filter-container" class="flex flex-wrap gap-2 justify-center mb-8 anim-entry" style="animation-delay: 0.1s;">
             </div>
 
-        <div id="skills-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry" style="animation-delay: 0.2s;">
+        <div id="skills-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry p-2" style="animation-delay: 0.2s;">
             </div>
+
+        <div class="flex justify-end gap-4 border-t border-theme-border pt-6 mt-8 anim-entry" style="animation-delay: 0.3s;">
+            <button onclick="exportTXT()" class="flex items-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                Baixar TXT
+            </button>
+            <button onclick="exportPNG()" id="btn-png" class="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 rounded text-white shadow-lg shadow-red-600/20 transition-all font-cinzel text-sm font-bold">
+                <i data-lucide="image" class="w-4 h-4"></i>
+                Baixar Imagem
+            </button>
+        </div>
 
     </div>
 
     <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
         <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
-            
             <div class="flex justify-between items-center mb-6">
                 <h2 id="modal-title" class="font-cinzel text-xl text-white">Nova Habilidade</h2>
                 <button onclick="closeModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-
             <form id="form-skill" onsubmit="saveSkill(event)" class="space-y-4">
                 <input type="hidden" id="skill-id">
-                
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nome</label>
-                    <input type="text" id="skill-nome" required placeholder="Nome da habilidade" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                    <input type="text" id="skill-nome" required class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Tipo</label>
-                        <select id="skill-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none cursor-pointer">
+                        <select id="skill-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                             <option value="dano">Dano</option>
                             <option value="cura">Cura</option>
                             <option value="buff">Buff</option>
@@ -116,26 +124,23 @@
                     </div>
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nível</label>
-                        <input type="number" id="skill-nivel" min="1" max="10" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                        <input type="number" id="skill-nivel" min="1" max="10" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                 </div>
-
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Custo Mana</label>
-                        <input type="number" id="skill-mana" value="10" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                        <input type="number" id="skill-mana" value="10" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Cooldown</label>
-                        <input type="number" id="skill-cd" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none transition-colors">
+                        <input type="number" id="skill-cd" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
-                    <textarea id="skill-desc" placeholder="O que essa habilidade faz?" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none h-24 resize-none transition-colors"></textarea>
+                    <textarea id="skill-desc" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none h-24 resize-none"></textarea>
                 </div>
-
                 <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
                     <button type="submit" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
@@ -145,7 +150,6 @@
     </div>
 
     <script>
-        // Configuração de Tipos (Cores e Ícones)
         const typesConfig = {
             'dano': { label: "Dano", icon: "sword", color: "#dc2626" },
             'cura': { label: "Cura", icon: "heart", color: "#22c55e" },
@@ -154,7 +158,6 @@
             'utilidade': { label: "Utilidade", icon: "wind", color: "#3b82f6" }
         };
 
-        // Estado Inicial
         let skills = [
             { id: 1, nome: "Golpe Devastador", tipo: "dano", custoMana: 20, cooldown: 2, descricao: "Um golpe poderoso que causa 150% do dano base.", nivel: 3 },
             { id: 2, nome: "Cura Menor", tipo: "cura", custoMana: 15, cooldown: 1, descricao: "Restaura 30 HP do alvo.", nivel: 2 },
@@ -163,30 +166,13 @@
 
         let currentFilter = 'todos';
 
-        // --- Renderização ---
-
         function renderFilters() {
             const container = document.getElementById('filter-container');
-            let html = `
-                <button onclick="setFilter('todos')" 
-                    class="px-4 py-2 text-sm font-cinzel transition-all border rounded border-theme-border ${currentFilter === 'todos' ? 'bg-theme-blue text-[#0a0a0c] border-theme-blue' : 'bg-[#0f0f12] text-[#606060] hover:text-white'}">
-                    Todas
-                </button>
-            `;
-
+            let html = `<button onclick="setFilter('todos')" class="px-4 py-2 text-sm font-cinzel transition-all border rounded border-theme-border ${currentFilter === 'todos' ? 'bg-theme-blue text-[#0a0a0c] border-theme-blue' : 'bg-[#0f0f12] text-[#606060] hover:text-white'}">Todas</button>`;
             for (const [key, config] of Object.entries(typesConfig)) {
                 const isActive = currentFilter === key;
-                // Se ativo, usa a cor do tipo como fundo. Se não, usa estilo padrão dark.
                 const style = isActive ? `background-color: ${config.color}; color: #0a0a0c; border-color: ${config.color}` : ``;
-                
-                html += `
-                    <button onclick="setFilter('${key}')" 
-                        class="px-4 py-2 text-sm font-cinzel flex items-center gap-2 transition-all border border-theme-border rounded ${!isActive ? 'bg-[#0f0f12] text-[#606060] hover:text-white' : ''}"
-                        style="${style}">
-                        <i data-lucide="${config.icon}" class="w-4 h-4"></i>
-                        ${config.label}
-                    </button>
-                `;
+                html += `<button onclick="setFilter('${key}')" class="px-4 py-2 text-sm font-cinzel flex items-center gap-2 transition-all border border-theme-border rounded ${!isActive ? 'bg-[#0f0f12] text-[#606060] hover:text-white' : ''}" style="${style}"><i data-lucide="${config.icon}" class="w-4 h-4"></i>${config.label}</button>`;
             }
             container.innerHTML = html;
         }
@@ -194,146 +180,128 @@
         function renderGrid() {
             const grid = document.getElementById('skills-grid');
             const filteredSkills = currentFilter === 'todos' ? skills : skills.filter(s => s.tipo === currentFilter);
-
             let html = '';
-
-            // Gerar Cards
             filteredSkills.forEach(skill => {
                 const config = typesConfig[skill.tipo] || typesConfig['dano'];
-                
                 html += `
-                    <div class="bg-theme-panel border border-theme-border p-4 group hover:border-opacity-50 transition-all rounded relative anim-entry"
-                         style="border-left: 3px solid ${config.color};">
-                        
+                    <div class="skill-card bg-theme-panel border border-theme-border p-4 group hover:border-opacity-50 transition-all rounded relative anim-entry" style="border-left: 3px solid ${config.color};">
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex items-center gap-3">
-                                <div class="p-2 rounded" style="background-color: ${config.color}20">
-                                    <i data-lucide="${config.icon}" class="w-5 h-5" style="color: ${config.color}"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-white font-medium">${skill.nome}</h4>
-                                    <p class="text-xs text-[#606060]">Nível ${skill.nivel}</p>
-                                </div>
+                                <div class="p-2 rounded" style="background-color: ${config.color}20"><i data-lucide="${config.icon}" class="w-5 h-5" style="color: ${config.color}"></i></div>
+                                <div><h4 class="text-white font-medium">${skill.nome}</h4><p class="text-xs text-[#606060]">Nível ${skill.nivel}</p></div>
                             </div>
-                            
-                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onclick="openModal(${skill.id})" class="p-1.5 hover:bg-theme-blue/20 rounded transition-colors">
-                                    <i data-lucide="edit-2" class="w-3 h-3 text-theme-blue"></i>
-                                </button>
-                                <button onclick="deleteSkill(${skill.id})" class="p-1.5 hover:bg-red-600/20 rounded transition-colors">
-                                    <i data-lucide="trash-2" class="w-3 h-3 text-red-600"></i>
-                                </button>
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity no-print">
+                                <button onclick="openModal(${skill.id})" class="p-1.5 hover:bg-theme-blue/20 rounded transition-colors"><i data-lucide="edit-2" class="w-3 h-3 text-theme-blue"></i></button>
+                                <button onclick="deleteSkill(${skill.id})" class="p-1.5 hover:bg-red-600/20 rounded transition-colors"><i data-lucide="trash-2" class="w-3 h-3 text-red-600"></i></button>
                             </div>
                         </div>
-
                         <p class="text-[#808080] text-sm mb-4 min-h-[40px]">${skill.descricao}</p>
-
                         <div class="flex gap-4 text-xs">
-                            <div class="flex items-center gap-1">
-                                <i data-lucide="flame" class="w-3 h-3 text-blue-500"></i>
-                                <span class="text-[#606060]">${skill.custoMana} Mana</span>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                <i data-lucide="zap" class="w-3 h-3 text-yellow-500"></i>
-                                <span class="text-[#606060]">${skill.cooldown} turnos</span>
-                            </div>
+                            <div class="flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3 text-blue-500"></i><span class="text-[#606060]">${skill.custoMana} Mana</span></div>
+                            <div class="flex items-center gap-1"><i data-lucide="zap" class="w-3 h-3 text-yellow-500"></i><span class="text-[#606060]">${skill.cooldown} turnos</span></div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
             });
-
-            // Botão Adicionar (Sempre no final)
-            html += `
-                <button onclick="openModal()" 
-                    class="bg-[#0f0f12] border-2 border-dashed border-theme-border p-8 flex flex-col items-center justify-center gap-3 hover:border-theme-blue transition-colors group min-h-[200px] rounded anim-entry">
-                    <i data-lucide="plus" class="w-8 h-8 text-[#606060] group-hover:text-theme-blue transition-colors"></i>
-                    <span class="text-[#606060] group-hover:text-theme-blue font-cinzel transition-colors">Nova Habilidade</span>
-                </button>
-            `;
-
+            // Botão Adicionar (Classe 'add-btn' para esconder no print)
+            html += `<button onclick="openModal()" class="add-btn bg-[#0f0f12] border-2 border-dashed border-theme-border p-8 flex flex-col items-center justify-center gap-3 hover:border-theme-blue transition-colors group min-h-[200px] rounded anim-entry"><i data-lucide="plus" class="w-8 h-8 text-[#606060] group-hover:text-theme-blue transition-colors"></i><span class="text-[#606060] group-hover:text-theme-blue font-cinzel transition-colors">Nova Habilidade</span></button>`;
             grid.innerHTML = html;
             lucide.createIcons();
         }
 
-        // --- Lógica de Filtro ---
-        function setFilter(filter) {
-            currentFilter = filter;
-            renderFilters();
-            renderGrid();
-            lucide.createIcons(); // Recriar ícones nos filtros
+        // --- Export Functions ---
+
+        function exportTXT() {
+            let content = "=== HABILIDADES DE COMBATE ===\n\n";
+            skills.forEach(s => {
+                content += `[${s.tipo.toUpperCase()}] ${s.nome} (Nv. ${s.nivel})\n`;
+                content += `Custo: ${s.custoMana} Mana | Cooldown: ${s.cooldown}T\n`;
+                content += `Descrição: ${s.descricao}\n`;
+                content += `----------------------------\n`;
+            });
+            content += `\nTotal: ${skills.length} habilidades.`;
+
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Minhas_Habilidades.txt";
+            link.click();
         }
 
-        // --- CRUD e Modal ---
+        function exportPNG() {
+            const grid = document.getElementById('skills-grid');
+            const btn = document.getElementById('btn-png');
+            const addBtn = document.querySelector('.add-btn'); // Botão de adicionar
+            
+            // Estado de Loading
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
+            lucide.createIcons();
 
-        function openModal(id = null) {
+            // Esconder o botão de adicionar para a foto ficar limpa
+            if(addBtn) addBtn.style.display = 'none';
+
+            html2canvas(grid, {
+                backgroundColor: '#0a0a0c', // Garante fundo escuro
+                scale: 2 // Melhor qualidade
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'Minhas_Habilidades.png';
+                link.href = canvas.toDataURL();
+                link.click();
+
+                // Restaurar
+                if(addBtn) addBtn.style.display = 'flex';
+                btn.innerHTML = originalText;
+                lucide.createIcons();
+            });
+        }
+
+        // --- Standard Logic ---
+        function setFilter(f) { currentFilter = f; renderFilters(); renderGrid(); }
+        function openModal(id=null) {
             const modal = document.getElementById('modal-overlay');
             const title = document.getElementById('modal-title');
-            
             if (id) {
-                const skill = skills.find(s => s.id === id);
-                title.innerText = "Editar Habilidade";
-                document.getElementById('skill-id').value = skill.id;
-                document.getElementById('skill-nome').value = skill.nome;
-                document.getElementById('skill-tipo').value = skill.tipo;
-                document.getElementById('skill-nivel').value = skill.nivel;
-                document.getElementById('skill-mana').value = skill.custoMana;
-                document.getElementById('skill-cd').value = skill.cooldown;
-                document.getElementById('skill-desc').value = skill.descricao;
+                const s = skills.find(sk => sk.id === id);
+                title.innerText = "Editar";
+                document.getElementById('skill-id').value = s.id;
+                document.getElementById('skill-nome').value = s.nome;
+                document.getElementById('skill-tipo').value = s.tipo;
+                document.getElementById('skill-nivel').value = s.nivel;
+                document.getElementById('skill-mana').value = s.custoMana;
+                document.getElementById('skill-cd').value = s.cooldown;
+                document.getElementById('skill-desc').value = s.descricao;
             } else {
                 title.innerText = "Nova Habilidade";
                 document.getElementById('form-skill').reset();
                 document.getElementById('skill-id').value = "";
-                // Default values reset
-                document.getElementById('skill-nivel').value = 1;
-                document.getElementById('skill-mana').value = 10;
-                document.getElementById('skill-cd').value = 1;
             }
-
             modal.classList.remove('hidden');
         }
-
-        function closeModal() {
-            document.getElementById('modal-overlay').classList.add('hidden');
-        }
-
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
         function saveSkill(e) {
             e.preventDefault();
-            
             const id = document.getElementById('skill-id').value;
-            const newSkill = {
+            const newS = {
                 id: id ? parseInt(id) : Date.now(),
                 nome: document.getElementById('skill-nome').value,
                 tipo: document.getElementById('skill-tipo').value,
-                nivel: parseInt(document.getElementById('skill-nivel').value) || 1,
-                custoMana: parseInt(document.getElementById('skill-mana').value) || 0,
-                cooldown: parseInt(document.getElementById('skill-cd').value) || 0,
+                nivel: parseInt(document.getElementById('skill-nivel').value),
+                custoMana: parseInt(document.getElementById('skill-mana').value),
+                cooldown: parseInt(document.getElementById('skill-cd').value),
                 descricao: document.getElementById('skill-desc').value
             };
-
-            if (id) {
-                const index = skills.findIndex(s => s.id == id);
-                if (index !== -1) skills[index] = newSkill;
-            } else {
-                skills.push(newSkill);
-            }
-
-            closeModal();
-            renderGrid();
+            if(id) {
+                const idx = skills.findIndex(s => s.id == id);
+                if(idx !== -1) skills[idx] = newS;
+            } else { skills.push(newS); }
+            closeModal(); renderGrid();
         }
-
         function deleteSkill(id) {
-            if(confirm("Deseja esquecer esta habilidade?")) {
-                skills = skills.filter(s => s.id !== id);
-                renderGrid();
-            }
+            if(confirm("Deletar habilidade?")) { skills = skills.filter(s => s.id !== id); renderGrid(); }
         }
 
-        // Inicialização
-        window.addEventListener('load', () => {
-            renderFilters();
-            renderGrid();
-        });
-
+        window.addEventListener('load', () => { renderFilters(); renderGrid(); });
     </script>
 </body>
 </html>

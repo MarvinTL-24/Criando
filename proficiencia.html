@@ -11,6 +11,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -56,92 +57,87 @@
 </head>
 <body class="min-h-screen font-sans pb-12">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-orange transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Proficiências</span>
+    <div id="print-area">
+        
+        <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+                <a href="index.html" class="text-theme-text hover:text-theme-orange transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </a>
+                <div class="h-6 w-[1px] bg-theme-border"></div>
+                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Proficiências</span>
+            </div>
+            <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
+        </nav>
+
+        <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+            <header class="flex items-center gap-4 mb-6 anim-entry">
+                <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
+                    <i data-lucide="wrench" class="w-8 h-8 text-theme-orange"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-cinzel font-bold text-white">Proficiências</h1>
+                    <p class="text-gray-400">Ofícios e Maestria com Armas</p>
+                </div>
+            </header>
+
+            <div class="flex flex-wrap justify-center gap-6 text-sm anim-entry mb-8">
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#606060]"></div><span class="text-[#606060]">Aprendiz (1-2)</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#22c55e]"></div><span class="text-[#606060]">Iniciante (3-4)</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#3b82f6]"></div><span class="text-[#606060]">Competente (5-6)</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#f59e0b]"></div><span class="text-[#606060]">Experiente (7-8)</span></div>
+                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#dc2626]"></div><span class="text-[#606060]">Mestre (9-10)</span></div>
+            </div>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1" style="border-left: 3px solid #f59e0b;">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
+                    <i data-lucide="hammer" class="w-4 h-4"></i> Ofícios & Crafting
+                </h3>
+                <div id="grid-oficios" class="grid md:grid-cols-2 gap-4"></div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2" style="border-left: 3px solid #dc2626;">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
+                    <i data-lucide="swords" class="w-4 h-4"></i> Maestria com Armas
+                </h3>
+                <div id="grid-armas" class="grid md:grid-cols-2 gap-4"></div>
+            </section>
+
+            <div class="bg-theme-panel border border-theme-border p-6 rounded anim-entry delay-3">
+                <h3 class="font-cinzel text-lg text-theme-blue mb-4">Resumo de Progressão</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                    <div>
+                        <p id="total-oficios" class="text-3xl font-bold text-theme-orange">0</p>
+                        <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Ofícios</p>
+                    </div>
+                    <div>
+                        <p id="total-armas" class="text-3xl font-bold text-theme-red">0</p>
+                        <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Armas</p>
+                    </div>
+                    <div>
+                        <p id="dominio-oficios" class="text-3xl font-bold text-theme-blue">0</p>
+                        <p class="text-xs text-theme-muted uppercase tracking-wide">Ofícios Dominados</p>
+                    </div>
+                    <div>
+                        <p id="dominio-armas" class="text-3xl font-bold text-theme-green">0</p>
+                        <p class="text-xs text-theme-muted uppercase tracking-wide">Armas Dominadas</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
-    </nav>
+    </div>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
-
-        <header class="flex items-center gap-4 mb-6 anim-entry">
-            <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
-                <i data-lucide="wrench" class="w-8 h-8 text-theme-orange"></i>
-            </div>
-            <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Proficiências</h1>
-                <p class="text-gray-400">Ofícios e Maestria com Armas</p>
-            </div>
-        </header>
-
-        <div class="flex flex-wrap justify-center gap-6 text-sm anim-entry mb-8">
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#606060]"></div><span class="text-[#606060]">Aprendiz (1-2)</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#22c55e]"></div><span class="text-[#606060]">Iniciante (3-4)</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#3b82f6]"></div><span class="text-[#606060]">Competente (5-6)</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#f59e0b]"></div><span class="text-[#606060]">Experiente (7-8)</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-[#dc2626]"></div><span class="text-[#606060]">Mestre (9-10)</span>
-            </div>
-        </div>
-
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1" style="border-left: 3px solid #f59e0b;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
-                <i data-lucide="hammer" class="w-4 h-4"></i> Ofícios & Crafting
-            </h3>
-            
-            <div id="grid-oficios" class="grid md:grid-cols-2 gap-4">
-                </div>
-        </section>
-
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2" style="border-left: 3px solid #dc2626;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
-                <i data-lucide="swords" class="w-4 h-4"></i> Maestria com Armas
-            </h3>
-            
-            <div id="grid-armas" class="grid md:grid-cols-2 gap-4">
-                </div>
-        </section>
-
-        <div class="bg-theme-panel border border-theme-border p-6 rounded anim-entry delay-3">
-            <h3 class="font-cinzel text-lg text-theme-blue mb-4">Resumo de Progressão</h3>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                
-                <div>
-                    <p id="total-oficios" class="text-3xl font-bold text-theme-orange">0</p>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Ofícios</p>
-                </div>
-                
-                <div>
-                    <p id="total-armas" class="text-3xl font-bold text-theme-red">0</p>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Armas</p>
-                </div>
-                
-                <div>
-                    <p id="dominio-oficios" class="text-3xl font-bold text-theme-blue">0</p>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Ofícios Dominados</p>
-                </div>
-                
-                <div>
-                    <p id="dominio-armas" class="text-3xl font-bold text-theme-green">0</p>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Armas Dominadas</p>
-                </div>
-
-            </div>
-        </div>
-
+    <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry delay-3" data-html2pdf-ignore="true">
+        <button onclick="downloadTXT()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Baixar Dados (.txt)
+        </button>
+        <button onclick="downloadPDF()" id="btn-pdf" class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-orange hover:bg-orange-600 rounded text-[#0a0a0c] shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            Baixar PDF Visual
+        </button>
     </div>
 
     <script>
@@ -161,11 +157,9 @@
             { id: "cajados", label: "Cajados", icon: "wand-2", nivel: 3, maxNivel: 10 },
         ];
 
-        // Função para gerar o HTML de um Card
+        // --- Funções de Renderização ---
         function createCard(item, color) {
             const percentage = (item.nivel / item.maxNivel) * 100;
-            
-            // Gerar bolinhas (dots)
             let dotsHtml = '';
             for(let i = 0; i < 10; i++) {
                 const isActive = i < item.nivel;
@@ -178,63 +172,92 @@
                         <div class="p-3 rounded-lg" style="background-color: ${color}15">
                             <i data-lucide="${item.icon}" class="w-6 h-6" style="color: ${color}"></i>
                         </div>
-                        
                         <div class="flex-1">
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="text-white font-medium">${item.label}</h4>
                                 <span class="text-sm font-mono" style="color: ${color}">${item.nivel}/${item.maxNivel}</span>
                             </div>
-                            
                             ${item.descricao ? `<p class="text-[#606060] text-xs mb-2">${item.descricao}</p>` : ''}
-                            
                             <div class="h-2 bg-[#1a1a1e] rounded-full overflow-hidden mb-2">
-                                <div class="progress-fill h-full rounded-full" 
-                                     style="background-color: ${color}; box-shadow: 0 0 10px ${color}50; width: 0%" 
-                                     data-width="${percentage}%">
-                                </div>
+                                <div class="progress-fill h-full rounded-full" style="background-color: ${color}; box-shadow: 0 0 10px ${color}50; width: 0%" data-width="${percentage}%"></div>
                             </div>
-                            
-                            <div class="flex justify-between mt-1">
-                                ${dotsHtml}
-                            </div>
+                            <div class="flex justify-between mt-1">${dotsHtml}</div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        // Renderização
         window.addEventListener('load', () => {
             const oficiosGrid = document.getElementById('grid-oficios');
             const armasGrid = document.getElementById('grid-armas');
             
-            // Render Ofícios
             oficiosGrid.innerHTML = proficienciasOficio.map(p => createCard(p, '#f59e0b')).join('');
-            
-            // Render Armas
             armasGrid.innerHTML = proficienciasArmas.map(p => createCard(p, '#dc2626')).join('');
 
-            // Calcular Resumo
+            // Cálculos
             const totalOficios = proficienciasOficio.reduce((acc, p) => acc + p.nivel, 0);
             const totalArmas = proficienciasArmas.reduce((acc, p) => acc + p.nivel, 0);
-            const domOficios = proficienciasOficio.filter(p => p.nivel >= 5).length;
-            const domArmas = proficienciasArmas.filter(p => p.nivel >= 5).length;
-
             document.getElementById('total-oficios').innerText = totalOficios;
             document.getElementById('total-armas').innerText = totalArmas;
-            document.getElementById('dominio-oficios').innerText = domOficios;
-            document.getElementById('dominio-armas').innerText = domArmas;
+            document.getElementById('dominio-oficios').innerText = proficienciasOficio.filter(p => p.nivel >= 5).length;
+            document.getElementById('dominio-armas').innerText = proficienciasArmas.filter(p => p.nivel >= 5).length;
 
-            // Inicializar Ícones
             lucide.createIcons();
-
-            // Animar Barras (delay pequeno para o CSS transition funcionar)
             setTimeout(() => {
                 document.querySelectorAll('.progress-fill').forEach(bar => {
                     bar.style.width = bar.getAttribute('data-width');
                 });
             }, 100);
         });
+
+        // --- Exportação PDF ---
+        function downloadPDF() {
+            const element = document.getElementById('print-area');
+            const btn = document.getElementById('btn-pdf');
+            const oldContent = btn.innerHTML;
+            
+            // Estado de loading
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
+            lucide.createIcons();
+
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     'Minhas_Proficiencias.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = oldContent;
+                lucide.createIcons();
+            });
+        }
+
+        // --- Exportação TXT ---
+        function downloadTXT() {
+            let texto = "=== FICHA DE PROFICIÊNCIAS ===\n\n";
+
+            texto += "--- OFÍCIOS & CRAFTING ---\n";
+            proficienciasOficio.forEach(p => {
+                texto += `[${p.nivel}/10] ${p.label}: ${p.descricao || ''}\n`;
+            });
+
+            texto += "\n--- MAESTRIA COM ARMAS ---\n";
+            proficienciasArmas.forEach(p => {
+                texto += `[${p.nivel}/10] ${p.label}\n`;
+            });
+
+            texto += "\n============================\n";
+            texto += "Gerado pelo Sistema RPG";
+
+            const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "Proficiencias_Dados.txt";
+            link.click();
+        }
     </script>
 </body>
 </html>
