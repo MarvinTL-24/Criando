@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema RPG</title>
+    <title>Sistema RPG - Hub Central</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <script>
         tailwind.config = {
@@ -20,6 +19,7 @@
                     fontFamily: {
                         cinzel: ['Cinzel', 'serif'],
                         sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
                     },
                     colors: {
                         theme: {
@@ -37,17 +37,34 @@
     </script>
 
     <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
         /* Scrollbar Customizada */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
 
-        /* Utilitários de Glow */
+        /* Efeitos de Glow */
         .text-shadow-glow { text-shadow: 0 0 10px rgba(74, 158, 255, 0.5); }
-        .glow-blue { box-shadow: 0 0 20px rgba(74, 158, 255, 0.3); }
+        .hover-glow-blue:hover { box-shadow: 0 0 20px rgba(74, 158, 255, 0.15); border-color: rgba(74, 158, 255, 0.5); }
 
-        /* Classes para Dropdown (Substituindo Framer Motion) */
+        /* Animações (Simulando Framer Motion) */
+        .anim-entry {
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .anim-delay-1 { animation-delay: 0.2s; }
+        .anim-delay-2 { animation-delay: 0.4s; }
+        .anim-delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Classes para Dropdown */
         .dropdown-content {
             opacity: 0;
             visibility: hidden;
@@ -63,15 +80,11 @@
             pointer-events: auto;
         }
 
-        .chevron {
-            transition: transform 0.3s ease;
-        }
-        .chevron.rotate {
-            transform: rotate(180deg);
-        }
+        .chevron { transition: transform 0.3s ease; }
+        .chevron.rotate { transform: rotate(180deg); }
     </style>
 </head>
-<body class="bg-theme-bg text-theme-text min-h-screen font-sans">
+<body class="min-h-screen font-sans flex flex-col">
 
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4">
@@ -133,41 +146,164 @@
 
             </div>
         </div>
-        
         <div class="h-[2px] bg-gradient-to-r from-transparent via-[#4a9eff] to-transparent"></div>
     </nav>
 
-    <main class="min-h-screen">
-        <div class="relative w-full h-[25vh] min-h-[200px] overflow-hidden">
+    <main class="flex-grow">
+        <div class="relative w-full h-[30vh] min-h-[250px] overflow-hidden anim-entry">
             <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&q=80');"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-theme-bg via-theme-bg/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0c]/80 via-transparent to-[#0a0a0c]/80"></div>
+            
             <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-theme-text tracking-widest text-shadow-glow">SISTEMA RPG</h1>
-                <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mt-4"></div>
+                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-theme-text tracking-widest text-shadow-glow mb-4">SISTEMA RPG</h1>
+                
+                <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
+                
                 <p class="text-[#a0a0a0] mt-3 tracking-[0.3em] text-sm font-light">HUB CENTRAL</p>
             </div>
+            
             <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-theme-blue/50 to-transparent"></div>
         </div>
         
-        <div class="max-w-6xl mx-auto px-4 py-12 text-center">
-            <p class="text-gray-400">Selecione uma opção no menu acima para navegar.</p>
+        <div class="max-w-6xl mx-auto px-4 py-8 anim-entry anim-delay-1">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="ficha.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover-glow-blue transition-all duration-300 rounded">
+                    <div class="p-2 rounded bg-[#4a9eff]/20 text-theme-blue">
+                        <i data-lucide="scroll-text" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-blue transition-colors">Criar Ficha</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-blue group-hover:translate-x-1 transition-all"></i>
+                </a>
+
+                <a href="status.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-theme-orange/50 transition-all duration-300 rounded">
+                    <div class="p-2 rounded bg-[#ff6b35]/20 text-theme-orange">
+                        <i data-lucide="zap" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-orange transition-colors">Ver Status</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-orange group-hover:translate-x-1 transition-all"></i>
+                </a>
+
+                <a href="inventario.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover-glow-blue transition-all duration-300 rounded">
+                    <div class="p-2 rounded bg-[#4a9eff]/20 text-theme-blue">
+                        <i data-lucide="backpack" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-blue transition-colors">Inventário</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-blue group-hover:translate-x-1 transition-all"></i>
+                </a>
+
+                <a href="habilidades.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-theme-orange/50 transition-all duration-300 rounded">
+                    <div class="p-2 rounded bg-[#ff6b35]/20 text-theme-orange">
+                        <i data-lucide="sword" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-cinzel text-sm text-theme-text group-hover:text-theme-orange transition-colors">Habilidades</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-theme-orange group-hover:translate-x-1 transition-all"></i>
+                </a>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 pb-12 anim-entry anim-delay-2">
+            <div class="grid md:grid-cols-2 gap-6">
+                
+                <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500 rounded">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded bg-[#4a9eff]/15 text-theme-blue">
+                            <i data-lucide="scroll-text" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-theme-blue">Personagem & Ficha</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium block">Ficha:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Onde reside a alma e o corpo. Foco em aparência detalhada (slots de corpo), história, personalidade e identidade visual.</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium block">Status:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">A matemática do poder. Força, agilidade, mana e cálculos de combate puro.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-orange/30 transition-all duration-500 rounded">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded bg-[#ff6b35]/15 text-theme-orange">
+                            <i data-lucide="shield" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-theme-orange">Responsabilidades</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium block">Papel Tático:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Define seu papel em grupo. Desde a Vanguarda que abre caminho, até o Doméstico que gerencia a base, ou o Domador que controla feras.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500 rounded">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded bg-[#4a9eff]/15 text-theme-blue">
+                            <i data-lucide="backpack" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-theme-blue">Inventário & Mascote</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium block">Recursos:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Gerenciamento de armas, itens e equipamentos.</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium block">Mascote:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Seu companheiro possui sua própria mini-ficha de evolução.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-orange/30 transition-all duration-500 rounded">
+                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
+                        <div class="p-2 rounded bg-[#ff6b35]/15 text-theme-orange">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                        </div>
+                        <h3 class="font-cinzel text-lg font-semibold text-theme-orange">Habilidades</h3>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-theme-text font-medium block">Combate:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Skills usadas em batalha (Dano, Cura, Buff).</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium block">Proficiências:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Talentos de vida (Ferreiro, Alquimia, Culinária) e maestria com armas.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
     </main>
 
+    <footer class="border-t border-theme-border py-8 mt-auto anim-entry anim-delay-3">
+        <div class="flex justify-center items-center gap-4">
+            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-[#4a9eff]/50"></div>
+            <i data-lucide="sword" class="w-4 h-4 text-[#4a9eff]/50 rotate-90 md:rotate-0"></i>
+            <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-[#4a9eff]/50"></div>
+        </div>
+        <p class="text-center text-[#606060] text-xs mt-4">SISTEMA RPG v1.0</p>
+    </footer>
+
     <script>
         // 1. Inicializar Ícones Lucide
-        lucide.createIcons();
+        if (window.lucide) {
+            lucide.createIcons();
+        }
 
-        // 2. Lógica dos Dropdowns
+        // 2. Lógica dos Dropdowns (Mantida idêntica)
         function toggleMenu(menuId, btnElement) {
             const menu = document.getElementById(menuId);
             const chevron = btnElement.querySelector('.chevron');
             const isActive = menu.classList.contains('active');
 
-            // Fechar todos os outros menus abertos antes de abrir este
             closeAllMenus();
 
-            // Se não estava aberto, abrimos agora
             if (!isActive) {
                 menu.classList.add('active');
                 if(chevron) chevron.classList.add('rotate');
@@ -175,19 +311,15 @@
         }
 
         function closeAllMenus() {
-            // Fecha todos os conteúdos
             document.querySelectorAll('.dropdown-content').forEach(el => {
                 el.classList.remove('active');
             });
-            // Reseta todas as setinhas
             document.querySelectorAll('.chevron').forEach(el => {
                 el.classList.remove('rotate');
             });
         }
 
-        // 3. Fechar menus ao clicar fora
         window.addEventListener('click', function(e) {
-            // Se o clique NÃO foi dentro de um container de dropdown
             if (!e.target.closest('.dropdown-container')) {
                 closeAllMenus();
             }
