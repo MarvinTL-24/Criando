@@ -43,7 +43,6 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Animações */
         .anim-entry { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
         .delay-1 { animation-delay: 0.1s; }
         .delay-2 { animation-delay: 0.2s; }
@@ -51,8 +50,7 @@
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Barra de Progresso */
-        .progress-fill { width: 0; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-fill { width: 0; transition: width 0.3s ease; }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-12">
@@ -130,7 +128,13 @@
     </div>
 
     <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry delay-3" data-html2pdf-ignore="true">
-        <button onclick="downloadTXT()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+        
+        <button onclick="resetAll()" class="flex items-center justify-center gap-2 px-6 py-3 border border-red-900/50 text-red-500 hover:bg-red-900/20 rounded transition-colors font-cinzel text-sm">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            Resetar Tudo
+        </button>
+
+        <div class="flex-1 md:flex-none"></div> <button onclick="downloadTXT()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
             <i data-lucide="file-text" class="w-4 h-4"></i>
             Baixar Dados (.txt)
         </button>
@@ -141,25 +145,62 @@
     </div>
 
     <script>
-        // Dados
-        const proficienciasOficio = [
-            { id: "ferreiro", label: "Ferreiro", icon: "hammer", descricao: "Forja armas e armaduras de metal", nivel: 3, maxNivel: 10 },
-            { id: "alquimia", label: "Alquimia", icon: "flask-conical", descricao: "Cria poções e elixires mágicos", nivel: 5, maxNivel: 10 },
-            { id: "culinaria", label: "Culinária", icon: "utensils", descricao: "Prepara refeições com buffs especiais", nivel: 2, maxNivel: 10 },
-            { id: "joalheria", label: "Joalheria", icon: "gem", descricao: "Cria anéis e amuletos encantados", nivel: 1, maxNivel: 10 },
-            { id: "escriba", label: "Escriba", icon: "scroll", descricao: "Copia e cria pergaminhos mágicos", nivel: 4, maxNivel: 10 },
+        // Dados Iniciais (Todos Zerados)
+        let proficienciasOficio = [
+            { id: "ferreiro", label: "Ferreiro", icon: "hammer", descricao: "Forja armas e armaduras de metal", nivel: 0, maxNivel: 10 },
+            { id: "alquimia", label: "Alquimia", icon: "flask-conical", descricao: "Cria poções e elixires mágicos", nivel: 0, maxNivel: 10 },
+            { id: "culinaria", label: "Culinária", icon: "utensils", descricao: "Prepara refeições com buffs especiais", nivel: 0, maxNivel: 10 },
+            { id: "joalheria", label: "Joalheria", icon: "gem", descricao: "Cria anéis e amuletos encantados", nivel: 0, maxNivel: 10 },
+            { id: "escriba", label: "Escriba", icon: "scroll", descricao: "Copia e cria pergaminhos mágicos", nivel: 0, maxNivel: 10 },
         ];
 
-        const proficienciasArmas = [
-            { id: "espadas", label: "Espadas", icon: "swords", nivel: 7, maxNivel: 10 },
-            { id: "machados", label: "Machados", icon: "axe", nivel: 4, maxNivel: 10 },
-            { id: "arcos", label: "Arcos", icon: "crosshair", nivel: 6, maxNivel: 10 },
-            { id: "cajados", label: "Cajados", icon: "wand-2", nivel: 3, maxNivel: 10 },
+        let proficienciasArmas = [
+            { id: "espadas", label: "Espadas", icon: "swords", nivel: 0, maxNivel: 10 },
+            { id: "machados", label: "Machados", icon: "axe", nivel: 0, maxNivel: 10 },
+            { id: "arcos", label: "Arcos", icon: "crosshair", nivel: 0, maxNivel: 10 },
+            { id: "cajados", label: "Cajados", icon: "wand-2", nivel: 0, maxNivel: 10 },
         ];
 
-        // --- Funções de Renderização ---
-        function createCard(item, color) {
+        // --- Gerenciamento de Estado e Cache ---
+        function loadState() {
+            const savedOficio = localStorage.getItem('rpg_oficio');
+            const savedArmas = localStorage.getItem('rpg_armas');
+            if (savedOficio) proficienciasOficio = JSON.parse(savedOficio);
+            if (savedArmas) proficienciasArmas = JSON.parse(savedArmas);
+            renderAll();
+        }
+
+        function saveState() {
+            localStorage.setItem('rpg_oficio', JSON.stringify(proficienciasOficio));
+            localStorage.setItem('rpg_armas', JSON.stringify(proficienciasArmas));
+            renderAll();
+        }
+
+        function resetAll() {
+            if(confirm("Tem certeza que deseja zerar todas as proficiências?")) {
+                proficienciasOficio.forEach(p => p.nivel = 0);
+                proficienciasArmas.forEach(p => p.nivel = 0);
+                saveState();
+            }
+        }
+
+        // --- Lógica de Alteração de Nível ---
+        function changeLevel(type, index, delta) {
+            let arr = type === 'oficio' ? proficienciasOficio : proficienciasArmas;
+            let item = arr[index];
+            
+            let novoNivel = item.nivel + delta;
+            if (novoNivel >= 0 && novoNivel <= item.maxNivel) {
+                item.nivel = novoNivel;
+                saveState();
+            }
+        }
+
+        // --- Renderização ---
+        function createCard(item, color, type, index) {
             const percentage = (item.nivel / item.maxNivel) * 100;
+            
+            // Bolinhas
             let dotsHtml = '';
             for(let i = 0; i < 10; i++) {
                 const isActive = i < item.nivel;
@@ -175,11 +216,18 @@
                         <div class="flex-1">
                             <div class="flex justify-between items-center mb-2">
                                 <h4 class="text-white font-medium">${item.label}</h4>
-                                <span class="text-sm font-mono" style="color: ${color}">${item.nivel}/${item.maxNivel}</span>
+                                
+                                <div class="flex items-center gap-3 bg-[#0f0f12] rounded px-2 py-1 border border-[#2a2a2e]">
+                                    <button onclick="changeLevel('${type}', ${index}, -1)" class="hide-on-pdf text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">-</button>
+                                    <span class="text-sm font-mono w-8 text-center" style="color: ${color}">${item.nivel}</span>
+                                    <button onclick="changeLevel('${type}', ${index}, 1)" class="hide-on-pdf text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">+</button>
+                                </div>
                             </div>
+                            
                             ${item.descricao ? `<p class="text-[#606060] text-xs mb-2">${item.descricao}</p>` : ''}
+                            
                             <div class="h-2 bg-[#1a1a1e] rounded-full overflow-hidden mb-2">
-                                <div class="progress-fill h-full rounded-full" style="background-color: ${color}; box-shadow: 0 0 10px ${color}50; width: 0%" data-width="${percentage}%"></div>
+                                <div class="progress-fill h-full rounded-full" style="background-color: ${color}; box-shadow: 0 0 10px ${color}50; width: ${percentage}%"></div>
                             </div>
                             <div class="flex justify-between mt-1">${dotsHtml}</div>
                         </div>
@@ -188,12 +236,12 @@
             `;
         }
 
-        window.addEventListener('load', () => {
+        function renderAll() {
             const oficiosGrid = document.getElementById('grid-oficios');
             const armasGrid = document.getElementById('grid-armas');
             
-            oficiosGrid.innerHTML = proficienciasOficio.map(p => createCard(p, '#f59e0b')).join('');
-            armasGrid.innerHTML = proficienciasArmas.map(p => createCard(p, '#dc2626')).join('');
+            oficiosGrid.innerHTML = proficienciasOficio.map((p, idx) => createCard(p, '#f59e0b', 'oficio', idx)).join('');
+            armasGrid.innerHTML = proficienciasArmas.map((p, idx) => createCard(p, '#dc2626', 'arma', idx)).join('');
 
             // Cálculos
             const totalOficios = proficienciasOficio.reduce((acc, p) => acc + p.nivel, 0);
@@ -204,13 +252,9 @@
             document.getElementById('dominio-armas').innerText = proficienciasArmas.filter(p => p.nivel >= 5).length;
 
             if(window.lucide) lucide.createIcons();
-            
-            setTimeout(() => {
-                document.querySelectorAll('.progress-fill').forEach(bar => {
-                    bar.style.width = bar.getAttribute('data-width');
-                });
-            }, 100);
-        });
+        }
+
+        window.addEventListener('load', loadState);
 
         // --- Exportação PDF ---
         function downloadPDF() {
@@ -218,7 +262,9 @@
             const btn = document.getElementById('btn-pdf');
             const oldContent = btn.innerHTML;
             
-            // Estado de loading
+            // Esconder botões de + e -
+            document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = 'none');
+
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
             if(window.lucide) lucide.createIcons();
 
@@ -231,6 +277,8 @@
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
+                // Restaurar e limpar
+                document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = '');
                 btn.innerHTML = oldContent;
                 if(window.lucide) lucide.createIcons();
             });
@@ -250,6 +298,8 @@
                 texto += `[${p.nivel}/10] ${p.label}\n`;
             });
 
+            const total = proficienciasOficio.reduce((a,b)=>a+b.nivel,0) + proficienciasArmas.reduce((a,b)=>a+b.nivel,0);
+            texto += `\nTOTAL DE PONTOS GASTOS: ${total}\n`;
             texto += "\n============================\n";
             texto += "Gerado pelo Sistema RPG";
 

@@ -12,6 +12,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -31,6 +32,7 @@
                             blue: '#4a9eff',
                             orange: '#ff6b35',
                             yellow: '#f59e0b',
+                            red: '#dc2626',
                             muted: '#606060'
                         }
                     }
@@ -41,8 +43,6 @@
 
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Utilitários */
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -51,19 +51,13 @@
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
         #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
 
-        /* Select Customizado */
         select {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e8e4dc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 0.7rem center;
-            background-size: 1em;
+            background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 1em;
         }
-
-        /* Classe para esconder elementos na hora do print/png */
-        .no-print { display: flex; }
+        
+        /* Utilitário para esconder elementos na exportação */
     </style>
 </head>
 <body class="min-h-screen font-sans pb-12">
@@ -116,7 +110,7 @@
         </div>
 
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s;">
-            <div class="flex flex-col md:flex-row gap-4 mb-6 no-print-area">
+            <div class="flex flex-col md:flex-row gap-4 mb-6 hide-on-export">
                 <div class="relative flex-1">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted"></i>
                     <input type="text" id="input-busca" placeholder="Buscar item..." oninput="renderItems()" 
@@ -143,35 +137,43 @@
                 </div>
         </section>
         
-        <div class="flex justify-end gap-4 border-t border-theme-border pt-6 mt-8 anim-entry no-print-area" style="animation-delay: 0.3s;">
-            <button onclick="exportTXT()" class="flex items-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
-                <i data-lucide="file-text" class="w-4 h-4"></i>
-                Baixar TXT
-            </button>
-            <button onclick="exportPNG()" id="btn-png" class="flex items-center gap-2 px-6 py-3 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
-                <i data-lucide="image" class="w-4 h-4"></i>
-                Baixar Imagem
-            </button>
-        </div>
+    </div>
 
+    <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry" style="animation-delay: 0.3s;">
+        
+        <button onclick="resetInventory()" class="flex items-center justify-center gap-2 px-6 py-3 border border-red-900/50 text-red-500 hover:bg-red-900/20 rounded transition-colors font-cinzel text-sm">
+            <i data-lucide="trash" class="w-4 h-4"></i>
+            Limpar Tudo
+        </button>
+
+        <div class="flex-1 md:flex-none"></div>
+
+        <button onclick="exportTXT()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Baixar TXT
+        </button>
+        <button onclick="exportPDF()" id="btn-pdf" class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-orange hover:bg-orange-600 rounded text-[#0a0a0c] shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            Baixar PDF
+        </button>
+        <button onclick="exportPNG()" id="btn-png" class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg hover:shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="image" class="w-4 h-4"></i>
+            Baixar PNG
+        </button>
     </div>
 
     <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
         <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
-            
             <div class="flex justify-between items-center mb-6">
                 <h2 id="modal-title" class="font-cinzel text-xl text-white">Novo Item</h2>
                 <button onclick="closeModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
             </div>
-
             <form id="form-item" onsubmit="salvarItem(event)" class="space-y-4">
                 <input type="hidden" id="item-id">
-                
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nome</label>
                     <input type="text" id="item-nome" required placeholder="Nome do item" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                 </div>
-
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Categoria</label>
                     <select id="item-categoria" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
@@ -183,7 +185,6 @@
                         <option value="chave">Itens-Chave</option>
                     </select>
                 </div>
-
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Qtd</label>
@@ -198,12 +199,10 @@
                         <input type="number" id="item-valor" value="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                 </div>
-
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
                     <input type="text" id="item-desc" placeholder="Breve descrição" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                 </div>
-
                 <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
                     <button type="submit" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
@@ -213,7 +212,6 @@
     </div>
 
     <script>
-        // Configuração de Categorias e Cores
         const categoriasMap = {
             "arma": { label: "Armas", color: "#dc2626" },
             "armadura": { label: "Armaduras", color: "#f59e0b" },
@@ -223,20 +221,16 @@
             "outro": { label: "Outros", color: "#606060" }
         };
 
-        // Estado Inicial
         let inventario = [];
 
-        // --- Lógica de Storage (Cache) ---
+        // --- Storage & Reset ---
         function loadFromStorage() {
             const savedData = localStorage.getItem('rpg_inventario');
             if (savedData) {
                 inventario = JSON.parse(savedData);
             } else {
-                // Dados padrão se for a primeira vez
-                inventario = [
-                    { id: 1, nome: "Espada Longa", categoria: "arma", quantidade: 1, peso: 3, valor: 50, descricao: "Uma espada comum de aço." },
-                    { id: 2, nome: "Poção de Vida", categoria: "consumivel", quantidade: 5, peso: 0.5, valor: 25, descricao: "Restaura 50 HP." },
-                ];
+                // Iniciar Zerado
+                inventario = [];
                 updateStorage();
             }
         }
@@ -245,8 +239,31 @@
             localStorage.setItem('rpg_inventario', JSON.stringify(inventario));
         }
 
-        // --- Funções de Renderização ---
+        function resetInventory() {
+            if(confirm("Tem certeza que deseja apagar TODO o inventário?")) {
+                inventario = [];
+                updateStorage();
+                renderItems();
+            }
+        }
 
+        // --- Lógica de Quantidade ---
+        function updateQuantity(id, delta) {
+            const item = inventario.find(i => i.id === id);
+            if (item) {
+                const newQty = item.quantidade + delta;
+                if (newQty > 0) {
+                    item.quantidade = newQty;
+                } else {
+                    // Opção: não deixar baixar de 1, para remover use o lixo
+                    item.quantidade = 1; 
+                }
+                updateStorage();
+                renderItems();
+            }
+        }
+
+        // --- Renderização ---
         function renderItems() {
             const listaEl = document.getElementById('lista-itens');
             const busca = document.getElementById('input-busca').value.toLowerCase();
@@ -260,6 +277,7 @@
                 return matchBusca && matchCat;
             });
 
+            // Atualiza Stats
             const totalPeso = inventario.reduce((acc, i) => acc + (i.peso * i.quantidade), 0);
             const totalValor = inventario.reduce((acc, i) => acc + (i.valor * i.quantidade), 0);
 
@@ -278,17 +296,28 @@
                 itensFiltrados.forEach(item => {
                     const cor = categoriasMap[item.categoria]?.color || '#606060';
                     const itemHtml = `
-                        <div class="bg-[#0a0a0c] border border-theme-border p-4 flex items-center gap-4 group hover:border-[#4a9eff]/30 transition-all rounded anim-entry">
-                            <div class="w-2 h-12 rounded-full" style="background-color: ${cor}"></div>
-                            <div class="flex-1">
+                        <div class="bg-[#0a0a0c] border border-theme-border p-4 flex flex-col md:flex-row items-center gap-4 group hover:border-[#4a9eff]/30 transition-all rounded anim-entry">
+                            <div class="w-full md:w-2 h-2 md:h-12 rounded-full" style="background-color: ${cor}"></div>
+                            
+                            <div class="flex-1 w-full text-center md:text-left">
                                 <h4 class="text-white font-medium text-lg">${item.nome}</h4>
                                 <p class="text-[#606060] text-sm">${item.descricao}</p>
                             </div>
-                            <div class="text-right mr-4">
-                                <p class="text-white font-mono">x${item.quantidade}</p>
-                                <p class="text-[#606060] text-xs">${item.peso}kg • ${item.valor}g</p>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="text-right mr-4 text-sm text-[#606060]">
+                                    <p>${item.peso}kg</p>
+                                    <p>${item.valor}g</p>
+                                </div>
+
+                                <div class="flex items-center gap-3 bg-[#0f0f12] rounded px-2 py-1 border border-[#2a2a2e]">
+                                    <button onclick="updateQuantity(${item.id}, -1)" class="hide-on-export text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">-</button>
+                                    <span class="text-white font-mono w-8 text-center font-bold">x${item.quantidade}</span>
+                                    <button onclick="updateQuantity(${item.id}, 1)" class="hide-on-export text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">+</button>
+                                </div>
                             </div>
-                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity no-print-area">
+
+                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity hide-on-export">
                                 <button onclick="openModal(${item.id})" class="p-2 hover:bg-[#4a9eff]/20 rounded transition-colors text-[#4a9eff]">
                                     <i data-lucide="edit-2" class="w-4 h-4"></i>
                                 </button>
@@ -304,12 +333,10 @@
             if(window.lucide) lucide.createIcons();
         }
 
-        // --- Exportação TXT e PNG ---
+        // --- Exportações ---
 
         function exportTXT() {
             let content = "=== INVENTÁRIO DO PERSONAGEM ===\n\n";
-            
-            // Stats Gerais
             const totalPeso = inventario.reduce((acc, i) => acc + (i.peso * i.quantidade), 0);
             const totalValor = inventario.reduce((acc, i) => acc + (i.valor * i.quantidade), 0);
             content += `Total Itens: ${inventario.length} | Peso Total: ${totalPeso.toFixed(1)}kg | Valor Total: ${totalValor}g\n`;
@@ -330,41 +357,59 @@
             link.click();
         }
 
-        function exportPNG() {
-            const captureArea = document.getElementById('capture-area');
-            const btn = document.getElementById('btn-png');
-            
-            // Esconder elementos que não queremos na foto
-            const elementsToHide = document.querySelectorAll('.no-print-area');
-            elementsToHide.forEach(el => el.style.display = 'none');
-
-            // Feedback visual
+        function exportPDF() {
+            const element = document.getElementById('capture-area');
+            const btn = document.getElementById('btn-pdf');
             const originalText = btn.innerHTML;
+            
+            // Esconder elementos
+            document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = 'none');
+            
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
             if(window.lucide) lucide.createIcons();
 
-            html2canvas(captureArea, {
-                backgroundColor: '#0a0a0c',
-                scale: 2 // Melhora qualidade
-            }).then(canvas => {
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     'Inventario_RPG.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(element).save().then(() => {
+                // Restaurar
+                document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = '');
+                btn.innerHTML = originalText;
+                if(window.lucide) lucide.createIcons();
+            });
+        }
+
+        function exportPNG() {
+            const element = document.getElementById('capture-area');
+            const btn = document.getElementById('btn-png');
+            const originalText = btn.innerHTML;
+
+            document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = 'none');
+            
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
+            if(window.lucide) lucide.createIcons();
+
+            html2canvas(element, { backgroundColor: '#0a0a0c', scale: 2 }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = 'Inventario.png';
                 link.href = canvas.toDataURL();
                 link.click();
 
-                // Restaurar
-                elementsToHide.forEach(el => el.style.display = '');
+                document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = '');
                 btn.innerHTML = originalText;
                 if(window.lucide) lucide.createIcons();
             });
         }
 
         // --- CRUD e Modal ---
-
         function openModal(id = null) {
             const modal = document.getElementById('modal-overlay');
             const title = document.getElementById('modal-title');
-            
             if (id) {
                 const item = inventario.find(i => i.id === id);
                 title.innerText = "Editar Item";
@@ -383,9 +428,7 @@
             modal.classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('modal-overlay').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
 
         function salvarItem(e) {
             e.preventDefault();
@@ -399,34 +442,25 @@
                 valor: parseInt(document.getElementById('item-valor').value) || 0,
                 descricao: document.getElementById('item-desc').value
             };
-
             if (id) {
                 const index = inventario.findIndex(i => i.id == id);
                 if (index !== -1) inventario[index] = novoItem;
-            } else {
-                inventario.push(novoItem);
-            }
-
-            updateStorage(); // Salva no cache
-            closeModal();
-            renderItems();
+            } else { inventario.push(novoItem); }
+            updateStorage(); closeModal(); renderItems();
         }
 
         function deletarItem(id) {
             if(confirm('Tem certeza que deseja remover este item?')) {
                 inventario = inventario.filter(i => i.id !== id);
-                updateStorage(); // Salva no cache
-                renderItems();
+                updateStorage(); renderItems();
             }
         }
 
-        // Inicializar
         window.addEventListener('load', () => {
             loadFromStorage();
             renderItems();
             if(window.lucide) lucide.createIcons();
         });
-
     </script>
 </body>
 </html>
