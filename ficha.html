@@ -11,6 +11,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -39,7 +40,7 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Animações de Entrada */
+        /* Animações */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -48,10 +49,8 @@
         .delay-1 { animation-delay: 0.1s; }
         .delay-2 { animation-delay: 0.2s; }
         .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
-
-        /* Estilos de Input Customizados */
+        
+        /* Inputs */
         .custom-input {
             width: 100%;
             background: transparent;
@@ -60,10 +59,8 @@
             padding: 0.5rem 0;
             transition: all 0.3s;
         }
-        .custom-input:focus {
-            border-bottom-color: #4a9eff;
-            outline: none;
-        }
+        .custom-input:focus { border-bottom-color: #4a9eff; outline: none; }
+        
         .custom-textarea {
             width: 100%;
             background: #0a0a0c;
@@ -74,201 +71,234 @@
             resize: none;
             transition: all 0.3s;
         }
-        .custom-textarea:focus {
-            border-color: #4a9eff;
-            outline: none;
+        .custom-textarea:focus { border-color: #4a9eff; outline: none; }
+        .custom-textarea.orange:focus { border-color: #ff6b35; }
+
+        /* Estilo do Avatar Upload */
+        .avatar-upload {
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
-        .custom-textarea.orange:focus {
-            border-color: #ff6b35;
-        }
+        .avatar-placeholder { transition: opacity 0.3s; }
+        .avatar-upload:hover .avatar-placeholder { opacity: 1; background-color: rgba(0,0,0,0.6); }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-12">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-blue">Ficha de Personagem</span>
-        </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
-    </nav>
+    <div id="ficha-content">
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
-
-        <header class="flex items-center gap-4 mb-8 anim-entry">
-            <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
-                <i data-lucide="scroll-text" class="w-8 h-8 text-theme-blue"></i>
+        <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+                <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </a>
+                <div class="h-6 w-[1px] bg-theme-border"></div>
+                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-blue">Ficha de Personagem</span>
             </div>
-            <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Ficha do Personagem</h1>
-                <p class="text-gray-400">Lore & Corpo</p>
-            </div>
-        </header>
+            <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
+        </nav>
 
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
-            
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
-                <i data-lucide="user" class="w-4 h-4"></i> Identidade
-            </h3>
+        <div class="max-w-6xl mx-auto px-4 space-y-6">
 
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Nome</label>
-                    <input type="text" placeholder="Nome do personagem" class="custom-input">
+            <header class="flex items-center gap-4 mb-8 anim-entry">
+                <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
+                    <i data-lucide="scroll-text" class="w-8 h-8 text-theme-blue"></i>
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Título / Epíteto</label>
-                    <input type="text" placeholder="O Destemido, A Sombra..." class="custom-input">
+                    <h1 class="text-3xl font-cinzel font-bold text-white">Ficha do Personagem</h1>
+                    <p class="text-gray-400">Lore & Corpo</p>
                 </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Idade</label>
-                    <input type="text" placeholder="25 anos" class="custom-input">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Raça</label>
-                    <input type="text" placeholder="Humano, Elfo, Anão..." class="custom-input">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Classe</label>
-                    <input type="text" placeholder="Guerreiro, Mago..." class="custom-input">
-                </div>
-            </div>
-        </section>
+            </header>
 
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
-            
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-2">
-                <i data-lucide="palette" class="w-4 h-4"></i> Aparência Física
-            </h3>
-            <p class="text-[#606060] text-sm mb-6">Descreva cada parte do corpo do seu personagem para criar uma imagem detalhada.</p>
-
-            <div class="grid md:grid-cols-2 gap-4">
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Cabeça</label>
-                    <textarea placeholder="Corte de cabelo, cicatrizes faciais..." class="custom-textarea orange h-20"></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Olhos</label>
-                    <textarea placeholder="Cor, formato, expressão..." class="custom-textarea orange h-20"></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Torso</label>
-                    <textarea placeholder="Tatuagens, cicatrizes, estrutura..." class="custom-textarea orange h-20"></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Braços</label>
-                    <textarea placeholder="Marcas, músculos, adornos..." class="custom-textarea orange h-20"></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Mãos</label>
-                    <textarea placeholder="Calosidades, anéis, garras..." class="custom-textarea orange h-20"></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Pernas</label>
-                    <textarea placeholder="Próteses, armaduras, marcas..." class="custom-textarea orange h-20"></textarea>
-                </div>
-                <div class="space-y-2">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Pés</label>
-                    <textarea placeholder="Botas, descalço, garras..." class="custom-textarea orange h-20"></textarea>
-                </div>
-            </div>
-        </section>
-
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
-            
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
-                <i data-lucide="book-open" class="w-4 h-4"></i> História & Passado
-            </h3>
-
-            <div class="space-y-2">
-                <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">História de Fundo</label>
-                <textarea placeholder="De onde veio seu personagem? Qual sua origem? O que o levou a essa vida de aventuras?" class="custom-textarea min-h-[150px]"></textarea>
-            </div>
-        </section>
-
-        <div class="grid md:grid-cols-2 gap-6 anim-entry delay-4">
-            
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
-                
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
-                    <i data-lucide="heart" class="w-4 h-4"></i> Personalidade
-                </h3>
-
-                <div class="space-y-4">
-                    <div class="space-y-2">
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Traços de Personalidade</label>
-                        <textarea placeholder="Como seu personagem age? É corajoso? Tímido?" class="custom-textarea orange h-24"></textarea>
-                    </div>
-                    <div class="space-y-2">
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Medos & Fraquezas</label>
-                        <textarea placeholder="O que seu personagem teme?" class="custom-textarea orange h-24"></textarea>
-                    </div>
-                </div>
-            </section>
-
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg relative overflow-hidden">
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
                 
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
-                    <i data-lucide="brain" class="w-4 h-4"></i> Motivações & Objetivos
+                    <i data-lucide="user" class="w-4 h-4"></i> Identidade
                 </h3>
 
-                <div class="space-y-2 h-full">
-                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">O que move seu personagem?</label>
-                    <textarea placeholder="Quais são os objetivos do seu personagem? Vingança? Riqueza? Proteção? Conhecimento?" class="custom-textarea h-[calc(100%-2rem)] min-h-[180px]"></textarea>
+                <div class="flex flex-col md:flex-row gap-8">
+                    <div class="flex-shrink-0 w-full md:w-48 flex justify-center md:justify-start">
+                        <div class="relative w-40 h-40 md:w-48 md:h-56 rounded-lg border-2 border-dashed border-theme-border hover:border-theme-blue cursor-pointer overflow-hidden group avatar-upload bg-[#0a0a0c]" 
+                             id="avatar-container"
+                             onclick="document.getElementById('file-upload').click()">
+                            
+                            <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="previewImage(event)">
+                            
+                            <div class="avatar-placeholder absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                                <i data-lucide="camera" class="w-8 h-8 text-theme-muted mb-2 group-hover:text-theme-blue transition-colors"></i>
+                                <span class="text-xs text-[#606060] group-hover:text-theme-blue">Adicionar Imagem</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-grow grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Nome</label>
+                            <input type="text" id="inp-nome" placeholder="Nome do personagem" class="custom-input data-field">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Título / Epíteto</label>
+                            <input type="text" id="inp-titulo" placeholder="O Destemido..." class="custom-input data-field">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Idade</label>
+                            <input type="text" id="inp-idade" placeholder="25 anos" class="custom-input data-field">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Raça</label>
+                            <input type="text" id="inp-raca" placeholder="Humano, Elfo..." class="custom-input data-field">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Classe</label>
+                            <input type="text" id="inp-classe" placeholder="Guerreiro, Mago..." class="custom-input data-field">
+                        </div>
+                    </div>
                 </div>
             </section>
-        </div>
 
-        <div class="flex justify-end gap-4 pt-6 border-t border-theme-border anim-entry delay-5 mt-6">
-            <button class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
-                Cancelar
-            </button>
-            <button onclick="saveFicha()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-[#4a9eff] hover:bg-[#3b82f6] rounded text-white shadow-lg hover:shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
-                <i data-lucide="save" class="w-4 h-4"></i>
-                <span>Salvar Ficha</span>
-            </button>
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-2">
+                    <i data-lucide="palette" class="w-4 h-4"></i> Aparência Física
+                </h3>
+                <p class="text-[#606060] text-sm mb-6">Descreva cada parte do corpo.</p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Cabeça</label>
+                        <textarea id="inp-cabeca" class="custom-textarea orange h-20 data-field"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Olhos</label>
+                        <textarea id="inp-olhos" class="custom-textarea orange h-20 data-field"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Torso</label>
+                        <textarea id="inp-torso" class="custom-textarea orange h-20 data-field"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Braços</label>
+                        <textarea id="inp-bracos" class="custom-textarea orange h-20 data-field"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> História & Passado
+                </h3>
+                <div class="space-y-2">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">História de Fundo</label>
+                    <textarea id="inp-historia" class="custom-textarea min-h-[150px] data-field"></textarea>
+                </div>
+            </section>
+
         </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry delay-3" data-html2pdf-ignore="true">
+        
+        <button onclick="downloadTextData()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            Baixar Dados (.txt)
+        </button>
+        
+        <button onclick="downloadPDF()" id="btn-pdf" class="flex items-center justify-center gap-2 px-6 py-3 bg-[#4a9eff] hover:bg-[#3b82f6] rounded text-white shadow-lg hover:shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            Baixar PDF Visual
+        </button>
 
     </div>
 
     <script>
-        // Inicializa Ícones
         lucide.createIcons();
 
-        // Função de Salvar (Simulação)
-        function saveFicha() {
-            const btn = document.getElementById('btn-save');
-            const originalContent = btn.innerHTML;
-            const originalBg = btn.className;
+        // 1. Lógica de Upload de Imagem
+        function previewImage(event) {
+            const input = event.target;
+            const container = document.getElementById('avatar-container');
+            const placeholder = container.querySelector('.avatar-placeholder');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.style.backgroundImage = `url('${e.target.result}')`;
+                    // Esconde o placeholder mas mantém acessível se passar o mouse
+                    placeholder.style.opacity = '0'; 
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 2. Exportar PDF Visual
+        function downloadPDF() {
+            const element = document.getElementById('ficha-content');
+            const nome = document.getElementById('inp-nome').value || 'Personagem';
             
-            // Estado de Loading
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
-            // Redefine ícones dentro do botão alterado
+            const opt = {
+                margin:       [10, 10, 10, 10], // Margens
+                filename:     `Ficha_${nome}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' }, // Scale 2 melhora qualidade
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Feedback visual no botão
+            const btn = document.getElementById('btn-pdf');
+            const oldContent = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> Gerando PDF...`;
             lucide.createIcons();
 
-            setTimeout(() => {
-                // Estado de Sucesso
-                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
-                btn.className = "group flex items-center gap-2 px-6 py-2 bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold";
+            html2pdf().set(opt).from(element).save().then(() => {
+                btn.innerHTML = oldContent;
                 lucide.createIcons();
-                
-                setTimeout(() => {
-                    // Voltar ao normal
-                    btn.disabled = false;
-                    btn.innerHTML = originalContent;
-                    btn.className = originalBg; // Restaura classes originais
-                    lucide.createIcons();
-                }, 2000);
-            }, 1000);
+            });
+        }
+
+        // 3. Exportar Dados em Texto (.txt)
+        function downloadTextData() {
+            let texto = "=== FICHA DE PERSONAGEM RPG ===\n\n";
+            
+            // Coletar todos os inputs e textareas com a classe 'data-field'
+            // NOTA: Adicionei id e label manual no código acima para facilitar, 
+            // mas aqui vou pegar pela label anterior para ser genérico ou pelo ID.
+            
+            // Mapeamento manual para ficar bonito no TXT
+            const campos = [
+                { id: 'inp-nome', label: 'Nome' },
+                { id: 'inp-titulo', label: 'Título' },
+                { id: 'inp-idade', label: 'Idade' },
+                { id: 'inp-raca', label: 'Raça' },
+                { id: 'inp-classe', label: 'Classe' },
+                { id: 'inp-cabeca', label: 'Cabeça' },
+                { id: 'inp-olhos', label: 'Olhos' },
+                { id: 'inp-torso', label: 'Torso' },
+                { id: 'inp-bracos', label: 'Braços' },
+                { id: 'inp-historia', label: 'História' }
+            ];
+
+            campos.forEach(campo => {
+                const el = document.getElementById(campo.id);
+                if (el) {
+                    texto += `${campo.label}: ${el.value}\n`;
+                    if (el.tagName === 'TEXTAREA') texto += "\n"; // Espaço extra após textareas
+                }
+            });
+
+            texto += "\n===============================";
+
+            // Criar Blob e Link de Download
+            const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            const nomeArquivo = document.getElementById('inp-nome').value || 'Personagem';
+            
+            link.href = URL.createObjectURL(blob);
+            link.download = `Dados_${nomeArquivo}.txt`;
+            link.click();
         }
     </script>
 </body>
