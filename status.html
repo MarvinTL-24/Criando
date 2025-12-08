@@ -662,20 +662,6 @@
 
         function gerarCardFicha() {
             // 1. COLETAR DADOS DA FICHA ATUAL (Inputs Manuais)
-            const nome = valText('input-nome');
-            const raça = valText('input-raca');
-            const classeNome = valText('input-classe-nome');
-            const subclasse = valText('input-subclasse');
-            
-            // Simulação de Dados Físicos (Se você os adicionar no HTML)
-            const idade = 25; // Exemplo ou input
-            const altura = 180; // Exemplo ou input
-            const peso = 80; // Exemplo ou input
-            
-            // Imagem
-            const imagemInput = document.getElementById("imagemPersonagem");
-            const imagemURL = imagemInput && imagemInput.files.length > 0 ? URL.createObjectURL(imagemInput.files[0]) : '';
-            
             // 2. COLETAR DADOS CALCULADOS E ATRIBUTOS (Do Recalc/Inputs Numéricos)
             const nivel = currentLevel; // Do estado global
             const xpAcumulado = accumulatedXP; // Do estado global
@@ -696,31 +682,15 @@
             const percepcao = el('calc-percepcao').innerText;
             const visaoNoturna = el('calc-visao-noturna').innerText;
 
-            if (!nome || !classeNome || !raça) {
-                alert("Preencha ao menos Nome, Raça e Classe para gerar o Card.");
-                return;
-            }
-
             // 3. MONTAR O CARD VISUAL (Referência ao seu estilo)
             const cardHTML = `
                 <div id="ficha-para-exportar" class="bg-theme-panel border border-theme-border rounded-lg p-6 shadow-xl">
-                    <h2 class="text-2xl font-cinzel font-bold text-theme-pink border-b border-theme-border pb-2 mb-4">${nome.toUpperCase()} - NÍVEL ${nivel}</h2>
-                    
+                    <h2 class="font-cinzel text-2xl font-bold text-theme-orange mb-4">Status do Personagem</h2>
                     <div class="grid md:grid-cols-3 gap-6">
                         <div class="md:col-span-1 space-y-4">
-                            ${imagemURL 
-                                ? `<img src="${imagemURL}" alt="${nome}" class="w-full h-auto object-cover rounded border border-theme-border">` 
-                                : `<div class="w-full h-32 flex items-center justify-center text-[#606060] border border-dashed border-theme-border rounded">Sem Imagem</div>`}
-                            
                             <div class="p-3 bg-theme-bg rounded-lg border border-theme-orange/50">
-                                <p class="text-sm">**Raça:** <span class="text-theme-text">${raça}</span></p>
-                                <p class="text-sm">**Classe:** <span class="text-theme-text">${classeNome}</span> (${subclasse})</p>
+                                <p class="text-sm text-theme-orange font-semibold">PROGRESSÃO</p>
                                 <p class="text-sm mt-2">**XP:** ${xpAcumulado} / ${xpNecessario} (Próximo Nível)</p>
-                            </div>
-
-                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-blue/50">
-                                <p class="text-sm text-theme-blue font-semibold">DADOS FÍSICOS (SIMULAÇÃO)</p>
-                                <p class="text-xs">Idade: ${idade} | Altura: ${altura}cm | Peso: ${peso}kg</p>
                             </div>
                         </div>
 
