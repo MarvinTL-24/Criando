@@ -95,8 +95,11 @@
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
                     <i data-lucide="zap" class="w-4 h-4"></i> Progressão
                 </h3>
-
+                
                 <div class="grid md:grid-cols-4 gap-6">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
+                    <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
+                   
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nível</label>
                         <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-orange transition-colors">
@@ -657,23 +660,35 @@
         // FUNÇÕES DE EXPORTAÇÃO (PDF, PNG, TXT)
         // ====================================================================
 
-        // Função para pegar o valor de inputs de texto (não números)
+        // Função auxiliar para pegar o valor de inputs de texto (não números)
         const valText = id => document.getElementById(id) ? document.getElementById(id).value : '';
 
+        // Funções de ajuda para renderizar o HTML do Card (renderizadas para o contexto)
+        function renderAttribute(name, value, colorClass) {
+            return `<p class="text-sm font-semibold">${name}: <span class="text-${colorClass} text-xl font-mono">${value}</span></p>`;
+        }
+        function renderDerived(name, value, colorClass) {
+            return `<div class="p-2 bg-theme-bg rounded border border-theme-border">
+                <p class="text-xs uppercase text-[#606060]">${name}</p>
+                <p class="font-bold text-lg text-${colorClass} font-mono">${value}</p>
+            </div>`;
+        }
+
         function gerarCardFicha() {
-            // 1. COLETAR DADOS DA FICHA ATUAL (Inputs Manuais)
-            // 2. COLETAR DADOS CALCULADOS E ATRIBUTOS (Do Recalc/Inputs Numéricos)
-            const nivel = currentLevel; // Do estado global
-            const xpAcumulado = accumulatedXP; // Do estado global
+            // 1. COLETAR NOME E DADOS CALCULADOS
+            const nome = valText('input-nome');
+            
+            const nivel = currentLevel;
+            const xpAcumulado = accumulatedXP;
             const xpNecessario = XP_PER_LEVEL;
             
-            // Atributos Base
+            // Atributos Base (do recalc)
             const STR = val('attr-forca');
             const DEX = val('attr-destreza');
             const CON = val('attr-constituicao');
             const INT = val('attr-inteligencia');
             const WIS = val('attr-sabedoria');
-            const CAR = val('attr-carisma'); // Adicionei Carisma
+            const CAR = val('attr-carisma');
 
             // Valores Derivados (do output do recalc)
             const blindagem = el('calc-blindagem').innerText;
@@ -682,15 +697,32 @@
             const percepcao = el('calc-percepcao').innerText;
             const visaoNoturna = el('calc-visao-noturna').innerText;
 
-            // 3. MONTAR O CARD VISUAL (Referência ao seu estilo)
+            // 2. MONTAR O CARD VISUAL (Focado em Status e Atributos)
             const cardHTML = `
-                <div id="ficha-para-exportar" class="bg-theme-panel border border-theme-border rounded-lg p-6 shadow-xl">
-                    <h2 class="font-cinzel text-2xl font-bold text-theme-orange mb-4">Status do Personagem</h2>
+                <div id="ficha-para-exportar" class="bg-theme-panel border border-theme-border rounded-lg p-6 shadow-xl space-y-6">
+                    <h2 class="text-2xl font-cinzel font-bold text-theme-pink border-b border-theme-border pb-2 mb-4">
+                        ${nome.toUpperCase()}
+                        <span class="text-theme-orange ml-4 text-lg">NÍVEL ${nivel}</span>
+                    </h2>
+                    
                     <div class="grid md:grid-cols-3 gap-6">
                         <div class="md:col-span-1 space-y-4">
                             <div class="p-3 bg-theme-bg rounded-lg border border-theme-orange/50">
                                 <p class="text-sm text-theme-orange font-semibold">PROGRESSÃO</p>
-                                <p class="text-sm mt-2">**XP:** ${xpAcumulado} / ${xpNecessario} (Próximo Nível)</p>
+                                <p class="text-sm mt-2 font-bold">XP Restante: ${xpAcumulado} / ${xpNecessario}</p>
+                            </div>
+                            
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-red/50">
+                                <p class="text-sm text-theme-red font-semibold">RECURSOS VITAIS (Atual/Máx)</p>
+                                <p class="text-xs">Vida: ${val('input-vida-atual')} / ${val('input-vida-max')}</p>
+                                <p class="text-xs">Mana: ${val('input-mana-atual')} / ${val('input-mana-max')}</p>
+                                <p class="text-xs">Estamina: ${val('input-estamina-atual')} / ${val('input-estamina-max')}</p>
+                            </div>
+
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-yellow/50">
+                                <p class="text-sm text-theme-yellow font-semibold">BALANCEAMENTO</p>
+                                <p class="text-xs">Classe Multi.: ${val('input-classe').toFixed(2)}</p>
+                                <p class="text-xs">Dificuldade Multi.: ${val('input-dificuldade').toFixed(2)}</p>
                             </div>
                         </div>
 
@@ -709,12 +741,8 @@
                             ${renderDerived('BLINDAGEM', blindagem, 'theme-green')}
                             ${renderDerived('VELOCIDADE', velocidade, 'theme-green')}
                             ${renderDerived('INICIATIVA', iniciativa, 'theme-green')}
-                            ${renderDerived('PERCEPÇÃO ESPACIAL', percepcao, 'theme-green')}
+                            ${renderDerived('PERCEPÇÃO', percepcao, 'theme-green')}
                             ${renderDerived('VISÃO NOTURNA', visaoNoturna, 'theme-green')}
-                            
-                            <h4 class="font-cinzel text-lg text-theme-yellow border-b border-theme-border pb-1 mt-4">Balanceamento</h4>
-                            ${renderDerived('MULT. CLASSE', val('input-classe').toFixed(2), 'theme-yellow')}
-                            ${renderDerived('MULT. DIFICULDADE', val('input-dificuldade').toFixed(2), 'theme-yellow')}
                         </div>
                     </div>
                 </div>
@@ -723,31 +751,15 @@
             document.getElementById("card-personagem-output").innerHTML = cardHTML;
             lucide.createIcons(); 
             
-            // 4. ATIVAR BOTÕES DE EXPORTAÇÃO (Para mirar o novo card)
+            // Rola a página para ver o card
             const cardEl = document.getElementById('ficha-para-exportar');
             if (cardEl) {
                 cardEl.scrollIntoView({ behavior: 'smooth' });
             }
         }
 
-        // Funções de Ajuda para Renderizar o HTML do Card
-        function renderAttribute(name, value, colorClass) {
-            return `<p class="text-sm font-semibold">${name}: <span class="text-${colorClass} text-xl font-mono">${value}</span></p>`;
-        }
-        function renderDerived(name, value, colorClass) {
-            return `<div class="p-2 bg-theme-bg rounded border border-theme-border">
-                <p class="text-xs uppercase text-[#606060]">${name}</p>
-                <p class="font-bold text-lg text-${colorClass} font-mono">${value}</p>
-            </div>`;
-        }
-
-        // Novo botão para gerar o card
-        // Adicione esta função ao final do seu HTML
         function acionarGerarCard() {
             gerarCardFicha();
-            // Após gerar, podemos acionar o download:
-            // downloadPDF('ficha-para-exportar'); 
-            // downloadPNG('ficha-para-exportar');
         }
 
         function exportDataTXT() {
