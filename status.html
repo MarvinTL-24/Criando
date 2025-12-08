@@ -111,8 +111,7 @@
                             <div id="bar-xp" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <input type="number" id="input-xp" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
-                            <span class="text-[#606060]">/ <span id="display-xp-max">1000</span> XP</span>
+                            <input type="number" id="input-nivel" value="0" min="0" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
                         </div>
                     </div>
                 </div>
@@ -229,6 +228,18 @@
                         <input type="number" id="attr-carisma" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-pink py-2" oninput="recalc()">
                     </div>
                 </div>
+
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-red transition-colors w-full md:w-auto">
+                        <span class="text-xs uppercase tracking-widest text-[#606060] mr-2 font-cinzel whitespace-nowrap">Total de Pontos:</span>
+                        <input type="number" id="input-pool-pontos" value="50" min="6" max="100" class="bg-transparent w-full outline-none font-mono text-lg text-right text-theme-red">
+                    </div>
+
+                    <button onclick="rolarAtributos()" class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-red hover:bg-red-600 rounded text-white shadow-lg hover:shadow-red-500/20 transition-all font-cinzel text-sm font-bold w-full md:w-auto">
+                        <i data-lucide="dice-5" class="w-4 h-4"></i>
+                        <span>Rolar Atributos</span>
+                    </button>
+                </div>
             </section>
 
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
@@ -314,6 +325,7 @@
         </div>
     </div>
 
+    
     <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
         <button onclick="resetStats()" class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
             Resetar
@@ -336,14 +348,15 @@
 
         // Funções auxiliares curtas
         const el = id => document.getElementById(id);
-        
-        // CORREÇÃO CRÍTICA: USAR parseFloat PARA MULTIPLICADORES DECIMAIS
         const val = id => parseFloat(el(id).value) || 0;
-        
         const setTxt = (id, txt) => el(id).innerText = txt;
         
-        // VARIÁVEL CURTA
+        // VARIÁVEIS CURTAS
         const getInt = () => val('attr-inteligencia');
+        const ATTRIBUTE_IDS = ['attr-forca', 'attr-destreza', 'attr-constituicao', 'attr-inteligencia', 'attr-sabedoria', 'attr-carisma'];
+
+        // Variável para armazenar pontos de atributo não distribuídos (persistente)
+        let bonusPoints = 0;
 
         // ====================================================================
         // FUNÇÃO PRINCIPAL DE RECALCULO
@@ -390,7 +403,7 @@
             setTxt('calc-iniciativa', iniciativa);
             setTxt('calc-sorte', sorte);
             setTxt('calc-percepcao', percepcao);
-            setTxt('calc-visao-noturna', visaoNoturna); // Novo campo incluído
+            setTxt('calc-visao-noturna', visaoNoturna);
 
             // 5. ATUALIZAÇÃO DA INTERFACE (Barras e XP)
             const xpMax = nivel * 1000;
@@ -400,44 +413,73 @@
             updateBar('bar-vida', val('input-vida-atual'), val('input-vida-max'));
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
+
+            // 6. ATUALIZAÇÃO DO DISPLAY DE PONTOS BÔNUS (Se implementado no HTML)
+            // Se você adicionar um <div> para exibir o 'bonusPoints', use setTxt aqui.
         }
 
-        // Função de Atualização de Barras (inalterada)
-        function updateBar(elementId, current, max) {
-            const el = document.getElementById(elementId);
-            if(max <= 0) max = 1;
-            let pct = (current / max) * 100;
-            if (pct > 100) pct = 100;
-            if (pct < 0) pct = 0;
-            el.style.width = `${pct}%`;
-        }
+        // ====================================================================
+        // FUNÇÕES DE PROGRESSÃO E ROLAGEM
+        // ====================================================================
 
-        // Funções de Reset, Save e PDF (inalteradas)
-        function resetStats() {
-            if(confirm("Deseja resetar todos os valores para o padrão?")) {
-                const defaults = {
-                    'input-nivel': 1, 'input-xp': 0,
-                    'input-vida-atual': 100, 'input-vida-max': 100,
-                    'input-mana-atual': 50, 'input-mana-max': 50,
-                    'input-estamina-atual': 80, 'input-estamina-max': 80,
-                    'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
-                    'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
-                    'input-classe': 1.0, 'input-dificuldade': 0.5 // Reset dos multiplicadores
-                };
-                for(const [id, value] of Object.entries(defaults)) {
-                    document.getElementById(id).value = value;
-                }
-                recalc();
+        function rolarAtributos() {
+            const totalPoints = parseInt(el('input-pool-pontos').value);
+            const minAttr = 3;
+            const numAttributes = ATTRIBUTE_IDS.length;
+            const minTotal = minAttr * numAttributes;
+
+            if (totalPoints < minTotal) {
+                alert(`O total de pontos deve ser no mínimo ${minTotal} (3 por atributo).`);
+                return;
             }
+
+            let pointsRemaining = totalPoints;
+            const newAttributes = {};
+
+            // 1. Garantir o mínimo (3) para todos
+            ATTRIBUTE_IDS.forEach(id => {
+                newAttributes[id] = minAttr;
+                pointsRemaining -= minAttr;
+            });
+
+            // 2. Distribuir o restante aleatoriamente
+            while (pointsRemaining > 0) {
+                // Escolhe um atributo aleatório
+                const randomId = ATTRIBUTE_IDS[Math.floor(Math.random() * numAttributes)];
+                
+                newAttributes[randomId] += 1;
+                pointsRemaining -= 1;
+            }
+
+            // 3. Aplicar os novos valores e forçar recalculo
+            ATTRIBUTE_IDS.forEach(id => {
+                document.getElementById(id).value = newAttributes[id];
+            });
+
+            recalc();
+            alert(`Atributos Rolados! Total de pontos (${totalPoints}) distribuído.`);
         }
 
         function saveStats() {
             const btn = document.getElementById('btn-save');
             const originalContent = btn.innerHTML;
+            
+            // Lógica de Subida de Nível (Opcional)
+            // ------------------------------------
+            // Se a pessoa implementou uma lógica de aumento de atributo por nível
+            // (ex: clicou um botão "Subir Nível", que aumentou a variável bonusPoints)
+            // essa função Salvar seria o local para "consumir" os bonusPoints
+            // e salvar o estado atual do personagem (via LocalStorage, por exemplo).
+            // ------------------------------------
+            
+            // Simulação de Salvamento
             btn.disabled = true;
             btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
             lucide.createIcons();
-
+            
+            // Simulação de persistência
+            // Para uma implementação real, use: localStorage.setItem('ficha', JSON.stringify(getCurrentStats()));
+            
             setTimeout(() => {
                 btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
                 lucide.createIcons();
@@ -447,6 +489,35 @@
                     lucide.createIcons();
                 }, 2000);
             }, 1000);
+        }
+        
+        // Funções de UpdateBar, ResetStats e downloadPDF (restante do código...)
+        
+        function updateBar(elementId, current, max) {
+            const el = document.getElementById(elementId);
+            if(max <= 0) max = 1;
+            let pct = (current / max) * 100;
+            if (pct > 100) pct = 100;
+            if (pct < 0) pct = 0;
+            el.style.width = `${pct}%`;
+        }
+
+        function resetStats() {
+            if(confirm("Deseja resetar todos os valores para o padrão?")) {
+                const defaults = {
+                    'input-nivel': 0, 'input-xp': 0, // Nível agora começa em 0
+                    'input-vida-atual': 100, 'input-vida-max': 100,
+                    'input-mana-atual': 50, 'input-mana-max': 50,
+                    'input-estamina-atual': 80, 'input-estamina-max': 80,
+                    'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
+                    'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
+                    'input-classe': 1.0, 'input-dificuldade': 0.5 
+                };
+                for(const [id, value] of Object.entries(defaults)) {
+                    document.getElementById(id).value = value;
+                }
+                recalc();
+            }
         }
         
         function downloadPDF() {
@@ -471,12 +542,13 @@
             });
         }
 
-        // Adiciona o listener 'input' para todos os campos de entrada, garantindo que calc sempre seja chamado
+        // Listener para o início
         window.addEventListener('load', () => {
+            // Garantir que todos os campos de número chamem recalc
             document.querySelectorAll('input[type="number"]').forEach(input => {
                 input.addEventListener('input', recalc);
             });
-            recalc(); // Inicializa os cálculos ao carregar
+            recalc(); 
         });
     </script>
 </body>
