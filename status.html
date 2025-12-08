@@ -362,14 +362,9 @@
             Resetar
         </button>
         
-        <button onclick="downloadPNG()" id="btn-png" class="group flex items-center gap-2 px-4 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="image" class="w-4 h-4"></i>
-            <span>Baixar PNG</span>
-        </button>
-
-        <button onclick="downloadPDF()" id="btn-pdf" class="group flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            <span>Baixar PDF</span>
+        <button onclick="acionarGerarCard()" class="group flex items-center gap-2 px-6 py-2 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="sheet" class="w-4 h-4"></i>
+            <span>Gerar Card Ficha</span>
         </button>
 
         <button onclick="exportDataTXT()" id="btn-txt" class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
@@ -662,62 +657,127 @@
         // FUNÇÕES DE EXPORTAÇÃO (PDF, PNG, TXT)
         // ====================================================================
 
-        function downloadPDF() {
-            const element = document.getElementById('status-content');
-            const btn = document.getElementById('btn-pdf');
-            const originalContent = btn.innerHTML;
+        // Função para pegar o valor de inputs de texto (não números)
+        const valText = id => document.getElementById(id) ? document.getElementById(id).value : '';
+
+        function gerarCardFicha() {
+            // 1. COLETAR DADOS DA FICHA ATUAL (Inputs Manuais)
+            const nome = valText('input-nome');
+            const raça = valText('input-raca');
+            const classeNome = valText('input-classe-nome');
+            const subclasse = valText('input-subclasse');
             
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando PDF...`;
-            lucide.createIcons();
+            // Simulação de Dados Físicos (Se você os adicionar no HTML)
+            const idade = 25; // Exemplo ou input
+            const altura = 180; // Exemplo ou input
+            const peso = 80; // Exemplo ou input
+            
+            // Imagem
+            const imagemInput = document.getElementById("imagemPersonagem");
+            const imagemURL = imagemInput && imagemInput.files.length > 0 ? URL.createObjectURL(imagemInput.files[0]) : '';
+            
+            // 2. COLETAR DADOS CALCULADOS E ATRIBUTOS (Do Recalc/Inputs Numéricos)
+            const nivel = currentLevel; // Do estado global
+            const xpAcumulado = accumulatedXP; // Do estado global
+            const xpNecessario = XP_PER_LEVEL;
+            
+            // Atributos Base
+            const STR = val('attr-forca');
+            const DEX = val('attr-destreza');
+            const CON = val('attr-constituicao');
+            const INT = val('attr-inteligencia');
+            const WIS = val('attr-sabedoria');
+            const CAR = val('attr-carisma'); // Adicionei Carisma
 
-            const opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     'Status_Personagem.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 3, logging: false, dpi: 192, letterRendering: true, backgroundColor: '#0a0a0c' }, // Aumentamos a escala e DPI
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+            // Valores Derivados (do output do recalc)
+            const blindagem = el('calc-blindagem').innerText;
+            const velocidade = el('calc-velocidade').innerText;
+            const iniciativa = el('calc-iniciativa').innerText;
+            const percepcao = el('calc-percepcao').innerText;
+            const visaoNoturna = el('calc-visao-noturna').innerText;
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                lucide.createIcons();
-            });
+            if (!nome || !classeNome || !raça) {
+                alert("Preencha ao menos Nome, Raça e Classe para gerar o Card.");
+                return;
+            }
+
+            // 3. MONTAR O CARD VISUAL (Referência ao seu estilo)
+            const cardHTML = `
+                <div id="ficha-para-exportar" class="bg-theme-panel border border-theme-border rounded-lg p-6 shadow-xl">
+                    <h2 class="text-2xl font-cinzel font-bold text-theme-pink border-b border-theme-border pb-2 mb-4">${nome.toUpperCase()} - NÍVEL ${nivel}</h2>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 space-y-4">
+                            ${imagemURL 
+                                ? `<img src="${imagemURL}" alt="${nome}" class="w-full h-auto object-cover rounded border border-theme-border">` 
+                                : `<div class="w-full h-32 flex items-center justify-center text-[#606060] border border-dashed border-theme-border rounded">Sem Imagem</div>`}
+                            
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-orange/50">
+                                <p class="text-sm">**Raça:** <span class="text-theme-text">${raça}</span></p>
+                                <p class="text-sm">**Classe:** <span class="text-theme-text">${classeNome}</span> (${subclasse})</p>
+                                <p class="text-sm mt-2">**XP:** ${xpAcumulado} / ${xpNecessario} (Próximo Nível)</p>
+                            </div>
+
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-blue/50">
+                                <p class="text-sm text-theme-blue font-semibold">DADOS FÍSICOS (SIMULAÇÃO)</p>
+                                <p class="text-xs">Idade: ${idade} | Altura: ${altura}cm | Peso: ${peso}kg</p>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-1 space-y-2">
+                            <h4 class="font-cinzel text-lg text-theme-red border-b border-theme-border pb-1">Atributos Base</h4>
+                            ${renderAttribute('FORÇA', STR, 'theme-red')}
+                            ${renderAttribute('DESTREZA', DEX, 'theme-green')}
+                            ${renderAttribute('CONSTITUIÇÃO', CON, 'theme-yellow')}
+                            ${renderAttribute('INTELIGÊNCIA', INT, 'theme-blue')}
+                            ${renderAttribute('SABEDORIA', WIS, 'theme-purple')}
+                            ${renderAttribute('CARISMA', CAR, 'theme-pink')}
+                        </div>
+
+                        <div class="md:col-span-1 space-y-4">
+                            <h4 class="font-cinzel text-lg text-theme-green border-b border-theme-border pb-1">Valores Derivados</h4>
+                            ${renderDerived('BLINDAGEM', blindagem, 'theme-green')}
+                            ${renderDerived('VELOCIDADE', velocidade, 'theme-green')}
+                            ${renderDerived('INICIATIVA', iniciativa, 'theme-green')}
+                            ${renderDerived('PERCEPÇÃO ESPACIAL', percepcao, 'theme-green')}
+                            ${renderDerived('VISÃO NOTURNA', visaoNoturna, 'theme-green')}
+                            
+                            <h4 class="font-cinzel text-lg text-theme-yellow border-b border-theme-border pb-1 mt-4">Balanceamento</h4>
+                            ${renderDerived('MULT. CLASSE', val('input-classe').toFixed(2), 'theme-yellow')}
+                            ${renderDerived('MULT. DIFICULDADE', val('input-dificuldade').toFixed(2), 'theme-yellow')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("card-personagem-output").innerHTML = cardHTML;
+            lucide.createIcons(); 
+            
+            // 4. ATIVAR BOTÕES DE EXPORTAÇÃO (Para mirar o novo card)
+            const cardEl = document.getElementById('ficha-para-exportar');
+            if (cardEl) {
+                cardEl.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
-        function downloadPNG() {
-            const element = document.getElementById('status-content');
-            const btn = document.getElementById('btn-png');
-            const originalContent = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando PNG...`;
-            lucide.createIcons();
-            
-            // Configuração para gerar imagem PNG
-            const opt = {
-                margin:       [0, 0, 0, 0],
-                filename:     'Status_Personagem.png',
-                image:        { type: 'png' }, // Tipo PNG
-                html2canvas:  { scale: 3, logging: false, backgroundColor: '#0a0a0c' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true }
-            };
+        // Funções de Ajuda para Renderizar o HTML do Card
+        function renderAttribute(name, value, colorClass) {
+            return `<p class="text-sm font-semibold">${name}: <span class="text-${colorClass} text-xl font-mono">${value}</span></p>`;
+        }
+        function renderDerived(name, value, colorClass) {
+            return `<div class="p-2 bg-theme-bg rounded border border-theme-border">
+                <p class="text-xs uppercase text-[#606060]">${name}</p>
+                <p class="font-bold text-lg text-${colorClass} font-mono">${value}</p>
+            </div>`;
+        }
 
-            // Usamos a mesma biblioteca, mas mudamos a saída para Imagem
-            html2pdf().set(opt).from(element).outputImg().then((image) => {
-                // Cria um link de download temporário para a imagem
-                const link = document.createElement('a');
-                link.href = image.src;
-                link.download = opt.filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-                lucide.createIcons();
-            });
+        // Novo botão para gerar o card
+        // Adicione esta função ao final do seu HTML
+        function acionarGerarCard() {
+            gerarCardFicha();
+            // Após gerar, podemos acionar o download:
+            // downloadPDF('ficha-para-exportar'); 
+            // downloadPNG('ficha-para-exportar');
         }
 
         function exportDataTXT() {
