@@ -111,7 +111,8 @@
                             <div id="bar-xp" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <input type="number" id="input-nivel" value="0" min="0" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
+                            <input type="number" id="input-xp-atual" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
+                            <span class="text-[#606060]">/ <span id="display-xp-max">1000</span> XP Total</span>
                         </div>
                     </div>
                 </div>
@@ -348,7 +349,16 @@
 
         // Funções auxiliares curtas
         const el = id => document.getElementById(id);
-        const val = id => parseFloat(el(id).value) || 0;
+        
+        // NOVO val: Retorna FLOAT se for Balanceamento, senão retorna INT (para Nível/Atributos)
+        const val = id => {
+            const value = el(id).value;
+            if (id === 'input-classe' || id === 'input-dificuldade') {
+                return parseFloat(value) || 0; // Para decimais
+            }
+            return parseInt(value) || 0; // Para inteiros (Nível, Força, XP, etc.)
+        };
+        
         const setTxt = (id, txt) => el(id).innerText = txt;
         
         // VARIÁVEIS CURTAS
@@ -357,6 +367,7 @@
 
         // Variável para armazenar pontos de atributo não distribuídos (persistente)
         let bonusPoints = 0;
+        let oldLevel = 0; // Armazena o nível anterior
 
         // ====================================================================
         // FUNÇÃO PRINCIPAL DE RECALCULO
@@ -365,19 +376,29 @@
         function recalc() {
             // 1. OBTENÇÃO DAS VARIÁVEIS DE ATRIBUTO
             const nivel = val('input-nivel');
-            const xp = val('input-xp');
+            const xpAtual = val('input-xp-atual'); // NOVO ID
             
+            // Atributos
             const STR = val('attr-forca');
             const DEX = val('attr-destreza');
             const CON = val('attr-constituicao');
             const INT = getInt();
             const WIS = val('attr-sabedoria');
 
-            // 2. MULTIPLICADORES MANUAIS
+            // 2. MULTIPLICADORES MANUAIS (Float)
             const classe = val('input-classe');     
             const dificuldade = val('input-dificuldade'); 
             
-            // 3. FÓRMULAS DE CÁLCULO
+            // 3. LÓGICA DE PROGRESSÃO POR NÍVEL
+            // Se o Nível subiu, a pessoa ganha pontos para distribuir
+            if (nivel > oldLevel) {
+                const levelDifference = nivel - oldLevel;
+                // Assumimos 10 pontos por nível, como sugerido (1 a 10, escolhemos 10)
+                bonusPoints += levelDifference * 10; 
+            }
+            oldLevel = nivel; // Atualiza o nível anterior
+
+            // 4. FÓRMULAS DE CÁLCULO
             
             // Blindagem: CON * CLASSE + Nível * DIFICULDADE
             const blindagem = Math.floor(CON * classe + nivel * dificuldade);
@@ -394,10 +415,10 @@
             // Sorte (1d100)
             const sorte = Math.floor(Math.random() * 100) + 1; 
             
-            // Visão Noturna: Sorte (1d100) + Percepção Espacial
+            // Visão Noturna
             const visaoNoturna = sorte + percepcao; 
             
-            // 4. OUTPUTS DOS CÁLCULOS
+            // 5. OUTPUTS DOS CÁLCULOS
             setTxt('calc-blindagem', blindagem);
             setTxt('calc-velocidade', velocidade);
             setTxt('calc-iniciativa', iniciativa);
@@ -405,16 +426,16 @@
             setTxt('calc-percepcao', percepcao);
             setTxt('calc-visao-noturna', visaoNoturna);
 
-            // 5. ATUALIZAÇÃO DA INTERFACE (Barras e XP)
+            // 6. ATUALIZAÇÃO DA INTERFACE (Barras e XP)
             const xpMax = nivel * 1000;
             setTxt('display-xp-max', xpMax);
-            updateBar('bar-xp', xp, xpMax);
+            // Atualiza a barra de XP com XP Atual / XP Máximo
+            updateBar('bar-xp', xpAtual, xpMax); 
             
             updateBar('bar-vida', val('input-vida-atual'), val('input-vida-max'));
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
 
-            // 6. ATUALIZAÇÃO DO DISPLAY DE PONTOS BÔNUS (Se implementado no HTML)
             // Se você adicionar um <div> para exibir o 'bonusPoints', use setTxt aqui.
         }
 
@@ -444,7 +465,6 @@
 
             // 2. Distribuir o restante aleatoriamente
             while (pointsRemaining > 0) {
-                // Escolhe um atributo aleatório
                 const randomId = ATTRIBUTE_IDS[Math.floor(Math.random() * numAttributes)];
                 
                 newAttributes[randomId] += 1;
@@ -453,32 +473,35 @@
 
             // 3. Aplicar os novos valores e forçar recalculo
             ATTRIBUTE_IDS.forEach(id => {
-                document.getElementById(id).value = newAttributes[id];
+                // Usa .value para forçar o input a atualizar
+                document.getElementById(id).value = newAttributes[id]; 
+                // O evento 'input' é disparado pela interação do usuário, 
+                // aqui forçamos o recalc diretamente.
             });
 
-            recalc();
+            recalc(); // Chamada direta após alteração de valores
             alert(`Atributos Rolados! Total de pontos (${totalPoints}) distribuído.`);
         }
 
         function saveStats() {
+            // Implemente a lógica de distribuição de bônus aqui, se houver
+            if (bonusPoints > 0) {
+                alert(`Você tem ${bonusPoints} pontos de bônus para gastar antes de salvar!`);
+                // Se o usuário gastar os pontos, você pode subtraí-los e atualizar os atributos.
+                // Exemplo: distribuir pontos, recalcular atributos, e então: bonusPoints = 0;
+                return; // Impede o salvamento até os pontos serem gastos
+            }
+            
             const btn = document.getElementById('btn-save');
             const originalContent = btn.innerHTML;
-            
-            // Lógica de Subida de Nível (Opcional)
-            // ------------------------------------
-            // Se a pessoa implementou uma lógica de aumento de atributo por nível
-            // (ex: clicou um botão "Subir Nível", que aumentou a variável bonusPoints)
-            // essa função Salvar seria o local para "consumir" os bonusPoints
-            // e salvar o estado atual do personagem (via LocalStorage, por exemplo).
-            // ------------------------------------
             
             // Simulação de Salvamento
             btn.disabled = true;
             btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
             lucide.createIcons();
             
-            // Simulação de persistência
-            // Para uma implementação real, use: localStorage.setItem('ficha', JSON.stringify(getCurrentStats()));
+            // Em um sistema real, aqui você usaria LocalStorage ou um back-end:
+            // Ex: const dados = getCurrentStats(); localStorage.setItem('ficha', JSON.stringify(dados));
             
             setTimeout(() => {
                 btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
@@ -491,7 +514,7 @@
             }, 1000);
         }
         
-        // Funções de UpdateBar, ResetStats e downloadPDF (restante do código...)
+        // Funções de UpdateBar, ResetStats e downloadPDF (inalteradas)
         
         function updateBar(elementId, current, max) {
             const el = document.getElementById(elementId);
@@ -505,7 +528,7 @@
         function resetStats() {
             if(confirm("Deseja resetar todos os valores para o padrão?")) {
                 const defaults = {
-                    'input-nivel': 0, 'input-xp': 0, // Nível agora começa em 0
+                    'input-nivel': 1, 'input-xp-atual': 0, // Nível volta para 1, XP Atual 0
                     'input-vida-atual': 100, 'input-vida-max': 100,
                     'input-mana-atual': 50, 'input-mana-max': 50,
                     'input-estamina-atual': 80, 'input-estamina-max': 80,
@@ -516,6 +539,8 @@
                 for(const [id, value] of Object.entries(defaults)) {
                     document.getElementById(id).value = value;
                 }
+                oldLevel = 1; // Reseta o controle de nível
+                bonusPoints = 0; // Zera pontos bônus
                 recalc();
             }
         }
