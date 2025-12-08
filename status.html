@@ -95,11 +95,15 @@
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
                     <i data-lucide="zap" class="w-4 h-4"></i> Progressão
                 </h3>
-                
-                <div class="grid md:grid-cols-4 gap-6">
+
+                <section class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry delay-0 mb-6">
                     <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
                     <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
-                   
+                </section>
+                <section id="card-personagem-output" class="mt-6"></section>
+
+                <div class="grid md:grid-cols-4 gap-6">
+
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nível</label>
                         <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-orange transition-colors">
@@ -115,7 +119,7 @@
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <input type="number" id="input-xp-acumulado" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
-                            <span class="text-[#606060]">/ <span id="display-xp-necessario">100</span> XP Próximo Nível</span>
+                            <span class="text-[#606060]">/ <span id="display-xp-necessario">1000</span> XP Próximo Nível</span>
                         </div>
                     </div>
                 </div>
