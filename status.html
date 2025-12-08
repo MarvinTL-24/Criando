@@ -362,9 +362,19 @@
             Resetar
         </button>
         
-        <button onclick="downloadPDF()" id="btn-pdf" class="group flex items-center gap-2 px-6 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg hover:shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
+        <button onclick="downloadPNG()" id="btn-png" class="group flex items-center gap-2 px-4 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="image" class="w-4 h-4"></i>
+            <span>Baixar PNG</span>
+        </button>
+
+        <button onclick="downloadPDF()" id="btn-pdf" class="group flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="file-down" class="w-4 h-4"></i>
             <span>Baixar PDF</span>
+        </button>
+
+        <button onclick="exportDataTXT()" id="btn-txt" class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span>Exportar TXT</span>
         </button>
 
         <button onclick="saveStats()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-theme-orange to-red-600 rounded text-white shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
@@ -648,27 +658,101 @@
             }
         }
         
+        // ====================================================================
+        // FUNÇÕES DE EXPORTAÇÃO (PDF, PNG, TXT)
+        // ====================================================================
+
         function downloadPDF() {
-            // ... (função inalterada) ...
             const element = document.getElementById('status-content');
             const btn = document.getElementById('btn-pdf');
-            const oldContent = btn.innerHTML;
+            const originalContent = btn.innerHTML;
             
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando PDF...`;
             lucide.createIcons();
 
             const opt = {
                 margin:       [10, 10, 10, 10],
                 filename:     'Status_Personagem.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
+                html2canvas:  { scale: 3, logging: false, dpi: 192, letterRendering: true, backgroundColor: '#0a0a0c' }, // Aumentamos a escala e DPI
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
-                btn.innerHTML = oldContent;
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
                 lucide.createIcons();
             });
+        }
+
+        function downloadPNG() {
+            const element = document.getElementById('status-content');
+            const btn = document.getElementById('btn-png');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando PNG...`;
+            lucide.createIcons();
+            
+            // Configuração para gerar imagem PNG
+            const opt = {
+                margin:       [0, 0, 0, 0],
+                filename:     'Status_Personagem.png',
+                image:        { type: 'png' }, // Tipo PNG
+                html2canvas:  { scale: 3, logging: false, backgroundColor: '#0a0a0c' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait', putOnlyUsedFonts: true }
+            };
+
+            // Usamos a mesma biblioteca, mas mudamos a saída para Imagem
+            html2pdf().set(opt).from(element).outputImg().then((image) => {
+                // Cria um link de download temporário para a imagem
+                const link = document.createElement('a');
+                link.href = image.src;
+                link.download = opt.filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                lucide.createIcons();
+            });
+        }
+
+        function exportDataTXT() {
+            const btn = document.getElementById('btn-txt');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Exportando...`;
+            lucide.createIcons();
+
+            // 1. Coleta os dados em formato JSON (Função que você já tem)
+            const stats = getCurrentStats(); 
+            
+            // 2. Converte os dados JSON em formato TXT legível
+            let outputText = "--- DADOS DA FICHA RPG ---\n\n";
+            for (const key in stats) {
+                // Formata chaves (ex: 'attr-forca' -> 'FORÇA')
+                const cleanKey = key.toUpperCase().replace(/_|-/g, ' ').trim();
+                outputText += `${cleanKey}: ${stats[key]}\n`;
+            }
+
+            // 3. Cria um Blob (objeto de dados) e um link de download
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Status_Personagem_DADOS.txt';
+
+            // 4. Dispara o download
+            setTimeout(() => {
+                link.click();
+                
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                lucide.createIcons();
+            }, 500);
         }
 
         // Listener para o início: Carrega os dados e inicia o ciclo
