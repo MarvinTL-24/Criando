@@ -232,6 +232,32 @@
             </section>
 
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-gray"></div>
+
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-gray mb-4">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Balanceamento Manual
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Multiplicador Classe (0.0 a 2.0)</label>
+                        <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-gray transition-colors">
+                            <i data-lucide="target" class="w-4 h-4 text-theme-gray mr-2"></i>
+                            <input type="number" id="input-classe" value="1.0" min="0.0" max="2.0" step="0.1" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Multiplicador Dificuldade (0.0 a 1.0)</label>
+                        <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-gray transition-colors">
+                            <i data-lucide="hand" class="w-4 h-4 text-theme-gray mr-2"></i>
+                            <input type="number" id="input-dificuldade" value="0.5" min="0.0" max="1.0" step="0.1" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
                 
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
@@ -275,6 +301,13 @@
                         <p id="calc-percepcao" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
                     </div>
 
+                    <!-- Visão Noturna -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="eye-off" class="w-6 h-6 mx-auto mb-2 text-theme-yellow"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Visão Noturna</p>
+                        <p id="calc-visao-noturna" class="text-3xl font-bold text-theme-yellow font-mono mt-2">0</p>
+                    </div>
+
                 </div>
             </section>
 
@@ -298,43 +331,78 @@
     </div>
 
     <script>
+        // Inicializa os ícones do Lucide
         lucide.createIcons();
 
-        const val = (id) => parseInt(document.getElementById(id).value) || 0;
-        const setTxt = (id, txt) => document.getElementById(id).innerText = txt;
+        // Funções auxiliares curtas
+        const el = id => document.getElementById(id);
+        
+        // CORREÇÃO CRÍTICA: USAR parseFloat PARA MULTIPLICADORES DECIMAIS
+        const val = id => parseFloat(el(id).value) || 0;
+        
+        const setTxt = (id, txt) => el(id).innerText = txt;
+        
+        // VARIÁVEL CURTA
+        const getInt = () => val('attr-inteligencia');
+
+        // ====================================================================
+        // FUNÇÃO PRINCIPAL DE RECALCULO
+        // ====================================================================
 
         function recalc() {
+            // 1. OBTENÇÃO DAS VARIÁVEIS DE ATRIBUTO
             const nivel = val('input-nivel');
             const xp = val('input-xp');
             
-            const str = val('attr-forca');
-            const dex = val('attr-destreza');
-            const con = val('attr-constituicao');
-            const int = val('attr-inteligencia');
-            const wis = val('attr-sabedoria');
+            const STR = val('attr-forca');
+            const DEX = val('attr-destreza');
+            const CON = val('attr-constituicao');
+            const INT = getInt();
+            const WIS = val('attr-sabedoria');
 
-            // NOVAS FÓRMULAS
-            const blindagem   = Math.floor(con * 1.4 + nivel * 1.2);
-            const velocidade  = Math.floor(dex * 1.5 + str * 0.3);
-            const iniciativa  = Math.floor(dex * 1.2 + wis * 0.4);
-            const percepcao   = Math.floor(wis * 1.3 + intt * 0.8);
-            const sorte       = Math.floor(Math.random() * 100) + 1; // 1d100
+            // 2. MULTIPLICADORES MANUAIS
+            const classe = val('input-classe');     
+            const dificuldade = val('input-dificuldade'); 
+            
+            // 3. FÓRMULAS DE CÁLCULO
+            
+            // Blindagem: CON * CLASSE + Nível * DIFICULDADE
+            const blindagem = Math.floor(CON * classe + nivel * dificuldade);
 
-            // OUTPUTS
+            // Velocidade: DEX * CLASSE + CON * DIFICULDADE
+            const velocidade = Math.floor(DEX * classe + CON * dificuldade); 
+
+            // Iniciativa: DEX * DIFICULDADE + INT * CLASSE
+            const iniciativa = Math.floor(DEX * dificuldade + INT * classe); 
+
+            // Percepção Espacial: WIS * CLASSE + INT * DIFICULDADE
+            const percepcao = Math.floor(WIS * classe + INT * dificuldade); 
+
+            // Sorte (1d100)
+            const sorte = Math.floor(Math.random() * 100) + 1; 
+            
+            // Visão Noturna: Sorte (1d100) + Percepção Espacial
+            const visaoNoturna = sorte + percepcao; 
+            
+            // 4. OUTPUTS DOS CÁLCULOS
             setTxt('calc-blindagem', blindagem);
             setTxt('calc-velocidade', velocidade);
             setTxt('calc-iniciativa', iniciativa);
             setTxt('calc-sorte', sorte);
             setTxt('calc-percepcao', percepcao);
+            setTxt('calc-visao-noturna', visaoNoturna); // Novo campo incluído
 
+            // 5. ATUALIZAÇÃO DA INTERFACE (Barras e XP)
             const xpMax = nivel * 1000;
             setTxt('display-xp-max', xpMax);
             updateBar('bar-xp', xp, xpMax);
+            
             updateBar('bar-vida', val('input-vida-atual'), val('input-vida-max'));
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
         }
 
+        // Função de Atualização de Barras (inalterada)
         function updateBar(elementId, current, max) {
             const el = document.getElementById(elementId);
             if(max <= 0) max = 1;
@@ -344,6 +412,7 @@
             el.style.width = `${pct}%`;
         }
 
+        // Funções de Reset, Save e PDF (inalteradas)
         function resetStats() {
             if(confirm("Deseja resetar todos os valores para o padrão?")) {
                 const defaults = {
@@ -352,7 +421,8 @@
                     'input-mana-atual': 50, 'input-mana-max': 50,
                     'input-estamina-atual': 80, 'input-estamina-max': 80,
                     'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
-                    'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0
+                    'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
+                    'input-classe': 1.0, 'input-dificuldade': 0.5 // Reset dos multiplicadores
                 };
                 for(const [id, value] of Object.entries(defaults)) {
                     document.getElementById(id).value = value;
@@ -378,8 +448,7 @@
                 }, 2000);
             }, 1000);
         }
-
-        // Função de Download PDF
+        
         function downloadPDF() {
             const element = document.getElementById('status-content');
             const btn = document.getElementById('btn-pdf');
@@ -389,11 +458,11 @@
             lucide.createIcons();
 
             const opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     'Status_Personagem.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin:       [10, 10, 10, 10],
+                filename:     'Status_Personagem.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
@@ -402,7 +471,13 @@
             });
         }
 
-        window.addEventListener('load', recalc);
+        // Adiciona o listener 'input' para todos os campos de entrada, garantindo que calc sempre seja chamado
+        window.addEventListener('load', () => {
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', recalc);
+            });
+            recalc(); // Inicializa os cálculos ao carregar
+        });
     </script>
 </body>
 </html>
