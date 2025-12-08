@@ -233,7 +233,7 @@
                 <div class="flex flex-col md:flex-row gap-4 mb-6">
                     <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-red transition-colors w-full md:w-auto">
                         <span class="text-xs uppercase tracking-widest text-[#606060] mr-2 font-cinzel whitespace-nowrap">Total de Pontos:</span>
-                        <input type="number" id="input-pool-pontos" value="50" min="6" max="100" class="bg-transparent w-full outline-none font-mono text-lg text-right text-theme-red">
+                        <input type="number" id="input-pool-pontos" value="0" min="6" max="100" class="bg-transparent w-full outline-none font-mono text-lg text-right text-theme-red">
                     </div>
 
                     <button onclick="rolarAtributos()" class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-red hover:bg-red-600 rounded text-white shadow-lg hover:shadow-red-500/20 transition-all font-cinzel text-sm font-bold w-full md:w-auto">
@@ -441,7 +441,7 @@
             setTxt('calc-visao-noturna', visaoNoturna);
 
             // 6. ATUALIZAÇÃO DA INTERFACE (Barras e XP)
-            const xpMax = nivel * 1000;
+            const xpMax = nivel * 100;
             setTxt('display-xp-max', xpMax);
             // Atualiza a barra de XP com XP Atual / XP Máximo
             updateBar('bar-xp', xpAtual, xpMax); 
@@ -542,13 +542,13 @@
         function resetStats() {
             if(confirm("Deseja resetar todos os valores para o padrão?")) {
                 const defaults = {
-                    'input-nivel': 1, 'input-xp-atual': 0, // Nível volta para 1, XP Atual 0
+                    'input-nivel': 0, 'input-xp-atual': 0, // Nível volta para 1, XP Atual 0
                     'input-vida-atual': 100, 'input-vida-max': 100,
                     'input-mana-atual': 50, 'input-mana-max': 50,
                     'input-estamina-atual': 80, 'input-estamina-max': 80,
                     'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
                     'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
-                    'input-classe': 1.0, 'input-dificuldade': 0.5 
+                    'input-classe': 0, 'input-dificuldade': 5 
                 };
                 for(const [id, value] of Object.entries(defaults)) {
                     document.getElementById(id).value = value;
