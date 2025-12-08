@@ -100,7 +100,6 @@
                     <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
                     <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
                 </section>
-                <section id="card-personagem-output" class="mt-6"></section>
 
                 <div class="grid md:grid-cols-4 gap-6">
 
@@ -374,6 +373,15 @@
             <span>Gerar Card Ficha</span>
         </button>
 
+        <button onclick="downloadCardPNG()" id="btn-png-card" class="group flex items-center gap-2 px-4 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="image" class="w-4 h-4"></i>
+            <span>Card PNG</span>
+        </button>
+        <button onclick="downloadCardPDF()" id="btn-pdf-card" class="group flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            <span>Card PDF</span>
+        </button>
+        
         <button onclick="exportDataTXT()" id="btn-txt" class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="file-text" class="w-4 h-4"></i>
             <span>Exportar TXT</span>
@@ -383,6 +391,10 @@
             <i data-lucide="save" class="w-4 h-4"></i>
             <span>Salvar</span>
         </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4">
+        <section id="card-personagem-output" class="mt-6"></section>
     </div>
 
     <script>
@@ -764,6 +776,100 @@
 
         function acionarGerarCard() {
             gerarCardFicha();
+        }
+        // --- NOVAS FUNÇÕES PARA EXPORTAR O CARD FICHA (ficha-para-exportar) ---
+
+        function downloadCardPDF() {
+            // Chamamos a função principal de download, mas miramos no ID do Card
+            downloadPDF_Internal('ficha-para-exportar', 'Card_Personagem.pdf'); 
+        }
+
+        function downloadCardPNG() {
+            // Chamamos a função principal de download, mas miramos no ID do Card
+            downloadPNG_Internal('ficha-para-exportar', 'Card_Personagem.png'); 
+        }
+
+        // --------------------------------------------------------------------------
+
+        // Renomear as funções de exportação existentes para internas e aceitar um ID de elemento alvo
+        function downloadPDF_Internal(elementId, filename) {
+            const element = document.getElementById(elementId);
+            // ... restante da lógica de PDF ...
+            // Trocar btn.innerHTML por uma lógica de botão temporário se for necessário
+        }
+
+        function downloadPNG_Internal(elementId, filename) {
+            const element = document.getElementById(elementId);
+            // ... restante da lógica de PNG ...
+        }
+        // ====================================================================
+        // FUNÇÕES DE EXPORTAÇÃO INTERNA
+        // ====================================================================
+
+        // Função que realiza o download de PDF ou PNG, mirando no ID
+        function downloadExport(elementId, filename, type = 'pdf') {
+            const element = document.getElementById(elementId);
+            if (!element) return alert("Erro: Elemento de exportação não encontrado!");
+            
+            // Usamos o botão Salvar como feedback de progresso
+            const btnId = (type === 'pdf') ? 'btn-pdf-card' : 'btn-png-card';
+            const btn = document.getElementById(btnId) || document.getElementById('btn-save'); 
+            
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando ${type.toUpperCase()}...`;
+            lucide.createIcons();
+
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     filename,
+                image:        { type: (type === 'pdf') ? 'jpeg' : 'png', quality: 0.98 },
+                html2canvas:  { scale: 3, logging: false, dpi: 192, letterRendering: true, backgroundColor: '#0f0f12' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Se for PNG, usa outputImg e simula o download
+            if (type === 'png') {
+                html2pdf().set(opt).from(element).outputImg().then((image) => {
+                    const link = document.createElement('a');
+                    link.href = image.src;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    lucide.createIcons();
+                });
+            } else {
+                // Se for PDF
+                html2pdf().set(opt).from(element).save().then(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    lucide.createIcons();
+                });
+            }
+        }
+
+        // ====================================================================
+        // FUNÇÕES PÚBLICAS DE EXPORTAÇÃO
+        // ====================================================================
+
+        function downloadPDF() {
+            // Exporta a Ficha de Status COMPLETA
+            downloadExport('status-content', 'Status_Completo.pdf', 'pdf'); 
+        }
+
+        function downloadCardPDF() {
+            // Exporta APENAS o Card Gerado
+            downloadExport('ficha-para-exportar', 'Card_Personagem.pdf', 'pdf');
+        }
+
+        function downloadCardPNG() {
+            // Exporta APENAS o Card Gerado
+            downloadExport('ficha-para-exportar', 'Card_Personagem.png', 'png');
         }
 
         function exportDataTXT() {
