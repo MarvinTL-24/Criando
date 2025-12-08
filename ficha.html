@@ -147,6 +147,14 @@
                             <input type="text" id="inp-idade" placeholder="25 anos" class="custom-input data-field">
                         </div>
                         <div>
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Altura</label>
+                            <input type="text" id="inp-altura" placeholder="165cm, 2m, 3.5m ..." class="custom-input data-field">
+                        </div>
+                        <div class="sm:col-span-2">
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Peso</label>
+                            <input type="text" id="inp-peso" placeholder="150kg, 100kg..." class="custom-input data-field">
+                        </div>
+                        <div>
                             <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-1">Raça</label>
                             <input type="text" id="inp-raca" placeholder="Humano, Elfo..." class="custom-input data-field">
                         </div>
@@ -187,13 +195,41 @@
             </section>
 
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
                     <i data-lucide="book-open" class="w-4 h-4"></i> História & Passado
                 </h3>
                 <div class="space-y-2">
                     <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">História de Fundo</label>
                     <textarea id="inp-historia" class="custom-textarea min-h-[150px] data-field"></textarea>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-yellow"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-2">
+                    <i data-lucide="palette" class="w-4 h-4"></i> Traços de personalidade
+                </h3>
+                <p class="text-[#606060] text-sm mb-6">Descreva o comportamento ou defeitos psicologicos.</p>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Personalidade</label>
+                        <textarea id="inp-personalidade" class="custom-textarea yellow h-20 data-field"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Defeito</label>
+                        <textarea id="inp-defeito" class="custom-textarea yellow h-20 data-field"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Ideais</label>
+                        <textarea id="inp-ideais" class="custom-textarea yellow h-20 data-field"></textarea>
+                    </div>
+                    <div class="space-y-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Observação:</label>
+                        <textarea id="inp-observar" class="custom-textarea yellow h-20 data-field"></textarea>
+                    </div>
                 </div>
             </section>
 
@@ -272,13 +308,19 @@
                 { id: 'inp-nome', label: 'Nome' },
                 { id: 'inp-titulo', label: 'Título' },
                 { id: 'inp-idade', label: 'Idade' },
+                { id: 'inp-altura', label: 'Altura' },
+                { id: 'inp-peso', label: 'Peso' },
                 { id: 'inp-raca', label: 'Raça' },
                 { id: 'inp-classe', label: 'Classe' },
                 { id: 'inp-cabeca', label: 'Cabeça' },
                 { id: 'inp-olhos', label: 'Olhos' },
                 { id: 'inp-torso', label: 'Torso' },
                 { id: 'inp-bracos', label: 'Braços' },
-                { id: 'inp-historia', label: 'História' }
+                { id: 'inp-historia', label: 'História' },
+                { id: 'inp-personalidade', label: 'Personalidade' },
+                { id: 'inp-defeito', label: 'Defeito' },
+                { id: 'inp-ideais', label: 'Ideais' },
+                { id: 'inp-observar', label: 'Observação' }
             ];
 
             campos.forEach(campo => {
