@@ -33,6 +33,9 @@
                             orange: '#ff6b35',
                             yellow: '#f59e0b',
                             red: '#dc2626',
+                            green: '#22c55e',
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
                             muted: '#606060'
                         }
                     }
@@ -50,6 +53,12 @@
         #modal-overlay { transition: opacity 0.3s ease; }
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
         #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
+
+        /* Barras de progresso */
+        .progress-bar { transition: width 0.5s ease; }
+        .progress-bar-danger { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
+        .progress-bar-warning { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+        .progress-bar-safe { background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%); }
 
         select {
             -webkit-appearance: none; -moz-appearance: none; appearance: none;
@@ -85,7 +94,196 @@
             </div>
         </header>
 
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.1s;">
+        <!-- Seção de Configurações de Limites (Edição) -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s;">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange">
+                    <i data-lucide="settings" class="w-4 h-4"></i> Configurações de Limites
+                </h3>
+                <button onclick="toggleLimitsEdit()" class="flex items-center gap-2 text-sm text-theme-blue hover:text-blue-400">
+                    <i data-lucide="edit" class="w-4 h-4"></i>
+                    <span>Editar</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Peso Máximo -->
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-theme-muted">Peso Máximo</span>
+                        <span class="text-sm font-mono" id="weight-display">
+                            <span id="current-weight">0.0</span>/<span id="max-weight">50.0</span> kg
+                        </span>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden">
+                        <div id="weight-progress" class="h-full progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div id="weight-edit" class="hidden">
+                        <input type="number" id="input-max-weight" min="1" max="999" step="0.1" value="50.0" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white text-sm">
+                    </div>
+                </div>
+
+                <!-- Itens Usáveis Máximos -->
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-theme-muted">Itens Usáveis</span>
+                        <span class="text-sm font-mono" id="usable-display">
+                            <span id="current-usable">0</span>/<span id="max-usable">10</span> itens
+                        </span>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden">
+                        <div id="usable-progress" class="h-full progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div id="usable-edit" class="hidden">
+                        <input type="number" id="input-max-usable" min="1" max="100" value="10" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white text-sm">
+                    </div>
+                </div>
+
+                <!-- Itens Carregáveis Máximos -->
+                <div class="space-y-2">
+                    <div class="flex justify-between">
+                        <span class="text-sm text-theme-muted">Itens Carregáveis</span>
+                        <span class="text-sm font-mono" id="carryable-display">
+                            <span id="current-carryable">0</span>/<span id="max-carryable">20</span> itens
+                        </span>
+                    </div>
+                    <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden">
+                        <div id="carryable-progress" class="h-full progress-bar" style="width: 0%"></div>
+                    </div>
+                    <div id="carryable-edit" class="hidden">
+                        <input type="number" id="input-max-carryable" min="1" max="100" value="20" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-4 hidden" id="save-limits-buttons">
+                <button onclick="saveLimits()" class="px-4 py-2 bg-theme-green hover:bg-green-600 rounded text-white text-sm">
+                    Salvar Limites
+                </button>
+                <button onclick="toggleLimitsEdit()" class="px-4 py-2 border border-theme-border rounded text-theme-text text-sm">
+                    Cancelar
+                </button>
+            </div>
+        </section>
+
+        <!-- Seção de Moedas -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.15s;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-4">
+                <i data-lucide="coins" class="w-4 h-4"></i> Carteira
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Moedas de Ouro -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                                <i data-lucide="circle" class="w-6 h-6 text-yellow-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-theme-muted uppercase">Ouro</p>
+                                <p id="gold-amount" class="text-2xl font-bold text-yellow-500">100</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="adjustMoney('gold', -1)" class="w-8 h-8 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400">
+                                -1
+                            </button>
+                            <button onclick="adjustMoney('gold', 1)" class="w-8 h-8 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400">
+                                +1
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-gold" placeholder="Quantia" min="0" 
+                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-sm">
+                        <button onclick="setMoney('gold')" class="px-3 bg-yellow-600 hover:bg-yellow-700 rounded text-white text-sm">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Moedas de Prata -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-full bg-gray-400/20 flex items-center justify-center">
+                                <i data-lucide="circle" class="w-6 h-6 text-gray-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-theme-muted uppercase">Prata</p>
+                                <p id="silver-amount" class="text-2xl font-bold text-gray-300">500</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="adjustMoney('silver', -1)" class="w-8 h-8 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400">
+                                -1
+                            </button>
+                            <button onclick="adjustMoney('silver', 1)" class="w-8 h-8 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400">
+                                +1
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-silver" placeholder="Quantia" min="0" 
+                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-sm">
+                        <button onclick="setMoney('silver')" class="px-3 bg-gray-600 hover:bg-gray-700 rounded text-white text-sm">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Moedas de Cobre -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-full bg-orange-600/20 flex items-center justify-center">
+                                <i data-lucide="circle" class="w-6 h-6 text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-theme-muted uppercase">Cobre</p>
+                                <p id="copper-amount" class="text-2xl font-bold text-orange-500">1000</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="adjustMoney('copper', -1)" class="w-8 h-8 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400">
+                                -1
+                            </button>
+                            <button onclick="adjustMoney('copper', 1)" class="w-8 h-8 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400">
+                                +1
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-copper" placeholder="Quantia" min="0" 
+                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-sm">
+                        <button onclick="setMoney('copper')" class="px-3 bg-orange-600 hover:bg-orange-700 rounded text-white text-sm">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total em Cobre (Conversão) -->
+            <div class="mt-6 pt-4 border-t border-theme-border">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-theme-muted">Valor Total em Cobre</p>
+                        <p id="total-copper" class="text-xl font-bold text-theme-yellow">0 cp</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-theme-muted">Conversão Automática</p>
+                        <p class="text-sm">1 Ouro = 10 Prata = 100 Cobre</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Estatísticas -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.2s;">
             <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
                 <i data-lucide="package" class="w-8 h-8 text-theme-blue"></i>
                 <div>
@@ -100,16 +298,24 @@
                     <p id="stat-peso-total" class="text-2xl font-bold text-white">0.0 kg</p>
                 </div>
             </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 col-span-2 rounded">
-                <i data-lucide="coins" class="w-8 h-8 text-theme-yellow"></i>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="flask-conical" class="w-8 h-8 text-theme-green"></i>
                 <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Valor Total</p>
-                    <p id="stat-valor-total" class="text-2xl font-bold text-theme-yellow">0 moedas</p>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Usáveis</p>
+                    <p id="stat-usaveis" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="shield" class="w-8 h-8 text-theme-purple"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Carregáveis</p>
+                    <p id="stat-carregaveis" class="text-2xl font-bold text-white">0</p>
                 </div>
             </div>
         </div>
 
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s;">
+        <!-- Lista de Itens -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.25s;">
             <div class="flex flex-col md:flex-row gap-4 mb-6 hide-on-export">
                 <div class="relative flex-1">
                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-theme-muted"></i>
@@ -133,12 +339,17 @@
                 </button>
             </div>
 
+            <!-- Alertas de Limite -->
+            <div id="alerts-container" class="mb-4 space-y-2"></div>
+
             <div id="lista-itens" class="space-y-3 min-h-[200px]">
-                </div>
+                <!-- Itens serão renderizados aqui -->
+            </div>
         </section>
         
     </div>
 
+    <!-- Botões de Ação -->
     <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry" style="animation-delay: 0.3s;">
         
         <button onclick="resetInventory()" class="flex items-center justify-center gap-2 px-6 py-3 border border-red-900/50 text-red-500 hover:bg-red-900/20 rounded transition-colors font-cinzel text-sm">
@@ -162,6 +373,7 @@
         </button>
     </div>
 
+    <!-- Modal para Adicionar/Editar Item -->
     <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
         <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
             <div class="flex justify-between items-center mb-6">
@@ -176,7 +388,7 @@
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Categoria</label>
-                    <select id="item-categoria" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    <select id="item-categoria" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none" onchange="updateItemType()">
                         <option value="outro">Outros</option>
                         <option value="arma">Armas</option>
                         <option value="armadura">Armaduras</option>
@@ -185,23 +397,37 @@
                         <option value="chave">Itens-Chave</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Qtd</label>
                         <input type="number" id="item-qtd" required min="1" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Peso</label>
-                        <input type="number" id="item-peso" step="0.1" value="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Tipo</label>
+                        <select id="item-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                            <option value="normal">Normal</option>
+                            <option value="usavel">Usável</option>
+                            <option value="carregavel">Carregável</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Peso (kg)</label>
+                        <input type="number" id="item-peso" step="0.1" value="0" min="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Valor</label>
-                        <input type="number" id="item-valor" value="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Valor (cobre)</label>
+                        <input type="number" id="item-valor" value="0" min="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
-                    <input type="text" id="item-desc" placeholder="Breve descrição" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição / Função</label>
+                    <textarea id="item-desc" placeholder="Descrição, efeitos, ou função do item" rows="3" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none resize-none"></textarea>
+                </div>
+                <div id="weight-warning" class="hidden p-3 bg-red-900/30 border border-red-700/50 rounded text-sm text-red-300">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-2"></i>
+                    <span id="weight-warning-text"></span>
                 </div>
                 <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
                     <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
@@ -212,149 +438,659 @@
     </div>
 
     <script>
+        // Mapeamento de categorias
         const categoriasMap = {
-            "arma": { label: "Armas", color: "#dc2626" },
-            "armadura": { label: "Armaduras", color: "#f59e0b" },
-            "consumivel": { label: "Consumíveis", color: "#22c55e" },
-            "material": { label: "Materiais", color: "#8b5cf6" },
-            "chave": { label: "Itens-Chave", color: "#ec4899" },
-            "outro": { label: "Outros", color: "#606060" }
+            "arma": { label: "Armas", color: "#dc2626", icon: "sword" },
+            "armadura": { label: "Armaduras", color: "#f59e0b", icon: "shield" },
+            "consumivel": { label: "Consumíveis", color: "#22c55e", icon: "flask-conical" },
+            "material": { label: "Materiais", color: "#8b5cf6", icon: "package" },
+            "chave": { label: "Itens-Chave", color: "#ec4899", icon: "key" },
+            "outro": { label: "Outros", color: "#606060", icon: "box" }
         };
 
+        // Array do inventário
         let inventario = [];
+        
+        // Configurações de limites
+        let limites = {
+            pesoMaximo: 50.0,
+            itensUsaveisMax: 10,
+            itensCarregaveisMax: 20
+        };
+        
+        // Sistema de moedas
+        let moedas = {
+            gold: 100,
+            silver: 500,
+            copper: 1000
+        };
 
-        // --- Storage & Reset ---
+        // --- Sistema de Storage ---
         function loadFromStorage() {
-            const savedData = localStorage.getItem('rpg_inventario');
-            if (savedData) {
-                inventario = JSON.parse(savedData);
-            } else {
-                // Iniciar Zerado
+            try {
+                const savedData = localStorage.getItem('rpg_inventario');
+                if (savedData) {
+                    inventario = JSON.parse(savedData);
+                } else {
+                    inventario = [];
+                }
+                
+                const savedLimits = localStorage.getItem('rpg_inventory_limits');
+                if (savedLimits) {
+                    limites = JSON.parse(savedLimits);
+                }
+                
+                const savedMoney = localStorage.getItem('rpg_inventory_money');
+                if (savedMoney) {
+                    moedas = JSON.parse(savedMoney);
+                }
+            } catch (e) {
+                console.error("Erro ao carregar dados:", e);
                 inventario = [];
-                updateStorage();
             }
+            updateAllStats();
         }
 
         function updateStorage() {
-            localStorage.setItem('rpg_inventario', JSON.stringify(inventario));
-        }
-
-        function resetInventory() {
-            if(confirm("Tem certeza que deseja apagar TODO o inventário?")) {
-                inventario = [];
-                updateStorage();
-                renderItems();
+            try {
+                localStorage.setItem('rpg_inventario', JSON.stringify(inventario));
+                localStorage.setItem('rpg_inventory_limits', JSON.stringify(limites));
+                localStorage.setItem('rpg_inventory_money', JSON.stringify(moedas));
+            } catch (e) {
+                console.error("Erro ao salvar dados:", e);
             }
         }
 
-        // --- Lógica de Quantidade ---
-        function updateQuantity(id, delta) {
-            const item = inventario.find(i => i.id === id);
-            if (item) {
-                const newQty = item.quantidade + delta;
-                if (newQty > 0) {
-                    item.quantidade = newQty;
-                } else {
-                    // Opção: não deixar baixar de 1, para remover use o lixo
-                    item.quantidade = 1; 
+        // --- Sistema de Limites ---
+        function toggleLimitsEdit() {
+            const isEditing = !document.getElementById('weight-edit').classList.contains('hidden');
+            
+            if (isEditing) {
+                // Sair do modo edição
+                document.getElementById('weight-edit').classList.add('hidden');
+                document.getElementById('usable-edit').classList.add('hidden');
+                document.getElementById('carryable-edit').classList.add('hidden');
+                document.getElementById('save-limits-buttons').classList.add('hidden');
+            } else {
+                // Entrar no modo edição
+                document.getElementById('weight-edit').classList.remove('hidden');
+                document.getElementById('usable-edit').classList.remove('hidden');
+                document.getElementById('carryable-edit').classList.remove('hidden');
+                document.getElementById('save-limits-buttons').classList.remove('hidden');
+                
+                // Preencher valores atuais
+                document.getElementById('input-max-weight').value = limites.pesoMaximo;
+                document.getElementById('input-max-usable').value = limites.itensUsaveisMax;
+                document.getElementById('input-max-carryable').value = limites.itensCarregaveisMax;
+            }
+        }
+
+        function saveLimits() {
+            const newWeight = parseFloat(document.getElementById('input-max-weight').value);
+            const newUsable = parseInt(document.getElementById('input-max-usable').value);
+            const newCarryable = parseInt(document.getElementById('input-max-carryable').value);
+            
+            if (newWeight <= 0 || newUsable <= 0 || newCarryable <= 0) {
+                alert("Todos os valores devem ser maiores que zero!");
+                return;
+            }
+            
+            limites.pesoMaximo = newWeight;
+            limites.itensUsaveisMax = newUsable;
+            limites.itensCarregaveisMax = newCarryable;
+            
+            updateStorage();
+            updateAllStats();
+            toggleLimitsEdit();
+            
+            // Verificar se excede os novos limites
+            checkLimits();
+        }
+
+        // --- Sistema de Moedas ---
+        function adjustMoney(type, amount) {
+            const newAmount = moedas[type] + amount;
+            if (newAmount >= 0) {
+                moedas[type] = newAmount;
+                updateMoneyDisplay();
+                updateStorage();
+                updateTotalCopper();
+            }
+        }
+
+        function setMoney(type) {
+            const input = document.getElementById(`input-${type}`);
+            const value = parseInt(input.value) || 0;
+            if (value >= 0) {
+                moedas[type] = value;
+                updateMoneyDisplay();
+                updateStorage();
+                updateTotalCopper();
+                input.value = '';
+            }
+        }
+
+        function updateMoneyDisplay() {
+            document.getElementById('gold-amount').textContent = moedas.gold;
+            document.getElementById('silver-amount').textContent = moedas.silver;
+            document.getElementById('copper-amount').textContent = moedas.copper;
+        }
+
+        function updateTotalCopper() {
+            // Conversão: 1 gold = 10 silver = 100 copper
+            const totalCopper = (moedas.gold * 100) + (moedas.silver * 10) + moedas.copper;
+            document.getElementById('total-copper').textContent = `${totalCopper.toLocaleString()} cp`;
+        }
+
+        // --- Cálculo de Estatísticas ---
+        function calculateStats() {
+            let totalPeso = 0;
+            let totalItens = inventario.length;
+            let usaveisCount = 0;
+            let carregaveisCount = 0;
+            let itemCount = 0;
+            
+            inventario.forEach(item => {
+                const pesoItem = parseFloat(item.peso) || 0;
+                const qtdItem = parseInt(item.quantidade) || 1;
+                totalPeso += pesoItem * qtdItem;
+                itemCount += qtdItem;
+                
+                if (item.tipo === 'usavel') {
+                    usaveisCount += qtdItem;
+                } else if (item.tipo === 'carregavel') {
+                    carregaveisCount += qtdItem;
                 }
-                updateStorage();
-                renderItems();
+            });
+            
+            return {
+                totalPeso: parseFloat(totalPeso.toFixed(1)),
+                totalItens: totalItens,
+                itemCount: itemCount,
+                usaveisCount: usaveisCount,
+                carregaveisCount: carregaveisCount
+            };
+        }
+
+        function updateAllStats() {
+            const stats = calculateStats();
+            
+            // Atualizar displays
+            document.getElementById('stat-total-itens').textContent = stats.itemCount;
+            document.getElementById('stat-peso-total').textContent = `${stats.totalPeso} kg`;
+            document.getElementById('stat-usaveis').textContent = stats.usaveisCount;
+            document.getElementById('stat-carregaveis').textContent = stats.carregaveisCount;
+            
+            // Atualizar barras de progresso
+            updateProgressBars(stats);
+            
+            // Atualizar displays de limites
+            document.getElementById('current-weight').textContent = stats.totalPeso;
+            document.getElementById('max-weight').textContent = limites.pesoMaximo;
+            document.getElementById('current-usable').textContent = stats.usaveisCount;
+            document.getElementById('max-usable').textContent = limites.itensUsaveisMax;
+            document.getElementById('current-carryable').textContent = stats.carregaveisCount;
+            document.getElementById('max-carryable').textContent = limites.itensCarregaveisMax;
+            
+            // Atualizar moedas
+            updateMoneyDisplay();
+            updateTotalCopper();
+        }
+
+        function updateProgressBars(stats) {
+            // Peso
+            const pesoPercent = Math.min((stats.totalPeso / limites.pesoMaximo) * 100, 100);
+            const weightBar = document.getElementById('weight-progress');
+            weightBar.style.width = `${pesoPercent}%`;
+            weightBar.className = `h-full progress-bar ${pesoPercent >= 90 ? 'progress-bar-danger' : pesoPercent >= 70 ? 'progress-bar-warning' : 'progress-bar-safe'}`;
+            
+            // Usáveis
+            const usablePercent = Math.min((stats.usaveisCount / limites.itensUsaveisMax) * 100, 100);
+            const usableBar = document.getElementById('usable-progress');
+            usableBar.style.width = `${usablePercent}%`;
+            usableBar.className = `h-full progress-bar ${usablePercent >= 90 ? 'progress-bar-danger' : usablePercent >= 70 ? 'progress-bar-warning' : 'progress-bar-safe'}`;
+            
+            // Carregáveis
+            const carryablePercent = Math.min((stats.carregaveisCount / limites.itensCarregaveisMax) * 100, 100);
+            const carryableBar = document.getElementById('carryable-progress');
+            carryableBar.style.width = `${carryablePercent}%`;
+            carryableBar.className = `h-full progress-bar ${carryablePercent >= 90 ? 'progress-bar-danger' : carryablePercent >= 70 ? 'progress-bar-warning' : 'progress-bar-safe'}`;
+        }
+
+        function checkLimits() {
+            const stats = calculateStats();
+            const alerts = [];
+            
+            if (stats.totalPeso > limites.pesoMaximo) {
+                alerts.push({
+                    type: 'danger',
+                    message: `Peso excedido! ${stats.totalPeso.toFixed(1)}/${limites.pesoMaximo}kg`,
+                    icon: 'weight'
+                });
+            } else if (stats.totalPeso > limites.pesoMaximo * 0.9) {
+                alerts.push({
+                    type: 'warning',
+                    message: `Peso quase no limite: ${stats.totalPeso.toFixed(1)}/${limites.pesoMaximo}kg`,
+                    icon: 'weight'
+                });
+            }
+            
+            if (stats.usaveisCount > limites.itensUsaveisMax) {
+                alerts.push({
+                    type: 'danger',
+                    message: `Itens usáveis excedidos! ${stats.usaveisCount}/${limites.itensUsaveisMax}`,
+                    icon: 'flask-conical'
+                });
+            } else if (stats.usaveisCount > limites.itensUsaveisMax * 0.9) {
+                alerts.push({
+                    type: 'warning',
+                    message: `Itens usáveis quase no limite: ${stats.usaveisCount}/${limites.itensUsaveisMax}`,
+                    icon: 'flask-conical'
+                });
+            }
+            
+            if (stats.carregaveisCount > limites.itensCarregaveisMax) {
+                alerts.push({
+                    type: 'danger',
+                    message: `Itens carregáveis excedidos! ${stats.carregaveisCount}/${limites.itensCarregaveisMax}`,
+                    icon: 'shield'
+                });
+            } else if (stats.carregaveisCount > limites.itensCarregaveisMax * 0.9) {
+                alerts.push({
+                    type: 'warning',
+                    message: `Itens carregáveis quase no limite: ${stats.carregaveisCount}/${limites.itensCarregaveisMax}`,
+                    icon: 'shield'
+                });
+            }
+            
+            renderAlerts(alerts);
+            return alerts.length === 0;
+        }
+
+        function renderAlerts(alerts) {
+            const container = document.getElementById('alerts-container');
+            container.innerHTML = '';
+            
+            if (alerts.length === 0) return;
+            
+            alerts.forEach(alert => {
+                const bgColor = alert.type === 'danger' ? 'bg-red-900/30 border-red-700' : 'bg-yellow-900/30 border-yellow-700';
+                const textColor = alert.type === 'danger' ? 'text-red-300' : 'text-yellow-300';
+                
+                const alertHTML = `
+                    <div class="flex items-center gap-3 p-3 ${bgColor} border rounded-lg ${textColor} anim-entry">
+                        <i data-lucide="${alert.icon}" class="w-5 h-5"></i>
+                        <span class="text-sm font-medium">${alert.message}</span>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', alertHTML);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // --- Sistema de Quantidade ---
+        function updateQuantity(id, delta) {
+            const itemIndex = inventario.findIndex(i => i.id === id);
+            if (itemIndex !== -1) {
+                const newQty = inventario[itemIndex].quantidade + delta;
+                
+                if (newQty > 0) {
+                    inventario[itemIndex].quantidade = newQty;
+                    updateStorage();
+                    updateAllStats();
+                    renderItems();
+                    checkLimits();
+                } else {
+                    if (confirm('Remover item do inventário?')) {
+                        inventario.splice(itemIndex, 1);
+                        updateStorage();
+                        updateAllStats();
+                        renderItems();
+                        checkLimits();
+                    }
+                }
             }
         }
 
-        // --- Renderização ---
+        // --- Renderizar Itens ---
         function renderItems() {
             const listaEl = document.getElementById('lista-itens');
             const busca = document.getElementById('input-busca').value.toLowerCase();
             const filtro = document.getElementById('select-filtro').value;
             
-            listaEl.innerHTML = '';
-
+            // Filtrar itens
             const itensFiltrados = inventario.filter(item => {
-                const matchBusca = item.nome.toLowerCase().includes(busca);
+                const matchBusca = item.nome.toLowerCase().includes(busca) || 
+                                 item.descricao.toLowerCase().includes(busca);
                 const matchCat = filtro === 'todos' || item.categoria === filtro;
                 return matchBusca && matchCat;
             });
-
-            // Atualiza Stats
-            const totalPeso = inventario.reduce((acc, i) => acc + (i.peso * i.quantidade), 0);
-            const totalValor = inventario.reduce((acc, i) => acc + (i.valor * i.quantidade), 0);
-
-            document.getElementById('stat-total-itens').innerText = inventario.length;
-            document.getElementById('stat-peso-total').innerText = `${totalPeso.toFixed(1)} kg`;
-            document.getElementById('stat-valor-total').innerText = `${totalValor} moedas`;
-
+            
+            // Ordenar por tipo e nome
+            itensFiltrados.sort((a, b) => {
+                const typeOrder = { 'usavel': 0, 'carregavel': 1, 'normal': 2 };
+                if (typeOrder[a.tipo] !== typeOrder[b.tipo]) {
+                    return typeOrder[a.tipo] - typeOrder[b.tipo];
+                }
+                return a.nome.localeCompare(b.nome);
+            });
+            
+            // Limpar lista
+            listaEl.innerHTML = '';
+            
             if (itensFiltrados.length === 0) {
                 listaEl.innerHTML = `
-                    <div class="text-center py-12 text-[#606060]">
+                    <div class="text-center py-12 text-theme-muted">
                         <i data-lucide="package-open" class="w-12 h-12 mx-auto mb-4 opacity-50"></i>
                         <p>Nenhum item encontrado</p>
+                        <p class="text-sm opacity-75">Use o botão "Adicionar" para criar seu primeiro item</p>
                     </div>
                 `;
-            } else {
-                itensFiltrados.forEach(item => {
-                    const cor = categoriasMap[item.categoria]?.color || '#606060';
-                    const itemHtml = `
-                        <div class="bg-[#0a0a0c] border border-theme-border p-4 flex flex-col md:flex-row items-center gap-4 group hover:border-[#4a9eff]/30 transition-all rounded anim-entry">
-                            <div class="w-full md:w-2 h-2 md:h-12 rounded-full" style="background-color: ${cor}"></div>
-                            
-                            <div class="flex-1 w-full text-center md:text-left">
-                                <h4 class="text-white font-medium text-lg">${item.nome}</h4>
-                                <p class="text-[#606060] text-sm">${item.descricao}</p>
-                            </div>
-                            
-                            <div class="flex items-center gap-4">
-                                <div class="text-right mr-4 text-sm text-[#606060]">
-                                    <p>${item.peso}kg</p>
-                                    <p>${item.valor}g</p>
-                                </div>
-
-                                <div class="flex items-center gap-3 bg-[#0f0f12] rounded px-2 py-1 border border-[#2a2a2e]">
-                                    <button onclick="updateQuantity(${item.id}, -1)" class="hide-on-export text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">-</button>
-                                    <span class="text-white font-mono w-8 text-center font-bold">x${item.quantidade}</span>
-                                    <button onclick="updateQuantity(${item.id}, 1)" class="hide-on-export text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">+</button>
-                                </div>
-                            </div>
-
-                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity hide-on-export">
-                                <button onclick="openModal(${item.id})" class="p-2 hover:bg-[#4a9eff]/20 rounded transition-colors text-[#4a9eff]">
-                                    <i data-lucide="edit-2" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="deletarItem(${item.id})" class="p-2 hover:bg-[#dc2626]/20 rounded transition-colors text-[#dc2626]">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                    listaEl.insertAdjacentHTML('beforeend', itemHtml);
-                });
+                lucide.createIcons();
+                return;
             }
-            if(window.lucide) lucide.createIcons();
+            
+            // Adicionar cada item
+            itensFiltrados.forEach(item => {
+                const categoria = categoriasMap[item.categoria] || categoriasMap.outro;
+                const stats = calculateStats();
+                const pesoExcedido = stats.totalPeso > limites.pesoMaximo;
+                const isUsavel = item.tipo === 'usavel';
+                const isCarregavel = item.tipo === 'carregavel';
+                
+                // Ícone do tipo
+                let tipoIcon = 'box';
+                let tipoColor = '#606060';
+                if (isUsavel) {
+                    tipoIcon = 'flask-conical';
+                    tipoColor = '#22c55e';
+                } else if (isCarregavel) {
+                    tipoIcon = 'shield';
+                    tipoColor = '#8b5cf6';
+                }
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = `bg-[#0a0a0c] border ${pesoExcedido ? 'border-red-700/50' : 'border-theme-border'} p-4 flex flex-col md:flex-row items-center gap-4 group hover:border-theme-blue/30 transition-all rounded anim-entry`;
+                itemElement.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-12 rounded-full" style="background-color: ${categoria.color}"></div>
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: ${tipoColor}20">
+                            <i data-lucide="${tipoIcon}" class="w-4 h-4" style="color: ${tipoColor}"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="flex-1 w-full text-center md:text-left">
+                        <div class="flex items-center gap-2 mb-1">
+                            <h4 class="text-white font-medium text-lg">${escapeHtml(item.nome)}</h4>
+                            ${pesoExcedido ? '<span class="text-xs bg-red-900/50 text-red-300 px-2 py-1 rounded">PESO EXCEDIDO</span>' : ''}
+                        </div>
+                        <p class="text-theme-muted text-sm">${escapeHtml(item.descricao || 'Sem descrição')}</p>
+                        <div class="flex gap-3 mt-2 text-xs text-theme-muted">
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="weight" class="w-3 h-3"></i>
+                                ${parseFloat(item.peso).toFixed(1)}kg cada
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="coins" class="w-3 h-3"></i>
+                                ${parseInt(item.valor)}c cada
+                            </span>
+                            <span class="flex items-center gap-1">
+                                <i data-lucide="${categoria.icon}" class="w-3 h-3"></i>
+                                ${categoria.label}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center gap-4">
+                        <div class="text-right text-sm">
+                            <p class="text-white font-bold">Total: ${(parseFloat(item.peso) * item.quantidade).toFixed(1)}kg</p>
+                            <p class="text-theme-muted">${parseFloat(item.peso).toFixed(1)}kg × ${item.quantidade}</p>
+                        </div>
+
+                        <div class="flex items-center gap-3 bg-[#0f0f12] rounded px-2 py-1 border border-theme-border">
+                            <button onclick="updateQuantity('${item.id}', -1)" class="hide-on-export text-theme-muted hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">-</button>
+                            <span class="text-white font-mono w-8 text-center font-bold">x${item.quantidade}</span>
+                            <button onclick="updateQuantity('${item.id}', 1)" class="hide-on-export text-theme-muted hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">+</button>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity hide-on-export">
+                        <button onclick="openModal('${item.id}')" class="p-2 hover:bg-theme-blue/20 rounded transition-colors text-theme-blue">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deletarItem('${item.id}')" class="p-2 hover:bg-theme-red/20 rounded transition-colors text-theme-red">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                `;
+                
+                listaEl.appendChild(itemElement);
+            });
+            
+            lucide.createIcons();
+        }
+
+        // --- Funções do Modal ---
+        function updateItemType() {
+            const categoria = document.getElementById('item-categoria').value;
+            const tipoSelect = document.getElementById('item-tipo');
+            
+            // Resetar opções
+            tipoSelect.innerHTML = `
+                <option value="normal">Normal</option>
+                <option value="usavel">Usável</option>
+                <option value="carregavel">Carregável</option>
+            `;
+            
+            // Baseado na categoria, selecionar tipo padrão
+            if (categoria === 'consumivel') {
+                tipoSelect.value = 'usavel';
+            } else if (categoria === 'arma' || categoria === 'armadura') {
+                tipoSelect.value = 'carregavel';
+            }
+            
+            // Verificar peso
+            checkItemWeight();
+        }
+
+        function checkItemWeight() {
+            const peso = parseFloat(document.getElementById('item-peso').value) || 0;
+            const qtd = parseInt(document.getElementById('item-qtd').value) || 1;
+            const pesoTotal = peso * qtd;
+            const stats = calculateStats();
+            
+            const warningEl = document.getElementById('weight-warning');
+            const warningText = document.getElementById('weight-warning-text');
+            
+            // Calcular peso futuro
+            const futureWeight = stats.totalPeso + pesoTotal;
+            
+            if (futureWeight > limites.pesoMaximo) {
+                warningEl.classList.remove('hidden');
+                warningText.textContent = `Este item fará você exceder o limite de peso! (${futureWeight.toFixed(1)}/${limites.pesoMaximo}kg)`;
+            } else if (futureWeight > limites.pesoMaximo * 0.9) {
+                warningEl.classList.remove('hidden');
+                warningText.textContent = `Cuidado! Este item fará você chegar perto do limite de peso. (${futureWeight.toFixed(1)}/${limites.pesoMaximo}kg)`;
+            } else {
+                warningEl.classList.add('hidden');
+            }
+        }
+
+        function openModal(id = null) {
+            const modal = document.getElementById('modal-overlay');
+            const title = document.getElementById('modal-title');
+            
+            // Adicionar listeners para verificação de peso
+            document.getElementById('item-peso').addEventListener('input', checkItemWeight);
+            document.getElementById('item-qtd').addEventListener('input', checkItemWeight);
+            
+            if (id) {
+                // Modo edição
+                const item = inventario.find(i => i.id === id);
+                if (item) {
+                    title.textContent = "Editar Item";
+                    document.getElementById('item-id').value = item.id;
+                    document.getElementById('item-nome').value = item.nome;
+                    document.getElementById('item-categoria').value = item.categoria;
+                    document.getElementById('item-qtd').value = item.quantidade;
+                    document.getElementById('item-peso').value = item.peso;
+                    document.getElementById('item-valor').value = item.valor;
+                    document.getElementById('item-desc').value = item.descricao || '';
+                    document.getElementById('item-tipo').value = item.tipo || 'normal';
+                }
+            } else {
+                // Modo novo item
+                title.textContent = "Novo Item";
+                document.getElementById('form-item').reset();
+                document.getElementById('item-id').value = '';
+                document.getElementById('item-qtd').value = 1;
+                document.getElementById('item-peso').value = 0;
+                document.getElementById('item-valor').value = 0;
+                document.getElementById('item-tipo').value = 'normal';
+                document.getElementById('weight-warning').classList.add('hidden');
+            }
+            
+            updateItemType();
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+            // Remover listeners
+            document.getElementById('item-peso').removeEventListener('input', checkItemWeight);
+            document.getElementById('item-qtd').removeEventListener('input', checkItemWeight);
+        }
+
+        function salvarItem(event) {
+            event.preventDefault();
+            
+            const id = document.getElementById('item-id').value;
+            const nome = document.getElementById('item-nome').value.trim();
+            const categoria = document.getElementById('item-categoria').value;
+            const quantidade = parseInt(document.getElementById('item-qtd').value) || 1;
+            const peso = parseFloat(document.getElementById('item-peso').value) || 0;
+            const valor = parseInt(document.getElementById('item-valor').value) || 0;
+            const descricao = document.getElementById('item-desc').value.trim();
+            const tipo = document.getElementById('item-tipo').value;
+            
+            if (!nome) {
+                alert('Por favor, insira um nome para o item.');
+                return;
+            }
+            
+            // Verificar limites antes de salvar
+            const stats = calculateStats();
+            const pesoItemTotal = peso * quantidade;
+            const futureWeight = stats.totalPeso + pesoItemTotal;
+            
+            if (futureWeight > limites.pesoMaximo && !confirm(`Adicionar este item fará você exceder o limite de peso (${futureWeight.toFixed(1)}/${limites.pesoMaximo}kg). Deseja continuar?`)) {
+                return;
+            }
+            
+            // Verificar limite de usáveis
+            if (tipo === 'usavel') {
+                const futureUsaveis = stats.usaveisCount + quantidade;
+                if (futureUsaveis > limites.itensUsaveisMax && !confirm(`Adicionar este item fará você exceder o limite de itens usáveis (${futureUsaveis}/${limites.itensUsaveisMax}). Deseja continuar?`)) {
+                    return;
+                }
+            }
+            
+            // Verificar limite de carregáveis
+            if (tipo === 'carregavel') {
+                const futureCarregaveis = stats.carregaveisCount + quantidade;
+                if (futureCarregaveis > limites.itensCarregaveisMax && !confirm(`Adicionar este item fará você exceder o limite de itens carregáveis (${futureCarregaveis}/${limites.itensCarregaveisMax}). Deseja continuar?`)) {
+                    return;
+                }
+            }
+            
+            const novoItem = {
+                id: id || `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                nome: nome,
+                categoria: categoria,
+                quantidade: Math.max(1, quantidade),
+                peso: Math.max(0, peso),
+                valor: Math.max(0, valor),
+                descricao: descricao,
+                tipo: tipo
+            };
+            
+            if (id) {
+                // Atualizar item existente
+                const index = inventario.findIndex(i => i.id === id);
+                if (index !== -1) {
+                    inventario[index] = novoItem;
+                }
+            } else {
+                // Adicionar novo item
+                inventario.push(novoItem);
+            }
+            
+            updateStorage();
+            updateAllStats();
+            renderItems();
+            checkLimits();
+            closeModal();
+        }
+
+        function deletarItem(id) {
+            if (confirm('Tem certeza que deseja remover este item?')) {
+                inventario = inventario.filter(i => i.id !== id);
+                updateStorage();
+                updateAllStats();
+                renderItems();
+                checkLimits();
+            }
         }
 
         // --- Exportações ---
-
         function exportTXT() {
             let content = "=== INVENTÁRIO DO PERSONAGEM ===\n\n";
-            const totalPeso = inventario.reduce((acc, i) => acc + (i.peso * i.quantidade), 0);
-            const totalValor = inventario.reduce((acc, i) => acc + (i.valor * i.quantidade), 0);
-            content += `Total Itens: ${inventario.length} | Peso Total: ${totalPeso.toFixed(1)}kg | Valor Total: ${totalValor}g\n`;
-            content += "===================================\n\n";
-
-            inventario.forEach(i => {
-                const cat = categoriasMap[i.categoria]?.label.toUpperCase() || "OUTRO";
-                content += `[${cat}] ${i.nome} (x${i.quantidade})\n`;
-                content += `   Descrição: ${i.descricao}\n`;
-                content += `   Peso Uni: ${i.peso}kg | Valor Uni: ${i.valor}g\n`;
-                content += "-----------------------------------\n";
+            
+            // Estatísticas
+            const stats = calculateStats();
+            content += `=== ESTATÍSTICAS ===\n`;
+            content += `Total de Itens: ${stats.itemCount}\n`;
+            content += `Peso Total: ${stats.totalPeso} kg / ${limites.pesoMaximo} kg\n`;
+            content += `Itens Usáveis: ${stats.usaveisCount} / ${limites.itensUsaveisMax}\n`;
+            content += `Itens Carregáveis: ${stats.carregaveisCount} / ${limites.itensCarregaveisMax}\n\n`;
+            
+            // Moedas
+            content += `=== CARTERA ===\n`;
+            content += `Ouro: ${moedas.gold}\n`;
+            content += `Prata: ${moedas.silver}\n`;
+            content += `Cobre: ${moedas.copper}\n`;
+            content += `Total em Cobre: ${(moedas.gold * 100 + moedas.silver * 10 + moedas.copper).toLocaleString()} cp\n\n`;
+            
+            // Lista de itens
+            content += `=== ITENS (${inventario.length} tipos) ===\n`;
+            
+            // Agrupar por categoria
+            Object.keys(categoriasMap).forEach(catKey => {
+                const itensCategoria = inventario.filter(item => item.categoria === catKey);
+                if (itensCategoria.length > 0) {
+                    const categoria = categoriasMap[catKey];
+                    content += `\n[ ${categoria.label.toUpperCase()} ]\n`;
+                    content += "-".repeat(50) + "\n";
+                    
+                    itensCategoria.forEach(item => {
+                        const tipoText = item.tipo === 'usavel' ? '[USÁVEL]' : item.tipo === 'carregavel' ? '[CARREGÁVEL]' : '';
+                        content += `• ${item.nome} ${tipoText} (x${item.quantidade})\n`;
+                        content += `  Descrição: ${item.descricao || "Sem descrição"}\n`;
+                        content += `  Peso: ${item.peso} kg cada | Valor: ${item.valor} cobre cada\n`;
+                        content += `  Peso Total: ${(item.peso * item.quantidade).toFixed(1)} kg | Valor Total: ${item.valor * item.quantidade} cobre\n\n`;
+                    });
+                }
             });
-
+            
+            // Criar e baixar arquivo
             const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = "Meu_Inventario.txt";
+            link.download = `Inventario_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(link);
             link.click();
+            document.body.removeChild(link);
         }
 
         function exportPDF() {
@@ -362,25 +1098,41 @@
             const btn = document.getElementById('btn-pdf');
             const originalText = btn.innerHTML;
             
-            // Esconder elementos
+            // Esconder elementos que não devem aparecer no PDF
             document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = 'none');
             
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
-            if(window.lucide) lucide.createIcons();
-
-            const opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     'Inventario_RPG.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            lucide.createIcons();
+            
+            const options = {
+                margin: [10, 10, 10, 10],
+                filename: `Inventario_${new Date().toISOString().split('T')[0]}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2, 
+                    backgroundColor: '#0a0a0c',
+                    useCORS: true,
+                    logging: false
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true
+                }
             };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restaurar
+            
+            html2pdf().set(options).from(element).save().then(() => {
+                // Restaurar elementos escondidos
                 document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = '');
                 btn.innerHTML = originalText;
-                if(window.lucide) lucide.createIcons();
+                lucide.createIcons();
+            }).catch(err => {
+                console.error("Erro ao gerar PDF:", err);
+                alert("Erro ao gerar PDF. Tente novamente.");
+                document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = '');
+                btn.innerHTML = originalText;
+                lucide.createIcons();
             });
         }
 
@@ -388,78 +1140,150 @@
             const element = document.getElementById('capture-area');
             const btn = document.getElementById('btn-png');
             const originalText = btn.innerHTML;
-
+            
+            // Esconder elementos
             document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = 'none');
             
             btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
-            if(window.lucide) lucide.createIcons();
-
-            html2canvas(element, { backgroundColor: '#0a0a0c', scale: 2 }).then(canvas => {
+            lucide.createIcons();
+            
+            html2canvas(element, { 
+                backgroundColor: '#0a0a0c', 
+                scale: 2,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
                 const link = document.createElement('a');
-                link.download = 'Inventario.png';
-                link.href = canvas.toDataURL();
+                link.download = `Inventario_${new Date().toISOString().split('T')[0]}.png`;
+                link.href = canvas.toDataURL('image/png');
+                document.body.appendChild(link);
                 link.click();
-
+                document.body.removeChild(link);
+                
+                // Restaurar elementos
                 document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = '');
                 btn.innerHTML = originalText;
-                if(window.lucide) lucide.createIcons();
+                lucide.createIcons();
+            }).catch(err => {
+                console.error("Erro ao gerar PNG:", err);
+                alert("Erro ao gerar PNG. Tente novamente.");
+                document.querySelectorAll('.hide-on-export').forEach(el => el.style.display = '');
+                btn.innerHTML = originalText;
+                lucide.createIcons();
             });
         }
 
-        // --- CRUD e Modal ---
-        function openModal(id = null) {
-            const modal = document.getElementById('modal-overlay');
-            const title = document.getElementById('modal-title');
-            if (id) {
-                const item = inventario.find(i => i.id === id);
-                title.innerText = "Editar Item";
-                document.getElementById('item-id').value = item.id;
-                document.getElementById('item-nome').value = item.nome;
-                document.getElementById('item-categoria').value = item.categoria;
-                document.getElementById('item-qtd').value = item.quantidade;
-                document.getElementById('item-peso').value = item.peso;
-                document.getElementById('item-valor').value = item.valor;
-                document.getElementById('item-desc').value = item.descricao;
-            } else {
-                title.innerText = "Novo Item";
-                document.getElementById('form-item').reset();
-                document.getElementById('item-id').value = "";
-            }
-            modal.classList.remove('hidden');
-        }
-
-        function closeModal() { document.getElementById('modal-overlay').classList.add('hidden'); }
-
-        function salvarItem(e) {
-            e.preventDefault();
-            const id = document.getElementById('item-id').value;
-            const novoItem = {
-                id: id ? parseInt(id) : Date.now(),
-                nome: document.getElementById('item-nome').value,
-                categoria: document.getElementById('item-categoria').value,
-                quantidade: parseInt(document.getElementById('item-qtd').value) || 1,
-                peso: parseFloat(document.getElementById('item-peso').value) || 0,
-                valor: parseInt(document.getElementById('item-valor').value) || 0,
-                descricao: document.getElementById('item-desc').value
-            };
-            if (id) {
-                const index = inventario.findIndex(i => i.id == id);
-                if (index !== -1) inventario[index] = novoItem;
-            } else { inventario.push(novoItem); }
-            updateStorage(); closeModal(); renderItems();
-        }
-
-        function deletarItem(id) {
-            if(confirm('Tem certeza que deseja remover este item?')) {
-                inventario = inventario.filter(i => i.id !== id);
-                updateStorage(); renderItems();
+        // --- Reset do Inventário ---
+        function resetInventory() {
+            if (confirm("Tem certeza que deseja limpar TODO o inventário, moedas e redefinir limites? Esta ação não pode ser desfeita.")) {
+                inventario = [];
+                limites = {
+                    pesoMaximo: 50.0,
+                    itensUsaveisMax: 10,
+                    itensCarregaveisMax: 20
+                };
+                moedas = {
+                    gold: 100,
+                    silver: 500,
+                    copper: 1000
+                };
+                updateStorage();
+                updateAllStats();
+                renderItems();
+                alert("Inventário limpo com sucesso!");
             }
         }
 
+        // --- Utilitários ---
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // --- Inicialização ---
         window.addEventListener('load', () => {
+            lucide.createIcons();
             loadFromStorage();
+            updateAllStats();
             renderItems();
-            if(window.lucide) lucide.createIcons();
+            checkLimits();
+            
+            // Adicionar evento de tecla ESC para fechar modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                }
+            });
+            
+            // Adicionar eventos para inputs de moedas (Enter para definir)
+            ['gold', 'silver', 'copper'].forEach(type => {
+                document.getElementById(`input-${type}`).addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        setMoney(type);
+                    }
+                });
+            });
+        });
+
+        // Adicionar alguns itens de exemplo se o inventário estiver vazio
+        window.addEventListener('load', () => {
+            if (inventario.length === 0) {
+                // Itens de exemplo
+                const exemplos = [
+                    {
+                        id: 'exemplo_1',
+                        nome: 'Espada Longa',
+                        categoria: 'arma',
+                        tipo: 'carregavel',
+                        quantidade: 1,
+                        peso: 2.5,
+                        valor: 1500,
+                        descricao: 'Uma espada de aço bem afiada'
+                    },
+                    {
+                        id: 'exemplo_2',
+                        nome: 'Poção de Cura Menor',
+                        categoria: 'consumivel',
+                        tipo: 'usavel',
+                        quantidade: 3,
+                        peso: 0.3,
+                        valor: 500,
+                        descricao: 'Restaura 20 pontos de vida'
+                    },
+                    {
+                        id: 'exemplo_3',
+                        nome: 'Couro de Dragão',
+                        categoria: 'material',
+                        tipo: 'normal',
+                        quantidade: 5,
+                        peso: 1.0,
+                        valor: 2000,
+                        descricao: 'Material raro para fabricação'
+                    },
+                    {
+                        id: 'exemplo_4',
+                        nome: 'Escudo de Madeira',
+                        categoria: 'armadura',
+                        tipo: 'carregavel',
+                        quantidade: 1,
+                        peso: 4.0,
+                        valor: 800,
+                        descricao: 'Escudo básico de madeira'
+                    }
+                ];
+                
+                exemplos.forEach(item => {
+                    if (!inventario.some(i => i.id === item.id)) {
+                        inventario.push(item);
+                    }
+                });
+                
+                updateStorage();
+                updateAllStats();
+                renderItems();
+            }
         });
     </script>
 </body>
