@@ -293,10 +293,6 @@
                     <i data-lucide="file-text" class="w-4 h-4"></i>
                     Baixar TXT
                 </button>
-                <button onclick="exportPNG()" id="btn-png" class="flex items-center gap-2 px-6 py-2 bg-yellow-600 hover:bg-yellow-700 rounded text-white shadow-lg shadow-yellow-600/20 transition-all font-cinzel text-sm font-bold">
-                    <i data-lucide="image" class="w-4 h-4"></i>
-                    Baixar Imagem
-                </button>
             </div>
         </div>
 
@@ -968,37 +964,6 @@
             a.click();
             document.body.removeChild(a);
             window.URL.revokeObjectURL(url);
-        }
-
-        function exportPNG() {
-            const element = document.getElementById('items-grid').parentNode;
-            const btn = document.getElementById('btn-png');
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = '<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> Processando...';
-            btn.disabled = true;
-            
-            html2canvas(element, {
-                backgroundColor: '#0a0a0c',
-                scale: 2,
-                useCORS: true,
-                logging: false
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `inventario_${new Date().toISOString().split('T')[0]}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-                
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                lucide.createIcons();
-            }).catch(err => {
-                console.error('Erro ao exportar PNG:', err);
-                alert('Erro ao gerar imagem. Tente novamente.');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                lucide.createIcons();
-            });
         }
 
         function resetInventory() {

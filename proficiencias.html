@@ -138,10 +138,6 @@
             <i data-lucide="file-text" class="w-4 h-4"></i>
             Baixar Dados (.txt)
         </button>
-        <button onclick="downloadPDF()" id="btn-pdf" class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-orange hover:bg-orange-600 rounded text-[#0a0a0c] shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            Baixar PDF Visual
-        </button>
     </div>
 
     <script>
@@ -256,33 +252,6 @@
 
         window.addEventListener('load', loadState);
 
-        // --- Exportação PDF ---
-        function downloadPDF() {
-            const element = document.getElementById('print-area');
-            const btn = document.getElementById('btn-pdf');
-            const oldContent = btn.innerHTML;
-            
-            // Esconder botões de + e -
-            document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = 'none');
-
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
-            if(window.lucide) lucide.createIcons();
-
-            const opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     'Minhas_Proficiencias.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restaurar e limpar
-                document.querySelectorAll('.hide-on-pdf').forEach(el => el.style.display = '');
-                btn.innerHTML = oldContent;
-                if(window.lucide) lucide.createIcons();
-            });
-        }
 
         // --- Exportação TXT ---
         function downloadTXT() {

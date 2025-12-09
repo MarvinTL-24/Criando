@@ -215,11 +215,6 @@
             Baixar TXT
         </button>
 
-        <button onclick="downloadPDF()" id="btn-pdf" class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg hover:shadow-purple-500/20 transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            Baixar PDF
-        </button>
-
         <button onclick="saveMascote()" id="btn-save" class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg hover:shadow-pink-500/20 transition-all font-cinzel text-sm font-bold">
             <i data-lucide="save" class="w-4 h-4"></i>
             Salvar
@@ -304,30 +299,6 @@
                 updateVida();
                 updateLealdade();
             }
-        }
-
-        // 3. Exportar PDF
-        function downloadPDF() {
-            const element = document.getElementById('print-area');
-            const btn = document.getElementById('btn-pdf');
-            const oldContent = btn.innerHTML;
-            const nome = document.getElementById('mascote-nome').value || 'Mascote';
-
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
-            lucide.createIcons();
-
-            const opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     `Ficha_${nome}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.innerHTML = oldContent;
-                lucide.createIcons();
-            });
         }
 
         // 4. Exportar TXT
