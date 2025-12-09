@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Grimório Digital - Status</title>
+=======
+    <title>Sistema RPG - Status</title>
+>>>>>>> parent of 69ddfa1 (a)
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +64,7 @@
         }
 
         .stat-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+<<<<<<< HEAD
         
         /* Estilos para o modal de configurações */
         .modal-overlay {
@@ -86,6 +91,8 @@
             max-height: 80vh;
             overflow-y: auto;
         }
+=======
+>>>>>>> parent of 69ddfa1 (a)
     </style>
 </head>
 <body class="min-h-screen font-sans pb-12">
@@ -93,6 +100,7 @@
     <div id="status-content">
 
         <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
+<<<<<<< HEAD
             <div class="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
                 <div class="flex items-center gap-4">
                     <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
@@ -104,6 +112,14 @@
                 <button onclick="openConfigModal()" class="text-theme-text hover:text-theme-yellow transition-colors">
                     <i data-lucide="settings" class="w-5 h-5"></i>
                 </button>
+=======
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+                <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </a>
+                <div class="h-6 w-[1px] bg-theme-border"></div>
+                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Status</span>
+>>>>>>> parent of 69ddfa1 (a)
             </div>
             <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
         </nav>
@@ -120,11 +136,58 @@
                 </div>
             </header>
 
-            <section class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry delay-0 mb-6">
-                <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
-                <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Progressão
+                </h3>
+
+                <section class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry delay-0 mb-6">
+                    <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
+                    <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
+                </section>
+
+                <div class="grid md:grid-cols-4 gap-6">
+
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nível</label>
+                        <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-orange transition-colors">
+                            <i data-lucide="crown" class="w-4 h-4 text-theme-orange mr-2"></i>
+                            <input type="number" id="input-nivel" value="0" min="0" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-3">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">XP Acumulado</label>
+                        <div class="h-4 bg-[#0a0a0c] rounded-full overflow-hidden border border-theme-border mb-2">
+                            <div id="bar-xp" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <input type="number" id="input-xp-acumulado" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
+                            <span class="text-[#606060]">/ <span id="display-xp-necessario">1000</span> XP Próximo Nível</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="h-px bg-theme-border my-6"></div> 
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-4">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Adicionar XP
+                </h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">XP Ganhado</label>
+                        <input type="number" id="input-xp-ganhado" value="0" min="0" class="bg-transparent w-full border border-theme-border rounded px-3 py-2 outline-none focus:border-theme-orange font-mono text-lg">
+                    </div>
+                    <button onclick="addXP()" class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold mt-5">
+                        <i data-lucide="plus-square" class="w-4 h-4"></i>
+                        <span>Somar XP</span>
+                    </button>
+                </div>
             </section>
 
+<<<<<<< HEAD
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
                 
@@ -640,34 +703,350 @@
                 }
             }
         }
-        
-        function changeAttr(attrId, amount) {
-            let currentValue = parseInt(el(attrId).value);
-            let cost = Math.abs(amount);
+=======
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-red"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
+                    <i data-lucide="heart" class="w-4 h-4"></i> Recursos Vitais
+                </h3>
 
-            if (amount > 0) {
-                // Tentar adicionar
-                if (bonusPoints >= cost) {
-                    currentValue += amount;
-                    bonusPoints -= cost;
-                } else {
-                    alert("Você não tem pontos de atributo bônus suficientes para gastar!");
-                    return;
-                }
-            } else if (amount < 0) {
-                // Tentar remover (Pontos voltam para o pool, custo é negativo)
-                if (currentValue + amount >= 0) { // Garante que o valor não seja negativo
-                    currentValue += amount;
-                    bonusPoints += cost; // Pontos voltam para o pool
-                } else {
-                    return;
-                }
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="resource-group">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-theme-red">Vida</span>
+                            <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                        </div>
+                        <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                            <div id="bar-vida" class="h-full bg-theme-red stat-bar-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="flex justify-center gap-2 items-center">
+                            <input type="number" id="input-vida-atual" value="100" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" oninput="recalc()">
+                            <span class="text-gray-600">/</span>
+                            <input type="number" id="input-vida-max" value="100" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" oninput="recalc()">
+                        </div>
+                    </div>
+
+                    <div class="resource-group">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-theme-blue">Mana</span>
+                            <i data-lucide="flame" class="w-4 h-4 text-theme-blue"></i>
+                        </div>
+                        <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                            <div id="bar-mana" class="h-full bg-theme-blue stat-bar-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="flex justify-center gap-2 items-center">
+                            <input type="number" id="input-mana-atual" value="50" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" oninput="recalc()">
+                            <span class="text-gray-600">/</span>
+                            <input type="number" id="input-mana-max" value="50" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" oninput="recalc()">
+                        </div>
+                    </div>
+
+                    <div class="resource-group">
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-theme-green">Estamina</span>
+                            <i data-lucide="wind" class="w-4 h-4 text-theme-green"></i>
+                        </div>
+                        <div class="h-2 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                            <div id="bar-estamina" class="h-full bg-theme-green stat-bar-fill" style="width: 100%"></div>
+                        </div>
+                        <div class="flex justify-center gap-2 items-center">
+                            <input type="number" id="input-estamina-atual" value="80" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" oninput="recalc()">
+                            <span class="text-gray-600">/</span>
+                            <input type="number" id="input-estamina-max" value="80" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" oninput="recalc()">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                    <i data-lucide="sword" class="w-4 h-4"></i> Atributos Base
+                </h3>
+
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-red/50 transition-colors group">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-red/10 flex items-center justify-center">
+                            <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
+                        </div>
+                        <label class="text-xs uppercase text-[#606060] font-cinzel">Força</label>
+                        <input type="number" id="attr-forca" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-red py-2" oninput="recalc()">
+                    </div>
+
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-green/10 flex items-center justify-center">
+                            <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
+                        </div>
+                        <label class="text-xs uppercase text-[#606060] font-cinzel">Destreza</label>
+                        <input type="number" id="attr-destreza" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-green py-2" oninput="recalc()">
+                    </div>
+
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-yellow/50 transition-colors">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-yellow/10 flex items-center justify-center">
+                            <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
+                        </div>
+                        <label class="text-xs uppercase text-[#606060] font-cinzel">Constituição</label>
+                        <input type="number" id="attr-constituicao" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-yellow py-2" oninput="recalc()">
+                    </div>
+
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-blue/50 transition-colors">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-blue/10 flex items-center justify-center">
+                            <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
+                        </div>
+                        <label class="text-xs uppercase text-[#606060] font-cinzel">Inteligência</label>
+                        <input type="number" id="attr-inteligencia" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-blue py-2" oninput="recalc()">
+                    </div>
+
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-purple/50 transition-colors">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-purple/10 flex items-center justify-center">
+                            <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
+                        </div>
+                        <label class="text-xs uppercase text-[#606060] font-cinzel">Sabedoria</label>
+                        <input type="number" id="attr-sabedoria" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-purple py-2" oninput="recalc()">
+                    </div>
+
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-pink/50 transition-colors">
+                        <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-pink/10 flex items-center justify-center">
+                            <i data-lucide="flame" class="w-5 h-5 text-theme-pink"></i>
+                        </div>
+                        <label class="text-xs uppercase text-[#606060] font-cinzel">Carisma</label>
+                        <input type="number" id="attr-carisma" value="0" class="w-full bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-pink py-2" oninput="recalc()">
+                    </div>
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-red transition-colors w-full md:w-auto">
+                        <span class="text-xs uppercase tracking-widest text-[#606060] mr-2 font-cinzel whitespace-nowrap">Total de Pontos:</span>
+                        <input type="number" id="input-pool-pontos" value="0" min="6" max="100" class="bg-transparent w-full outline-none font-mono text-lg text-right text-theme-red">
+                    </div>
+
+                    <button onclick="rolarAtributos()" class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-red hover:bg-red-600 rounded text-white shadow-lg hover:shadow-red-500/20 transition-all font-cinzel text-sm font-bold w-full md:w-auto">
+                        <i data-lucide="dice-5" class="w-4 h-4"></i>
+                        <span>Rolar Atributos</span>
+                    </button>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-yellow"></div>
+
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-4">
+                    <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Balanceamento Manual
+                </h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Multiplicador Classe (0.00 a 2.00)</label>
+                        <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-yellow transition-colors">
+                            <i data-lucide="target" class="w-4 h-4 text-theme-yellow mr-2"></i>
+                            <input type="number" 
+                                id="input-classe" 
+                                value="0" 
+                                min="0.00" 
+                                max="2.00" 
+                                step="0.01" 
+                                class="bg-transparent w-full outline-none font-mono text-lg" 
+                                oninput="recalc()">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Multiplicador Dificuldade (0.00 a 1.00)</label>
+                        <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-yellow transition-colors">
+                            <i data-lucide="hand" class="w-4 h-4 text-theme-yellow mr-2"></i>
+                            <input type="number" 
+                                id="input-dificuldade" 
+                                value="0" 
+                                min="0.00" 
+                                max="1.00" 
+                                step="0.01" 
+                                class="bg-transparent w-full outline-none font-mono text-lg" 
+                                oninput="recalc()">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
+                
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
+                    <i data-lucide="calculator" class="w-4 h-4"></i> Valores Derivados (Automático)
+                </h3>
+
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+
+                    <!-- Blindagem -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="shield" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Blindagem</p>
+                        <p id="calc-blindagem" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+
+                    <!-- Velocidade -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="wind" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Velocidade</p>
+                        <p id="calc-velocidade" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+
+                    <!-- Iniciativa -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="zap" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Iniciativa</p>
+                        <p id="calc-iniciativa" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+
+                    <!-- Sorte -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="clover" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Sorte (1d100)</p>
+                        <p id="calc-sorte" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+
+                    <!-- Percepção Espacial -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="radar" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Percepção Espacial</p>
+                        <p id="calc-percepcao" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+
+                    <!-- Visão Noturna -->
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                        <i data-lucide="eye-off" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
+                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Visão Noturna</p>
+                        <p id="calc-visao-noturna" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    
+    <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
+        <button onclick="resetStats()" class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+            Resetar
+        </button>
+>>>>>>> parent of 69ddfa1 (a)
+        
+        <button onclick="acionarGerarCard()" class="group flex items-center gap-2 px-6 py-2 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="sheet" class="w-4 h-4"></i>
+            <span>Gerar Card Ficha</span>
+        </button>
+
+        <button onclick="downloadCardPNG()" id="btn-png-card" class="group flex items-center gap-2 px-4 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="image" class="w-4 h-4"></i>
+            <span>Card PNG</span>
+        </button>
+        <button onclick="downloadCardPDF()" id="btn-pdf-card" class="group flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-down" class="w-4 h-4"></i>
+            <span>Card PDF</span>
+        </button>
+        
+        <button onclick="exportDataTXT()" id="btn-txt" class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span>Exportar TXT</span>
+        </button>
+
+        <button onclick="saveStats()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-theme-orange to-red-600 rounded text-white shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Salvar</span>
+        </button>
+    </div>
+
+    <div class="max-w-6xl mx-auto px-4">
+        <section id="card-personagem-output" class="mt-6"></section>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const el = id => document.getElementById(id);
+        const setTxt = (id, txt) => el(id).innerText = txt;
+        
+        // NOVO val: Retorna FLOAT se for Balanceamento, senão retorna INT (Para XP e Atributos)
+        const val = id => {
+            const value = el(id).value;
+            if (id === 'input-classe' || id === 'input-dificuldade') {
+                return parseFloat(value) || 0;
+            }
+            return parseInt(value) || 0;
+        };
+        
+        // Variáveis Globais (Serão salvas/carregadas)
+        const getInt = () => val('attr-inteligencia');
+        const ATTRIBUTE_IDS = ['attr-forca', 'attr-destreza', 'attr-constituicao', 'attr-inteligencia', 'attr-sabedoria', 'attr-carisma'];
+
+        // Variáveis que precisam de estado persistente (global, mas controladas por load/save)
+        let currentLevel = 0;
+        let accumulatedXP = 0;
+        
+        // XP necessário para subir de Nível X. (Aqui, 1000 XP por nível)
+        const XP_PER_LEVEL = 1000; 
+
+        // ====================================================================
+        // 1. LÓGICA DE SUBIDA DE NÍVEL EM CASCATA
+        // ====================================================================
+
+        function checkLevelUp() {
+            let xpGained = 0;
+            let levelsJumped = 0;
+
+            // Loop principal para subir múltiplos níveis de uma vez
+            while (accumulatedXP >= XP_PER_LEVEL) {
+                
+                // Subiu de Nível
+                currentLevel += 1;
+                levelsJumped += 1;
+                
+                // Deduz o XP necessário do acumulado
+                accumulatedXP -= XP_PER_LEVEL;
+                
+                // Adiciona pontos de bônus, como você pediu (10 pontos por nível)
+                // Esta variável bonusPoints deve ser implementada no futuro para o gasto.
+                // Aqui, apenas logamos:
+                xpGained += XP_PER_LEVEL;
+            }
+
+            if (levelsJumped > 0) {
+                alert(`Parabéns! Você subiu ${levelsJumped} níveis e está agora no Nível ${currentLevel}!`);
             }
             
-            el(attrId).value = currentValue;
-            recalc(); // Recalcula os derivados
-            updateBonusDisplay(); // Atualiza o estado dos botões
-            saveStats(false); // Salva o novo estado
+            // Atualiza a ficha com os novos valores
+            el('input-nivel').value = currentLevel;
+            el('input-xp-acumulado').value = accumulatedXP;
+            recalc();
+            
+            return levelsJumped; // Retorna quantos níveis foram ganhos
+        }
+        
+        // ====================================================================
+        // 2. FUNÇÃO SOMAR XP (Trigger de Subida de Nível)
+        // ====================================================================
+        
+        function addXP() {
+            const xpGanhado = val('input-xp-ganhado');
+            
+            if (xpGanhado <= 0) {
+                alert("Por favor, insira uma quantidade de XP válida para somar.");
+                return;
+            }
+
+            // 1. Soma o XP recebido ao total acumulado
+            accumulatedXP += xpGanhado;
+            
+            // 2. Limpa o campo de XP Ganhado
+            el('input-xp-ganhado').value = 0;
+
+            // 3. Verifica subida de nível e atualiza a ficha
+            const levelsJumped = checkLevelUp();
+
+            // 4. Salva o estado atual automaticamente após a soma
+            saveStats(false); // Salva, mas sem o feedback visual demorado
         }
 
         // ====================================================================
@@ -677,13 +1056,20 @@
         function recalc() {
             // 1. OBTENÇÃO DAS VARIÁVEIS DE ATRIBUTO
             const nivel = currentLevel; // O Nível é controlado pela variável global
+<<<<<<< HEAD
+=======
+            const xpAcumulado = accumulatedXP; // XP é controlado pela variável global
+>>>>>>> parent of 69ddfa1 (a)
             
             const STR = val('attr-forca');
             const DEX = val('attr-destreza');
             const CON = val('attr-constituicao');
             const INT = getInt();
             const WIS = val('attr-sabedoria');
+<<<<<<< HEAD
             const CAR = val('attr-carisma');
+=======
+>>>>>>> parent of 69ddfa1 (a)
 
             // 2. MULTIPLICADORES MANUAIS
             const classe = val('input-classe');     
@@ -697,6 +1083,7 @@
             const sorte = Math.floor(Math.random() * 100) + 1; 
             const visaoNoturna = sorte + percepcao; 
             
+<<<<<<< HEAD
             // 4. NOVOS CÁLCULOS ADICIONADOS
             const resistenciaFisica = Math.floor(CON + blindagem + (sorte / 100));
             const resistenciaMental = Math.floor(INT + WIS + (sorte / 100));
@@ -704,12 +1091,16 @@
             const saudeMental = parseInt(el('input-saude-mental').value) || 100;
             
             // 5. OUTPUTS DOS CÁLCULOS
+=======
+            // 4. OUTPUTS DOS CÁLCULOS
+>>>>>>> parent of 69ddfa1 (a)
             setTxt('calc-blindagem', blindagem);
             setTxt('calc-velocidade', velocidade);
             setTxt('calc-iniciativa', iniciativa);
             setTxt('calc-sorte', sorte);
             setTxt('calc-percepcao', percepcao);
             setTxt('calc-visao-noturna', visaoNoturna);
+<<<<<<< HEAD
             setTxt('calc-resistencia-fisica', resistenciaFisica);
             setTxt('calc-resistencia-mental', resistenciaMental);
             setTxt('calc-esquiva', esquiva);
@@ -728,18 +1119,32 @@
             
             // Atualiza barra de XP (progresso para o próximo nível)
             updateBar('bar-xp', xpProgress, xpNeededForNextLevel); 
+=======
+
+            // 5. ATUALIZAÇÃO DA PROGRESSÃO e BARRAS
+            el('input-nivel').value = nivel;
+            el('input-xp-acumulado').value = xpAcumulado;
+            setTxt('display-xp-necessario', XP_PER_LEVEL); // XP fixo por nível
+            
+            // XP atual é o que sobrou após a subida de nível
+            updateBar('bar-xp', xpAcumulado, XP_PER_LEVEL); 
+>>>>>>> parent of 69ddfa1 (a)
             
             updateBar('bar-vida', val('input-vida-atual'), val('input-vida-max'));
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
+<<<<<<< HEAD
             updateBar('bar-saude-mental', saudeMental, 100);
 
             // Atualiza o estado visual dos botões
             updateBonusDisplay();
+=======
+>>>>>>> parent of 69ddfa1 (a)
         }
         
         function getCurrentStats() {
             const stats = {};
+<<<<<<< HEAD
             
             // Captura todos os inputs
             document.querySelectorAll('#status-content input').forEach(input => {
@@ -1042,6 +1447,372 @@
             link.download = `Ficha_${nomePersonagem}_${new Date().toISOString().split('T')[0]}.txt`;
 
             // Dispara o download
+=======
+            // Captura todos os inputs importantes para salvar
+            document.querySelectorAll('#status-content input[type="number"]').forEach(input => {
+                stats[input.id] = input.value;
+            });
+            // Adiciona as variáveis globais de controle de nível
+            stats['GLOBAL_LEVEL'] = currentLevel;
+            stats['GLOBAL_XP'] = accumulatedXP;
+            return stats;
+        }
+
+        function loadStats() {
+            const savedStats = localStorage.getItem('rpg_stats');
+            if (!savedStats) {
+                // Se não houver dados salvos, define padrões e recalcula
+                currentLevel = 1; 
+                accumulatedXP = 0;
+                return;
+            }
+
+            const stats = JSON.parse(savedStats);
+            
+            // Restaura as variáveis globais
+            currentLevel = parseInt(stats['GLOBAL_LEVEL']) || 1;
+            accumulatedXP = parseInt(stats['GLOBAL_XP']) || 0;
+
+            // Restaura os inputs
+            document.querySelectorAll('#status-content input[type="number"]').forEach(input => {
+                if (stats[input.id] !== undefined) {
+                    input.value = stats[input.id];
+                }
+            });
+            
+            // Garante que o nível e XP na interface reflitam o estado global
+            el('input-nivel').value = currentLevel;
+            el('input-xp-acumulado').value = accumulatedXP;
+            
+            recalc();
+            alert("Ficha carregada do último save!");
+        }
+
+        function saveStats(showFeedback = true) {
+            const statsToSave = getCurrentStats();
+            localStorage.setItem('rpg_stats', JSON.stringify(statsToSave));
+
+            if (showFeedback) {
+                const btn = document.getElementById('btn-save');
+                const originalContent = btn.innerHTML;
+                
+                btn.disabled = true;
+                btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Salvando...`;
+                lucide.createIcons();
+                
+                setTimeout(() => {
+                    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
+                    lucide.createIcons();
+                    setTimeout(() => {
+                        btn.disabled = false;
+                        btn.innerHTML = originalContent;
+                        lucide.createIcons();
+                    }, 2000);
+                }, 1000);
+            }
+        }
+        
+        // Funções de ROLAGEM, BARRAS e RESET (Adaptações)
+
+        function rolarAtributos() {
+            // ... (Lógica de rolagem anterior, sem alterações) ...
+            const totalPoints = parseInt(el('input-pool-pontos').value);
+            const minAttr = 3;
+            const numAttributes = ATTRIBUTE_IDS.length;
+            const minTotal = minAttr * numAttributes;
+
+            if (totalPoints < minTotal) {
+                alert(`O total de pontos deve ser no mínimo ${minTotal} (3 por atributo).`);
+                return;
+            }
+
+            let pointsRemaining = totalPoints;
+            const newAttributes = {};
+
+            ATTRIBUTE_IDS.forEach(id => {
+                newAttributes[id] = minAttr;
+                pointsRemaining -= minAttr;
+            });
+
+            while (pointsRemaining > 0) {
+                const randomId = ATTRIBUTE_IDS[Math.floor(Math.random() * numAttributes)];
+                newAttributes[randomId] += 1;
+                pointsRemaining -= 1;
+            }
+
+            ATTRIBUTE_IDS.forEach(id => {
+                document.getElementById(id).value = newAttributes[id]; 
+            });
+
+            recalc(); 
+            alert(`Atributos Rolados! Total de pontos (${totalPoints}) distribuído.`);
+        }
+
+        function updateBar(elementId, current, max) {
+            const el = document.getElementById(elementId);
+            if(max <= 0) max = 1;
+            let pct = (current / max) * 100;
+            if (pct > 100) pct = 100;
+            if (pct < 0) pct = 0;
+            el.style.width = `${pct}%`;
+        }
+
+        function resetStats() {
+            if(confirm("Deseja resetar todos os valores para o padrão? (Isto irá apagar o save local)")) {
+                // Reseta localStorage
+                localStorage.removeItem('rpg_stats');
+                
+                // Padrões
+                currentLevel = 1;
+                accumulatedXP = 0;
+                
+                const defaults = {
+                    'input-nivel': 1, 'input-xp-acumulado': 0, 
+                    'input-vida-atual': 100, 'input-vida-max': 100,
+                    'input-mana-atual': 50, 'input-mana-max': 50,
+                    'input-estamina-atual': 80, 'input-estamina-max': 80,
+                    'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
+                    'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
+                    'input-classe': 1.00, 'input-dificuldade': 0.50,
+                    'input-xp-ganhado': 0
+                };
+                for(const [id, value] of Object.entries(defaults)) {
+                    if (document.getElementById(id)) {
+                        document.getElementById(id).value = value;
+                    }
+                }
+                recalc();
+                alert("Ficha resetada e save local apagado.");
+            }
+        }
+        
+        // ====================================================================
+        // FUNÇÕES DE EXPORTAÇÃO (PDF, PNG, TXT)
+        // ====================================================================
+
+        // Função auxiliar para pegar o valor de inputs de texto (não números)
+        const valText = id => document.getElementById(id) ? document.getElementById(id).value : '';
+
+        // Funções de ajuda para renderizar o HTML do Card (renderizadas para o contexto)
+        function renderAttribute(name, value, colorClass) {
+            return `<p class="text-sm font-semibold">${name}: <span class="text-${colorClass} text-xl font-mono">${value}</span></p>`;
+        }
+        function renderDerived(name, value, colorClass) {
+            return `<div class="p-2 bg-theme-bg rounded border border-theme-border">
+                <p class="text-xs uppercase text-[#606060]">${name}</p>
+                <p class="font-bold text-lg text-${colorClass} font-mono">${value}</p>
+            </div>`;
+        }
+
+        function gerarCardFicha() {
+            // 1. COLETAR NOME E DADOS CALCULADOS
+            const nome = valText('input-nome');
+            
+            const nivel = currentLevel;
+            const xpAcumulado = accumulatedXP;
+            const xpNecessario = XP_PER_LEVEL;
+            
+            // Atributos Base (do recalc)
+            const STR = val('attr-forca');
+            const DEX = val('attr-destreza');
+            const CON = val('attr-constituicao');
+            const INT = val('attr-inteligencia');
+            const WIS = val('attr-sabedoria');
+            const CAR = val('attr-carisma');
+
+            // Valores Derivados (do output do recalc)
+            const blindagem = el('calc-blindagem').innerText;
+            const velocidade = el('calc-velocidade').innerText;
+            const iniciativa = el('calc-iniciativa').innerText;
+            const percepcao = el('calc-percepcao').innerText;
+            const visaoNoturna = el('calc-visao-noturna').innerText;
+
+            // 2. MONTAR O CARD VISUAL (Focado em Status e Atributos)
+            const cardHTML = `
+                <div id="ficha-para-exportar" class="bg-theme-panel border border-theme-border rounded-lg p-6 shadow-xl space-y-6">
+                    <h2 class="text-2xl font-cinzel font-bold text-theme-pink border-b border-theme-border pb-2 mb-4">
+                        ${nome.toUpperCase()}
+                        <span class="text-theme-orange ml-4 text-lg">NÍVEL ${nivel}</span>
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <div class="md:col-span-1 space-y-4">
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-orange/50">
+                                <p class="text-sm text-theme-orange font-semibold">PROGRESSÃO</p>
+                                <p class="text-sm mt-2 font-bold">XP Restante: ${xpAcumulado} / ${xpNecessario}</p>
+                            </div>
+                            
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-red/50">
+                                <p class="text-sm text-theme-red font-semibold">RECURSOS VITAIS (Atual/Máx)</p>
+                                <p class="text-xs">Vida: ${val('input-vida-atual')} / ${val('input-vida-max')}</p>
+                                <p class="text-xs">Mana: ${val('input-mana-atual')} / ${val('input-mana-max')}</p>
+                                <p class="text-xs">Estamina: ${val('input-estamina-atual')} / ${val('input-estamina-max')}</p>
+                            </div>
+
+                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-yellow/50">
+                                <p class="text-sm text-theme-yellow font-semibold">BALANCEAMENTO</p>
+                                <p class="text-xs">Classe Multi.: ${val('input-classe').toFixed(2)}</p>
+                                <p class="text-xs">Dificuldade Multi.: ${val('input-dificuldade').toFixed(2)}</p>
+                            </div>
+                        </div>
+
+                        <div class="md:col-span-1 space-y-2">
+                            <h4 class="font-cinzel text-lg text-theme-red border-b border-theme-border pb-1">Atributos Base</h4>
+                            ${renderAttribute('FORÇA', STR, 'theme-red')}
+                            ${renderAttribute('DESTREZA', DEX, 'theme-green')}
+                            ${renderAttribute('CONSTITUIÇÃO', CON, 'theme-yellow')}
+                            ${renderAttribute('INTELIGÊNCIA', INT, 'theme-blue')}
+                            ${renderAttribute('SABEDORIA', WIS, 'theme-purple')}
+                            ${renderAttribute('CARISMA', CAR, 'theme-pink')}
+                        </div>
+
+                        <div class="md:col-span-1 space-y-4">
+                            <h4 class="font-cinzel text-lg text-theme-green border-b border-theme-border pb-1">Valores Derivados</h4>
+                            ${renderDerived('BLINDAGEM', blindagem, 'theme-green')}
+                            ${renderDerived('VELOCIDADE', velocidade, 'theme-green')}
+                            ${renderDerived('INICIATIVA', iniciativa, 'theme-green')}
+                            ${renderDerived('PERCEPÇÃO', percepcao, 'theme-green')}
+                            ${renderDerived('VISÃO NOTURNA', visaoNoturna, 'theme-green')}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById("card-personagem-output").innerHTML = cardHTML;
+            lucide.createIcons(); 
+            
+            // Rola a página para ver o card
+            const cardEl = document.getElementById('ficha-para-exportar');
+            if (cardEl) {
+                cardEl.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function acionarGerarCard() {
+            gerarCardFicha();
+        }
+        // --- NOVAS FUNÇÕES PARA EXPORTAR O CARD FICHA (ficha-para-exportar) ---
+
+        function downloadCardPDF() {
+            // Chamamos a função principal de download, mas miramos no ID do Card
+            downloadPDF_Internal('ficha-para-exportar', 'Card_Personagem.pdf'); 
+        }
+
+        function downloadCardPNG() {
+            // Chamamos a função principal de download, mas miramos no ID do Card
+            downloadPNG_Internal('ficha-para-exportar', 'Card_Personagem.png'); 
+        }
+
+        // --------------------------------------------------------------------------
+
+        // Renomear as funções de exportação existentes para internas e aceitar um ID de elemento alvo
+        function downloadPDF_Internal(elementId, filename) {
+            const element = document.getElementById(elementId);
+            // ... restante da lógica de PDF ...
+            // Trocar btn.innerHTML por uma lógica de botão temporário se for necessário
+        }
+
+        function downloadPNG_Internal(elementId, filename) {
+            const element = document.getElementById(elementId);
+            // ... restante da lógica de PNG ...
+        }
+        // ====================================================================
+        // FUNÇÕES DE EXPORTAÇÃO INTERNA
+        // ====================================================================
+
+        // Função que realiza o download de PDF ou PNG, mirando no ID
+        function downloadExport(elementId, filename, type = 'pdf') {
+            const element = document.getElementById(elementId);
+            if (!element) return alert("Erro: Elemento de exportação não encontrado!");
+            
+            // Usamos o botão Salvar como feedback de progresso
+            const btnId = (type === 'pdf') ? 'btn-pdf-card' : 'btn-png-card';
+            const btn = document.getElementById(btnId) || document.getElementById('btn-save'); 
+            
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando ${type.toUpperCase()}...`;
+            lucide.createIcons();
+
+            const opt = {
+                margin:       [10, 10, 10, 10],
+                filename:     filename,
+                image:        { type: (type === 'pdf') ? 'jpeg' : 'png', quality: 0.98 },
+                html2canvas:  { scale: 3, logging: false, dpi: 192, letterRendering: true, backgroundColor: '#0f0f12' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            // Se for PNG, usa outputImg e simula o download
+            if (type === 'png') {
+                html2pdf().set(opt).from(element).outputImg().then((image) => {
+                    const link = document.createElement('a');
+                    link.href = image.src;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    lucide.createIcons();
+                });
+            } else {
+                // Se for PDF
+                html2pdf().set(opt).from(element).save().then(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = originalContent;
+                    lucide.createIcons();
+                });
+            }
+        }
+
+        // ====================================================================
+        // FUNÇÕES PÚBLICAS DE EXPORTAÇÃO
+        // ====================================================================
+
+        function downloadPDF() {
+            // Exporta a Ficha de Status COMPLETA
+            downloadExport('status-content', 'Status_Completo.pdf', 'pdf'); 
+        }
+
+        function downloadCardPDF() {
+            // Exporta APENAS o Card Gerado
+            downloadExport('ficha-para-exportar', 'Card_Personagem.pdf', 'pdf');
+        }
+
+        function downloadCardPNG() {
+            // Exporta APENAS o Card Gerado
+            downloadExport('ficha-para-exportar', 'Card_Personagem.png', 'png');
+        }
+
+        function exportDataTXT() {
+            const btn = document.getElementById('btn-txt');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Exportando...`;
+            lucide.createIcons();
+
+            // 1. Coleta os dados em formato JSON (Função que você já tem)
+            const stats = getCurrentStats(); 
+            
+            // 2. Converte os dados JSON em formato TXT legível
+            let outputText = "--- DADOS DA FICHA RPG ---\n\n";
+            for (const key in stats) {
+                // Formata chaves (ex: 'attr-forca' -> 'FORÇA')
+                const cleanKey = key.toUpperCase().replace(/_|-/g, ' ').trim();
+                outputText += `${cleanKey}: ${stats[key]}\n`;
+            }
+
+            // 3. Cria um Blob (objeto de dados) e um link de download
+            const blob = new Blob([outputText], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Status_Personagem_DADOS.txt';
+
+            // 4. Dispara o download
+>>>>>>> parent of 69ddfa1 (a)
             setTimeout(() => {
                 link.click();
                 
@@ -1051,6 +1822,7 @@
             }, 500);
         }
 
+<<<<<<< HEAD
         // ====================================================================
         // FUNÇÕES PARA OS NOVOS VALORES DERIVADOS
         // ====================================================================
@@ -1224,6 +1996,18 @@
         window.closeConfigModal = closeConfigModal;
         window.applyConfig = applyConfig;
         window.saveStats = () => saveStats(true);
+=======
+        // Listener para o início: Carrega os dados e inicia o ciclo
+        window.addEventListener('load', () => {
+            loadStats(); // Tenta carregar os dados salvos
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                // O recalc é disparado pelo Load ou pelo AddXP/Save
+                // Mantemos o listener para permitir a mudança manual dos atributos/balanceamento
+                input.addEventListener('input', recalc); 
+            });
+            recalc(); 
+        });
+>>>>>>> parent of 69ddfa1 (a)
     </script>
 </body>
 </html>
