@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimório Digital - Inventário</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            muted: '#606060',
+                            blue: '#4a9eff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Modal Transitions */
+        #modal-overlay { transition: opacity 0.3s ease; }
+        #modal-overlay.hidden { pointer-events: none; opacity: 0; }
+        #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
+
+        /* Scrollbar */
+        textarea::-webkit-scrollbar { width: 6px; }
+        textarea::-webkit-scrollbar-track { background: #0f0f12; }
+        textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
+        
+        /* Estilos para cards de item */
+        .item-card {
+            border-left: 3px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Barra de progresso personalizada */
+        .progress-bar {
+            transition: width 0.5s ease;
+            border-radius: 9999px;
+        }
+        
+        .progress-bar-danger { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
+        .progress-bar-warning { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
+        .progress-bar-safe { background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%); }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-yellow-600">Grimório Digital</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-yellow-600 to-transparent"></div>
+    </nav>
+
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+        <header class="flex items-center gap-4 mb-6 anim-entry">
+            <div class="p-3 rounded-lg bg-yellow-600/10 border border-yellow-600/20">
+                <i data-lucide="backpack" class="w-8 h-8 text-yellow-600"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Inventário</h1>
+                <p class="text-gray-400">Seus pertences e recursos</p>
+            </div>
+        </header>
+
+        <!-- Estatísticas Rápidas -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.1s;">
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="package" class="w-8 h-8 text-theme-blue"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Itens</p>
+                    <p id="stat-total-itens" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="weight" class="w-8 h-8 text-orange-500"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Peso</p>
+                    <p id="stat-peso-total" class="text-2xl font-bold text-white">0.0 kg</p>
+                </div>
+            </div>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="coins" class="w-8 h-8 text-yellow-500"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Ouro</p>
+                    <p id="stat-ouro" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                <div>
+                    <p class="text-xs text-theme-muted uppercase tracking-wide">Limite</p>
+                    <p id="stat-limite" class="text-2xl font-bold text-white">0%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Progresso do Peso -->
+        <div class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry" style="animation-delay: 0.15s;">
+            <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-2">
+                    <i data-lucide="weight" class="w-4 h-4 text-orange-500"></i>
+                    <span class="text-sm font-medium">Capacidade do Inventário</span>
+                </div>
+                <span class="text-sm font-mono" id="weight-display">
+                    <span id="current-weight">0.0</span>/<span id="max-weight">50.0</span> kg
+                </span>
+            </div>
+            <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden">
+                <div id="weight-progress" class="h-full progress-bar" style="width: 0%"></div>
+            </div>
+            <div class="flex justify-end mt-2">
+                <button onclick="openConfigModal()" class="text-xs text-theme-blue hover:text-blue-400 flex items-center gap-1">
+                    <i data-lucide="settings" class="w-3 h-3"></i>
+                    Configurar Limite
+                </button>
+            </div>
+        </div>
+
+        <!-- Filtros de Categorias -->
+        <div id="filter-container" class="flex flex-wrap gap-2 anim-entry" style="animation-delay: 0.2s;">
+            <!-- Filtros serão renderizados aqui -->
+        </div>
+
+        <!-- Alertas de Limite -->
+        <div id="alerts-container" class="space-y-2 anim-entry" style="animation-delay: 0.25s;">
+            <!-- Alertas serão renderizados aqui -->
+        </div>
+
+        <!-- Grid de Itens -->
+        <div id="items-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry p-2" style="animation-delay: 0.3s;">
+            <!-- Itens serão renderizados aqui -->
+        </div>
+
+        <!-- Carteira -->
+        <div class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.35s;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-yellow-500 mb-4">
+                <i data-lucide="coins" class="w-4 h-4"></i> Carteira
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Ouro -->
+                <div class="bg-[#0a0a0c] border border-yellow-600/30 p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                                <i data-lucide="circle" class="w-4 h-4 text-yellow-500"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-theme-muted uppercase">Ouro</p>
+                                <p id="gold-amount" class="text-xl font-bold text-yellow-500">100</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="adjustMoney('gold', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
+                                -1
+                            </button>
+                            <button onclick="adjustMoney('gold', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
+                                +1
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-gold" placeholder="Quantia" min="0" 
+                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-xs">
+                        <button onclick="setMoney('gold')" class="px-3 bg-yellow-600 hover:bg-yellow-700 rounded text-white text-xs">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Prata -->
+                <div class="bg-[#0a0a0c] border border-gray-500/30 p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-gray-400/20 flex items-center justify-center">
+                                <i data-lucide="circle" class="w-4 h-4 text-gray-400"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-theme-muted uppercase">Prata</p>
+                                <p id="silver-amount" class="text-xl font-bold text-gray-300">500</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="adjustMoney('silver', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
+                                -1
+                            </button>
+                            <button onclick="adjustMoney('silver', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
+                                +1
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-silver" placeholder="Quantia" min="0" 
+                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-xs">
+                        <button onclick="setMoney('silver')" class="px-3 bg-gray-600 hover:bg-gray-700 rounded text-white text-xs">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cobre -->
+                <div class="bg-[#0a0a0c] border border-orange-600/30 p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-orange-600/20 flex items-center justify-center">
+                                <i data-lucide="circle" class="w-4 h-4 text-orange-600"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs text-theme-muted uppercase">Cobre</p>
+                                <p id="copper-amount" class="text-xl font-bold text-orange-500">1000</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="adjustMoney('copper', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
+                                -1
+                            </button>
+                            <button onclick="adjustMoney('copper', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
+                                +1
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="number" id="input-copper" placeholder="Quantia" min="0" 
+                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-xs">
+                        <button onclick="setMoney('copper')" class="px-3 bg-orange-600 hover:bg-orange-700 rounded text-white text-xs">
+                            Definir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total -->
+            <div class="mt-4 pt-4 border-t border-theme-border">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <p class="text-sm text-theme-muted">Valor Total em Cobre</p>
+                        <p id="total-copper" class="text-lg font-bold text-yellow-500">0 cp</p>
+                    </div>
+                    <div class="text-right text-xs text-theme-muted">
+                        <p>Conversão Automática</p>
+                        <p>1 Ouro = 10 Prata = 100 Cobre</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between gap-4 border-t border-theme-border pt-6 mt-8 anim-entry" style="animation-delay: 0.4s;">
+            <button onclick="resetInventory()" class="flex items-center gap-2 px-4 py-2 border border-red-900/50 text-red-500 hover:bg-red-900/20 rounded transition-colors text-sm">
+                <i data-lucide="trash" class="w-4 h-4"></i>
+                Limpar Tudo
+            </button>
+            <div class="flex gap-4">
+                <button onclick="exportTXT()" class="flex items-center gap-2 px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                    Baixar TXT
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal para Adicionar/Editar Item -->
+    <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
+        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
+            <div class="flex justify-between items-center mb-6">
+                <h2 id="modal-title" class="font-cinzel text-xl text-white">Novo Item</h2>
+                <button onclick="closeModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="form-item" onsubmit="saveItem(event)" class="space-y-4">
+                <input type="hidden" id="item-id">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nome</label>
+                    <input type="text" id="item-nome" required class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Categoria</label>
+                        <select id="item-categoria" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none" onchange="updateItemType()">
+                            <option value="arma">Armas</option>
+                            <option value="armadura">Armaduras</option>
+                            <option value="consumivel">Consumíveis</option>
+                            <option value="material">Materiais</option>
+                            <option value="chave">Itens-Chave</option>
+                            <option value="outro">Outros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Tipo</label>
+                        <select id="item-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                            <option value="normal">Normal</option>
+                            <option value="usavel">Usável</option>
+                            <option value="carregavel">Carregável</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Quantidade</label>
+                        <input type="number" id="item-qtd" required min="1" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Peso (kg)</label>
+                        <input type="number" id="item-peso" step="0.1" value="0" min="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Valor (cobre)</label>
+                    <input type="number" id="item-valor" value="0" min="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
+                    <textarea id="item-desc" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none h-24 resize-none"></textarea>
+                </div>
+                <div id="weight-warning" class="hidden p-3 bg-red-900/30 border border-red-700/50 rounded text-sm text-red-300">
+                    <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-2"></i>
+                    <span id="weight-warning-text"></span>
+                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
+                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Configurações -->
+    <div id="configModal" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
+        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="font-cinzel text-xl text-white">Configurar Inventário</h2>
+                <button onclick="closeConfigModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Limite de Peso (kg)</label>
+                    <input type="number" id="config-max-weight" min="1" max="999" step="0.1" value="50.0" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Itens Usáveis</label>
+                        <input type="number" id="config-max-usaveis" min="1" max="100" value="10" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Itens Carregáveis</label>
+                        <input type="number" id="config-max-carregaveis" min="1" max="100" value="20" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                    </div>
+                </div>
+                <div class="pt-4 border-t border-theme-border mt-4">
+                    <h3 class="font-cinzel text-lg text-white mb-3">Moedas Iniciais</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Ouro</label>
+                            <input type="number" id="config-initial-gold" min="0" value="100" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Prata</label>
+                            <input type="number" id="config-initial-silver" min="0" value="500" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Cobre</label>
+                            <input type="number" id="config-initial-copper" min="0" value="1000" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-6 mt-6 border-t border-theme-border">
+                <button onclick="closeConfigModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
+                <button onclick="saveConfig()" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuração de categorias
+        const categoriesConfig = {
+            'arma': { label: "Armas", icon: "sword", color: "#dc2626" },
+            'armadura': { label: "Armaduras", icon: "shield", color: "#f59e0b" },
+            'consumivel': { label: "Consumíveis", icon: "flask-conical", color: "#22c55e" },
+            'material': { label: "Materiais", icon: "package", color: "#8b5cf6" },
+            'chave': { label: "Itens-Chave", icon: "key", color: "#ec4899" },
+            'outro': { label: "Outros", icon: "box", color: "#606060" }
+        };
+
+        // Configuração de tipos
+        const typesConfig = {
+            'normal': { label: "Normal", icon: "box", color: "#606060" },
+            'usavel': { label: "Usável", icon: "flask-conical", color: "#22c55e" },
+            'carregavel': { label: "Carregável", icon: "shield", color: "#8b5cf6" }
+        };
+
+        // Dados do inventário
+        let inventario = [];
+        let limites = {
+            pesoMaximo: 50.0,
+            itensUsaveisMax: 10,
+            itensCarregaveisMax: 20
+        };
+        let moedas = {
+            gold: 100,
+            silver: 500,
+            copper: 1000
+        };
+
+        let currentFilter = 'todos';
+
+        // Funções de persistência
+        function loadFromStorage() {
+            try {
+                const savedData = localStorage.getItem('rpg_inventario');
+                if (savedData) {
+                    inventario = JSON.parse(savedData);
+                }
+                
+                const savedLimits = localStorage.getItem('rpg_inventory_limits');
+                if (savedLimits) {
+                    limites = JSON.parse(savedLimits);
+                }
+                
+                const savedMoney = localStorage.getItem('rpg_inventory_money');
+                if (savedMoney) {
+                    moedas = JSON.parse(savedMoney);
+                }
+            } catch (e) {
+                console.error("Erro ao carregar dados:", e);
+                inventario = [];
+            }
+            updateAllStats();
+        }
+
+        function updateStorage() {
+            try {
+                localStorage.setItem('rpg_inventario', JSON.stringify(inventario));
+                localStorage.setItem('rpg_inventory_limits', JSON.stringify(limites));
+                localStorage.setItem('rpg_inventory_money', JSON.stringify(moedas));
+            } catch (e) {
+                console.error("Erro ao salvar dados:", e);
+            }
+        }
+
+        // Funções de cálculo
+        function calculateStats() {
+            let totalPeso = 0;
+            let totalItens = inventario.length;
+            let usaveisCount = 0;
+            let carregaveisCount = 0;
+            let itemCount = 0;
+            
+            inventario.forEach(item => {
+                const pesoItem = parseFloat(item.peso) || 0;
+                const qtdItem = parseInt(item.quantidade) || 1;
+                totalPeso += pesoItem * qtdItem;
+                itemCount += qtdItem;
+                
+                if (item.tipo === 'usavel') {
+                    usaveisCount += qtdItem;
+                } else if (item.tipo === 'carregavel') {
+                    carregaveisCount += qtdItem;
+                }
+            });
+            
+            return {
+                totalPeso: parseFloat(totalPeso.toFixed(1)),
+                totalItens: totalItens,
+                itemCount: itemCount,
+                usaveisCount: usaveisCount,
+                carregaveisCount: carregaveisCount
+            };
+        }
+
+        function updateAllStats() {
+            const stats = calculateStats();
+            
+            // Atualizar displays
+            document.getElementById('stat-total-itens').textContent = stats.itemCount;
+            document.getElementById('stat-peso-total').textContent = `${stats.totalPeso} kg`;
+            document.getElementById('stat-ouro').textContent = moedas.gold;
+            
+            // Atualizar barra de progresso
+            const pesoPercent = Math.min((stats.totalPeso / limites.pesoMaximo) * 100, 100);
+            document.getElementById('stat-limite').textContent = `${Math.round(pesoPercent)}%`;
+            
+            const weightBar = document.getElementById('weight-progress');
+            weightBar.style.width = `${pesoPercent}%`;
+            weightBar.className = `h-full progress-bar ${pesoPercent >= 90 ? 'progress-bar-danger' : pesoPercent >= 70 ? 'progress-bar-warning' : 'progress-bar-safe'}`;
+            
+            // Atualizar displays de limites
+            document.getElementById('current-weight').textContent = stats.totalPeso;
+            document.getElementById('max-weight').textContent = limites.pesoMaximo;
+            
+            // Atualizar moedas
+            updateMoneyDisplay();
+            updateTotalCopper();
+            
+            // Verificar limites
+            checkLimits();
+        }
+
+        // Funções de moedas
+        function adjustMoney(type, amount) {
+            const newAmount = moedas[type] + amount;
+            if (newAmount >= 0) {
+                moedas[type] = newAmount;
+                updateMoneyDisplay();
+                updateStorage();
+                updateTotalCopper();
+                updateAllStats();
+            }
+        }
+
+        function setMoney(type) {
+            const input = document.getElementById(`input-${type}`);
+            const value = parseInt(input.value) || 0;
+            if (value >= 0) {
+                moedas[type] = value;
+                updateMoneyDisplay();
+                updateStorage();
+                updateTotalCopper();
+                updateAllStats();
+                input.value = '';
+            }
+        }
+
+        function updateMoneyDisplay() {
+            document.getElementById('gold-amount').textContent = moedas.gold;
+            document.getElementById('silver-amount').textContent = moedas.silver;
+            document.getElementById('copper-amount').textContent = moedas.copper;
+        }
+
+        function updateTotalCopper() {
+            const totalCopper = (moedas.gold * 100) + (moedas.silver * 10) + moedas.copper;
+            document.getElementById('total-copper').textContent = `${totalCopper.toLocaleString()} cp`;
+        }
+
+        // Funções de renderização
+        function renderFilters() {
+            const container = document.getElementById('filter-container');
+            let html = `<button onclick="setFilter('todos')" class="px-4 py-2 text-sm font-cinzel transition-all border rounded border-theme-border ${currentFilter === 'todos' ? 'bg-theme-blue text-[#0a0a0c] border-theme-blue' : 'bg-[#0f0f12] text-[#606060] hover:text-white'}">Todos</button>`;
+            
+            for (const [key, config] of Object.entries(categoriesConfig)) {
+                const isActive = currentFilter === key;
+                const style = isActive ? `background-color: ${config.color}; color: #0a0a0c; border-color: ${config.color}` : ``;
+                html += `<button onclick="setFilter('${key}')" class="px-4 py-2 text-sm font-cinzel flex items-center gap-2 transition-all border border-theme-border rounded ${!isActive ? 'bg-[#0f0f12] text-[#606060] hover:text-white' : ''}" style="${style}"><i data-lucide="${config.icon}" class="w-4 h-4"></i>${config.label}</button>`;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('items-grid');
+            const filteredItems = currentFilter === 'todos' ? inventario : inventario.filter(item => item.categoria === currentFilter);
+            
+            let html = '';
+            
+            filteredItems.forEach(item => {
+                const categoria = categoriesConfig[item.categoria] || categoriesConfig['outro'];
+                const tipo = typesConfig[item.tipo] || typesConfig['normal'];
+                const stats = calculateStats();
+                const pesoExcedido = stats.totalPeso > limites.pesoMaximo;
+                
+                html += `
+                    <div class="item-card bg-theme-panel border border-theme-border p-4 group hover:border-opacity-50 transition-all rounded relative anim-entry" style="border-left-color: ${categoria.color};">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 rounded" style="background-color: ${categoria.color}20">
+                                    <i data-lucide="${categoria.icon}" class="w-5 h-5" style="color: ${categoria.color}"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-white font-medium">${item.nome}</h4>
+                                    <div class="flex items-center gap-2">
+                                                                                <span class="text-xs px-2 py-1 rounded" style="background-color: ${tipo.color}20; color: ${tipo.color}">
+                                            <i data-lucide="${tipo.icon}" class="w-3 h-3 inline mr-1"></i>${tipo.label}
+                                        </span>
+                                        <span class="text-xs text-theme-muted">${item.categoria}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-1">
+                                <button onclick="adjustQuantity('${item.id}', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
+                                    -1
+                                </button>
+                                <button onclick="adjustQuantity('${item.id}', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
+                                    +1
+                                </button>
+                            </div>
+                        </div>
+                        ${item.descricao ? `<p class="text-sm text-gray-400 mb-3">${item.descricao}</p>` : ''}
+                        <div class="flex justify-between items-center text-sm">
+                            <div class="flex gap-4">
+                                <div class="flex items-center gap-1">
+                                    <i data-lucide="package" class="w-4 h-4 text-theme-muted"></i>
+                                    <span class="${pesoExcedido ? 'text-red-400 font-bold' : 'text-white'}">
+                                        ${item.peso ? `${(parseFloat(item.peso) * parseInt(item.quantidade)).toFixed(1)} kg` : '—'}
+                                    </span>
+                                </div>
+                                <div class="flex items-center gap-1">
+                                    <i data-lucide="coins" class="w-4 h-4 text-yellow-500"></i>
+                                    <span>${item.valor ? `${(parseInt(item.valor) * parseInt(item.quantidade)).toLocaleString()} cp` : '—'}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="font-mono text-lg font-bold" style="color: ${categoria.color}">${item.quantidade}</span>
+                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onclick="editItem('${item.id}')" class="w-6 h-6 flex items-center justify-center bg-blue-900/30 hover:bg-blue-900/50 rounded text-blue-400 text-xs">
+                                        <i data-lucide="edit" class="w-3 h-3"></i>
+                                    </button>
+                                    <button onclick="deleteItem('${item.id}')" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
+                                        <i data-lucide="trash" class="w-3 h-3"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            if (filteredItems.length === 0) {
+                html = `
+                    <div class="col-span-full py-12 text-center anim-entry">
+                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-theme-border/50 flex items-center justify-center">
+                            <i data-lucide="package-x" class="w-8 h-8 text-theme-muted"></i>
+                        </div>
+                        <h3 class="font-cinzel text-xl text-white mb-2">Inventário Vazio</h3>
+                        <p class="text-theme-muted mb-6">${currentFilter !== 'todos' ? 'Nenhum item encontrado nesta categoria.' : 'Adicione itens para começar a gerenciar seu inventário.'}</p>
+                        <button onclick="openModal()" class="px-6 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white font-cinzel transition-colors">
+                            <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>Adicionar Item
+                        </button>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="col-span-full anim-entry">
+                        <button onclick="openModal()" class="w-full p-6 border-2 border-dashed border-theme-border hover:border-theme-blue hover:bg-white/5 rounded-lg transition-all group">
+                            <div class="flex flex-col items-center justify-center gap-2">
+                                <div class="w-12 h-12 rounded-full bg-theme-border/50 flex items-center justify-center group-hover:bg-theme-blue/20 transition-colors">
+                                    <i data-lucide="plus" class="w-6 h-6 text-theme-muted group-hover:text-theme-blue"></i>
+                                </div>
+                                <span class="font-cinzel text-lg text-theme-muted group-hover:text-theme-blue">Adicionar Novo Item</span>
+                                <span class="text-sm text-theme-muted">Clique para adicionar um item ao inventário</span>
+                            </div>
+                        </button>
+                    </div>
+                `;
+            }
+            
+            grid.innerHTML = html;
+            lucide.createIcons();
+            updateAllStats();
+        }
+
+        function checkLimits() {
+            const stats = calculateStats();
+            const alertsContainer = document.getElementById('alerts-container');
+            let alerts = [];
+            
+            // Verificar peso
+            const pesoPercent = (stats.totalPeso / limites.pesoMaximo) * 100;
+            if (pesoPercent >= 90) {
+                alerts.push({
+                    type: 'danger',
+                    icon: 'alert-triangle',
+                    message: `Inventário quase sobrecarregado! ${stats.totalPeso.toFixed(1)}/${limites.pesoMaximo} kg (${Math.round(pesoPercent)}%)`,
+                    color: 'red'
+                });
+            } else if (pesoPercent >= 70) {
+                alerts.push({
+                    type: 'warning',
+                    icon: 'alert-circle',
+                    message: `Inventário pesado: ${stats.totalPeso.toFixed(1)}/${limites.pesoMaximo} kg (${Math.round(pesoPercent)}%)`,
+                    color: 'orange'
+                });
+            }
+            
+            // Verificar limites de tipos
+            if (stats.usaveisCount > limites.itensUsaveisMax) {
+                alerts.push({
+                    type: 'danger',
+                    icon: 'flask-conical',
+                    message: `Excedido limite de itens usáveis: ${stats.usaveisCount}/${limites.itensUsaveisMax}`,
+                    color: 'red'
+                });
+            }
+            
+            if (stats.carregaveisCount > limites.itensCarregaveisMax) {
+                alerts.push({
+                    type: 'danger',
+                    icon: 'shield',
+                    message: `Excedido limite de itens carregáveis: ${stats.carregaveisCount}/${limites.itensCarregaveisMax}`,
+                    color: 'red'
+                });
+            }
+            
+            // Renderizar alertas
+            let html = '';
+            if (alerts.length > 0) {
+                alerts.forEach(alert => {
+                    html += `
+                        <div class="p-4 border-l-4 rounded bg-[#0f0f12] border-${alert.color}-500">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="${alert.icon}" class="w-5 h-5 text-${alert.color}-500"></i>
+                                <span class="text-white font-medium">${alert.message}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            alertsContainer.innerHTML = html;
+        }
+
+        // Funções de manipulação de itens
+        function openModal(itemId = null) {
+            const modal = document.getElementById('modal-overlay');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('form-item');
+            
+            if (itemId) {
+                // Modo edição
+                const item = inventario.find(i => i.id === itemId);
+                if (item) {
+                    title.textContent = 'Editar Item';
+                    document.getElementById('item-id').value = item.id;
+                    document.getElementById('item-nome').value = item.nome;
+                    document.getElementById('item-categoria').value = item.categoria;
+                    document.getElementById('item-tipo').value = item.tipo;
+                    document.getElementById('item-qtd').value = item.quantidade;
+                    document.getElementById('item-peso').value = item.peso;
+                    document.getElementById('item-valor').value = item.valor;
+                    document.getElementById('item-desc').value = item.descricao || '';
+                }
+            } else {
+                // Modo novo
+                title.textContent = 'Novo Item';
+                form.reset();
+                document.getElementById('item-id').value = '';
+                document.getElementById('item-qtd').value = 1;
+                document.getElementById('item-peso').value = 0;
+                document.getElementById('item-valor').value = 0;
+            }
+            
+            modal.classList.remove('hidden');
+            updateItemType();
+            validateWeight();
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').classList.add('hidden');
+        }
+
+        function saveItem(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('item-id').value || generateId();
+            const nome = document.getElementById('item-nome').value;
+            const categoria = document.getElementById('item-categoria').value;
+            const tipo = document.getElementById('item-tipo').value;
+            const quantidade = parseInt(document.getElementById('item-qtd').value) || 1;
+            const peso = parseFloat(document.getElementById('item-peso').value) || 0;
+            const valor = parseInt(document.getElementById('item-valor').value) || 0;
+            const descricao = document.getElementById('item-desc').value;
+            
+            const stats = calculateStats();
+            const novoItemPeso = peso * quantidade;
+            const pesoTotalEstimado = stats.totalPeso + (id ? 0 : novoItemPeso); // Se for edição, não soma novamente
+            
+            // Verificar se excede o limite
+            if (pesoTotalEstimado > limites.pesoMaximo) {
+                document.getElementById('weight-warning').classList.remove('hidden');
+                document.getElementById('weight-warning-text').textContent = 
+                    `Adicionar este item excederá o limite de peso! (${pesoTotalEstimado.toFixed(1)}/${limites.pesoMaximo} kg)`;
+                return;
+            }
+            
+            const itemIndex = inventario.findIndex(item => item.id === id);
+            
+            if (itemIndex > -1) {
+                // Editar item existente
+                inventario[itemIndex] = { id, nome, categoria, tipo, quantidade, peso, valor, descricao };
+            } else {
+                // Adicionar novo item
+                inventario.unshift({ id, nome, categoria, tipo, quantidade, peso, valor, descricao });
+            }
+            
+            updateStorage();
+            renderGrid();
+            closeModal();
+        }
+
+        function deleteItem(itemId) {
+            if (confirm('Tem certeza que deseja remover este item?')) {
+                inventario = inventario.filter(item => item.id !== itemId);
+                updateStorage();
+                renderGrid();
+            }
+        }
+
+        function editItem(itemId) {
+            openModal(itemId);
+        }
+
+        function adjustQuantity(itemId, change) {
+            const item = inventario.find(i => i.id === itemId);
+            if (item) {
+                const newQuantity = parseInt(item.quantidade) + change;
+                if (newQuantity >= 1) {
+                    item.quantidade = newQuantity;
+                    updateStorage();
+                    renderGrid();
+                } else if (newQuantity === 0) {
+                    deleteItem(itemId);
+                }
+            }
+        }
+
+        function setFilter(filter) {
+            currentFilter = filter;
+            renderFilters();
+            renderGrid();
+        }
+
+        function updateItemType() {
+            const categoria = document.getElementById('item-categoria').value;
+            const tipoSelect = document.getElementById('item-tipo');
+            
+            // Sugerir tipo baseado na categoria
+            if (categoria === 'consumivel') {
+                tipoSelect.value = 'usavel';
+            } else if (categoria === 'arma' || categoria === 'armadura') {
+                tipoSelect.value = 'carregavel';
+            }
+            
+            validateWeight();
+        }
+
+        function validateWeight() {
+            const peso = parseFloat(document.getElementById('item-peso').value) || 0;
+            const quantidade = parseInt(document.getElementById('item-qtd').value) || 1;
+            const novoItemPeso = peso * quantidade;
+            
+            const stats = calculateStats();
+            const pesoTotalEstimado = stats.totalPeso + novoItemPeso;
+            const warningDiv = document.getElementById('weight-warning');
+            
+            if (pesoTotalEstimado > limites.pesoMaximo) {
+                warningDiv.classList.remove('hidden');
+                document.getElementById('weight-warning-text').textContent = 
+                    `Este item excederá o limite de peso! (${pesoTotalEstimado.toFixed(1)}/${limites.pesoMaximo} kg)`;
+            } else {
+                warningDiv.classList.add('hidden');
+            }
+        }
+
+        // Funções de configuração
+        function openConfigModal() {
+            const modal = document.getElementById('configModal');
+            document.getElementById('config-max-weight').value = limites.pesoMaximo;
+            document.getElementById('config-max-usaveis').value = limites.itensUsaveisMax;
+            document.getElementById('config-max-carregaveis').value = limites.itensCarregaveisMax;
+            document.getElementById('config-initial-gold').value = moedas.gold;
+            document.getElementById('config-initial-silver').value = moedas.silver;
+            document.getElementById('config-initial-copper').value = moedas.copper;
+            modal.classList.remove('hidden');
+        }
+
+        function closeConfigModal() {
+            document.getElementById('configModal').classList.add('hidden');
+        }
+
+        function saveConfig() {
+            limites.pesoMaximo = parseFloat(document.getElementById('config-max-weight').value) || 50.0;
+            limites.itensUsaveisMax = parseInt(document.getElementById('config-max-usaveis').value) || 10;
+            limites.itensCarregaveisMax = parseInt(document.getElementById('config-max-carregaveis').value) || 20;
+            
+            moedas.gold = parseInt(document.getElementById('config-initial-gold').value) || 100;
+            moedas.silver = parseInt(document.getElementById('config-initial-silver').value) || 500;
+            moedas.copper = parseInt(document.getElementById('config-initial-copper').value) || 1000;
+            
+            updateStorage();
+            updateAllStats();
+            closeConfigModal();
+        }
+
+        // Funções de exportação
+        function exportTXT() {
+            const stats = calculateStats();
+            let text = `=== INVENTÁRIO RPG ===\n`;
+            text += `Data: ${new Date().toLocaleDateString()}\n`;
+            text += `Total de Itens: ${stats.itemCount}\n`;
+            text += `Peso Total: ${stats.totalPeso}/${limites.pesoMaximo} kg\n\n`;
+            
+            text += `=== MOEDAS ===\n`;
+            text += `Ouro: ${moedas.gold}\n`;
+            text += `Prata: ${moedas.silver}\n`;
+            text += `Cobre: ${moedas.copper}\n`;
+            text += `Total em Cobre: ${(moedas.gold * 100 + moedas.silver * 10 + moedas.copper).toLocaleString()} cp\n\n`;
+            
+            text += `=== ITENS ===\n\n`;
+            
+            Object.entries(categoriesConfig).forEach(([key, config]) => {
+                const items = inventario.filter(item => item.categoria === key);
+                if (items.length > 0) {
+                    text += `\n${config.label.toUpperCase()}:\n`;
+                    items.forEach(item => {
+                        const totalPeso = (parseFloat(item.peso) || 0) * parseInt(item.quantidade);
+                        const totalValor = (parseInt(item.valor) || 0) * parseInt(item.quantidade);
+                        text += `  ${item.nome} x${item.quantidade}`;
+                        if (totalPeso > 0) text += ` | ${totalPeso.toFixed(1)} kg`;
+                        if (totalValor > 0) text += ` | ${totalValor} cp`;
+                        if (item.descricao) text += ` | ${item.descricao}`;
+                        text += `\n`;
+                    });
+                }
+            });
+            
+            const blob = new Blob([text], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `inventario_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function resetInventory() {
+            if (confirm('Tem certeza que deseja limpar TODO o inventário? Esta ação não pode ser desfeita.')) {
+                inventario = [];
+                moedas = {
+                    gold: parseInt(document.getElementById('config-initial-gold').value) || 100,
+                    silver: parseInt(document.getElementById('config-initial-silver').value) || 500,
+                    copper: parseInt(document.getElementById('config-initial-copper').value) || 1000
+                };
+                updateStorage();
+                renderGrid();
+            }
+        }
+
+        // Utilitários
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Event Listeners
+        document.getElementById('item-peso').addEventListener('input', validateWeight);
+        document.getElementById('item-qtd').addEventListener('input', validateWeight);
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFromStorage();
+            renderFilters();
+            renderGrid();
+            lucide.createIcons();
+            
+            // Adicionar animação de entrada
+            const animElements = document.querySelectorAll('.anim-entry');
+            animElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.05}s`;
+            });
+        });
+
+        // Prevenir eventos padrão de formulário
+        document.addEventListener('submit', e => {
+            if (e.target.tagName === 'FORM') {
+                e.preventDefault();
+            }
+        });
+    </script>
+</body>
+</html>
