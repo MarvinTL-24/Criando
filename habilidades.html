@@ -91,10 +91,6 @@
                 <i data-lucide="file-text" class="w-4 h-4"></i>
                 Baixar TXT
             </button>
-            <button onclick="exportPNG()" id="btn-png" class="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 rounded text-white shadow-lg shadow-red-600/20 transition-all font-cinzel text-sm font-bold">
-                <i data-lucide="image" class="w-4 h-4"></i>
-                Baixar Imagem
-            </button>
         </div>
 
     </div>
@@ -225,35 +221,6 @@
             link.href = URL.createObjectURL(blob);
             link.download = "Minhas_Habilidades.txt";
             link.click();
-        }
-
-        function exportPNG() {
-            const grid = document.getElementById('skills-grid');
-            const btn = document.getElementById('btn-png');
-            const addBtn = document.querySelector('.add-btn'); // Botão de adicionar
-            
-            // Estado de Loading
-            const originalText = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando...`;
-            lucide.createIcons();
-
-            // Esconder o botão de adicionar para a foto ficar limpa
-            if(addBtn) addBtn.style.display = 'none';
-
-            html2canvas(grid, {
-                backgroundColor: '#0a0a0c', // Garante fundo escuro
-                scale: 2 // Melhor qualidade
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = 'Minhas_Habilidades.png';
-                link.href = canvas.toDataURL();
-                link.click();
-
-                // Restaurar
-                if(addBtn) addBtn.style.display = 'flex';
-                btn.innerHTML = originalText;
-                lucide.createIcons();
-            });
         }
 
         // --- Standard Logic ---
