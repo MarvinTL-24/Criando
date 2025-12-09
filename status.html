@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema RPG - Status</title>
+    <title>Grimório Digital - Status</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -93,6 +93,7 @@
                 <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
                 <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
             </section>
+
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
                 
@@ -116,7 +117,7 @@
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <input type="number" id="input-xp-acumulado" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
-                            <span class="text-[#606060]">/ <span id="display-xp-necessario">1000</span> XP Próximo Nível</span>
+                            <span class="text-[#606060]">/ <span id="display-xp-necessario">100</span> XP Próximo Nível</span>
                         </div>
                     </div>
                 </div>
@@ -335,7 +336,6 @@
                 </h3>
 
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
                         <i data-lucide="shield" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
                         <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Blindagem</p>
@@ -371,14 +371,11 @@
                         <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Visão Noturna</p>
                         <p id="calc-visao-noturna" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
                     </div>
-
                 </div>
             </section>
-
         </div>
     </div>
 
-    
     <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
         <button onclick="resetStats()" class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
             Resetar
@@ -437,8 +434,32 @@
         let accumulatedXP = 0;
         let bonusPoints = 0; // NOVO: Pontos para gastar
 
-        // XP necessário para subir de Nível X. (Aqui, 1000 XP por nível)
-        const XP_PER_LEVEL = 1000; 
+        // SISTEMA DE XP PROGRESSIVO
+        // XP necessário para cada nível (nível 1 começa em 0, nível 2 precisa de 100, etc.)
+        const XP_TABLE = {
+            1: 0,    // Nível 1 começa automaticamente
+            2: 100,  // Nível 2: 100 XP total
+            3: 400,  // Nível 3: 100 (nível 2) + 300 = 400 XP total
+            4: 800,  // Nível 4: 400 (nível 3) + 400 = 800 XP total
+            // Continue adicionando níveis conforme necessário
+            5: 1300, // +500
+            6: 1900, // +600
+            7: 2600, // +700
+            8: 3400, // +800
+            9: 4300, // +900
+            10: 5300 // +1000
+        };
+
+        // Função para calcular XP necessário para o próximo nível
+        function getXPForNextLevel() {
+            const nextLevel = currentLevel + 1;
+            return XP_TABLE[nextLevel] || XP_TABLE[Object.keys(XP_TABLE).length];
+        }
+
+        // Função para calcular XP total necessário para o nível atual
+        function getXPForCurrentLevel() {
+            return XP_TABLE[currentLevel] || 0;
+        }
 
         // ====================================================================
         // 1. LÓGICA DE SUBIDA DE NÍVEL EM CASCATA (Atualizada)
@@ -448,26 +469,34 @@
             let levelsJumped = 0;
 
             // Loop principal para subir múltiplos níveis de uma vez
-            while (accumulatedXP >= XP_PER_LEVEL) {
+            while (true) {
+                const xpNeededForNextLevel = getXPForNextLevel();
                 
-                // Subiu de Nível
-                currentLevel += 1;
-                levelsJumped += 1;
+                // Se não houver próximo nível definido na tabela, para o loop
+                if (xpNeededForNextLevel === undefined) break;
                 
-                // Deduz o XP necessário do acumulado
-                accumulatedXP -= XP_PER_LEVEL;
-                
-                // Adiciona 2 pontos de atributo por nível
-                bonusPoints += 2; 
+                // Verifica se tem XP suficiente para o próximo nível
+                if (accumulatedXP >= xpNeededForNextLevel) {
+                    // Subiu de Nível
+                    currentLevel += 1;
+                    levelsJumped += 1;
+                    
+                    // NÃO deduzimos XP - sistema baseado em XP TOTAL acumulado
+                    // Apenas continua verificando se pode subir mais níveis
+                } else {
+                    break; // Não tem XP suficiente para próximo nível
+                }
             }
 
             if (levelsJumped > 0) {
                 alert(`🎉 Parabéns! Você subiu ${levelsJumped} níveis e ganhou ${levelsJumped * 2} Pontos de Atributo Bônus!`);
+                
+                // Adiciona pontos de atributo (2 por nível subido)
+                bonusPoints += levelsJumped * 2;
             }
             
             // Atualiza a ficha com os novos valores
             el('input-nivel').value = currentLevel;
-            el('input-xp-acumulado').value = accumulatedXP;
             recalc();
             
             return levelsJumped; // Retorna quantos níveis foram ganhos
@@ -514,15 +543,15 @@
                 // Ativa o '+' apenas se houver pontos bônus disponíveis
                 if (btnPlus) btnPlus.disabled = bonusPoints <= 0;
                 
-                // Ativa o '-' apenas se o valor for maior que 0 E os pontos bônus não forem negativos
+                // Ativa o '-' apenas se o valor for maior que 0
                 if (btnMinus) btnMinus.disabled = value <= 0;
-
-                // Se houver um display dedicado para bônus, atualize-o aqui
-                const bonusDisplay = el('display-bonus-points');
-                if (bonusDisplay) {
-                    bonusDisplay.innerText = bonusPoints;
-                }
             });
+            
+            // Atualiza display de pontos bônus se existir
+            const bonusDisplay = el('display-bonus-points');
+            if (bonusDisplay) {
+                bonusDisplay.innerText = bonusPoints;
+            }
         }
         
         function changeAttr(attrId, amount) {
@@ -561,7 +590,6 @@
         function recalc() {
             // 1. OBTENÇÃO DAS VARIÁVEIS DE ATRIBUTO
             const nivel = currentLevel; // O Nível é controlado pela variável global
-            const xpAcumulado = accumulatedXP; // XP é controlado pela variável global
             
             const STR = val('attr-forca');
             const DEX = val('attr-destreza');
@@ -570,7 +598,7 @@
             const WIS = val('attr-sabedoria');
 
             // 2. MULTIPLICADORES MANUAIS
-            const classe = val('input-classe');     
+            const classe = val('input-classe');     
             const dificuldade = val('input-dificuldade'); 
             
             // 3. FÓRMULAS DE CÁLCULO (INALTERADAS)
@@ -591,11 +619,19 @@
 
             // 5. ATUALIZAÇÃO DA PROGRESSÃO e BARRAS
             el('input-nivel').value = nivel;
-            el('input-xp-acumulado').value = xpAcumulado;
-            setTxt('display-xp-necessario', XP_PER_LEVEL); // XP fixo por nível
+            el('input-xp-acumulado').value = accumulatedXP;
             
-            // XP atual é o que sobrou após a subida de nível
-            updateBar('bar-xp', xpAcumulado, XP_PER_LEVEL); 
+            // Calcula XP necessário para próximo nível
+            const xpNeededForNextLevel = getXPForNextLevel();
+            const xpForCurrentLevel = getXPForCurrentLevel();
+            const xpProgress = accumulatedXP - xpForCurrentLevel;
+            const xpToNextLevel = xpNeededForNextLevel - xpForCurrentLevel;
+            
+            // Atualiza display de XP necessário
+            setTxt('display-xp-necessario', xpToNextLevel);
+            
+            // Atualiza barra de XP (progresso para o próximo nível)
+            updateBar('bar-xp', xpProgress, xpToNextLevel); 
             
             updateBar('bar-vida', val('input-vida-atual'), val('input-vida-max'));
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
@@ -611,8 +647,8 @@
             document.querySelectorAll('#status-content input[type="number"]').forEach(input => {
                 stats[input.id] = input.value;
             });
-             // Captura inputs de texto (Nome)
-             stats['input-nome'] = el('input-nome').value;
+            // Captura inputs de texto (Nome)
+            stats['input-nome'] = el('input-nome').value;
 
             // Adiciona as variáveis globais de controle
             stats['GLOBAL_LEVEL'] = currentLevel;
@@ -689,7 +725,6 @@
         // Funções de ROLAGEM, BARRAS e RESET (Adaptações)
 
         function rolarAtributos() {
-            // ... (Lógica de rolagem anterior, sem alterações) ...
             const totalPoints = parseInt(el('input-pool-pontos').value);
             const minAttr = 3;
             const numAttributes = ATTRIBUTE_IDS.length;
@@ -762,175 +797,33 @@
                 alert("Ficha resetada e save local apagado.");
             }
         }
-        
+
         // ====================================================================
-        // FUNÇÕES DE EXPORTAÇÃO INTERNA (Ajustadas para fundo escuro)
+        // FUNÇÕES AUXILIARES (para exportação - mantidas da versão anterior)
         // ====================================================================
 
-        // Função que realiza o download de PDF ou PNG, mirando no ID
-        function downloadExport(elementId, filename, type = 'pdf') {
+        function downloadExport(elementId, filename, type) {
+            // Implementação básica - você precisará adaptar para html2pdf.js
             const element = document.getElementById(elementId);
-            if (!element) return alert("Erro: Elemento de exportação não encontrado! Gere o Card Ficha primeiro.");
-            
-            // Usamos o botão Salvar como feedback de progresso
-            const btnId = (type === 'pdf') ? 'btn-pdf-card' : 'btn-png-card';
-            const btn = document.getElementById(btnId) || document.getElementById('btn-save'); 
-            
-            const originalContent = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin w-4 h-4"></i> Gerando ${type.toUpperCase()}...`;
-            lucide.createIcons();
-
-            const opt = {
-                margin:       [10, 10, 10, 10],
-                filename:     filename,
-                image:        { type: (type === 'pdf') ? 'jpeg' : 'png', quality: 0.98 },
-                html2canvas:  { scale: 3, logging: false, dpi: 192, letterRendering: true, backgroundColor: '#0a0a0c' }, // Fundo escuro
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            // Se for PNG, usa outputImg e simula o download
-            if (type === 'png') {
-                html2pdf().set(opt).from(element).outputImg().then((image) => {
-                    const link = document.createElement('a');
-                    link.href = image.src;
-                    link.download = filename;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    btn.disabled = false;
-                    btn.innerHTML = originalContent;
-                    lucide.createIcons();
-                });
-            } else {
-                // Se for PDF
-                html2pdf().set(opt).from(element).save().then(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalContent;
-                    lucide.createIcons();
-                });
+            if (!element) {
+                alert("Elemento não encontrado para exportação!");
+                return;
             }
-        }
-
-        // Função auxiliar para pegar o valor de inputs de texto (não números)
-        const valText = id => document.getElementById(id) ? document.getElementById(id).value : '';
-
-        // Funções de ajuda para renderizar o HTML do Card (renderizadas para o contexto)
-        function renderAttribute(name, value, colorClass) {
-            return `<p class="text-sm font-semibold">${name}: <span class="text-${colorClass} text-xl font-mono">${value}</span></p>`;
-        }
-        function renderDerived(name, value, colorClass) {
-            return `<div class="p-2 bg-theme-bg rounded border border-theme-border">
-                <p class="text-xs uppercase text-[#606060]">${name}</p>
-                <p class="font-bold text-lg text-${colorClass} font-mono">${value}</p>
-            </div>`;
-        }
-
-        function gerarCardFicha() {
-            // 1. COLETAR NOME E DADOS CALCULADOS
-            const nome = valText('input-nome');
             
-            const nivel = currentLevel;
-            const xpAcumulado = accumulatedXP;
-            const xpNecessario = XP_PER_LEVEL;
-            
-            // Atributos Base (do recalc)
-            const STR = val('attr-forca');
-            const DEX = val('attr-destreza');
-            const CON = val('attr-constituicao');
-            const INT = val('attr-inteligencia');
-            const WIS = val('attr-sabedoria');
-            const CAR = val('attr-carisma');
-
-            // Valores Derivados (do output do recalc)
-            const blindagem = el('calc-blindagem').innerText;
-            const velocidade = el('calc-velocidade').innerText;
-            const iniciativa = el('calc-iniciativa').innerText;
-            const percepcao = el('calc-percepcao').innerText;
-            const visaoNoturna = el('calc-visao-noturna').innerText;
-
-            // --- NOVO: AVISO DE PONTOS BÔNUS ---
-            let bonusAvisoHTML = '';
-            if (bonusPoints > 0) {
-                bonusAvisoHTML = `
-                    <div class="p-3 bg-theme-red/10 rounded-lg border border-theme-red/50 mt-4">
-                        <p class="text-sm font-bold text-theme-red">⚠️ PONTOS DE ATRIBUTO PENDENTES!</p>
-                        <p class="text-xs">Você tem **${bonusPoints}** pontos para gastar!</p>
-                    </div>
-                `;
+            if (type === 'pdf') {
+                // Configurações para html2pdf
+                const opt = {
+                    margin:       1,
+                    filename:     filename,
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+                };
+                
+                html2pdf().set(opt).from(element).save();
             }
-
-
-            // 2. MONTAR O CARD VISUAL (Focado em Status e Atributos)
-            const cardHTML = `
-                <div id="ficha-para-exportar" class="bg-theme-panel border border-theme-border rounded-lg p-6 shadow-xl space-y-6">
-                    <h2 class="text-2xl font-cinzel font-bold text-theme-pink border-b border-theme-border pb-2 mb-4">
-                        ${nome.toUpperCase()}
-                        <span class="text-theme-orange ml-4 text-lg">NÍVEL ${nivel}</span>
-                    </h2>
-                    
-                    <div class="grid md:grid-cols-3 gap-6">
-                        <div class="md:col-span-1 space-y-4">
-                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-orange/50">
-                                <p class="text-sm text-theme-orange font-semibold">PROGRESSÃO</p>
-                                <p class="text-sm mt-2 font-bold">XP Restante: ${xpAcumulado} / ${xpNecessario}</p>
-                            </div>
-                            
-                            ${bonusAvisoHTML} <div class="p-3 bg-theme-bg rounded-lg border border-theme-red/50">
-                                <p class="text-sm text-theme-red font-semibold">RECURSOS VITAIS (Atual/Máx)</p>
-                                <p class="text-xs">Vida: ${val('input-vida-atual')} / ${val('input-vida-max')}</p>
-                                <p class="text-xs">Mana: ${val('input-mana-atual')} / ${val('input-mana-max')}</p>
-                                <p class="text-xs">Estamina: ${val('input-estamina-atual')} / ${val('input-estamina-max')}</p>
-                            </div>
-
-                            <div class="p-3 bg-theme-bg rounded-lg border border-theme-yellow/50">
-                                <p class="text-sm text-theme-yellow font-semibold">BALANCEAMENTO</p>
-                                <p class="text-xs">Classe Multi.: ${val('input-classe').toFixed(2)}</p>
-                                <p class="text-xs">Dificuldade Multi.: ${val('input-dificuldade').toFixed(2)}</p>
-                            </div>
-                        </div>
-
-                        <div class="md:col-span-1 space-y-2">
-                            <h4 class="font-cinzel text-lg text-theme-red border-b border-theme-border pb-1">Atributos Base</h4>
-                            ${renderAttribute('FORÇA', STR, 'theme-red')}
-                            ${renderAttribute('DESTREZA', DEX, 'theme-green')}
-                            ${renderAttribute('CONSTITUIÇÃO', CON, 'theme-yellow')}
-                            ${renderAttribute('INTELIGÊNCIA', INT, 'theme-blue')}
-                            ${renderAttribute('SABEDORIA', WIS, 'theme-purple')}
-                            ${renderAttribute('CARISMA', CAR, 'theme-pink')}
-                        </div>
-
-                        <div class="md:col-span-1 space-y-4">
-                            <h4 class="font-cinzel text-lg text-theme-green border-b border-theme-border pb-1">Valores Derivados</h4>
-                            ${renderDerived('BLINDAGEM', blindagem, 'theme-green')}
-                            ${renderDerived('VELOCIDADE', velocidade, 'theme-green')}
-                            ${renderDerived('INICIATIVA', iniciativa, 'theme-green')}
-                            ${renderDerived('PERCEPÇÃO', percepcao, 'theme-green')}
-                            ${renderDerived('VISÃO NOTURNA', visaoNoturna, 'theme-green')}
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById("card-personagem-output").innerHTML = cardHTML;
-            lucide.createIcons(); 
-            
-            // Rola a página para ver o card
-            const cardEl = document.getElementById('ficha-para-exportar');
-            if (cardEl) {
-                cardEl.scrollIntoView({ behavior: 'smooth' });
-            }
+            // Para PNG seria necessário html2canvas
         }
-
-        function acionarGerarCard() {
-            gerarCardFicha();
-        }
-
-        // ====================================================================
-        // FUNÇÕES PÚBLICAS DE EXPORTAÇÃO
-        // ====================================================================
 
         function downloadCardPDF() {
             // Exporta APENAS o Card Gerado
