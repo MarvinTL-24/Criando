@@ -251,11 +251,6 @@
             Baixar Dados (.txt)
         </button>
         
-        <button onclick="downloadPDF()" id="btn-pdf" class="flex items-center justify-center gap-2 px-6 py-3 bg-[#4a9eff] hover:bg-[#3b82f6] rounded text-white shadow-lg hover:shadow-blue-500/20 transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            Baixar PDF Visual
-        </button>
-
     </div>
 
     <script>
@@ -276,31 +271,6 @@
                 }
                 reader.readAsDataURL(input.files[0]);
             }
-        }
-
-        // 2. Exportar PDF Visual
-        function downloadPDF() {
-            const element = document.getElementById('ficha-content');
-            const nome = document.getElementById('inp-nome').value || 'Personagem';
-            
-            const opt = {
-                margin:       [10, 10, 10, 10], // Margens
-                filename:     `Ficha_${nome}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, backgroundColor: '#0a0a0c' }, // Scale 2 melhora qualidade
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            // Feedback visual no botão
-            const btn = document.getElementById('btn-pdf');
-            const oldContent = btn.innerHTML;
-            btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin"></i> Gerando PDF...`;
-            lucide.createIcons();
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                btn.innerHTML = oldContent;
-                lucide.createIcons();
-            });
         }
 
         // 3. Exportar Dados em Texto (.txt)
