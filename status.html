@@ -99,7 +99,7 @@
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>
                     <div class="h-6 w-[1px] bg-theme-border"></div>
-                    <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Status</span>
+                    <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital</span>
                 </div>
                 <button onclick="openConfigModal()" class="text-theme-text hover:text-theme-yellow transition-colors">
                     <i data-lucide="settings" class="w-5 h-5"></i>
@@ -148,7 +148,7 @@
                         </div>
                         <div class="flex justify-between items-center text-sm">
                             <input type="number" id="input-xp-acumulado" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
-                            <span class="text-[#606060]">/ <span id="display-xp-necessario">100</span> XP Próximo Nível</span>
+                            <span class="text-[#606060]">/ <span id="display-xp-necessario"></span> XP Próximo Nível</span>
                         </div>
                     </div>
                 </div>
@@ -505,14 +505,14 @@
         const XP_PER_LEVEL = {
             1: 0,    // Nível 1 começa automaticamente
             2: 100,  // Nível 2: 100 XP
-            3: 300,  // Nível 3: 300 XP (acumulado: 400)
-            4: 400,  // Nível 4: 400 XP (acumulado: 800)
-            5: 500,  // Nível 5: 500 XP (acumulado: 1300)
-            6: 600,  // Nível 6: 600 XP (acumulado: 1900)
-            7: 700,  // Nível 7: 700 XP (acumulado: 2600)
-            8: 800,  // Nível 8: 800 XP (acumulado: 3400)
-            9: 900,  // Nível 9: 900 XP (acumulado: 4300)
-            10: 1000 // Nível 10: 1000 XP (acumulado: 5300)
+            3: 300,  // Nível 3: 300 XP
+            4: 400,  // Nível 4: 400 XP
+            5: 500,  // Nível 5: 500 XP
+            6: 600,  // Nível 6: 600 XP
+            7: 700,  // Nível 7: 700 XP
+            8: 800,  // Nível 8: 800 XP
+            9: 900,  // Nível 9: 900 XP
+            10: 1000 // Nível 10: 1000 XP
         };
 
         // Configuração de valores derivados
@@ -549,21 +549,21 @@
 
         function checkLevelUp() {
             let levelsJumped = 0;
+            let maxLevel = Object.keys(XP_PER_LEVEL).length;
 
             // Loop principal para subir múltiplos níveis de uma vez
-            while (true) {
+            while (currentLevel < maxLevel) {
                 const nextLevel = currentLevel + 1;
-                const xpNeededForNextLevel = XP_PER_LEVEL[nextLevel];
-                
-                // Se não houver próximo nível definido na tabela, para o loop
-                if (xpNeededForNextLevel === undefined) break;
+                const xpNeededForNextLevel = getTotalXPForLevel(nextLevel);
                 
                 // Verifica se tem XP suficiente para o próximo nível
-                const currentXPNeeded = getTotalXPForLevel(nextLevel);
-                if (accumulatedXP >= currentXPNeeded) {
+                if (accumulatedXP >= xpNeededForNextLevel) {
                     // Subiu de Nível
-                    currentLevel += 1;
+                    currentLevel = nextLevel;
                     levelsJumped += 1;
+                    
+                    // Adiciona pontos de atributo (2 por nível subido)
+                    bonusPoints += 2;
                 } else {
                     break; // Não tem XP suficiente para próximo nível
                 }
@@ -571,14 +571,7 @@
 
             if (levelsJumped > 0) {
                 alert(`🎉 Parabéns! Você subiu ${levelsJumped} níveis e ganhou ${levelsJumped * 2} Pontos de Atributo Bônus!`);
-                
-                // Adiciona pontos de atributo (2 por nível subido)
-                bonusPoints += levelsJumped * 2;
             }
-            
-            // Atualiza a ficha com os novos valores
-            el('input-nivel').value = currentLevel;
-            recalc();
             
             return levelsJumped; // Retorna quantos níveis foram ganhos
         }
@@ -588,7 +581,7 @@
         // ====================================================================
         
         function addXP() {
-            const xpGanhado = val('input-xp-ganhado');
+            const xpGanhado = parseInt(el('input-xp-ganhado').value) || 0;
             
             if (xpGanhado <= 0) {
                 alert("Por favor, insira uma quantidade de XP válida para somar.");
@@ -604,7 +597,10 @@
             // 3. Verifica subida de nível e atualiza a ficha
             const levelsJumped = checkLevelUp();
 
-            // 4. Salva o estado atual automaticamente após a soma
+            // 4. Atualiza a interface
+            recalc();
+
+            // 5. Salva o estado atual automaticamente após a soma
             saveStats(false); // Salva, mas sem o feedback visual demorado
         }
 
@@ -627,6 +623,22 @@
                 // Ativa o '-' apenas se o valor for maior que 0
                 if (btnMinus) btnMinus.disabled = value <= 0;
             });
+            
+            // Mostra pontos bônus disponíveis
+            const bonusDisplay = document.createElement('div');
+            bonusDisplay.id = 'bonus-points-display';
+            bonusDisplay.className = 'text-sm text-theme-orange mt-2';
+            bonusDisplay.innerHTML = `<i data-lucide="zap" class="w-3 h-3 inline mr-1"></i> Pontos Bônus: ${bonusPoints}`;
+            
+            const existingDisplay = el('bonus-points-display');
+            if (existingDisplay) {
+                existingDisplay.innerHTML = bonusDisplay.innerHTML;
+            } else {
+                const buttonContainer = document.querySelector('.flex.flex-col.md\\:flex-row.gap-4.mb-6');
+                if (buttonContainer) {
+                    buttonContainer.parentNode.insertBefore(bonusDisplay, buttonContainer.nextSibling);
+                }
+            }
         }
         
         function changeAttr(attrId, amount) {
@@ -702,8 +714,8 @@
             setTxt('calc-resistencia-mental', resistenciaMental);
             setTxt('calc-esquiva', esquiva);
 
-            // 5. ATUALIZAÇÃO DA PROGRESSÃO e BARRAS
-            el('input-nivel').value = nivel;
+            // 6. ATUALIZAÇÃO DA PROGRESSÃO e BARRAS
+            el('input-nivel').value = currentLevel;
             el('input-xp-acumulado').value = accumulatedXP;
             
             // Calcula XP necessário para próximo nível
@@ -722,18 +734,29 @@
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
             updateBar('bar-saude-mental', saudeMental, 100);
 
-            // NOVO: Atualiza o estado visual dos botões
+            // Atualiza o estado visual dos botões
             updateBonusDisplay();
         }
         
         function getCurrentStats() {
             const stats = {};
-            // Captura inputs numéricos
-            document.querySelectorAll('#status-content input[type="number"]').forEach(input => {
+            
+            // Captura todos os inputs
+            document.querySelectorAll('#status-content input').forEach(input => {
                 stats[input.id] = input.value;
             });
-            // Captura inputs de texto (Nome)
-            stats['input-nome'] = el('input-nome').value;
+            
+            // Captura valores derivados
+            const derivedValues = ['calc-blindagem', 'calc-velocidade', 'calc-iniciativa', 'calc-sorte', 
+                                'calc-percepcao', 'calc-visao-noturna', 'calc-resistencia-fisica', 
+                                'calc-resistencia-mental', 'calc-esquiva'];
+            
+            derivedValues.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    stats[id] = element.innerText;
+                }
+            });
 
             // Adiciona as variáveis globais de controle
             stats['GLOBAL_LEVEL'] = currentLevel;
@@ -752,6 +775,7 @@
                 currentLevel = 1; 
                 accumulatedXP = 0;
                 bonusPoints = 0;
+                recalc(); // Atualiza a interface com valores padrão
                 return;
             }
 
@@ -768,38 +792,28 @@
                 applyConfigToUI();
             }
 
-            // Restaura os inputs (Numéricos)
-            document.querySelectorAll('#status-content input[type="number"]').forEach(input => {
+            // Restaura os inputs
+            document.querySelectorAll('#status-content input').forEach(input => {
                 if (stats[input.id] !== undefined) {
                     input.value = stats[input.id];
                 }
             });
-            // Restaura input de Nome (Texto)
-            if (el('input-nome') && stats['input-nome'] !== undefined) {
-                el('input-nome').value = stats['input-nome'];
-            }
             
-            // Garante que o nível e XP na interface reflitam o estado global
-            el('input-nivel').value = currentLevel;
-            el('input-xp-acumulado').value = accumulatedXP;
-            
+            // Atualiza a interface
             recalc();
-            renderDerivados();
-            alert("Ficha carregada do último save!");
+            
+            // Atualiza ícones do Lucide
+            lucide.createIcons();
         }
 
         function saveStats(showFeedback = true) {
-            // Se houver pontos bônus não gastos, salva mas avisa
-            if (bonusPoints > 0) {
-                // Não impede o save, mas alerta o usuário
-                alert(`⚠️ Você salvou com ${bonusPoints} pontos de atributo pendentes! Gaste-os para usar todo o poder do seu novo nível.`);
-            }
-
             const statsToSave = getCurrentStats();
             localStorage.setItem('rpg_stats', JSON.stringify(statsToSave));
 
             if (showFeedback) {
-                const btn = document.getElementById('btn-save');
+                const btn = el('btn-save');
+                if (!btn) return;
+                
                 const originalContent = btn.innerHTML;
                 
                 btn.disabled = true;
@@ -821,7 +835,7 @@
         // Funções de ROLAGEM, BARRAS e RESET (Adaptações)
 
         function rolarAtributos() {
-            const totalPoints = parseInt(el('input-pool-pontos').value);
+            const totalPoints = parseInt(el('input-pool-pontos').value) || 0;
             const minAttr = 3;
             const numAttributes = ATTRIBUTE_IDS.length;
             const minTotal = minAttr * numAttributes;
@@ -855,6 +869,8 @@
 
         function updateBar(elementId, current, max) {
             const element = document.getElementById(elementId);
+            if (!element) return;
+            
             if (max <= 0) max = 1;
             let pct = (current / max) * 100;
             if (pct > 100) pct = 100;
@@ -873,63 +889,108 @@
                 bonusPoints = 0;
                 
                 const defaults = {
-                    'input-nivel': 1, 'input-xp-acumulado': 0, 
-                    'input-vida-atual': 100, 'input-vida-max': 100,
-                    'input-mana-atual': 50, 'input-mana-max': 50,
-                    'input-estamina-atual': 80, 'input-estamina-max': 80,
-                    'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
-                    'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
-                    'input-classe': 1.00, 'input-dificuldade': 0.50,
+                    'input-nivel': 1, 
+                    'input-xp-acumulado': 0, 
+                    'input-vida-atual': 100, 
+                    'input-vida-max': 100,
+                    'input-mana-atual': 50, 
+                    'input-mana-max': 50,
+                    'input-estamina-atual': 80, 
+                    'input-estamina-max': 80,
+                    'attr-forca': 0, 
+                    'attr-destreza': 0, 
+                    'attr-constituicao': 0,
+                    'attr-inteligencia': 0, 
+                    'attr-sabedoria': 0, 
+                    'attr-carisma': 0,
+                    'input-classe': 1.00, 
+                    'input-dificuldade': 0.50,
                     'input-xp-ganhado': 0,
                     'input-pool-pontos': 0,
                     'input-nome': 'Herói Desconhecido',
                     'input-saude-mental': 100
                 };
+                
                 for(const [id, value] of Object.entries(defaults)) {
-                    if (document.getElementById(id)) {
-                        document.getElementById(id).value = value;
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.value = value;
                     }
                 }
+                
                 recalc();
                 alert("Ficha resetada e save local apagado.");
             }
         }
 
         // ====================================================================
-        // FUNÇÕES DE EXPORTAÇÃO
+        // FUNÇÕES DE EXPORTAÇÃO (PDF e TXT)
         // ====================================================================
 
         function downloadPDF() {
+            // Verifica se há dados para exportar
+            const nomePersonagem = el('input-nome').value || 'Personagem';
+            
+            // Atualiza os cálculos antes de exportar
+            recalc();
+            
+            // Salva os dados antes de exportar
+            saveStats(false);
+            
             const element = document.getElementById('status-content');
+            if (!element) {
+                alert("Erro: Elemento não encontrado para exportação.");
+                return;
+            }
+            
             const opt = {
                 margin:       10,
-                filename:     `Ficha_${el('input-nome').value || 'Personagem'}.pdf`,
+                filename:     `Ficha_${nomePersonagem}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true,
+                    backgroundColor: '#0a0a0c',
+                    logging: false
+                },
+                jsPDF:        { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait',
+                    compress: true
+                }
             };
             
             html2pdf().set(opt).from(element).save();
         }
 
         function exportDataTXT() {
-            const btn = document.getElementById('btn-txt');
+            // Verifica se há dados para exportar
+            const nomePersonagem = el('input-nome').value || 'Personagem';
+            
+            // Atualiza os cálculos antes de exportar
+            recalc();
+            
+            // Salva os dados antes de exportar
+            saveStats(false);
+            
+            const btn = el('btn-txt');
             const originalContent = btn.innerHTML;
             
             btn.disabled = true;
             btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Exportando...`;
             lucide.createIcons();
 
-            // Coleta todos os dados
+            // Coleta todos os dados atualizados
             const stats = getCurrentStats();
             
             // Cria texto formatado
-            let outputText = "=================================\n";
-            outputText += `FICHA DO PERSONAGEM - ${el('input-nome').value}\n`;
-            outputText += "=================================\n\n";
+            let outputText = "=".repeat(40) + "\n";
+            outputText += `FICHA DO PERSONAGEM - ${nomePersonagem}\n`;
+            outputText += "=".repeat(40) + "\n\n";
             
             outputText += "=== INFORMAÇÕES BÁSICAS ===\n";
-            outputText += `Nome: ${el('input-nome').value}\n`;
+            outputText += `Nome: ${nomePersonagem}\n`;
             outputText += `Nível: ${currentLevel}\n`;
             outputText += `XP Acumulado: ${accumulatedXP}\n`;
             outputText += `XP para próximo nível: ${getXPNeededForNextLevel()}\n`;
@@ -950,37 +1011,44 @@
             outputText += `Carisma: ${el('attr-carisma').value}\n\n`;
             
             outputText += "=== VALORES DERIVADOS ===\n";
-            outputText += `Blindagem: ${document.getElementById('calc-blindagem')?.innerText || '0'}\n`;
-            outputText += `Velocidade: ${document.getElementById('calc-velocidade')?.innerText || '0'}\n`;
-            outputText += `Iniciativa: ${document.getElementById('calc-iniciativa')?.innerText || '0'}\n`;
-            outputText += `Sorte: ${document.getElementById('calc-sorte')?.innerText || '0'}\n`;
-            outputText += `Percepção Espacial: ${document.getElementById('calc-percepcao')?.innerText || '0'}\n`;
-            outputText += `Visão Noturna: ${document.getElementById('calc-visao-noturna')?.innerText || '0'}\n`;
-            outputText += `Resistência Física: ${document.getElementById('calc-resistencia-fisica')?.innerText || '0'}\n`;
-            outputText += `Resistência Mental: ${document.getElementById('calc-resistencia-mental')?.innerText || '0'}\n`;
-            outputText += `Esquiva: ${document.getElementById('calc-esquiva')?.innerText || '0'}\n\n`;
+            const derivedIds = [
+                'calc-blindagem', 'calc-velocidade', 'calc-iniciativa', 
+                'calc-sorte', 'calc-percepcao', 'calc-visao-noturna',
+                'calc-resistencia-fisica', 'calc-resistencia-mental', 'calc-esquiva'
+            ];
+            
+            derivedIds.forEach(id => {
+                const element = document.getElementById(id);
+                if (element && element.innerText !== undefined) {
+                    const label = element.previousElementSibling?.innerText || id.replace('calc-', '').replace('-', ' ');
+                    outputText += `${label}: ${element.innerText}\n`;
+                }
+            });
+            outputText += "\n";
             
             outputText += "=== CONFIGURAÇÕES ===\n";
             outputText += `Multiplicador Classe: ${el('input-classe').value}\n`;
             outputText += `Multiplicador Dificuldade: ${el('input-dificuldade').value}\n`;
             outputText += `Data da Exportação: ${new Date().toLocaleString('pt-BR')}\n\n`;
             
-            outputText += "=================================\n";
-            outputText += "Fim da Ficha\n";
-            outputText += "=================================\n";
+            outputText += "=".repeat(40) + "\n";
+            outputText += "Fim da Ficha - Nexus da Criação RPG Manager\n";
+            outputText += "=".repeat(40) + "\n";
 
             // Cria blob e link de download
             const blob = new Blob([outputText], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `Ficha_${el('input-nome').value || 'Personagem'}.txt`;
+            link.download = `Ficha_${nomePersonagem}_${new Date().toISOString().split('T')[0]}.txt`;
 
             // Dispara o download
-            link.click();
-            
-            btn.disabled = false;
-            btn.innerHTML = originalContent;
-            lucide.createIcons();
+            setTimeout(() => {
+                link.click();
+                
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                lucide.createIcons();
+            }, 500);
         }
 
         // ====================================================================
@@ -989,6 +1057,8 @@
 
         function renderDerivados() {
             const container = document.getElementById('derivados-container');
+            if (!container) return;
+            
             container.innerHTML = '';
             
             // Ícones e cores para cada valor
@@ -1008,7 +1078,7 @@
             derivadosConfig.forEach(item => {
                 if (item.show) {
                     const div = document.createElement('div');
-                    div.className = 'bg-[#0a0a0c] border border-theme-border p-4 text-center rounded';
+                    div.className = 'bg-[#0a0a0c] border border-theme-border p-4 text-center rounded anim-entry';
                     div.innerHTML = `
                         <i data-lucide="${item.icon}" class="w-6 h-6 mx-auto mb-2 text-theme-${item.color}"></i>
                         <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">${item.nome}</p>
@@ -1028,22 +1098,28 @@
 
         function openConfigModal() {
             const modal = document.getElementById('configModal');
+            if (!modal) return;
+            
             modal.classList.remove('hidden');
             
             // Carrega configurações atuais nos checkboxes
-            document.getElementById('config-blindagem').checked = configDerivados.blindagem;
-            document.getElementById('config-velocidade').checked = configDerivados.velocidade;
-            document.getElementById('config-iniciativa').checked = configDerivados.iniciativa;
-            document.getElementById('config-sorte').checked = configDerivados.sorte;
-            document.getElementById('config-percepcao').checked = configDerivados.percepcao;
-            document.getElementById('config-visao').checked = configDerivados.visao;
-            document.getElementById('config-res-fisica').checked = configDerivados.resFisica;
-            document.getElementById('config-res-mental').checked = configDerivados.resMental;
-            document.getElementById('config-esquiva').checked = configDerivados.esquiva;
+            const configIds = ['blindagem', 'velocidade', 'iniciativa', 'sorte', 
+                            'percepcao', 'visao', 'res-fisica', 'res-mental', 'esquiva'];
+            
+            configIds.forEach(id => {
+                const checkbox = document.getElementById(`config-${id}`);
+                if (checkbox) {
+                    const key = id.replace('-', '');
+                    checkbox.checked = configDerivados[key] || false;
+                }
+            });
         }
 
         function closeConfigModal() {
-            document.getElementById('configModal').classList.add('hidden');
+            const modal = document.getElementById('configModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
         }
 
         function applyConfig() {
@@ -1070,23 +1146,84 @@
         }
 
         function applyConfigToUI() {
-            // Aplica configurações carregadas aos checkboxes
+            // Aplica configurações carregadas
             if (configDerivados) {
                 renderDerivados();
             }
         }
 
+        // ====================================================================
+        // INICIALIZAÇÃO
+        // ====================================================================
+
+        function initializeEventListeners() {
+            // Event listeners para todos os inputs
+            document.querySelectorAll('#status-content input[type="number"]').forEach(input => {
+                input.addEventListener('input', recalc);
+            });
+            
+            // Event listener para saúde mental
+            const saudeMentalInput = el('input-saude-mental');
+            if (saudeMentalInput) {
+                saudeMentalInput.addEventListener('input', recalc);
+            }
+            
+            // Event listener para nome do personagem
+            const nomeInput = el('input-nome');
+            if (nomeInput) {
+                nomeInput.addEventListener('input', () => saveStats(false));
+            }
+            
+            // Event listener para tecla Enter no XP ganhado
+            const xpGanhoInput = el('input-xp-ganhado');
+            if (xpGanhoInput) {
+                xpGanhoInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        addXP();
+                    }
+                });
+            }
+            
+            // Event listener para tecla ESC no modal
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeConfigModal();
+                }
+            });
+        }
+
         // Listener para o início: Carrega os dados e inicia o ciclo
         window.addEventListener('load', () => {
-            loadStats(); // Tenta carregar os dados salvos
-            document.querySelectorAll('input[type="number"]').forEach(input => {
-                // O recalc é disparado pelo Load ou pelo AddXP/Save
-                // Mantemos o listener para permitir a mudança manual dos atributos/balanceamento
-                input.addEventListener('input', recalc); 
-            });
-            recalc();
+            // Inicializa ícones
+            lucide.createIcons();
+            
+            // Carrega dados salvos
+            loadStats();
+            
+            // Inicializa event listeners
+            initializeEventListeners();
+            
+            // Renderiza valores derivados
             renderDerivados();
+            
+            // Força um recalc inicial
+            recalc();
+            
+            console.log('Sistema de Status inicializado com sucesso!');
         });
+
+        // Exporta funções necessárias para o HTML
+        window.addXP = addXP;
+        window.changeAttr = changeAttr;
+        window.rolarAtributos = rolarAtributos;
+        window.resetStats = resetStats;
+        window.downloadPDF = downloadPDF;
+        window.exportDataTXT = exportDataTXT;
+        window.openConfigModal = openConfigModal;
+        window.closeConfigModal = closeConfigModal;
+        window.applyConfig = applyConfig;
+        window.saveStats = () => saveStats(true);
     </script>
 </body>
 </html>
