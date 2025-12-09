@@ -72,7 +72,7 @@
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>
                 <div class="h-6 w-[1px] bg-theme-border"></div>
-                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Status</span>
+                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital </span>
             </div>
             <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
         </nav>
@@ -384,15 +384,6 @@
         <button onclick="acionarGerarCard()" class="group flex items-center gap-2 px-6 py-2 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="sheet" class="w-4 h-4"></i>
             <span>Gerar Card Ficha</span>
-        </button>
-
-        <button onclick="downloadCardPNG()" id="btn-png-card" class="group flex items-center gap-2 px-4 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="image" class="w-4 h-4"></i>
-            <span>Card PNG</span>
-        </button>
-        <button onclick="downloadCardPDF()" id="btn-pdf-card" class="group flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="file-down" class="w-4 h-4"></i>
-            <span>Card PDF</span>
         </button>
         
         <button onclick="exportDataTXT()" id="btn-txt" class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
@@ -763,21 +754,6 @@
         // ====================================================================
         // FUNÇÕES PÚBLICAS DE EXPORTAÇÃO
         // ====================================================================
-
-        function downloadCardPDF() {
-            // Exporta APENAS o Card Gerado
-            downloadExport('ficha-para-exportar', 'Card_Personagem.pdf', 'pdf');
-        }
-
-        function downloadCardPNG() {
-            // Exporta APENAS o Card Gerado
-            downloadExport('ficha-para-exportar', 'Card_Personagem.png', 'png');
-        }
-        
-        function downloadPDF() {
-            // Exporta a Ficha de Status COMPLETA
-            downloadExport('status-content', 'Status_Completo.pdf', 'pdf'); 
-        }
 
         function exportDataTXT() {
             const btn = document.getElementById('btn-txt');
