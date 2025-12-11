@@ -1004,13 +1004,227 @@
         }
 
         // ====================================================================
-        // 7. FUNÇÃO PRINCIPAL DE CÁLCULO
+        // CONSTANTES DO SISTEMA DE DIFICULDADE E CLASSE
+        // ====================================================================
+        const DIFICULDADE_NIVEIS = {
+            0: { nome: 'Muito Fácil', min: 0, max: 0.4, multiplicador: 0.2 },
+            1: { nome: 'Fácil', min: 0.5, max: 0.9, multiplicador: 0.4 },
+            2: { nome: 'Normal', min: 1.0, max: 1.4, multiplicador: 0.6 },
+            3: { nome: 'Difícil', min: 1.5, max: 1.9, multiplicador: 0.8 },
+            4: { nome: 'Extremo', min: 2.0, max: 2.0, multiplicador: 1.0 }
+        };
+
+        const CLASSE_NIVEIS = {
+            1: { nome: 'D', multiplicador: 0.2, bonus: 0 },
+            2: { nome: 'C', multiplicador: 0.4, bonus: 1 },
+            3: { nome: 'B', multiplicador: 0.6, bonus: 2 },
+            4: { nome: 'A', multiplicador: 0.8, bonus: 3 },
+            5: { nome: 'S', multiplicador: 1.0, bonus: 5 }
+        };
+
+        // ====================================================================
+        // FUNÇÕES DE CONVERSÃO DE DIFICULDADE E CLASSE
+        // ====================================================================
+        function getNivelDificuldade(valor) {
+            for (const [key, nivel] of Object.entries(DIFICULDADE_NIVEIS)) {
+                if (valor >= nivel.min && valor <= nivel.max) {
+                    return {
+                        id: parseInt(key),
+                        nome: nivel.nome,
+                        multiplicador: nivel.multiplicador,
+                        valor: valor
+                    };
+                }
+            }
+            return { id: 2, nome: 'Normal', multiplicador: 0.6, valor: 1.0 }; // Padrão
+        }
+
+        function getNivelClasse(valor) {
+            const valorInt = Math.floor(valor);
+            const nivel = CLASSE_NIVEIS[valorInt] || CLASSE_NIVEIS[3]; // Padrão B
+            return {
+                nivel: valorInt,
+                nome: nivel.nome,
+                multiplicador: nivel.multiplicador,
+                bonus: nivel.bonus,
+                valor: valor
+            };
+        }
+
+        // ====================================================================
+        // SISTEMA DE CLASSE DETALHADO COM BÔNUS ESPECÍFICOS
+        // ====================================================================
+        const DETALHES_CLASSE = {
+            guerreiro: {
+                nome: "Guerreiro",
+                cor: "#dc2626",
+                icone: "sword",
+                atributoPrincipal: "forca",
+                atributoSecundario: "constituicao",
+                atributosBonus: {
+                    for: { base: 4, porNivel: 0.5 },
+                    con: { base: 3, porNivel: 0.4 },
+                    dex: { base: 1, porNivel: 0.2 },
+                    int: { base: 0, porNivel: 0.1 },
+                    wis: { base: 1, porNivel: 0.2 },
+                    cha: { base: 1, porNivel: 0.1 }
+                },
+                habilidadesEspeciais: ["Provocar", "Postura de Combate", "Golpe Poderoso"]
+            },
+            mago: {
+                nome: "Mago",
+                cor: "#4a9eff",
+                icone: "sparkles",
+                atributoPrincipal: "inteligencia",
+                atributoSecundario: "sabedoria",
+                atributosBonus: {
+                    int: { base: 6, porNivel: 0.6 },
+                    wis: { base: 3, porNivel: 0.4 },
+                    dex: { base: 1, porNivel: 0.2 },
+                    con: { base: 1, porNivel: 0.1 },
+                    for: { base: 0, porNivel: 0.0 },
+                    cha: { base: 2, porNivel: 0.2 }
+                },
+                habilidadesEspeciais: ["Conjurar Magia", "Foco Arcano", "Barreira Mágica"]
+            },
+            arqueiro: {
+                nome: "Arqueiro",
+                cor: "#22c55e",
+                icone: "target",
+                atributoPrincipal: "destreza",
+                atributoSecundario: "sabedoria",
+                atributosBonus: {
+                    dex: { base: 6, porNivel: 0.6 },
+                    wis: { base: 2, porNivel: 0.3 },
+                    con: { base: 2, porNivel: 0.2 },
+                    int: { base: 2, porNivel: 0.2 },
+                    for: { base: 1, porNivel: 0.1 },
+                    cha: { base: 1, porNivel: 0.1 }
+                },
+                habilidadesEspeciais: ["Tiro Preciso", "Foco em Alvo", "Disparo Rápido"]
+            },
+            ladino: {
+                nome: "Ladino",
+                cor: "#f59e0b",
+                icone: "eye-off",
+                atributoPrincipal: "destreza",
+                atributoSecundario: "inteligencia",
+                atributosBonus: {
+                    dex: { base: 6, porNivel: 0.6 },
+                    int: { base: 3, porNivel: 0.3 },
+                    cha: { base: 2, porNivel: 0.2 },
+                    wis: { base: 1, porNivel: 0.1 },
+                    con: { base: 1, porNivel: 0.1 },
+                    for: { base: 1, porNivel: 0.1 }
+                },
+                habilidadesEspeciais: ["Furtividade", "Ataque Furtivo", "Armadilhas"]
+            },
+            paladino: {
+                nome: "Paladino",
+                cor: "#8b5cf6",
+                icone: "shield",
+                atributoPrincipal: "constituicao",
+                atributoSecundario: "forca",
+                atributosBonus: {
+                    con: { base: 4, porNivel: 0.5 },
+                    for: { base: 4, porNivel: 0.4 },
+                    cha: { base: 3, porNivel: 0.3 },
+                    wis: { base: 2, porNivel: 0.2 },
+                    dex: { base: 0, porNivel: 0.1 },
+                    int: { base: 1, porNivel: 0.1 }
+                },
+                habilidadesEspeciais: ["Cura Divina", "Proteção Sagrada", "Golpe Santificado"]
+            },
+            bardo: {
+                nome: "Bardo",
+                cor: "#ec4899",
+                icone: "music",
+                atributoPrincipal: "carisma",
+                atributoSecundario: "destreza",
+                atributosBonus: {
+                    cha: { base: 6, porNivel: 0.6 },
+                    dex: { base: 3, porNivel: 0.3 },
+                    int: { base: 3, porNivel: 0.3 },
+                    wis: { base: 2, porNivel: 0.2 },
+                    con: { base: 1, porNivel: 0.1 },
+                    for: { base: 0, porNivel: 0.0 }
+                },
+                habilidadesEspeciais: ["Inspirar Aliados", "Canção de Batalha", "Encantar"]
+            },
+            clérigo: {
+                nome: "Clérigo",
+                cor: "#06b6d4",
+                icone: "cross",
+                atributoPrincipal: "sabedoria",
+                atributoSecundario: "constituicao",
+                atributosBonus: {
+                    wis: { base: 6, porNivel: 0.6 },
+                    con: { base: 3, porNivel: 0.3 },
+                    cha: { base: 3, porNivel: 0.3 },
+                    int: { base: 2, porNivel: 0.2 },
+                    for: { base: 1, porNivel: 0.1 },
+                    dex: { base: 0, porNivel: 0.0 }
+                },
+                habilidadesEspeciais: ["Curar Ferimentos", "Proteção Divina", "Banir Mortos-Vivos"]
+            },
+            druida: {
+                nome: "Druida",
+                cor: "#10b981",
+                icone: "leaf",
+                atributoPrincipal: "sabedoria",
+                atributoSecundario: "constituicao",
+                atributosBonus: {
+                    wis: { base: 5, porNivel: 0.5 },
+                    con: { base: 3, porNivel: 0.3 },
+                    int: { base: 3, porNivel: 0.3 },
+                    cha: { base: 2, porNivel: 0.2 },
+                    for: { base: 1, porNivel: 0.1 },
+                    dex: { base: 1, porNivel: 0.1 }
+                },
+                habilidadesEspeciais: ["Forma Selvagem", "Comandar Animais", "Cura Natural"]
+            },
+            feiticeiro: {
+                nome: "Feiticeiro",
+                cor: "#8b5cf6",
+                icone: "zap",
+                atributoPrincipal: "carisma",
+                atributoSecundario: "inteligencia",
+                atributosBonus: {
+                    cha: { base: 5, porNivel: 0.5 },
+                    int: { base: 4, porNivel: 0.4 },
+                    dex: { base: 2, porNivel: 0.2 },
+                    wis: { base: 2, porNivel: 0.2 },
+                    con: { base: 1, porNivel: 0.1 },
+                    for: { base: 0, porNivel: 0.0 }
+                },
+                habilidadesEspeciais: ["Sangue Mágico", "Explosão Arcana", "Controle de Elementos"]
+            },
+            barbaro: {
+                nome: "Bárbaro",
+                cor: "#dc2626",
+                icone: "axe",
+                atributoPrincipal: "forca",
+                atributoSecundario: "constituicao",
+                atributosBonus: {
+                    for: { base: 6, porNivel: 0.7 },
+                    con: { base: 4, porNivel: 0.4 },
+                    dex: { base: 2, porNivel: 0.2 },
+                    wis: { base: 1, porNivel: 0.1 },
+                    cha: { base: 1, porNivel: 0.1 },
+                    int: { base: 0, porNivel: 0.0 }
+                },
+                habilidadesEspeciais: ["Fúria", "Resistência Inumana", "Grito de Guerra"]
+            }
+        };
+
+        // ====================================================================
+        // FUNÇÃO PRINCIPAL DE CÁLCULO ATUALIZADA
         // ====================================================================
         function recalc() {
             // 1. Carregar dados da ficha
             const dadosFicha = carregarDadosDaFicha();
             
-            // 2. Cálculos de atributos
+            // 2. Obter valores atuais
             const nivel = currentLevel;
             const xpAcumulado = accumulatedXP;
             
@@ -1019,28 +1233,72 @@
             const CON = val('attr-constituicao');
             const INT = getInt();
             const WIS = val('attr-sabedoria');
+            const CHA = val('attr-carisma');
             
-            // 3. Multiplicadores
-            const classe = val('input-classe');
-            const dificuldade = val('input-dificuldade');
+            // 3. Obter níveis de dificuldade e classe
+            const classeValor = parseFloat(el('input-classe').value) || 3;
+            const dificuldadeValor = parseFloat(el('input-dificuldade').value) || 1.0;
             
-            // 4. Fórmulas ajustadas (sem sorte aqui - sorte é separada)
-            const blindagem = Math.floor(CON * classe + nivel * dificuldade);
-            const velocidade = Math.floor(DEX * classe + CON * dificuldade);
-            const iniciativa = Math.floor(DEX * dificuldade + INT * classe);
-            const percepcao = Math.floor(WIS * classe + INT * dificuldade);
+            const nivelClasse = getNivelClasse(classeValor);
+            const nivelDificuldade = getNivelDificuldade(dificuldadeValor);
             
-            // Para visão noturna, usar percepção * 2
-            const visaoNoturna = percepcao * 2;
+            // 4. Fórmulas ajustadas com níveis de classe e dificuldade
+            // Cada atributo influencia valores específicos
             
-            // 5. Outputs
+            // Blindagem: Principalmente Constituição, com influência de Força
+            const blindagemBase = Math.floor(CON * 0.7 + STR * 0.3);
+            const blindagem = Math.floor(blindagemBase * nivelClasse.multiplicador + nivel * nivelDificuldade.multiplicador);
+            
+            // Velocidade: Principalmente Destreza, com influência de Constituição
+            const velocidadeBase = Math.floor(DEX * 0.8 + CON * 0.2);
+            const velocidade = Math.floor(velocidadeBase * nivelClasse.multiplicador + nivel * (nivelDificuldade.multiplicador * 0.8));
+            
+            // Iniciativa: Destreza + Inteligência
+            const iniciativaBase = Math.floor(DEX * 0.6 + INT * 0.4);
+            const iniciativa = Math.floor(iniciativaBase * nivelClasse.multiplicador + nivel * (nivelDificuldade.multiplicador * 0.6));
+            
+            // Percepção: Sabedoria + Inteligência
+            const percepcaoBase = Math.floor(WIS * 0.7 + INT * 0.3);
+            const percepcao = Math.floor(percepcaoBase * nivelClasse.multiplicador + nivel * (nivelDificuldade.multiplicador * 0.7));
+            
+            // Visão Noturna: Percepção + Nível (menor influência de classe)
+            const visaoNoturnaBase = percepcao * 1.5 + INT * 0.5;
+            const visaoNoturna = Math.floor(visaoNoturnaBase * (nivelClasse.multiplicador * 0.8) + nivel * 0.5);
+            
+            // Esquiva: Destreza + Nível (alta influência de classe)
+            const esquivaBase = Math.floor(DEX * 0.9 + nivel * 0.1);
+            const esquiva = Math.floor(esquivaBase * nivelClasse.multiplicador * 1.2);
+            
+            // Resistência: Constituição + Nível
+            const resistenciaBase = Math.floor(CON * 0.8 + nivel * 0.2);
+            const resistencia = Math.floor(resistenciaBase * nivelClasse.multiplicador + nivel * nivelDificuldade.multiplicador * 0.5);
+            
+            // 5. Outputs principais
             setTxt('calc-blindagem', blindagem);
             setTxt('calc-velocidade', velocidade);
             setTxt('calc-iniciativa', iniciativa);
             setTxt('calc-percepcao', percepcao);
             setTxt('calc-visao-noturna', visaoNoturna);
             
-            // 6. Atualizar progressão
+            // 6. Outputs adicionais (se existirem elementos HTML para eles)
+            if (el('calc-esquiva')) setTxt('calc-esquiva', esquiva);
+            if (el('calc-resistencia')) setTxt('calc-resistencia', resistencia);
+            
+            // 7. Atualizar displays de classe e dificuldade
+            if (el('display-classe-nivel')) {
+                setTxt('display-classe-nivel', nivelClasse.nome);
+                el('display-classe-nivel').style.color = getCorPorNivelClasse(nivelClasse.nivel);
+            }
+            
+            if (el('display-dificuldade-nivel')) {
+                setTxt('display-dificuldade-nivel', nivelDificuldade.nome);
+                el('display-dificuldade-nivel').style.color = getCorPorDificuldade(nivelDificuldade.id);
+            }
+            
+            // 8. Atualizar informações detalhadas
+            atualizarInfoClasseDificuldade(nivelClasse, nivelDificuldade);
+            
+            // 9. Atualizar progressão
             el('input-nivel').value = nivel;
             el('input-xp-acumulado').value = xpAcumulado;
             setTxt('display-xp-necessario', XP_PER_LEVEL);
@@ -1050,8 +1308,240 @@
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
             
+            // 10. Gerar recomendações baseadas nos valores
+            gerarRecomendacoesPorAtributos({
+                blindagem, velocidade, iniciativa, percepcao, 
+                visaoNoturna, esquiva, resistencia
+            });
+            
             updateBonusDisplay();
         }
+
+        // ====================================================================
+        // FUNÇÕES AUXILIARES PARA CORES E DISPLAY
+        // ====================================================================
+        function getCorPorNivelClasse(nivel) {
+            switch(nivel) {
+                case 1: return '#6b7280'; // D - Cinza
+                case 2: return '#22c55e'; // C - Verde
+                case 3: return '#3b82f6'; // B - Azul
+                case 4: return '#8b5cf6'; // A - Roxo
+                case 5: return '#f59e0b'; // S - Laranja
+                default: return '#6b7280';
+            }
+        }
+
+        function getCorPorDificuldade(nivel) {
+            switch(nivel) {
+                case 0: return '#22c55e'; // Muito Fácil - Verde
+                case 1: return '#3b82f6'; // Fácil - Azul
+                case 2: return '#6b7280'; // Normal - Cinza
+                case 3: return '#f59e0b'; // Difícil - Laranja
+                case 4: return '#dc2626'; // Extremo - Vermelho
+                default: return '#6b7280';
+            }
+        }
+
+        function atualizarInfoClasseDificuldade(nivelClasse, nivelDificuldade) {
+            const infoContainer = el('info-classe-dificuldade');
+            if (!infoContainer) {
+                // Criar container se não existir
+                const container = document.createElement('div');
+                container.id = 'info-classe-dificuldade';
+                container.className = 'bg-theme-panel border border-theme-border p-4 rounded-lg mt-4';
+                
+                // Inserir após a seção de balanceamento
+                const secaoBalanceamento = document.querySelector('.section-balance');
+                if (secaoBalanceamento) {
+                    secaoBalanceamento.after(container);
+                }
+            }
+            
+            const infoElement = el('info-classe-dificuldade');
+            if (infoElement) {
+                infoElement.innerHTML = `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border-l-4 border-[${getCorPorNivelClasse(nivelClasse.nivel)}] pl-3">
+                            <h4 class="font-cinzel font-bold text-sm" style="color: ${getCorPorNivelClasse(nivelClasse.nivel)}">
+                                <i data-lucide="target" class="w-3 h-3 inline mr-1"></i>
+                                NÍVEL DA CLASSE: ${nivelClasse.nome}
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">
+                                Multiplicador: ${nivelClasse.multiplicador.toFixed(1)}x
+                                <br>Bônus: +${nivelClasse.bonus}
+                            </p>
+                        </div>
+                        
+                        <div class="border-l-4 border-[${getCorPorDificuldade(nivelDificuldade.id)}] pl-3">
+                            <h4 class="font-cinzel font-bold text-sm" style="color: ${getCorPorDificuldade(nivelDificuldade.id)}">
+                                <i data-lucide="alert-triangle" class="w-3 h-3 inline mr-1"></i>
+                                DIFICULDADE: ${nivelDificuldade.nome}
+                            </h4>
+                            <p class="text-xs text-gray-400 mt-1">
+                                Multiplicador: ${nivelDificuldade.multiplicador.toFixed(1)}x
+                                <br>Valor: ${nivelDificuldade.valor.toFixed(1)}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 p-2 bg-theme-panel/50 rounded border border-theme-border">
+                        <p class="text-xs text-gray-400">
+                            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                            Fórmula: (Atributo × Classe) + (Nível × Dificuldade)
+                        </p>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+        }
+
+        // ====================================================================
+        // FUNÇÃO PARA GERAR RECOMENDAÇÕES BASEADAS NOS ATRIBUTOS
+        // ====================================================================
+        function gerarRecomendacoesPorAtributos(valores) {
+            const container = el('card-personagem-output');
+            if (!container) return;
+            
+            const { blindagem, velocidade, iniciativa, percepcao, visaoNoturna, esquiva, resistencia } = valores;
+            
+            let recomendacoes = [];
+            
+            // Análise de blindagem
+            if (blindagem < 20) {
+                recomendacoes.push("🛡️ Blindagem baixa: Considere aumentar Constituição ou Força");
+            } else if (blindagem > 60) {
+                recomendacoes.push("🛡️ Blindagem excelente! Você é muito resistente");
+            }
+            
+            // Análise de velocidade
+            if (velocidade < 15) {
+                recomendacoes.push("⚡ Velocidade baixa: Aumente Destreza para melhorar");
+            } else if (velocidade > 50) {
+                recomendacoes.push("⚡ Velocidade excepcional! Excelente para ataques rápidos");
+            }
+            
+            // Análise de iniciativa
+            if (iniciativa < 10) {
+                recomendacoes.push("🎯 Iniciativa baixa: Melhore Destreza ou Inteligência");
+            } else if (iniciativa > 40) {
+                recomendacoes.push("🎯 Iniciativa alta! Você age primeiro em combate");
+            }
+            
+            // Análise de esquiva (se calculada)
+            if (esquiva && esquiva > 45) {
+                recomendacoes.push("🌀 Esquiva alta! Excelente para evitar ataques");
+            }
+            
+            // Análise de resistência (se calculada)
+            if (resistencia && resistencia > 50) {
+                recomendacoes.push("💪 Resistência excepcional! Pode suportar muito dano");
+            }
+            
+            // Se houver muitas recomendações, mostrar as mais importantes
+            if (recomendacoes.length > 0) {
+                mostrarRecomendacoesDetalhadas(recomendacoes.slice(0, 3));
+            }
+        }
+
+        // ====================================================================
+        // FUNÇÃO PARA CARREGAR CLASSE DETALHADA
+        // ====================================================================
+        function carregarClasseDetalhada(classeNome) {
+            const classe = DETALHES_CLASSE[classeNome.toLowerCase()];
+            if (!classe) return null;
+            
+            // Atualizar interface com informações da classe
+            if (el('info-classe-detalhada')) {
+                el('info-classe-detalhada').innerHTML = `
+                    <div class="border-l-4 border-[${classe.cor}] pl-4 py-2">
+                        <h4 class="font-cinzel font-bold text-sm flex items-center gap-2" style="color: ${classe.cor}">
+                            <i data-lucide="${classe.icone}" class="w-4 h-4"></i>
+                            ${classe.nome}
+                        </h4>
+                        <p class="text-xs text-gray-400 mt-1">
+                            Atributo Principal: <span class="font-bold">${classe.atributoPrincipal.toUpperCase()}</span>
+                            <br>Atributo Secundário: <span class="font-bold">${classe.atributoSecundario.toUpperCase()}</span>
+                        </p>
+                        <div class="mt-2">
+                            <p class="text-xs font-bold text-gray-500">Habilidades:</p>
+                            <ul class="text-xs text-gray-400 mt-1 list-disc list-inside">
+                                ${classe.habilidadesEspeciais.map(h => `<li>${h}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+            
+            return classe;
+        }
+
+        // ====================================================================
+        // INICIALIZAÇÃO - ADICIONAR CAMPOS DE CLASSE E DIFICULDADE
+        // ====================================================================
+        function inicializarSistemaClasseDificuldade() {
+            // Atualizar os campos de input com os novos limites
+            const inputClasse = el('input-classe');
+            const inputDificuldade = el('input-dificuldade');
+            
+            if (inputClasse) {
+                inputClasse.min = 1;
+                inputClasse.max = 5;
+                inputClasse.step = 1;
+                inputClasse.value = 3; // Padrão: B
+                
+                // Tooltip explicativo
+                inputClasse.title = "Nível da Classe: 1(D) a 5(S)\nD=0.2x, C=0.4x, B=0.6x, A=0.8x, S=1.0x";
+            }
+            
+            if (inputDificuldade) {
+                inputDificuldade.min = 0;
+                inputDificuldade.max = 2.0;
+                inputDificuldade.step = 0.1;
+                inputDificuldade.value = 1.0; // Padrão: Normal
+                
+                // Tooltip explicativo
+                inputDificuldade.title = "Nível de Dificuldade: 0 a 2.0\n0-0.4=Muito Fácil, 0.5-0.9=Fácil, 1.0-1.4=Normal, 1.5-1.9=Difícil, 2.0=Extremo";
+            }
+            
+            // Adicionar labels explicativas
+            const secaoBalanceamento = document.querySelector('.section-balance');
+            if (secaoBalanceamento) {
+                // Atualizar labels existentes
+                const labels = secaoBalanceamento.querySelectorAll('label');
+                labels[0].textContent = 'Nível da Classe (1-5)';
+                labels[1].textContent = 'Dificuldade (0.0-2.0)';
+            }
+        }
+
+        // ====================================================================
+        // ATUALIZAR FUNÇÃO DE CARREGAMENTO
+        // ====================================================================
+        window.addEventListener('load', () => {
+            // Inicializar sistema de classe/dificuldade
+            inicializarSistemaClasseDificuldade();
+            
+            // Carregar dados salvos
+            loadStats();
+            
+            // Configurar listeners
+            document.querySelectorAll('input[type="number"]').forEach(input => {
+                input.addEventListener('input', recalc);
+            });
+            
+            if (el('input-nome')) {
+                el('input-nome').addEventListener('input', recalc);
+            }
+            
+            // Executar cálculo inicial
+            recalc();
+            
+            // Verificar se há classe carregada da ficha
+            const classeFicha = localStorage.getItem('grimorio_classe_personagem');
+            if (classeFicha) {
+                carregarClasseDetalhada(classeFicha);
+            }
+        });
 
         // ====================================================================
         // 8. FUNÇÕES DE XP E NÍVEL
