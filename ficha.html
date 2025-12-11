@@ -254,9 +254,49 @@
     </div>
 
     <script>
+        // Inicializar ícones Lucide
         lucide.createIcons();
 
-        // 1. Lógica de Upload de Imagem
+        // 1. CONSTANTES E CONFIGURAÇÕES
+        const STORAGE_KEY = 'grimorio_ficha_personagem';
+        const CLASS_RECOMMENDATIONS = {
+            guerreiro: { for: 15, agi: 10, int: 5, vit: 12, arma: 'Espada Longa', habilidade: 'Investida Poderosa' },
+            arqueiro: { for: 8, agi: 18, int: 10, vit: 8, arma: 'Arco Composto', habilidade: 'Tiro Certeiro' },
+            mago: { for: 5, agi: 8, int: 20, vit: 7, arma: 'Cajado Arcano', habilidade: 'Bola de Fogo' },
+            ladino: { for: 10, agi: 17, int: 12, vit: 9, arma: 'Adagas Duplas', habilidade: 'Ataque Furtivo' },
+            paladino: { for: 14, agi: 9, int: 10, vit: 15, arma: 'Martelo de Guerra', habilidade: 'Julgamento Divino' },
+            bardo: { for: 7, agi: 12, int: 16, vit: 9, arma: 'Alaúde Encantado', habilidade: 'Canção Inspiradora' }
+        };
+
+        // 2. FUNÇÕES AUXILIARES - DEFINIR PRIMEIRO!
+        // Feedback visual para o usuário (MOVIDA PARA CIMA!)
+        function mostrarFeedback(mensagem, tipo = 'info') {
+            // Remover feedback anterior
+            const feedbackAnterior = document.querySelector('.feedback-message');
+            if (feedbackAnterior) {
+                feedbackAnterior.remove();
+            }
+            
+            // Criar elemento de feedback
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-message fixed top-4 right-4 px-4 py-3 rounded-lg border z-[100] animate-fadeIn ${
+                tipo === 'success' ? 'bg-green-900/20 border-green-700 text-green-300' :
+                tipo === 'error' ? 'bg-red-900/20 border-red-700 text-red-300' :
+                'bg-blue-900/20 border-blue-700 text-blue-300'
+            }`;
+            feedback.textContent = mensagem;
+            
+            // Adicionar ao corpo
+            document.body.appendChild(feedback);
+            
+            // Remover após 3 segundos
+            setTimeout(() => {
+                feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => feedback.remove(), 500);
+            }, 3000);
+        }
+
+        // Lógica de upload de imagem
         function previewImage(event) {
             const input = event.target;
             const container = document.getElementById('avatar-container');
@@ -266,22 +306,295 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     container.style.backgroundImage = `url('${e.target.result}')`;
-                    // Esconde o placeholder mas mantém acessível se passar o mouse
-                    placeholder.style.opacity = '0'; 
+                    placeholder.style.opacity = '0';
+                    
+                    // Salvar automaticamente após upload de imagem
+                    setTimeout(salvarDados, 500);
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // 3. Exportar Dados em Texto (.txt)
+        // Adicionar estilos CSS para animações
+        function adicionarEstilosAnimacao() {
+            if (document.querySelector('#estilos-animacao')) return;
+            
+            const style = document.createElement('style');
+            style.id = 'estilos-animacao';
+            style.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(-10px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                
+                .animate-fadeIn {
+                    animation: fadeIn 0.3s ease-out;
+                }
+                
+                .data-field:focus {
+                    border-color: #4a9eff;
+                    box-shadow: 0 0 0 1px rgba(74, 158, 255, 0.2);
+                }
+                
+                .auto-save-indicator {
+                    position: fixed;
+                    bottom: 20px;
+                    right: 20px;
+                    background: rgba(74, 158, 255, 0.1);
+                    border: 1px solid rgba(74, 158, 255, 0.3);
+                    padding: 8px 12px;
+                    border-radius: 6px;
+                    font-size: 12px;
+                    opacity: 0;
+                    transition: opacity 0.3s;
+                    z-index: 1000;
+                }
+                
+                .auto-save-indicator.show {
+                    opacity: 1;
+                }
+                
+                /* Estilo para os novos botões */
+                .btn-export {
+                    transition: all 0.3s ease;
+                }
+                
+                .btn-export:hover {
+                    transform: translateY(-2px);
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 3. SISTEMA DE SALVAMENTO AUTOMÁTICO NO LOCALSTORAGE
+        const camposParaSalvar = [
+            'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
+            'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-olhos', 'inp-torso',
+            'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
+            'inp-ideais', 'inp-observar'
+        ];
+
+        // Função para salvar todos os dados
+        function salvarDados() {
+            const dados = {};
+            
+            // Salvar campos de texto
+            camposParaSalvar.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    dados[id] = elemento.value;
+                }
+            });
+            
+            // Salvar imagem do avatar (se existir)
+            const avatarContainer = document.getElementById('avatar-container');
+            if (avatarContainer.style.backgroundImage && avatarContainer.style.backgroundImage !== 'none') {
+                dados.avatar = avatarContainer.style.backgroundImage;
+            }
+            
+            // Salvar timestamp
+            dados.ultimaAtualizacao = new Date().toISOString();
+            
+            // Salvar no localStorage
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+            
+            // Feedback visual
+            mostrarFeedback('Dados salvos automaticamente!', 'success');
+        }
+
+        // Função para carregar dados salvos
+        function carregarDados() {
+            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+            
+            if (!dadosSalvos) {
+                mostrarFeedback('Nenhum dado salvo encontrado. Comece a preencher sua ficha!', 'info');
+                return;
+            }
+            
+            try {
+                const dados = JSON.parse(dadosSalvos);
+                
+                // Carregar campos de texto
+                camposParaSalvar.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento && dados[id] !== undefined) {
+                        elemento.value = dados[id];
+                    }
+                });
+                
+                // Carregar avatar
+                if (dados.avatar) {
+                    const avatarContainer = document.getElementById('avatar-container');
+                    const placeholder = avatarContainer.querySelector('.avatar-placeholder');
+                    avatarContainer.style.backgroundImage = dados.avatar;
+                    placeholder.style.opacity = '0';
+                }
+                
+                // Mostrar quando foi salvo pela última vez
+                if (dados.ultimaAtualizacao) {
+                    const data = new Date(dados.ultimaAtualizacao);
+                    console.log(`Ficha carregada - Última atualização: ${data.toLocaleString()}`);
+                }
+                
+                mostrarFeedback('Dados carregados com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                mostrarFeedback('Erro ao carregar dados salvos.', 'error');
+            }
+        }
+
+        // 4. SISTEMA DE RECOMENDAÇÃO DE CLASSE
+        function recomendarClasse() {
+            // Esta função seria chamada de outra página (status.html)
+            const status = {
+                for: parseInt(document.getElementById('status-forca')?.value) || 10,
+                agi: parseInt(document.getElementById('status-agilidade')?.value) || 10,
+                int: parseInt(document.getElementById('status-inteligencia')?.value) || 10,
+                vit: parseInt(document.getElementById('status-vitalidade')?.value) || 10
+            };
+            
+            let melhorClasse = null;
+            let melhorPontuacao = 0;
+            
+            Object.entries(CLASS_RECOMMENDATIONS).forEach(([classe, requisitos]) => {
+                let pontuacao = 0;
+                
+                if (status.for >= requisitos.for) pontuacao += 2;
+                if (status.agi >= requisitos.agi) pontuacao += 2;
+                if (status.int >= requisitos.int) pontuacao += 2;
+                if (status.vit >= requisitos.vit) pontuacao += 2;
+                
+                pontuacao += Math.min(status.for - requisitos.for, 5);
+                pontuacao += Math.min(status.agi - requisitos.agi, 5);
+                pontuacao += Math.min(status.int - requisitos.int, 5);
+                pontuacao += Math.min(status.vit - requisitos.vit, 5);
+                
+                if (pontuacao > melhorPontuacao) {
+                    melhorPontuacao = pontuacao;
+                    melhorClasse = classe;
+                }
+            });
+            
+            return {
+                classe: melhorClasse,
+                recomendacao: CLASS_RECOMMENDATIONS[melhorClasse],
+                pontuacao: melhorPontuacao
+            };
+        }
+
+        // 5. SISTEMA DE "PRINT" DA TELA
+        function gerarPDF() {
+            const elemento = document.getElementById('ficha-content');
+            const nomePersonagem = document.getElementById('inp-nome').value || 'Personagem';
+            
+            const opcoes = {
+                margin: [10, 10, 10, 10],
+                filename: `Ficha_${nomePersonagem}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { 
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#0a0a0c'
+                },
+                jsPDF: { 
+                    unit: 'mm', 
+                    format: 'a4', 
+                    orientation: 'portrait' 
+                }
+            };
+            
+            html2pdf().set(opcoes).from(elemento).save()
+                .then(() => {
+                    mostrarFeedback('PDF gerado com sucesso!', 'success');
+                })
+                .catch(error => {
+                    console.error('Erro ao gerar PDF:', error);
+                    mostrarFeedback('Erro ao gerar PDF. Tente novamente.', 'error');
+                });
+        }
+
+        function gerarImagem() {
+            const elemento = document.getElementById('ficha-content');
+            
+            html2canvas(elemento, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#0a0a0c',
+                logging: false
+            }).then(canvas => {
+                const imagemURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                const nomePersonagem = document.getElementById('inp-nome').value || 'Personagem';
+                const nomeArquivo = `Ficha_${nomePersonagem}_${new Date().getTime()}.png`;
+                
+                link.href = imagemURL;
+                link.download = nomeArquivo;
+                link.click();
+                
+                mostrarFeedback('Imagem gerada com sucesso!', 'success');
+            }).catch(error => {
+                console.error('Erro ao gerar imagem:', error);
+                mostrarFeedback('Erro ao gerar imagem.', 'error');
+            });
+        }
+
+        // 6. FUNÇÃO PARA ADICIONAR BOTÕES DE EXPORTAÇÃO
+        function adicionarBotoesExportacao() {
+            const containerBotoes = document.querySelector('.max-w-6xl.mx-auto.px-4.mt-8.pb-12');
+            
+            if (!containerBotoes) return;
+            
+            // Verificar se os botões já existem
+            if (containerBotoes.querySelector('.btn-pdf')) return;
+            
+            // Botão para Gerar PDF
+            const btnPDF = document.createElement('button');
+            btnPDF.innerHTML = `
+                <i data-lucide="file-text" class="w-4 h-4"></i>
+                Baixar como PDF
+            `;
+            btnPDF.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-blue btn-pdf';
+            btnPDF.onclick = gerarPDF;
+            
+            // Botão para Gerar Imagem
+            const btnImagem = document.createElement('button');
+            btnImagem.innerHTML = `
+                <i data-lucide="camera" class="w-4 h-4"></i>
+                Capturar Tela (PNG)
+            `;
+            btnImagem.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-orange btn-image';
+            btnImagem.onclick = gerarImagem;
+            
+            // Botão para Limpar Dados
+            const btnLimpar = document.createElement('button');
+            btnLimpar.innerHTML = `
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                Limpar Dados
+            `;
+            btnLimpar.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500 btn-clear';
+            btnLimpar.onclick = function() {
+                if (confirm('Tem certeza que deseja limpar todos os dados salvos localmente?')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    mostrarFeedback('Dados locais removidos!', 'success');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            };
+            
+            // Inserir botões no container
+            const btnExistente = containerBotoes.querySelector('button');
+            containerBotoes.insertBefore(btnPDF, btnExistente);
+            containerBotoes.insertBefore(btnImagem, btnExistente);
+            containerBotoes.insertBefore(btnLimpar, btnExistente);
+            
+            // CORREÇÃO: Atualizar ícones IMEDIATAMENTE
+            lucide.createIcons();
+        }
+
+        // 7. EXPORTAR DADOS EM TEXTO
         function downloadTextData() {
             let texto = "=== FICHA DE PERSONAGEM RPG ===\n\n";
             
-            // Coletar todos os inputs e textareas com a classe 'data-field'
-            // NOTA: Adicionei id e label manual no código acima para facilitar, 
-            // mas aqui vou pegar pela label anterior para ser genérico ou pelo ID.
-            
-            // Mapeamento manual para ficar bonito no TXT
             const campos = [
                 { id: 'inp-nome', label: 'Nome' },
                 { id: 'inp-titulo', label: 'Título' },
@@ -303,15 +616,14 @@
 
             campos.forEach(campo => {
                 const el = document.getElementById(campo.id);
-                if (el) {
+                if (el && el.value.trim()) {
                     texto += `${campo.label}: ${el.value}\n`;
-                    if (el.tagName === 'TEXTAREA') texto += "\n"; // Espaço extra após textareas
+                    if (el.tagName === 'TEXTAREA') texto += "\n";
                 }
             });
 
             texto += "\n===============================";
 
-            // Criar Blob e Link de Download
             const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
             const link = document.createElement("a");
             const nomeArquivo = document.getElementById('inp-nome').value || 'Personagem';
@@ -319,7 +631,45 @@
             link.href = URL.createObjectURL(blob);
             link.download = `Dados_${nomeArquivo}.txt`;
             link.click();
+            
+            mostrarFeedback('Arquivo TXT gerado com sucesso!', 'success');
         }
+
+        // 8. INICIALIZAÇÃO
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adicionar estilos primeiro
+            adicionarEstilosAnimacao();
+            
+            // Carregar dados salvos
+            setTimeout(carregarDados, 300);
+            
+            // Configurar salvamento automático
+            camposParaSalvar.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    let timeout;
+                    elemento.addEventListener('input', function() {
+                        clearTimeout(timeout);
+                        timeout = setTimeout(salvarDados, 800);
+                    });
+                    
+                    elemento.addEventListener('blur', salvarDados);
+                }
+            });
+            
+            // Adicionar botões de exportação
+            setTimeout(adicionarBotoesExportacao, 500);
+        });
+
+        // 9. EXPORTAÇÃO DAS FUNÇÕES
+        window.salvarDados = salvarDados;
+        window.carregarDados = carregarDados;
+        window.gerarPDF = gerarPDF;
+        window.gerarImagem = gerarImagem;
+        window.downloadTextData = downloadTextData;
+        window.recomendarClasse = recomendarClasse;
+        window.previewImage = previewImage;
+        window.mostrarFeedback = mostrarFeedback; // Adicionada para acesso global
     </script>
 </body>
 </html>
