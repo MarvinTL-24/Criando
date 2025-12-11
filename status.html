@@ -60,6 +60,52 @@
         }
 
         .stat-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        /* Novas cores para o tema de sorte/destino */
+        .bg-sorte-1 { background-color: #1a1510; }
+        .bg-sorte-2 { background-color: #2a2318; }
+        .border-sorte { border-color: #8b7355; }
+        .text-sorte-gold { color: #d4a76a; }
+        .text-sorte-light { color: #f4d29a; }
+        .text-sorte-dark { color: #8b7355; }
+
+        /* Animações para dados */
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(90deg) scale(1.1); }
+            50% { transform: rotate(180deg) scale(1.05); }
+            75% { transform: rotate(270deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .dice-rolling {
+            animation: diceRoll 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Efeito de brilho para dados altos */
+        .high-roll {
+            box-shadow: 0 0 20px rgba(212, 167, 106, 0.3);
+            border-color: #f4d29a;
+        }
+        
+        /* Cores para seções */
+        .section-vital { border-left-color: #dc2626; }
+        .section-vital h3 { color: #dc2626; }
+        
+        .section-attributes { border-left-color: #4a9eff; }
+        .section-attributes h3 { color: #4a9eff; }
+        
+        .section-progression { border-left-color: #ff6b35; }
+        .section-progression h3 { color: #ff6b35; }
+        
+        .section-balance { border-left-color: #f59e0b; }
+        .section-balance h3 { color: #f59e0b; }
+        
+        .section-derived { border-left-color: #22c55e; }
+        .section-derived h3 { color: #22c55e; }
+        
+        .section-destiny { border-left-color: #8b5cf6; }
+        .section-destiny h3 { color: #8b5cf6; }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-12">
@@ -72,77 +118,87 @@
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
                 </a>
                 <div class="h-6 w-[1px] bg-theme-border"></div>
-                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital </span>
+                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital</span>
             </div>
             <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
         </nav>
 
         <div class="max-w-6xl mx-auto px-4 space-y-6">
 
+            <!-- Cabeçalho -->
             <header class="flex items-center gap-4 mb-8 anim-entry">
-                <div class="p-3 rounded-lg bg-[#ff6b35]/10 border border-[#ff6b35]/20">
+                <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
                     <i data-lucide="zap" class="w-8 h-8 text-theme-orange"></i>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-cinzel font-bold text-white">Status</h1>
-                    <p class="text-gray-400">Atributos & Cálculos</p>
+                    <h1 class="text-3xl font-cinzel font-bold text-white">Status do Personagem</h1>
+                    <p class="text-gray-400">Atributos, Progressão e Destino</p>
                 </div>
             </header>
 
+            <!-- Seção 1: Nome do Personagem -->
             <section class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry delay-0 mb-6">
-                <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nome do Personagem</label>
-                <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
+                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Nome do Personagem</label>
+                <input type="text" id="input-nome" value="Herói Desconhecido" placeholder="Nome do seu personagem" 
+                    class="bg-[#0a0a0c] text-xl font-cinzel font-bold text-theme-text px-2 py-1 w-full outline-none focus:border-theme-orange border-b border-theme-border">
             </section>
 
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group">
+            <!-- Seção 2: Progressão (Laranja) -->
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden group section-progression">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
                 
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
-                    <i data-lucide="zap" class="w-4 h-4"></i> Progressão
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i> Progressão
                 </h3>
 
                 <div class="grid md:grid-cols-4 gap-6">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Nível</label>
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Nível</label>
                         <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-orange transition-colors">
                             <i data-lucide="crown" class="w-4 h-4 text-theme-orange mr-2"></i>
-                            <input type="number" id="input-nivel" value="0" min="0" class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
+                            <input type="number" id="input-nivel" value="0" min="0" 
+                                class="bg-transparent w-full outline-none font-mono text-lg" oninput="recalc()">
                         </div>
                     </div>
                     
                     <div class="md:col-span-3">
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">XP Acumulado</label>
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">XP Acumulado</label>
                         <div class="h-4 bg-[#0a0a0c] rounded-full overflow-hidden border border-theme-border mb-2">
                             <div id="bar-xp" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
                         </div>
                         <div class="flex justify-between items-center text-sm">
-                            <input type="number" id="input-xp-acumulado" value="0" class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" oninput="recalc()">
-                            <span class="text-[#606060]">/ <span id="display-xp-necessario">1000</span> XP Próximo Nível</span>
+                            <input type="number" id="input-xp-acumulado" value="0" 
+                                class="bg-transparent border-b border-theme-border w-20 outline-none focus:border-theme-orange text-right" 
+                                oninput="recalc()">
+                            <span class="text-gray-500">/ <span id="display-xp-necessario">1000</span> XP Próximo Nível</span>
                         </div>
                     </div>
                 </div>
                 
                 <div class="h-px bg-theme-border my-6"></div> 
                 
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-4">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-4">
                     <i data-lucide="plus" class="w-4 h-4"></i> Adicionar XP
                 </h3>
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="md:col-span-2">
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">XP Ganhado</label>
-                        <input type="number" id="input-xp-ganhado" value="0" min="0" class="bg-transparent w-full border border-theme-border rounded px-3 py-2 outline-none focus:border-theme-orange font-mono text-lg">
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">XP Ganhado</label>
+                        <input type="number" id="input-xp-ganhado" value="0" min="0" 
+                            class="bg-transparent w-full border border-theme-border rounded px-3 py-2 outline-none focus:border-theme-orange font-mono text-lg">
                     </div>
-                    <button onclick="addXP()" class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold mt-5">
+                    <button onclick="addXP()" 
+                        class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-green hover:bg-green-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold mt-5">
                         <i data-lucide="plus-square" class="w-4 h-4"></i>
                         <span>Somar XP</span>
                     </button>
                 </div>
             </section>
 
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
+            <!-- Seção 3: Recursos Vitais (Vermelho) -->
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden section-vital">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-red"></div>
                 
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
                     <i data-lucide="heart" class="w-4 h-4"></i> Recursos Vitais
                 </h3>
 
@@ -156,9 +212,13 @@
                             <div id="bar-vida" class="h-full bg-theme-red stat-bar-fill" style="width: 100%"></div>
                         </div>
                         <div class="flex justify-center gap-2 items-center">
-                            <input type="number" id="input-vida-atual" value="100" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" oninput="recalc()">
+                            <input type="number" id="input-vida-atual" value="100" 
+                                class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" 
+                                oninput="recalc()">
                             <span class="text-gray-600">/</span>
-                            <input type="number" id="input-vida-max" value="100" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" oninput="recalc()">
+                            <input type="number" id="input-vida-max" value="100" 
+                                class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-red outline-none" 
+                                oninput="recalc()">
                         </div>
                     </div>
 
@@ -171,9 +231,13 @@
                             <div id="bar-mana" class="h-full bg-theme-blue stat-bar-fill" style="width: 100%"></div>
                         </div>
                         <div class="flex justify-center gap-2 items-center">
-                            <input type="number" id="input-mana-atual" value="50" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" oninput="recalc()">
+                            <input type="number" id="input-mana-atual" value="50" 
+                                class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" 
+                                oninput="recalc()">
                             <span class="text-gray-600">/</span>
-                            <input type="number" id="input-mana-max" value="50" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" oninput="recalc()">
+                            <input type="number" id="input-mana-max" value="50" 
+                                class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-blue outline-none" 
+                                oninput="recalc()">
                         </div>
                     </div>
 
@@ -186,118 +250,168 @@
                             <div id="bar-estamina" class="h-full bg-theme-green stat-bar-fill" style="width: 100%"></div>
                         </div>
                         <div class="flex justify-center gap-2 items-center">
-                            <input type="number" id="input-estamina-atual" value="80" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" oninput="recalc()">
+                            <input type="number" id="input-estamina-atual" value="80" 
+                                class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" 
+                                oninput="recalc()">
                             <span class="text-gray-600">/</span>
-                            <input type="number" id="input-estamina-max" value="80" class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" oninput="recalc()">
+                            <input type="number" id="input-estamina-max" value="80" 
+                                class="w-16 bg-transparent text-center border-b border-theme-border focus:border-theme-green outline-none" 
+                                oninput="recalc()">
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
+            <!-- Seção 4: Atributos Base (Azul) -->
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-3 relative overflow-hidden section-attributes">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
                 
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
                     <i data-lucide="sword" class="w-4 h-4"></i> Atributos Base
                 </h3>
 
                 <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    <!-- Força (Vermelho) -->
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-red/50 transition-colors group">
                         <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-red/10 flex items-center justify-center">
                             <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
                         </div>
-                        <label class="text-xs uppercase text-[#606060] font-cinzel">Força</label>
+                        <label class="text-xs uppercase text-gray-500 font-cinzel">Força</label>
                         <div class="flex justify-center items-center mt-2">
-                            <button onclick="changeAttr('attr-forca', -1)" class="p-1 text-lg font-bold text-theme-red hover:bg-theme-border rounded-l border border-r-0 border-theme-border" id="btn-forca-minus" disabled>-</button>
-                            <input type="number" id="attr-forca" value="0" class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-red py-2" oninput="recalc()" readonly>
-                            <button onclick="changeAttr('attr-forca', 1)" class="p-1 text-lg font-bold text-theme-red hover:bg-theme-border rounded-r border border-l-0 border-theme-border" id="btn-forca-plus" disabled>+</button>
+                            <button onclick="changeAttr('attr-forca', -1)" 
+                                class="p-1 text-lg font-bold text-theme-red hover:bg-theme-border rounded-l border border-r-0 border-theme-border" 
+                                id="btn-forca-minus" disabled>-</button>
+                            <input type="number" id="attr-forca" value="0" 
+                                class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-red py-2" 
+                                oninput="recalc()" readonly>
+                            <button onclick="changeAttr('attr-forca', 1)" 
+                                class="p-1 text-lg font-bold text-theme-red hover:bg-theme-border rounded-r border border-l-0 border-theme-border" 
+                                id="btn-forca-plus" disabled>+</button>
                         </div>
                     </div>
 
+                    <!-- Destreza (Verde) -->
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
                         <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-green/10 flex items-center justify-center">
                             <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
                         </div>
-                        <label class="text-xs uppercase text-[#606060] font-cinzel">Destreza</label>
+                        <label class="text-xs uppercase text-gray-500 font-cinzel">Destreza</label>
                         <div class="flex justify-center items-center mt-2">
-                            <button onclick="changeAttr('attr-destreza', -1)" class="p-1 text-lg font-bold text-theme-green hover:bg-theme-border rounded-l border border-r-0 border-theme-border" id="btn-destreza-minus" disabled>-</button>
-                            <input type="number" id="attr-destreza" value="0" class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-green py-2" oninput="recalc()" readonly>
-                            <button onclick="changeAttr('attr-destreza', 1)" class="p-1 text-lg font-bold text-theme-green hover:bg-theme-border rounded-r border border-l-0 border-theme-border" id="btn-destreza-plus" disabled>+</button>
+                            <button onclick="changeAttr('attr-destreza', -1)" 
+                                class="p-1 text-lg font-bold text-theme-green hover:bg-theme-border rounded-l border border-r-0 border-theme-border" 
+                                id="btn-destreza-minus" disabled>-</button>
+                            <input type="number" id="attr-destreza" value="0" 
+                                class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-green py-2" 
+                                oninput="recalc()" readonly>
+                            <button onclick="changeAttr('attr-destreza', 1)" 
+                                class="p-1 text-lg font-bold text-theme-green hover:bg-theme-border rounded-r border border-l-0 border-theme-border" 
+                                id="btn-destreza-plus" disabled>+</button>
                         </div>
                     </div>
 
+                    <!-- Constituição (Amarelo) -->
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-yellow/50 transition-colors">
                         <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-yellow/10 flex items-center justify-center">
                             <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
                         </div>
-                        <label class="text-xs uppercase text-[#606060] font-cinzel">Constituição</label>
+                        <label class="text-xs uppercase text-gray-500 font-cinzel">Constituição</label>
                         <div class="flex justify-center items-center mt-2">
-                            <button onclick="changeAttr('attr-constituicao', -1)" class="p-1 text-lg font-bold text-theme-yellow hover:bg-theme-border rounded-l border border-r-0 border-theme-border" id="btn-constituicao-minus" disabled>-</button>
-                            <input type="number" id="attr-constituicao" value="0" class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-yellow py-2" oninput="recalc()" readonly>
-                            <button onclick="changeAttr('attr-constituicao', 1)" class="p-1 text-lg font-bold text-theme-yellow hover:bg-theme-border rounded-r border border-l-0 border-theme-border" id="btn-constituicao-plus" disabled>+</button>
+                            <button onclick="changeAttr('attr-constituicao', -1)" 
+                                class="p-1 text-lg font-bold text-theme-yellow hover:bg-theme-border rounded-l border border-r-0 border-theme-border" 
+                                id="btn-constituicao-minus" disabled>-</button>
+                            <input type="number" id="attr-constituicao" value="0" 
+                                class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-yellow py-2" 
+                                oninput="recalc()" readonly>
+                            <button onclick="changeAttr('attr-constituicao', 1)" 
+                                class="p-1 text-lg font-bold text-theme-yellow hover:bg-theme-border rounded-r border border-l-0 border-theme-border" 
+                                id="btn-constituicao-plus" disabled>+</button>
                         </div>
                     </div>
 
+                    <!-- Inteligência (Azul) -->
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-blue/50 transition-colors">
                         <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-blue/10 flex items-center justify-center">
                             <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
                         </div>
-                        <label class="text-xs uppercase text-[#606060] font-cinzel">Inteligência</label>
+                        <label class="text-xs uppercase text-gray-500 font-cinzel">Inteligência</label>
                         <div class="flex justify-center items-center mt-2">
-                            <button onclick="changeAttr('attr-inteligencia', -1)" class="p-1 text-lg font-bold text-theme-blue hover:bg-theme-border rounded-l border border-r-0 border-theme-border" id="btn-inteligencia-minus" disabled>-</button>
-                            <input type="number" id="attr-inteligencia" value="0" class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-blue py-2" oninput="recalc()" readonly>
-                            <button onclick="changeAttr('attr-inteligencia', 1)" class="p-1 text-lg font-bold text-theme-blue hover:bg-theme-border rounded-r border border-l-0 border-theme-border" id="btn-inteligencia-plus" disabled>+</button>
+                            <button onclick="changeAttr('attr-inteligencia', -1)" 
+                                class="p-1 text-lg font-bold text-theme-blue hover:bg-theme-border rounded-l border border-r-0 border-theme-border" 
+                                id="btn-inteligencia-minus" disabled>-</button>
+                            <input type="number" id="attr-inteligencia" value="0" 
+                                class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-blue py-2" 
+                                oninput="recalc()" readonly>
+                            <button onclick="changeAttr('attr-inteligencia', 1)" 
+                                class="p-1 text-lg font-bold text-theme-blue hover:bg-theme-border rounded-r border border-l-0 border-theme-border" 
+                                id="btn-inteligencia-plus" disabled>+</button>
                         </div>
                     </div>
 
+                    <!-- Sabedoria (Roxo) -->
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-purple/50 transition-colors">
                         <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-purple/10 flex items-center justify-center">
                             <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
                         </div>
-                        <label class="text-xs uppercase text-[#606060] font-cinzel">Sabedoria</label>
+                        <label class="text-xs uppercase text-gray-500 font-cinzel">Sabedoria</label>
                         <div class="flex justify-center items-center mt-2">
-                            <button onclick="changeAttr('attr-sabedoria', -1)" class="p-1 text-lg font-bold text-theme-purple hover:bg-theme-border rounded-l border border-r-0 border-theme-border" id="btn-sabedoria-minus" disabled>-</button>
-                            <input type="number" id="attr-sabedoria" value="0" class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-purple py-2" oninput="recalc()" readonly>
-                            <button onclick="changeAttr('attr-sabedoria', 1)" class="p-1 text-lg font-bold text-theme-purple hover:bg-theme-border rounded-r border border-l-0 border-theme-border" id="btn-sabedoria-plus" disabled>+</button>
+                            <button onclick="changeAttr('attr-sabedoria', -1)" 
+                                class="p-1 text-lg font-bold text-theme-purple hover:bg-theme-border rounded-l border border-r-0 border-theme-border" 
+                                id="btn-sabedoria-minus" disabled>-</button>
+                            <input type="number" id="attr-sabedoria" value="0" 
+                                class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-purple py-2" 
+                                oninput="recalc()" readonly>
+                            <button onclick="changeAttr('attr-sabedoria', 1)" 
+                                class="p-1 text-lg font-bold text-theme-purple hover:bg-theme-border rounded-r border border-l-0 border-theme-border" 
+                                id="btn-sabedoria-plus" disabled>+</button>
                         </div>
                     </div>
 
+                    <!-- Carisma (Rosa) -->
                     <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-pink/50 transition-colors">
                         <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-pink/10 flex items-center justify-center">
                             <i data-lucide="flame" class="w-5 h-5 text-theme-pink"></i>
                         </div>
-                        <label class="text-xs uppercase text-[#606060] font-cinzel">Carisma</label>
+                        <label class="text-xs uppercase text-gray-500 font-cinzel">Carisma</label>
                         <div class="flex justify-center items-center mt-2">
-                            <button onclick="changeAttr('attr-carisma', -1)" class="p-1 text-lg font-bold text-theme-pink hover:bg-theme-border rounded-l border border-r-0 border-theme-border" id="btn-carisma-minus" disabled>-</button>
-                            <input type="number" id="attr-carisma" value="0" class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-pink py-2" oninput="recalc()" readonly>
-                            <button onclick="changeAttr('attr-carisma', 1)" class="p-1 text-lg font-bold text-theme-pink hover:bg-theme-border rounded-r border border-l-0 border-theme-border" id="btn-carisma-plus" disabled>+</button>
+                            <button onclick="changeAttr('attr-carisma', -1)" 
+                                class="p-1 text-lg font-bold text-theme-pink hover:bg-theme-border rounded-l border border-r-0 border-theme-border" 
+                                id="btn-carisma-minus" disabled>-</button>
+                            <input type="number" id="attr-carisma" value="0" 
+                                class="w-12 bg-transparent border-b-2 border-theme-border text-2xl font-bold font-mono text-center focus:outline-none focus:border-theme-pink py-2" 
+                                oninput="recalc()" readonly>
+                            <button onclick="changeAttr('attr-carisma', 1)" 
+                                class="p-1 text-lg font-bold text-theme-pink hover:bg-theme-border rounded-r border border-l-0 border-theme-border" 
+                                id="btn-carisma-plus" disabled>+</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                <div class="flex flex-col md:flex-row gap-4 mt-6">
                     <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-red transition-colors w-full md:w-auto">
-                        <span class="text-xs uppercase tracking-widest text-[#606060] mr-2 font-cinzel whitespace-nowrap">Total de Pontos:</span>
-                        <input type="number" id="input-pool-pontos" value="0" min="6" max="100" class="bg-transparent w-full outline-none font-mono text-lg text-right text-theme-red">
+                        <span class="text-xs uppercase tracking-widest text-gray-500 mr-2 font-cinzel whitespace-nowrap">Total de Pontos:</span>
+                        <input type="number" id="input-pool-pontos" value="0" min="6" max="100" 
+                            class="bg-transparent w-full outline-none font-mono text-lg text-right text-theme-red">
                     </div>
 
-                    <button onclick="rolarAtributos()" class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-red hover:bg-red-600 rounded text-white shadow-lg hover:shadow-red-500/20 transition-all font-cinzel text-sm font-bold w-full md:w-auto">
+                    <button onclick="rolarAtributos()" 
+                        class="flex items-center justify-center gap-2 px-6 py-2 bg-theme-red hover:bg-red-600 rounded text-white shadow-lg hover:shadow-red-500/20 transition-all font-cinzel text-sm font-bold w-full md:w-auto">
                         <i data-lucide="dice-5" class="w-4 h-4"></i>
                         <span>Rolar Atributos</span>
                     </button>
                 </div>
             </section>
 
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
+            <!-- Seção 5: Balanceamento Manual (Amarelo) -->
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden section-balance">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-yellow"></div>
 
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-4">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-4">
                     <i data-lucide="sliders-horizontal" class="w-4 h-4"></i> Balanceamento Manual
                 </h3>
                 
                 <div class="grid md:grid-cols-2 gap-6">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Multiplicador Classe (0.00 a 2.00)</label>
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Multiplicador Classe (0.00 a 2.00)</label>
                         <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-yellow transition-colors">
                             <i data-lucide="target" class="w-4 h-4 text-theme-yellow mr-2"></i>
                             <input type="number" 
@@ -312,7 +426,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] mb-2 font-cinzel">Multiplicador Dificuldade (0.00 a 1.00)</label>
+                        <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Multiplicador Dificuldade (0.00 a 1.00)</label>
                         <div class="flex items-center bg-[#0a0a0c] border border-theme-border rounded px-3 py-2 focus-within:border-theme-yellow transition-colors">
                             <i data-lucide="hand" class="w-4 h-4 text-theme-yellow mr-2"></i>
                             <input type="number" 
@@ -328,75 +442,194 @@
                 </div>
             </section>
 
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden">
+            <!-- Seção 6: Valores Derivados (Verde) -->
+            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden section-derived">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
                 
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
                     <i data-lucide="calculator" class="w-4 h-4"></i> Valores Derivados (Automático)
                 </h3>
 
                 <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
                         <i data-lucide="shield" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
-                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Blindagem</p>
+                        <p class="text-xs uppercase tracking-widest text-gray-500 font-cinzel">Blindagem</p>
                         <p id="calc-blindagem" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
                     </div>
 
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
                         <i data-lucide="wind" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
-                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Velocidade</p>
+                        <p class="text-xs uppercase tracking-widest text-gray-500 font-cinzel">Velocidade</p>
                         <p id="calc-velocidade" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
                     </div>
 
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
                         <i data-lucide="zap" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
-                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Iniciativa</p>
+                        <p class="text-xs uppercase tracking-widest text-gray-500 font-cinzel">Iniciativa</p>
                         <p id="calc-iniciativa" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
                     </div>
 
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
-                        <i data-lucide="clover" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
-                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Sorte (1d100)</p>
-                        <p id="calc-sorte" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
-                    </div>
-
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
                         <i data-lucide="radar" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
-                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Percepção Espacial</p>
+                        <p class="text-xs uppercase tracking-widest text-gray-500 font-cinzel">Percepção Espacial</p>
                         <p id="calc-percepcao" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
                     </div>
 
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded">
+                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
                         <i data-lucide="eye-off" class="w-6 h-6 mx-auto mb-2 text-theme-green"></i>
-                        <p class="text-xs uppercase tracking-widest text-[#606060] font-cinzel">Visão Noturna</p>
+                        <p class="text-xs uppercase tracking-widest text-gray-500 font-cinzel">Visão Noturna</p>
                         <p id="calc-visao-noturna" class="text-3xl font-bold text-theme-green font-mono mt-2">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Seção 7: Destino (Card Principal - Tema Marrom/Cobre) -->
+            <section class="bg-[#1a1510] border border-[#8b7355] p-4 text-center rounded anim-entry delay-4 group hover:border-[#d4a76a] transition-all duration-300">
+                <div class="w-12 h-12 mx-auto mb-2 rounded-full bg-gradient-to-br from-[#8b7355] to-[#d4a76a] flex items-center justify-center shadow-lg">
+                    <i data-lucide="clover" class="w-6 h-6 text-white"></i>
+                </div>
+                <p class="text-xs uppercase tracking-widest text-[#d4a76a] font-cinzel mb-1">Destino</p>
+                <p id="calc-sorte" class="text-3xl font-bold text-[#f4d29a] font-mono my-2">--</p>
+                <div class="text-xs text-[#8b7355] mb-3">% de Fortuna</div>
+                <button onclick="rolarSorte()" 
+                    class="w-full px-4 py-2 bg-gradient-to-r from-[#8b7355]/20 to-[#d4a76a]/20 text-[#f4d29a] rounded border border-[#8b7355] hover:border-[#d4a76a] hover:from-[#8b7355]/30 hover:to-[#d4a76a]/30 transition-all duration-300 font-cinzel text-sm group-hover:shadow-lg group-hover:shadow-[#8b7355]/20">
+                    <i data-lucide="dice-5" class="w-3 h-3 inline mr-1"></i>
+                    Rolar Destino
+                </button>
+            </section>
+
+            <!-- Seção 8: Rolagem do Destino (Expandida - Tema Marrom/Cobre) -->
+            <section id="secao-dados-sorte" class="bg-[#1a1510] border border-[#8b7355] p-6 rounded-lg hidden anim-entry delay-4 relative overflow-hidden group hover:border-[#d4a76a] transition-all duration-500">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#8b7355] via-[#d4a76a] to-[#f4d29a]"></div>
+                
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 rounded bg-[#8b7355]/20 border border-[#8b7355]/30">
+                        <i data-lucide="dice-5" class="w-5 h-5 text-[#d4a76a]"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#f4d29a]">Rolagem do Destino</h3>
+                        <p class="text-[#8b7355] text-sm">Três dados definem sua fortuna</p>
+                    </div>
+                </div>
+                
+                <!-- DADOS VISUAIS -->
+                <div class="grid grid-cols-3 gap-6 mb-8">
+                    <div class="text-center transform hover:scale-105 transition-transform duration-300">
+                        <div class="w-20 h-20 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[#1a1510] to-[#2a2318] flex items-center justify-center border-2 border-[#8b7355] shadow-lg relative overflow-hidden group/dado">
+                            <div class="absolute inset-0 bg-gradient-to-br from-transparent via-[#8b7355]/5 to-transparent"></div>
+                            <span id="dado-sorte-1" class="text-3xl font-bold text-[#f4d29a] font-mono relative z-10">0</span>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#d4a76a] to-transparent opacity-0 group-hover/dado:opacity-100 transition-opacity"></div>
+                        </div>
+                        <p class="text-xs uppercase tracking-widest text-[#8b7355] font-cinzel">Fé</p>
+                        <p class="text-xs text-[#8b7355] mt-1">Dado do Coração</p>
+                    </div>
+                    
+                    <div class="text-center transform hover:scale-105 transition-transform duration-300">
+                        <div class="w-20 h-20 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[#1a1510] to-[#2a2318] flex items-center justify-center border-2 border-[#8b7355] shadow-lg relative overflow-hidden group/dado">
+                            <div class="absolute inset-0 bg-gradient-to-br from-transparent via-[#8b7355]/5 to-transparent"></div>
+                            <span id="dado-sorte-2" class="text-3xl font-bold text-[#f4d29a] font-mono relative z-10">0</span>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#d4a76a] to-transparent opacity-0 group-hover/dado:opacity-100 transition-opacity"></div>
+                        </div>
+                        <p class="text-xs uppercase tracking-widest text-[#8b7355] font-cinzel">Sorte</p>
+                        <p class="text-xs text-[#8b7355] mt-1">Dado do Acaso</p>
+                    </div>
+                    
+                    <div class="text-center transform hover:scale-105 transition-transform duration-300">
+                        <div class="w-20 h-20 mx-auto mb-3 rounded-xl bg-gradient-to-br from-[#1a1510] to-[#2a2318] flex items-center justify-center border-2 border-[#8b7355] shadow-lg relative overflow-hidden group/dado">
+                            <div class="absolute inset-0 bg-gradient-to-br from-transparent via-[#8b7355]/5 to-transparent"></div>
+                            <span id="dado-sorte-3" class="text-3xl font-bold text-[#f4d29a] font-mono relative z-10">0</span>
+                            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#d4a76a] to-transparent opacity-0 group-hover/dado:opacity-100 transition-opacity"></div>
+                        </div>
+                        <p class="text-xs uppercase tracking-widest text-[#8b7355] font-cinzel">Destino</p>
+                        <p class="text-xs text-[#8b7355] mt-1">Dado do Fado</p>
+                    </div>
+                </div>
+                
+                <!-- FÓRMULA E CÁLCULO -->
+                <div class="bg-gradient-to-r from-[#1a1510] to-[#2a2318] border border-[#8b7355]/30 p-5 rounded-xl mb-6">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="calculator" class="w-4 h-4 text-[#d4a76a]"></i>
+                        <span class="font-cinzel text-sm font-semibold text-[#f4d29a]">Fórmula do Destino</span>
+                    </div>
+                    
+                    <div class="text-center mb-4">
+                        <p class="text-sm text-[#8b7355] mb-1">A magia da probabilidade:</p>
+                        <div class="font-mono text-lg text-[#f4d29a] bg-[#1a1510] p-3 rounded border border-[#8b7355]/20">
+                            <span class="text-[#d4a76a]">((</span><span class="text-white">FÉ</span><span class="text-[#d4a76a]"> + </span><span class="text-white">DESTINO</span><span class="text-[#d4a76a]">) × 2 - </span><span class="text-white">SORTE</span><span class="text-[#d4a76a]">) ÷ 2</span>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <p class="text-xs text-[#8b7355] mb-1">Cálculo atual:</p>
+                        <p id="calculo-sorte" class="text-base font-mono text-[#f4d29a]">
+                            ((<span class="text-white">0</span> + <span class="text-white">0</span>) × 2 - <span class="text-white">0</span>) ÷ 2 = <span class="text-[#d4a76a] font-bold">0</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- BOTÕES DE AÇÃO -->
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <button onclick="rolarSorte()" 
+                        class="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] text-white rounded-lg border border-[#8b7355] hover:from-[#9d8465] hover:to-[#e6b97a] hover:shadow-lg hover:shadow-[#8b7355]/30 transition-all duration-300 font-cinzel text-sm font-bold group/btn">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 group-hover/btn:rotate-180 transition-transform duration-500"></i>
+                        <span>Rolar Novamente</span>
+                    </button>
+                    
+                    <button onclick="fixarSorte()" id="btn-fixar-sorte" 
+                        class="flex-1 flex items-center justify-center gap-2 px-5 py-3 bg-gradient-to-r from-[#1a1510] to-[#2a2318] text-[#f4d29a] rounded-lg border border-[#8b7355] hover:border-[#d4a76a] hover:bg-[#2a2318] hover:shadow-lg hover:shadow-[#8b7355]/20 transition-all duration-300 font-cinzel text-sm">
+                        <i data-lucide="lock" class="w-4 h-4"></i>
+                        <span>Fixar Destino</span>
+                    </button>
+                </div>
+                
+                <!-- LEGENDA -->
+                <div class="mt-6 pt-4 border-t border-[#8b7355]/20">
+                    <div class="flex items-center justify-center gap-4 text-xs text-[#8b7355]">
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 rounded-full bg-[#8b7355]"></div>
+                            <span>1-25%: Azar Persegue</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 rounded-full bg-[#d4a76a]"></div>
+                            <span>26-74%: Destino Misto</span>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <div class="w-2 h-2 rounded-full bg-[#f4d29a]"></div>
+                            <span>75-100%: Fortuna Sorri</span>
+                        </div>
                     </div>
                 </div>
             </section>
         </div>
     </div>
 
+    <!-- Rodapé com Botões de Ação -->
     <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
-        <button onclick="resetStats()" class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
+        <button onclick="resetStats()" 
+            class="px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
             Resetar
         </button>
         
-        <button onclick="acionarGerarCard()" class="group flex items-center gap-2 px-6 py-2 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+        <button onclick="acionarGerarCard()" 
+            class="group flex items-center gap-2 px-6 py-2 bg-theme-pink hover:bg-pink-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="sheet" class="w-4 h-4"></i>
             <span>Gerar Card Ficha</span>
         </button>
         
-        <button onclick="exportDataTXT()" id="btn-txt" class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+        <button onclick="exportDataTXT()" id="btn-txt" 
+            class="group flex items-center gap-2 px-4 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="file-text" class="w-4 h-4"></i>
             <span>Exportar TXT</span>
         </button>
 
-        <button onclick="saveStats()" id="btn-save" class="group flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-theme-orange to-red-600 rounded text-white shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
+        <button onclick="saveStats()" id="btn-save" 
+            class="group flex items-center gap-2 px-6 py-2 bg-gradient-to-r from-theme-orange to-red-600 rounded text-white shadow-lg hover:shadow-orange-500/20 transition-all font-cinzel text-sm font-bold">
             <i data-lucide="save" class="w-4 h-4"></i>
             <span>Salvar</span>
         </button>
     </div>
 
+    <!-- Área de Saída para Cards -->
     <div class="max-w-6xl mx-auto px-4">
         <section id="card-personagem-output" class="mt-6"></section>
     </div>
@@ -405,9 +638,22 @@
         lucide.createIcons();
 
         // ====================================================================
-        // 1. SISTEMA DE CLASSES E RECOMENDAÇÕES
+        // 1. VARIÁVEIS GLOBAIS E CONSTANTES
         // ====================================================================
+        let currentLevel = 1;
+        let accumulatedXP = 0;
+        let bonusPoints = 0;
+        const XP_PER_LEVEL = 1000;
+        const ATTRIBUTE_IDS = ['attr-forca', 'attr-destreza', 'attr-constituicao', 'attr-inteligencia', 'attr-sabedoria', 'attr-carisma'];
         
+        // Variáveis para controle da sorte
+        let sorteAtual = null;
+        let dadosSorte = [0, 0, 0];
+        let sorteFixada = false;
+
+        // ====================================================================
+        // 2. SISTEMA DE CLASSES E RECOMENDAÇÕES
+        // ====================================================================
         const CLASS_BONUSES = {
             guerreiro: { for: 4, dex: 2, con: 4, int: 1, wis: 2, cha: 1 },
             mago: { for: 1, dex: 2, con: 2, int: 6, wis: 4, cha: 3 },
@@ -421,47 +667,55 @@
             barbaro: { for: 6, dex: 3, con: 5, int: 1, wis: 2, cha: 1 }
         };
 
-        const WEAPON_RECOMMENDATIONS = {
-            // Armas com alto crítico (>75% sorte)
-            altoCritico: [
-                { nome: "Adagas Gêmeas da Sorte"},
-                { nome: "Arco do Acerto Certeiro"},
-                { nome: "Espada Vorpal"},
-                { nome: "Foice da Colheita"}
-            ],
-            // Armas baseadas em Força
-            forca: [
-                { nome: "Machado de Batalha Duplo"},
-                { nome: "Martelo do Trovão"},
-                { nome: "Espada Grande"}
-            ],
-            // Armas baseadas em Destreza
-            destreza: [
-                { nome: "Rapieira Elegante"},
-                { nome: "Arco Longo Composto"},
-                { nome: "Shurikens Estelares"}
-            ],
-            // Armas baseadas em Inteligência
-            inteligencia: [
-                { nome: "Cajado Arcano"},
-                { nome: "Orbe Cristalino"},
-                { nome: "Livro de Feitiços"}
-            ],
-            // Armas baseadas em classe específica
-            classeEspecifica: {
-                guerreiro: ["Espada Longa", "Machado de Guerra", "Lança"],
-                mago: ["Cajado", "Adaga Mágica", "Cetro"],
-                arqueiro: ["Arco Composto", "Besta", "Funda"],
-                ladino: ["Adagas", "Azagaia", "Foice"],
-                paladino: ["Martelo de Guerra", "Espada Bastarda", "Maça"],
-                bardo: ["Alaúde", "Rapieira", "Besta de Mão"]
-            }
-        };
+        // ====================================================================
+        // 3. FUNÇÕES UTILITÁRIAS
+        // ====================================================================
+        function el(id) { return document.getElementById(id); }
+        function val(id) { return parseInt(el(id)?.value || 0); }
+        function getInt() { return val('attr-inteligencia'); }
+        function setTxt(id, value) { const e = el(id); if (e) e.textContent = value; }
+
+        function mostrarFeedback(mensagem, tipo = 'info') {
+            console.log(`[${tipo.toUpperCase()}] ${mensagem}`);
+            
+            // Remove feedback anterior se existir
+            const feedbackAntigo = document.querySelector('.feedback-msg');
+            if (feedbackAntigo) feedbackAntigo.remove();
+            
+            // Cria novo feedback
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-msg fixed top-4 right-4 z-50 px-4 py-3 rounded-lg border shadow-lg transition-all duration-500 animate-in slide-in-from-right-10 ${
+                tipo === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
+                tipo === 'warning' ? 'bg-yellow-900/30 border-yellow-700 text-yellow-300' :
+                tipo === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
+                'bg-blue-900/30 border-blue-700 text-blue-300'
+            }`;
+            
+            feedback.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i data-lucide="${
+                        tipo === 'success' ? 'check-circle' :
+                        tipo === 'warning' ? 'alert-triangle' :
+                        tipo === 'error' ? 'x-circle' : 'info'
+                    }" class="w-4 h-4"></i>
+                    <span class="font-medium">${mensagem}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(feedback);
+            lucide.createIcons();
+            
+            // Remove após 5 segundos
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+                feedback.style.transform = 'translateX(20px)';
+                setTimeout(() => feedback.remove(), 500);
+            }, 5000);
+        }
 
         // ====================================================================
-        // 2. FUNÇÕES DE CARREGAMENTO DE DADOS DA FICHA
+        // 4. SISTEMA DE CARREGAMENTO DE DADOS DA FICHA
         // ====================================================================
-        
         function carregarDadosDaFicha() {
             // Carregar dados salvos da ficha
             const dadosFicha = localStorage.getItem('grimorio_ficha_personagem');
@@ -471,24 +725,12 @@
             
             // 1. Preencher nome do personagem
             if (nome && nome !== 'null' && nome !== 'undefined') {
-                document.getElementById('input-nome').value = nome;
+                el('input-nome').value = nome;
             }
             
             // 2. Carregar classe e aplicar bônus
             if (classe && classe !== 'null' && classe !== 'undefined') {
                 aplicarBonusDeClasse(classe);
-            }
-            
-            // 3. Carregar dados completos da ficha (se existirem)
-            if (dadosFicha) {
-                try {
-                    const dados = JSON.parse(dadosFicha);
-                    console.log('Dados da ficha carregados:', dados);
-                    
-                    // Aqui você pode carregar outros dados específicos se necessário
-                } catch (error) {
-                    console.error('Erro ao carregar dados da ficha:', error);
-                }
             }
             
             return { classe, raca, nome };
@@ -504,221 +746,268 @@
             }
             
             // Aplicar bônus aos atributos
-            document.getElementById('attr-forca').value = parseInt(document.getElementById('attr-forca').value) + bonus.for;
-            document.getElementById('attr-destreza').value = parseInt(document.getElementById('attr-destreza').value) + bonus.dex;
-            document.getElementById('attr-constituicao').value = parseInt(document.getElementById('attr-constituicao').value) + bonus.con;
-            document.getElementById('attr-inteligencia').value = parseInt(document.getElementById('attr-inteligencia').value) + bonus.int;
-            document.getElementById('attr-sabedoria').value = parseInt(document.getElementById('attr-sabedoria').value) + bonus.wis;
-            document.getElementById('attr-carisma').value = parseInt(document.getElementById('attr-carisma').value) + bonus.cha;
+            el('attr-forca').value = parseInt(el('attr-forca').value) + bonus.for;
+            el('attr-destreza').value = parseInt(el('attr-destreza').value) + bonus.dex;
+            el('attr-constituicao').value = parseInt(el('attr-constituicao').value) + bonus.con;
+            el('attr-inteligencia').value = parseInt(el('attr-inteligencia').value) + bonus.int;
+            el('attr-sabedoria').value = parseInt(el('attr-sabedoria').value) + bonus.wis;
+            el('attr-carisma').value = parseInt(el('attr-carisma').value) + bonus.cha;
             
-            // Mostrar feedback
-            mostrarRecomendacao(`Bônus de classe "${classe}" aplicados: +${bonus.for} FOR, +${bonus.dex} DEX, +${bonus.con} CON, +${bonus.int} INT, +${bonus.wis} WIS, +${bonus.cha} CHA`);
+            mostrarFeedback(`Bônus de classe "${classe}" aplicados!`, 'success');
         }
 
         // ====================================================================
-        // 3. SISTEMA DE SORTE E RECOMENDAÇÕES
+        // 5. SISTEMA DE DESTINO/SORTE
         // ====================================================================
-        
-        function calcularSorte() {
-            // Sorte é baseada em Carisma + Nível + random
-            const carisma = parseInt(document.getElementById('attr-carisma').value) || 0;
-            const nivel = parseInt(document.getElementById('input-nivel').value) || 1;
-            const randomBonus = Math.floor(Math.random() * 21); // 0-20
+        function rolarSorte() {
+            if (sorteFixada) {
+                if (!confirm("O destino está fixado! Deseja rolar novamente e sobrescrever?")) {
+                    return;
+                }
+                sorteFixada = false;
+            }
             
-            let sorteBase = carisma * 2 + nivel * 3 + randomBonus;
+            // Rolar 3 dados de 1 a 100
+            const dado1 = Math.floor(Math.random() * 100) + 1;
+            const dado2 = Math.floor(Math.random() * 100) + 1;
+            const dado3 = Math.floor(Math.random() * 100) + 1;
             
-            // Ajustar para 1-100
-            sorteBase = Math.min(100, Math.max(1, sorteBase));
+            dadosSorte = [dado1, dado2, dado3];
             
-            return sorteBase;
+            // Aplicar a fórmula: ((dado1 + dado3) * 2 - dado2) / 2
+            const resultadoBruto = ((dado1 + dado3) * 2 - dado2) / 2;
+            
+            // Garantir que o resultado esteja entre 1 e 100
+            let resultadoFinal = Math.round(resultadoBruto);
+            resultadoFinal = Math.max(1, Math.min(100, resultadoFinal));
+            
+            sorteAtual = resultadoFinal;
+            
+            // Atualizar a interface
+            atualizarDisplaySorte();
+            
+            // Mostrar a seção de dados
+            el('secao-dados-sorte').classList.remove('hidden');
+            
+            // Gerar recomendações baseadas na nova sorte
+            gerarRecomendacoesBaseadasNaSorte(sorteAtual);
+            
+            // Salvar automaticamente
+            salvarSorteNoLocalStorage();
+            
+            mostrarFeedback(`🎲 Destino rolado: ${sorteAtual}%`, 'success');
         }
-        
-        function gerarRecomendacoes(sorte) {
-            const classe = localStorage.getItem('grimorio_classe_personagem') || 'guerreiro';
-            const classeLower = classe.toLowerCase();
+
+        function fixarSorte() {
+            sorteFixada = true;
             
-            let recomendacoes = [];
-            
-            // 1. RECOMENDAÇÃO PRINCIPAL BASEADA EM SORTE
-            if (sorte >= 75) {
-                // Sorte alta = armas de crítico
-                const armaCritico = WEAPON_RECOMMENDATIONS.altoCritico[
-                    Math.floor(Math.random() * WEAPON_RECOMMENDATIONS.altoCritico.length)
-                ];
-                recomendacoes.push({
-                    tipo: "🎲 SORTE ALTA",
-                    mensagem: `Com ${sorte}% de sorte, você é abençoado pela fortuna!`,
-                    recomendacao: `Arma recomendada: ${armaCritico.nome} (${armaCritico.dano}, Crítico: ${armaCritico.critico})`,
-                    dica: "Foque em ataques que exploram chances de crítico."
-                });
-            } else if (sorte <= 25) {
-                recomendacoes.push({
-                    tipo: "⚠️ SORTE BAIXA",
-                    mensagem: `Com apenas ${sorte}% de sorte, o destino não está ao seu favor.`,
-                    recomendacao: "Use armas confiáveis com dano constante.",
-                    dica: "Equipamentos defensivos são essenciais para sobreviver."
-                });
+            // Atualizar botão
+            const botaoFixar = el('btn-fixar-sorte');
+            if (botaoFixar) {
+                botaoFixar.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Destino Selado!';
+                botaoFixar.classList.remove('bg-gradient-to-r', 'from-[#1a1510]', 'to-[#2a2318]', 'hover:bg-[#2a2318]');
+                botaoFixar.classList.add('bg-gradient-to-r', 'from-[#8b7355]/30', 'to-[#d4a76a]/30', 'border-[#d4a76a]');
+                botaoFixar.disabled = true;
+                lucide.createIcons();
             }
             
-            // 2. RECOMENDAÇÃO BASEADA NO ATRIBUTO MAIS ALTO
-            const atributos = {
-                forca: parseInt(document.getElementById('attr-forca').value),
-                destreza: parseInt(document.getElementById('attr-destreza').value),
-                constituicao: parseInt(document.getElementById('attr-constituicao').value),
-                inteligencia: parseInt(document.getElementById('attr-inteligencia').value),
-                sabedoria: parseInt(document.getElementById('attr-sabedoria').value),
-                carisma: parseInt(document.getElementById('attr-carisma').value)
-            };
-            
-            const maiorAtributo = Object.keys(atributos).reduce((a, b) => 
-                atributos[a] > atributos[b] ? a : b
-            );
-            
-            switch(maiorAtributo) {
-                case 'forca':
-                    recomendacoes.push({
-                        tipo: "💪 FORÇA DOMINANTE",
-                        mensagem: "Sua força impressionante é seu maior trunfo.",
-                        recomendacao: "Armas pesadas de duas mãos maximizam seu dano.",
-                        dica: "Considere a especialização em quebrar defesas."
-                    });
-                    break;
-                case 'destreza':
-                    recomendacoes.push({
-                        tipo: "🎯 PRECISÃO EXCEPCIONAL",
-                        mensagem: "Sua agilidade e precisão são notáveis.",
-                        recomendacao: "Armas leves e rápidas ou arcos aproveitam sua destreza.",
-                        dica: "Foque em esquiva e ataques múltiplos."
-                    });
-                    break;
-                case 'inteligencia':
-                    recomendacoes.push({
-                        tipo: "🧠 INTELIGÊNCIA SUPERIOR",
-                        mensagem: "Sua mente afiada é sua maior arma.",
-                        recomendacao: "Feitiços e armas mágicas amplificam seu potencial.",
-                        dica: "Estude o inimigo e explore suas fraquezas."
-                    });
-                    break;
+            // Efeito visual de confirmação
+            const secaoSorte = el('secao-dados-sorte');
+            if (secaoSorte) {
+                secaoSorte.classList.add('border-[#d4a76a]');
+                secaoSorte.style.boxShadow = '0 0 30px rgba(212, 167, 106, 0.2)';
+                setTimeout(() => {
+                    secaoSorte.style.boxShadow = '';
+                }, 1000);
             }
             
-            // 3. RECOMENDAÇÃO BASEADA NA CLASSE
-            if (CLASS_BONUSES[classeLower]) {
-                const armasClasse = WEAPON_RECOMMENDATIONS.classeEspecifica[classeLower] || [];
-                if (armasClasse.length > 0) {
-                    recomendacoes.push({
-                        tipo: `⚔️ ESPECIALISTA ${classe.toUpperCase()}`,
-                        mensagem: `Como ${classe}, você domina certas armas.`,
-                        recomendacao: `Armas recomendadas: ${armasClasse.join(', ')}`,
-                        dica: "Aperfeiçoe técnicas únicas de sua classe."
-                    });
+            // Salvar automaticamente
+            salvarSorteNoLocalStorage();
+            
+            // Feedback
+            let mensagem = '';
+            if (sorteAtual >= 75) {
+                mensagem = `✨ Destino glorioso fixado em ${sorteAtual}%! A fortuna sorri para você.`;
+            } else if (sorteAtual <= 25) {
+                mensagem = `🌑 Destino sombrio fixado em ${sorteAtual}%. O caminho será árduo, mas não impossível.`;
+            } else {
+                mensagem = `⚖️ Destino fixado em ${sorteAtual}%. O equilíbrio está em suas mãos.`;
+            }
+            
+            mostrarFeedback(mensagem, 'success');
+        }
+
+        function atualizarDisplaySorte() {
+            // Atualizar o card principal
+            const cardSorte = el('calc-sorte');
+            if (cardSorte) {
+                cardSorte.textContent = sorteAtual !== null ? `${sorteAtual}%` : '--';
+                
+                // Cor dinâmica baseada no valor
+                const cardContainer = cardSorte.closest('.bg-\\[\\#1a1510\\]');
+                if (cardContainer) {
+                    if (sorteAtual >= 75) {
+                        cardContainer.classList.remove('border-[#8b7355]');
+                        cardContainer.classList.add('border-[#f4d29a]', 'shadow-lg', 'shadow-[#f4d29a]/20');
+                    } else if (sorteAtual <= 25) {
+                        cardContainer.classList.remove('border-[#8b7355]');
+                        cardContainer.classList.add('border-[#8b4513]');
+                    } else {
+                        cardContainer.classList.add('border-[#8b7355]');
+                        cardContainer.classList.remove('border-[#f4d29a]', 'border-[#8b4513]', 'shadow-lg', 'shadow-[#f4d29a]/20');
+                    }
                 }
             }
             
-            // 4. ANÁLISE DE SINERGIA
-            const forca = atributos.forca;
-            const destreza = atributos.destreza;
-            
-            if (forca >= 15 && destreza >= 15) {
-                recomendacoes.push({
-                    tipo: "🔥 SINERGIA PERFEITA",
-                    mensagem: "Força e Destreza em equilíbrio!",
-                    recomendacao: "Armas versáteis como espadas longas são ideais.",
-                    dica: "Você pode alternar entre poder e agilidade."
-                });
-            }
-            
-            return recomendacoes;
-        }
-
-        // ====================================================================
-        // 4. FUNÇÕES UTILITÁRIAS (MANTIDAS COM AJUSTES)
-        // ====================================================================
-        
-        const el = id => document.getElementById(id);
-        const setTxt = (id, txt) => el(id).innerText = txt;
-        
-        const val = id => {
-            const value = el(id).value;
-            if (id === 'input-classe' || id === 'input-dificuldade') {
-                return parseFloat(value) || 0;
-            }
-            return parseInt(value) || 0;
-        };
-        
-        const getInt = () => val('attr-inteligencia');
-        const ATTRIBUTE_IDS = ['attr-forca', 'attr-destreza', 'attr-constituicao', 'attr-inteligencia', 'attr-sabedoria', 'attr-carisma'];
-
-        // Variáveis globais
-        let currentLevel = 1;
-        let accumulatedXP = 0;
-        let bonusPoints = 0;
-        const XP_PER_LEVEL = 1000;
-
-        function mostrarRecomendacao(mensagem, tipo = 'info') {
-            // Criar ou atualizar elemento de recomendação
-            let recomendacaoEl = document.getElementById('recomendacao-container');
-            
-            if (!recomendacaoEl) {
-                recomendacaoEl = document.createElement('div');
-                recomendacaoEl.id = 'recomendacao-container';
-                recomendacaoEl.className = 'mt-6 p-4 bg-theme-panel border border-theme-border rounded-lg anim-entry';
-                document.querySelector('.max-w-6xl.mx-auto.px-4').appendChild(recomendacaoEl);
-            }
-            
-            const icon = tipo === 'info' ? '📊' : tipo === 'success' ? '✅' : '⚠️';
-            recomendacaoEl.innerHTML = `
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-2">
-                    <i data-lucide="sparkles" class="w-4 h-4"></i> Recomendações do Sistema
-                </h3>
-                <p class="text-theme-text">${icon} ${mensagem}</p>
-            `;
-            
-            // Remover após 10 segundos
-            setTimeout(() => {
-                if (recomendacaoEl) {
-                    recomendacaoEl.style.opacity = '0';
-                    recomendacaoEl.style.transition = 'opacity 0.5s';
-                    setTimeout(() => recomendacaoEl.remove(), 500);
+            // Atualizar os dados visuais com animação
+            const dadosIds = ['dado-sorte-1', 'dado-sorte-2', 'dado-sorte-3'];
+            dadosIds.forEach((id, index) => {
+                const elemento = el(id);
+                if (elemento) {
+                    // Animação de rolagem
+                    elemento.classList.add('dice-rolling');
+                    setTimeout(() => {
+                        elemento.textContent = dadosSorte[index];
+                        
+                        // Destacar dados altos (>80)
+                        const dadoContainer = elemento.closest('.rounded-xl');
+                        if (dadosSorte[index] > 80 && dadoContainer) {
+                            dadoContainer.classList.add('high-roll');
+                        } else {
+                            dadoContainer.classList.remove('high-roll');
+                        }
+                        
+                        // Remover animação após completar
+                        setTimeout(() => {
+                            elemento.classList.remove('dice-rolling');
+                        }, 800);
+                    }, 300);
                 }
-            }, 10000);
-        }
-
-        function mostrarRecomendacoesDetalhadas(recomendacoes) {
-            const container = document.getElementById('card-personagem-output');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            recomendacoes.forEach((rec, index) => {
-                const card = document.createElement('div');
-                card.className = `bg-theme-panel border ${rec.tipo.includes('SORTE ALTA') ? 'border-theme-yellow' : 'border-theme-border'} p-4 rounded-lg mb-4 anim-entry delay-${index}`;
-                
-                card.innerHTML = `
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="font-cinzel font-bold ${rec.tipo.includes('SORTE ALTA') ? 'text-theme-yellow' : 'text-theme-blue'}">${rec.tipo}</span>
-                    </div>
-                    <p class="text-theme-text mb-2">${rec.mensagem}</p>
-                    <div class="bg-[#0a0a0c] p-3 rounded border border-theme-border">
-                        <p class="text-sm font-medium text-theme-green">🎯 ${rec.recomendacao}</p>
-                        <p class="text-xs text-[#a0a0a0] mt-1">💡 ${rec.dica}</p>
-                    </div>
-                `;
-                
-                container.appendChild(card);
             });
             
-            // Rolar para as recomendações
-            setTimeout(() => {
-                container.scrollIntoView({ behavior: 'smooth' });
-            }, 300);
+            // Atualizar o cálculo com cores
+            const calculo = `((<span class="text-white">${dadosSorte[0]}</span> + <span class="text-white">${dadosSorte[2]}</span>) × 2 - <span class="text-white">${dadosSorte[1]}</span>) ÷ 2 = <span class="${sorteAtual >= 75 ? 'text-[#f4d29a]' : sorteAtual <= 25 ? 'text-[#8b4513]' : 'text-[#d4a76a]'} font-bold">${sorteAtual}</span>`;
+            el('calculo-sorte').innerHTML = calculo;
+            
+            // Atualizar título da seção baseado na sorte
+            const titulo = document.querySelector('#secao-dados-sorte h3');
+            if (titulo) {
+                if (sorteAtual >= 75) {
+                    titulo.innerHTML = '<i data-lucide="crown" class="w-5 h-5 inline mr-2 text-[#f4d29a]"></i>Destino Glorioso';
+                } else if (sorteAtual <= 25) {
+                    titulo.innerHTML = '<i data-lucide="cloud-rain" class="w-5 h-5 inline mr-2 text-[#8b4513]"></i>Destino Sombrio';
+                } else {
+                    titulo.innerHTML = '<i data-lucide="compass" class="w-5 h-5 inline mr-2 text-[#d4a76a]"></i>Destino Incerto';
+                }
+                lucide.createIcons();
+            }
+        }
+
+        function gerarRecomendacoesBaseadasNaSorte(sorte) {
+            const container = el('card-personagem-output');
+            if (!container) return;
+            
+            let recomendacao = '';
+            let icone = '🎯';
+            
+            if (sorte >= 90) {
+                recomendacao = 'SORTE LENDÁRIA! Você é abençoado pelos deuses. Armas com crítico máximo são obrigatórias.';
+                icone = '✨';
+            } else if (sorte >= 75) {
+                recomendacao = 'Sorte excelente! Foque em armas com alto dano crítico e efeitos especiais.';
+                icone = '🎲';
+            } else if (sorte >= 60) {
+                recomendacao = 'Sorte acima da média. Armas balanceadas com chance de crítico são ideais.';
+                icone = '🍀';
+            } else if (sorte >= 40) {
+                recomendacao = 'Sorte mediana. Use armas confiáveis com dano constante.';
+                icone = '⚖️';
+            } else if (sorte >= 25) {
+                recomendacao = 'Sorte abaixo da média. Prefira armas defensivas e equipamentos de proteção.';
+                icone = '🛡️';
+            } else {
+                recomendacao = 'Sorte crítica baixa. Foque em sobrevivência e evite riscos desnecessários.';
+                icone = '⚠️';
+            }
+            
+            // Criar ou atualizar card de recomendação de sorte
+            let cardSorte = el('card-recomendacao-sorte');
+            if (!cardSorte) {
+                cardSorte = document.createElement('div');
+                cardSorte.id = 'card-recomendacao-sorte';
+                cardSorte.className = `bg-[#1a1510] border border-[#8b7355] p-4 rounded-lg mb-4`;
+                container.prepend(cardSorte);
+            }
+            
+            cardSorte.innerHTML = `
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-2xl">${icone}</span>
+                    <span class="font-cinzel font-bold text-[#f4d29a]">DESTINO: ${sorte}%</span>
+                </div>
+                <p class="text-[#d4a76a]">${recomendacao}</p>
+                ${sorte >= 75 ? `
+                <div class="mt-3 p-2 bg-[#8b7355]/10 border border-[#8b7355]/20 rounded">
+                    <p class="text-sm text-[#f4d29a] font-medium">🎯 Armas recomendadas (Alto Crítico):</p>
+                    <ul class="text-xs text-[#d4a76a] mt-1 list-disc list-inside">
+                        <li>Adagas Gêmeas da Sorte (19-20/x3)</li>
+                        <li>Espada Vorpal (18-20/x2)</li>
+                        <li>Arco do Acerto Certeiro (x4 crítico)</li>
+                    </ul>
+                </div>
+                ` : ''}
+            `;
         }
 
         // ====================================================================
-        // 5. FUNÇÃO PRINCIPAL DE CÁLCULO (ATUALIZADA)
+        // 6. SISTEMA DE SALVAMENTO/CARREGAMENTO DA SORTE
         // ====================================================================
-        
+        function salvarSorteNoLocalStorage() {
+            const dadosSorte = {
+                valor: sorteAtual,
+                dados: dadosSorte,
+                fixada: sorteFixada,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('grimorio_sorte', JSON.stringify(dadosSorte));
+        }
+
+        function carregarSorteDoLocalStorage() {
+            const dadosSalvos = localStorage.getItem('grimorio_sorte');
+            if (!dadosSalvos) return;
+            
+            try {
+                const dados = JSON.parse(dadosSalvos);
+                sorteAtual = dados.valor;
+                dadosSorte = dados.dados || [0, 0, 0];
+                sorteFixada = dados.fixada || false;
+                
+                if (sorteAtual !== null) {
+                    atualizarDisplaySorte();
+                    
+                    // Se a sorte estava fixada, mostrar a seção de dados
+                    if (sorteFixada) {
+                        el('secao-dados-sorte').classList.remove('hidden');
+                        const botaoFixar = el('btn-fixar-sorte');
+                        if (botaoFixar) {
+                            botaoFixar.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Destino Selado!';
+                            botaoFixar.disabled = true;
+                        }
+                    }
+                    
+                    // Gerar recomendações baseadas na sorte carregada
+                    gerarRecomendacoesBaseadasNaSorte(sorteAtual);
+                }
+            } catch (error) {
+                console.error('Erro ao carregar sorte:', error);
+            }
+        }
+
+        // ====================================================================
+        // 7. FUNÇÃO PRINCIPAL DE CÁLCULO
+        // ====================================================================
         function recalc() {
-            // 1. Carregar dados da ficha se ainda não carregou
+            // 1. Carregar dados da ficha
             const dadosFicha = carregarDadosDaFicha();
             
             // 2. Cálculos de atributos
@@ -730,31 +1019,28 @@
             const CON = val('attr-constituicao');
             const INT = getInt();
             const WIS = val('attr-sabedoria');
-            const CHA = val('attr-carisma');
             
-            // 3. Cálculo da SORTE (baseado em Carisma e random)
-            const sorte = calcularSorte();
-            
-            // 4. Multiplicadores
+            // 3. Multiplicadores
             const classe = val('input-classe');
             const dificuldade = val('input-dificuldade');
             
-            // 5. Fórmulas ajustadas
+            // 4. Fórmulas ajustadas (sem sorte aqui - sorte é separada)
             const blindagem = Math.floor(CON * classe + nivel * dificuldade);
             const velocidade = Math.floor(DEX * classe + CON * dificuldade);
             const iniciativa = Math.floor(DEX * dificuldade + INT * classe);
             const percepcao = Math.floor(WIS * classe + INT * dificuldade);
-            const visaoNoturna = sorte + percepcao;
             
-            // 6. Outputs
+            // Para visão noturna, usar percepção * 2
+            const visaoNoturna = percepcao * 2;
+            
+            // 5. Outputs
             setTxt('calc-blindagem', blindagem);
             setTxt('calc-velocidade', velocidade);
             setTxt('calc-iniciativa', iniciativa);
-            setTxt('calc-sorte', sorte + '%');
             setTxt('calc-percepcao', percepcao);
             setTxt('calc-visao-noturna', visaoNoturna);
             
-            // 7. Atualizar progressão
+            // 6. Atualizar progressão
             el('input-nivel').value = nivel;
             el('input-xp-acumulado').value = xpAcumulado;
             setTxt('display-xp-necessario', XP_PER_LEVEL);
@@ -764,26 +1050,12 @@
             updateBar('bar-mana', val('input-mana-atual'), val('input-mana-max'));
             updateBar('bar-estamina', val('input-estamina-atual'), val('input-estamina-max'));
             
-            // 8. Gerar recomendações baseadas nos novos valores
-            const recomendacoes = gerarRecomendacoes(sorte);
-            
-            // 9. Mostrar recomendações se houver
-            if (recomendacoes.length > 0) {
-                mostrarRecomendacoesDetalhadas(recomendacoes);
-                
-                // Feedback específico para sorte alta
-                if (sorte >= 75) {
-                    mostrarRecomendacao(`🎲 Sorte Crítica! (${sorte}%) - Armas com alto dano crítico são recomendadas!`, 'success');
-                }
-            }
-            
             updateBonusDisplay();
         }
 
         // ====================================================================
-        // 6. FUNÇÕES DE XP E NÍVEL (MANTIDAS)
+        // 8. FUNÇÕES DE XP E NÍVEL
         // ====================================================================
-        
         function checkLevelUp() {
             let levelsJumped = 0;
             
@@ -795,8 +1067,7 @@
             }
             
             if (levelsJumped > 0) {
-                const mensagem = `🎉 Parabéns! Nível ${currentLevel} alcançado! +${levelsJumped * 2} Pontos de Atributo.`;
-                mostrarRecomendacao(mensagem, 'success');
+                mostrarFeedback(`🎉 Parabéns! Nível ${currentLevel} alcançado! +${levelsJumped * 2} Pontos de Atributo.`, 'success');
             }
             
             el('input-nivel').value = currentLevel;
@@ -810,7 +1081,7 @@
             const xpGanhado = val('input-xp-ganhado');
             
             if (xpGanhado <= 0) {
-                mostrarRecomendacao("Insira uma quantidade de XP válida.", 'warning');
+                mostrarFeedback("Insira uma quantidade de XP válida.", 'warning');
                 return;
             }
             
@@ -822,9 +1093,8 @@
         }
 
         // ====================================================================
-        // 7. FUNÇÕES DE ATRIBUTOS E CONTROLE (MANTIDAS COM PEQUENOS AJUSTES)
+        // 9. FUNÇÕES DE ATRIBUTOS
         // ====================================================================
-        
         function updateBonusDisplay() {
             ATTRIBUTE_IDS.forEach(id => {
                 const value = parseInt(el(id).value);
@@ -846,7 +1116,7 @@
                     currentValue += amount;
                     bonusPoints -= cost;
                 } else {
-                    mostrarRecomendacao("Pontos de atributo insuficientes!", 'warning');
+                    mostrarFeedback("Pontos de atributo insuficientes!", 'warning');
                     return;
                 }
             } else if (amount < 0) {
@@ -871,7 +1141,7 @@
             const minTotal = minAttr * numAttributes;
             
             if (totalPoints < minTotal) {
-                mostrarRecomendacao(`Mínimo ${minTotal} pontos (3 por atributo).`, 'warning');
+                mostrarFeedback(`Mínimo ${minTotal} pontos (3 por atributo).`, 'warning');
                 return;
             }
             
@@ -894,13 +1164,25 @@
             });
             
             recalc();
-            mostrarRecomendacao(`Atributos rolados! ${totalPoints} pontos distribuídos.`, 'success');
+            mostrarFeedback(`Atributos rolados! ${totalPoints} pontos distribuídos.`, 'success');
         }
 
         // ====================================================================
-        // 8. SISTEMA DE SALVAMENTO/CARREGAMENTO (ATUALIZADO)
+        // 10. FUNÇÕES DE BARRA DE PROGRESSO
         // ====================================================================
-        
+        function updateBar(elementId, current, max) {
+            const element = el(elementId);
+            if (!element) return;
+            
+            if (max <= 0) max = 1;
+            let pct = (current / max) * 100;
+            pct = Math.min(100, Math.max(0, pct));
+            element.style.width = `${pct}%`;
+        }
+
+        // ====================================================================
+        // 11. SISTEMA DE SALVAMENTO/CARREGAMENTO
+        // ====================================================================
         function getCurrentStats() {
             const stats = {};
             
@@ -929,6 +1211,9 @@
             // Primeiro carrega dados da ficha
             carregarDadosDaFicha();
             
+            // Carregar sorte
+            carregarSorteDoLocalStorage();
+            
             if (!savedStats) {
                 currentLevel = 1;
                 accumulatedXP = 0;
@@ -954,24 +1239,19 @@
             el('input-xp-acumulado').value = accumulatedXP;
             
             recalc();
-            
-            // Mostrar recomendações baseadas no estado carregado
-            const sorte = calcularSorte();
-            const recomendacoes = gerarRecomendacoes(sorte);
-            if (recomendacoes.length > 0) {
-                setTimeout(() => {
-                    mostrarRecomendacoesDetalhadas(recomendacoes);
-                }, 1000);
-            }
         }
         
         function saveStats(showFeedback = true) {
             if (bonusPoints > 0) {
-                mostrarRecomendacao(`${bonusPoints} pontos de atributo pendentes!`, 'warning');
+                mostrarFeedback(`${bonusPoints} pontos de atributo pendentes!`, 'warning');
             }
             
+            // Salvar stats normais
             const statsToSave = getCurrentStats();
             localStorage.setItem('rpg_stats', JSON.stringify(statsToSave));
+            
+            // Salvar sorte separadamente
+            salvarSorteNoLocalStorage();
             
             if (showFeedback) {
                 const btn = el('btn-save');
@@ -994,22 +1274,30 @@
         }
 
         // ====================================================================
-        // 9. FUNÇÕES UTILITÁRIAS RESTANTES
+        // 12. FUNÇÕES DE RESET E EXPORTAÇÃO
         // ====================================================================
-        
-        function updateBar(elementId, current, max) {
-            const element = el(elementId);
-            if (!element) return;
-            
-            if (max <= 0) max = 1;
-            let pct = (current / max) * 100;
-            pct = Math.min(100, Math.max(0, pct));
-            element.style.width = `${pct}%`;
-        }
-        
         function resetStats() {
-            if (confirm("Resetar todos os valores? (Save local será apagado)")) {
+            if (confirm("Resetar todos os valores? (Sorte e save local serão apagados)")) {
                 localStorage.removeItem('rpg_stats');
+                localStorage.removeItem('grimorio_sorte');
+                
+                // Resetar variáveis de sorte
+                sorteAtual = null;
+                dadosSorte = [0, 0, 0];
+                sorteFixada = false;
+                
+                // Esconder seção de dados
+                el('secao-dados-sorte').classList.add('hidden');
+                
+                // Resetar display da sorte
+                el('calc-sorte').textContent = '--';
+                
+                // Resetar botão de fixar
+                const botaoFixar = el('btn-fixar-sorte');
+                if (botaoFixar) {
+                    botaoFixar.innerHTML = '<i data-lucide="lock" class="w-4 h-4"></i> Fixar Destino';
+                    botaoFixar.disabled = false;
+                }
                 
                 currentLevel = 1;
                 accumulatedXP = 0;
@@ -1022,7 +1310,7 @@
                     'input-estamina-atual': 80, 'input-estamina-max': 80,
                     'attr-forca': 0, 'attr-destreza': 0, 'attr-constituicao': 0,
                     'attr-inteligencia': 0, 'attr-sabedoria': 0, 'attr-carisma': 0,
-                    'input-classe': 1.00, 'input-dificuldade': 0.50,
+                    'input-classe': 0, 'input-dificuldade': 0,
                     'input-xp-ganhado': 0,
                     'input-pool-pontos': 0,
                     'input-nome': 'Herói Desconhecido'
@@ -1035,7 +1323,7 @@
                 }
                 
                 recalc();
-                mostrarRecomendacao("Ficha resetada com sucesso!", 'success');
+                mostrarFeedback("Ficha resetada com sucesso!", 'success');
             }
         }
         
@@ -1068,12 +1356,12 @@
             outputText += `Mana: ${val('input-mana-atual')}/${val('input-mana-max')}\n`;
             outputText += `Estamina: ${val('input-estamina-atual')}/${val('input-estamina-max')}\n\n`;
             
-            // Adicionar recomendações
-            const sorte = calcularSorte();
-            if (sorte >= 75) {
-                outputText += "=== RECOMENDAÇÃO ESPECIAL ===\n";
-                outputText += `Sorte: ${sorte}% (ALTA!)\n`;
-                outputText += "Recomendação: Use armas com alto dano crítico!\n";
+            // Adicionar dados de sorte se existirem
+            if (sorteAtual !== null) {
+                outputText += "=== DESTINO ===\n";
+                outputText += `Sorte: ${sorteAtual}%\n`;
+                outputText += `Dados: ${dadosSorte[0]}, ${dadosSorte[1]}, ${dadosSorte[2]}\n`;
+                if (sorteFixada) outputText += `Status: Fixado\n`;
             }
             
             const blob = new Blob([outputText], { type: 'text/plain' });
@@ -1086,19 +1374,18 @@
                 btn.disabled = false;
                 btn.innerHTML = originalContent;
                 lucide.createIcons();
-                mostrarRecomendacao("Dados exportados com sucesso!", 'success');
+                mostrarFeedback("Dados exportados com sucesso!", 'success');
             }, 500);
         }
-        
+
         function acionarGerarCard() {
-            // Esta função pode ser expandida para gerar um card visual
-            mostrarRecomendacao("Função 'Gerar Card' em desenvolvimento!", 'info');
+            // Implementação futura para gerar card visual
+            mostrarFeedback("Função 'Gerar Card' em desenvolvimento!", 'info');
         }
 
         // ====================================================================
-        // 10. INICIALIZAÇÃO
+        // 13. INICIALIZAÇÃO
         // ====================================================================
-        
         window.addEventListener('load', () => {
             // Carregar dados salvos
             loadStats();
@@ -1116,18 +1403,12 @@
             // Executar cálculo inicial
             recalc();
             
-            // Mostrar mensagem de boas-vindas com recomendações
-            setTimeout(() => {
-                const classe = localStorage.getItem('grimorio_classe_personagem');
-                if (classe) {
-                    mostrarRecomendacao(`Classe detectada: ${classe}. Bônus aplicados automaticamente.`, 'success');
-                }
-                
-                const sorte = calcularSorte();
-                if (sorte >= 75) {
-                    mostrarRecomendacao(`🎲 Sorte Crítica detectada (${sorte}%)! Armas de alto crítico são ideais.`, 'success');
-                }
-            }, 1500);
+            // Se não há sorte definida, sugerir rolar
+            if (sorteAtual === null) {
+                setTimeout(() => {
+                    mostrarFeedback("🎲 Seu destino ainda não foi definido. Clique em 'Rolar Destino' para definir sua fortuna!", 'info');
+                }, 1000);
+            }
         });
     </script>
 </body>
