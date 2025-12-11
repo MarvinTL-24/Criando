@@ -595,12 +595,6 @@
                 const containerBotoes = document.querySelector('.max-w-6xl.mx-auto.px-4.mt-8.pb-12');
                 if (!containerBotoes) return;
                 
-                // Botão PDF
-                const btnPDF = document.createElement('button');
-                btnPDF.innerHTML = '<i data-lucide="file-text" class="w-4 h-4"></i> Baixar como PDF';
-                btnPDF.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-blue';
-                btnPDF.onclick = gerarPDF;
-                
                 // Botão Imagem
                 const btnImagem = document.createElement('button');
                 btnImagem.innerHTML = '<i data-lucide="camera" class="w-4 h-4"></i> Capturar Tela (PNG)';
@@ -639,7 +633,6 @@
         // 8. EXPORTAR
         window.salvarDados = salvarDados;
         window.carregarDadosFicha = carregarDadosFicha;
-        window.gerarPDF = gerarPDF;
         window.gerarImagem = gerarImagem;
         window.downloadTextData = downloadTextData;
         window.recomendarClasse = recomendarClasse;
