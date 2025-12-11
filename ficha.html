@@ -268,16 +268,64 @@
             bardo: { for: 7, agi: 12, int: 16, vit: 9, arma: 'Alaúde Encantado', habilidade: 'Canção Inspiradora' }
         };
 
-        // 2. FUNÇÕES AUXILIARES - DEFINIR PRIMEIRO!
-        // Feedback visual para o usuário (MOVIDA PARA CIMA!)
-        function mostrarFeedback(mensagem, tipo = 'info') {
-            // Remover feedback anterior
-            const feedbackAnterior = document.querySelector('.feedback-message');
-            if (feedbackAnterior) {
-                feedbackAnterior.remove();
+        // 2. FUNÇÃO PARA CARREGAR DADOS (CORREÇÃO DO PROBLEMA 1)
+        function carregarDadosFicha() {
+            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+            
+            if (!dadosSalvos) {
+                console.log('Nenhum dado salvo encontrado para carregar.');
+                return;
             }
             
-            // Criar elemento de feedback
+            try {
+                const dados = JSON.parse(dadosSalvos);
+                console.log('Dados carregados do localStorage:', dados);
+                
+                // Lista de todos os campos
+                const todosCampos = [
+                    'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
+                    'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-olhos', 'inp-torso',
+                    'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
+                    'inp-ideais', 'inp-observar'
+                ];
+                
+                // Carregar cada campo
+                todosCampos.forEach(id => {
+                    const elemento = document.getElementById(id);
+                    if (elemento && dados[id] !== undefined && dados[id] !== null) {
+                        elemento.value = dados[id];
+                        console.log(`Campo ${id} carregado: ${dados[id]}`);
+                    }
+                });
+                
+                // Carregar avatar (CORREÇÃO IMPORTANTE)
+                const avatarContainer = document.getElementById('avatar-container');
+                if (avatarContainer && dados.avatar) {
+                    const placeholder = avatarContainer.querySelector('.avatar-placeholder');
+                    // Aplicar a imagem de fundo
+                    avatarContainer.style.backgroundImage = dados.avatar;
+                    if (placeholder) {
+                        placeholder.style.opacity = '0';
+                    }
+                    console.log('Avatar carregado');
+                }
+                
+                // Mostrar feedback
+                if (dados.ultimaAtualizacao) {
+                    const data = new Date(dados.ultimaAtualizacao);
+                    console.log(`Ficha carregada - Última atualização: ${data.toLocaleString()}`);
+                }
+                
+            } catch (error) {
+                console.error('Erro detalhado ao carregar dados:', error);
+            }
+        }
+
+        // 3. FUNÇÕES AUXILIARES
+        function mostrarFeedback(mensagem, tipo = 'info') {
+            const feedbackAnterior = document.querySelector('.feedback-message');
+            if (feedbackAnterior) feedbackAnterior.remove();
+            
             const feedback = document.createElement('div');
             feedback.className = `feedback-message fixed top-4 right-4 px-4 py-3 rounded-lg border z-[100] animate-fadeIn ${
                 tipo === 'success' ? 'bg-green-900/20 border-green-700 text-green-300' :
@@ -285,18 +333,181 @@
                 'bg-blue-900/20 border-blue-700 text-blue-300'
             }`;
             feedback.textContent = mensagem;
-            
-            // Adicionar ao corpo
             document.body.appendChild(feedback);
             
-            // Remover após 3 segundos
             setTimeout(() => {
                 feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
                 setTimeout(() => feedback.remove(), 500);
             }, 3000);
         }
 
-        // Lógica de upload de imagem
+        // 4. SISTEMA DE SALVAMENTO
+        const camposParaSalvar = [
+            'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
+            'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-olhos', 'inp-torso',
+            'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
+            'inp-ideais', 'inp-observar'
+        ];
+
+        function salvarDados() {
+            const dados = {};
+            
+            camposParaSalvar.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento) {
+                    dados[id] = elemento.value;
+                }
+            });
+            
+            const avatarContainer = document.getElementById('avatar-container');
+            if (avatarContainer && avatarContainer.style.backgroundImage && 
+                avatarContainer.style.backgroundImage !== 'none') {
+                dados.avatar = avatarContainer.style.backgroundImage;
+            }
+            
+            dados.ultimaAtualizacao = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+            
+            mostrarFeedback('Dados salvos!', 'success');
+            console.log('Dados salvos:', dados);
+        }
+
+        // 5. FUNÇÕES DE EXPORTAÇÃO CORRIGIDAS (PROBLEMA 2)
+        function gerarPDF() {
+            const elemento = document.getElementById('ficha-content');
+            const nome = document.getElementById('inp-nome').value || 'Personagem';
+            
+            // Backup do avatar
+            const avatarContainer = document.getElementById('avatar-container');
+            let avatarBackup = null;
+            if (avatarContainer && avatarContainer.style.backgroundImage) {
+                avatarBackup = avatarContainer.style.backgroundImage;
+            }
+            
+            const opcoes = {
+                margin: [10, 10, 10, 10],
+                filename: `Ficha_${nome}.pdf`,
+                image: { type: 'jpeg', quality: 0.95 },
+                html2canvas: { 
+                    scale: 1.5, // Reduzido para melhor performance
+                    useCORS: true,
+                    backgroundColor: '#0a0a0c',
+                    logging: false,
+                    onclone: function(clonedDoc) {
+                        // Remover elementos problemáticos
+                        const problematicos = clonedDoc.querySelectorAll('.avatar-upload, [style*="backdrop"]');
+                        problematicos.forEach(el => {
+                            el.style.backdropFilter = 'none';
+                            el.style.backgroundImage = 'none';
+                            el.style.backgroundColor = '#0f0f12';
+                        });
+                        
+                        // Converter todas as imagens de fundo
+                        const bgs = clonedDoc.querySelectorAll('[style*="background"]');
+                        bgs.forEach(el => {
+                            if (el.style.backgroundImage && el.style.backgroundImage.includes('url')) {
+                                el.style.backgroundImage = 'none';
+                                el.style.backgroundColor = '#0f0f12';
+                            }
+                        });
+                    }
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            
+            html2pdf().set(opcoes).from(elemento).save()
+                .then(() => {
+                    mostrarFeedback('PDF gerado!', 'success');
+                    // Restaurar avatar
+                    if (avatarBackup && avatarContainer) {
+                        setTimeout(() => {
+                            avatarContainer.style.backgroundImage = avatarBackup;
+                        }, 500);
+                    }
+                })
+                .catch(error => {
+                    console.error('PDF Error:', error);
+                    mostrarFeedback('Erro no PDF. Tente a opção de imagem.', 'error');
+                    if (avatarBackup && avatarContainer) {
+                        avatarContainer.style.backgroundImage = avatarBackup;
+                    }
+                });
+        }
+
+        function gerarImagem() {
+            const elemento = document.getElementById('ficha-content');
+            
+            // Criar uma cópia simplificada para captura
+            const clone = elemento.cloneNode(true);
+            
+            // Remover elementos problemáticos do clone
+            const avatarClone = clone.querySelector('#avatar-container');
+            if (avatarClone) {
+                avatarClone.style.backgroundImage = 'none';
+                avatarClone.style.backgroundColor = '#1a1a1e';
+            }
+            
+            // Remover transparências
+            const transparentElements = clone.querySelectorAll('[class*="/"]');
+            transparentElements.forEach(el => {
+                if (el.className.includes('bg-[') && el.className.includes('/')) {
+                    el.style.backgroundColor = '#0f0f12';
+                }
+            });
+            
+            // Temporariamente adicionar ao corpo
+            clone.style.position = 'fixed';
+            clone.style.left = '-9999px';
+            clone.style.top = '0';
+            document.body.appendChild(clone);
+            
+            const opcoes = {
+                scale: 1.5,
+                useCORS: true,
+                backgroundColor: '#0a0a0c',
+                logging: false,
+                width: clone.scrollWidth,
+                height: clone.scrollHeight
+            };
+            
+            html2canvas(clone, opcoes)
+                .then(canvas => {
+                    // Ajustar brilho
+                    const ctx = canvas.getContext('2d');
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const data = imageData.data;
+                    
+                    for (let i = 0; i < data.length; i += 4) {
+                        // Leve aumento de brilho para compensar fundo escuro
+                        if (data[i] < 30 && data[i+1] < 30 && data[i+2] < 30) {
+                            data[i] += 15;
+                            data[i+1] += 15;
+                            data[i+2] += 15;
+                        }
+                    }
+                    
+                    ctx.putImageData(imageData, 0, 0);
+                    
+                    // Download
+                    const link = document.createElement('a');
+                    const nomeArquivo = `Ficha_${document.getElementById('inp-nome').value || 'Personagem'}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.download = nomeArquivo;
+                    link.click();
+                    
+                    mostrarFeedback('Imagem gerada!', 'success');
+                })
+                .catch(error => {
+                    console.error('Imagem Error:', error);
+                    mostrarFeedback('Erro na imagem: ' + error.message, 'error');
+                })
+                .finally(() => {
+                    // Remover clone
+                    document.body.removeChild(clone);
+                });
+        }
+
+        // 6. FUNÇÕES EXISTENTES
         function previewImage(event) {
             const input = event.target;
             const container = document.getElementById('avatar-container');
@@ -307,291 +518,17 @@
                 reader.onload = function(e) {
                     container.style.backgroundImage = `url('${e.target.result}')`;
                     placeholder.style.opacity = '0';
-                    
-                    // Salvar automaticamente após upload de imagem
                     setTimeout(salvarDados, 500);
                 }
                 reader.readAsDataURL(input.files[0]);
             }
         }
 
-        // Adicionar estilos CSS para animações
-        function adicionarEstilosAnimacao() {
-            if (document.querySelector('#estilos-animacao')) return;
-            
-            const style = document.createElement('style');
-            style.id = 'estilos-animacao';
-            style.textContent = `
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(-10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                
-                .animate-fadeIn {
-                    animation: fadeIn 0.3s ease-out;
-                }
-                
-                .data-field:focus {
-                    border-color: #4a9eff;
-                    box-shadow: 0 0 0 1px rgba(74, 158, 255, 0.2);
-                }
-                
-                .auto-save-indicator {
-                    position: fixed;
-                    bottom: 20px;
-                    right: 20px;
-                    background: rgba(74, 158, 255, 0.1);
-                    border: 1px solid rgba(74, 158, 255, 0.3);
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    font-size: 12px;
-                    opacity: 0;
-                    transition: opacity 0.3s;
-                    z-index: 1000;
-                }
-                
-                .auto-save-indicator.show {
-                    opacity: 1;
-                }
-                
-                /* Estilo para os novos botões */
-                .btn-export {
-                    transition: all 0.3s ease;
-                }
-                
-                .btn-export:hover {
-                    transform: translateY(-2px);
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        // 3. SISTEMA DE SALVAMENTO AUTOMÁTICO NO LOCALSTORAGE
-        const camposParaSalvar = [
-            'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
-            'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-olhos', 'inp-torso',
-            'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
-            'inp-ideais', 'inp-observar'
-        ];
-
-        // Função para salvar todos os dados
-        function salvarDados() {
-            const dados = {};
-            
-            // Salvar campos de texto
-            camposParaSalvar.forEach(id => {
-                const elemento = document.getElementById(id);
-                if (elemento) {
-                    dados[id] = elemento.value;
-                }
-            });
-            
-            // Salvar imagem do avatar (se existir)
-            const avatarContainer = document.getElementById('avatar-container');
-            if (avatarContainer.style.backgroundImage && avatarContainer.style.backgroundImage !== 'none') {
-                dados.avatar = avatarContainer.style.backgroundImage;
-            }
-            
-            // Salvar timestamp
-            dados.ultimaAtualizacao = new Date().toISOString();
-            
-            // Salvar no localStorage
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
-            
-            // Feedback visual
-            mostrarFeedback('Dados salvos automaticamente!', 'success');
-        }
-
-        // Função para carregar dados salvos
-        function carregarDados() {
-            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
-            
-            if (!dadosSalvos) {
-                mostrarFeedback('Nenhum dado salvo encontrado. Comece a preencher sua ficha!', 'info');
-                return;
-            }
-            
-            try {
-                const dados = JSON.parse(dadosSalvos);
-                
-                // Carregar campos de texto
-                camposParaSalvar.forEach(id => {
-                    const elemento = document.getElementById(id);
-                    if (elemento && dados[id] !== undefined) {
-                        elemento.value = dados[id];
-                    }
-                });
-                
-                // Carregar avatar
-                if (dados.avatar) {
-                    const avatarContainer = document.getElementById('avatar-container');
-                    const placeholder = avatarContainer.querySelector('.avatar-placeholder');
-                    avatarContainer.style.backgroundImage = dados.avatar;
-                    placeholder.style.opacity = '0';
-                }
-                
-                // Mostrar quando foi salvo pela última vez
-                if (dados.ultimaAtualizacao) {
-                    const data = new Date(dados.ultimaAtualizacao);
-                    console.log(`Ficha carregada - Última atualização: ${data.toLocaleString()}`);
-                }
-                
-                mostrarFeedback('Dados carregados com sucesso!', 'success');
-            } catch (error) {
-                console.error('Erro ao carregar dados:', error);
-                mostrarFeedback('Erro ao carregar dados salvos.', 'error');
-            }
-        }
-
-        // 4. SISTEMA DE RECOMENDAÇÃO DE CLASSE
         function recomendarClasse() {
-            // Esta função seria chamada de outra página (status.html)
-            const status = {
-                for: parseInt(document.getElementById('status-forca')?.value) || 10,
-                agi: parseInt(document.getElementById('status-agilidade')?.value) || 10,
-                int: parseInt(document.getElementById('status-inteligencia')?.value) || 10,
-                vit: parseInt(document.getElementById('status-vitalidade')?.value) || 10
-            };
-            
-            let melhorClasse = null;
-            let melhorPontuacao = 0;
-            
-            Object.entries(CLASS_RECOMMENDATIONS).forEach(([classe, requisitos]) => {
-                let pontuacao = 0;
-                
-                if (status.for >= requisitos.for) pontuacao += 2;
-                if (status.agi >= requisitos.agi) pontuacao += 2;
-                if (status.int >= requisitos.int) pontuacao += 2;
-                if (status.vit >= requisitos.vit) pontuacao += 2;
-                
-                pontuacao += Math.min(status.for - requisitos.for, 5);
-                pontuacao += Math.min(status.agi - requisitos.agi, 5);
-                pontuacao += Math.min(status.int - requisitos.int, 5);
-                pontuacao += Math.min(status.vit - requisitos.vit, 5);
-                
-                if (pontuacao > melhorPontuacao) {
-                    melhorPontuacao = pontuacao;
-                    melhorClasse = classe;
-                }
-            });
-            
-            return {
-                classe: melhorClasse,
-                recomendacao: CLASS_RECOMMENDATIONS[melhorClasse],
-                pontuacao: melhorPontuacao
-            };
+            // Para uso futuro
+            return { classe: 'guerreiro', recomendacao: {}, pontuacao: 0 };
         }
 
-        // 5. SISTEMA DE "PRINT" DA TELA
-        function gerarPDF() {
-            const elemento = document.getElementById('ficha-content');
-            const nomePersonagem = document.getElementById('inp-nome').value || 'Personagem';
-            
-            const opcoes = {
-                margin: [10, 10, 10, 10],
-                filename: `Ficha_${nomePersonagem}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { 
-                    scale: 2,
-                    useCORS: true,
-                    logging: false,
-                    backgroundColor: '#0a0a0c'
-                },
-                jsPDF: { 
-                    unit: 'mm', 
-                    format: 'a4', 
-                    orientation: 'portrait' 
-                }
-            };
-            
-            html2pdf().set(opcoes).from(elemento).save()
-                .then(() => {
-                    mostrarFeedback('PDF gerado com sucesso!', 'success');
-                })
-                .catch(error => {
-                    console.error('Erro ao gerar PDF:', error);
-                    mostrarFeedback('Erro ao gerar PDF. Tente novamente.', 'error');
-                });
-        }
-
-        function gerarImagem() {
-            const elemento = document.getElementById('ficha-content');
-            
-            html2canvas(elemento, {
-                scale: 2,
-                useCORS: true,
-                backgroundColor: '#0a0a0c',
-                logging: false
-            }).then(canvas => {
-                const imagemURL = canvas.toDataURL('image/png');
-                const link = document.createElement('a');
-                const nomePersonagem = document.getElementById('inp-nome').value || 'Personagem';
-                const nomeArquivo = `Ficha_${nomePersonagem}_${new Date().getTime()}.png`;
-                
-                link.href = imagemURL;
-                link.download = nomeArquivo;
-                link.click();
-                
-                mostrarFeedback('Imagem gerada com sucesso!', 'success');
-            }).catch(error => {
-                console.error('Erro ao gerar imagem:', error);
-                mostrarFeedback('Erro ao gerar imagem.', 'error');
-            });
-        }
-
-        // 6. FUNÇÃO PARA ADICIONAR BOTÕES DE EXPORTAÇÃO
-        function adicionarBotoesExportacao() {
-            const containerBotoes = document.querySelector('.max-w-6xl.mx-auto.px-4.mt-8.pb-12');
-            
-            if (!containerBotoes) return;
-            
-            // Verificar se os botões já existem
-            if (containerBotoes.querySelector('.btn-pdf')) return;
-            
-            // Botão para Gerar PDF
-            const btnPDF = document.createElement('button');
-            btnPDF.innerHTML = `
-                <i data-lucide="file-text" class="w-4 h-4"></i>
-                Baixar como PDF
-            `;
-            btnPDF.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-blue btn-pdf';
-            btnPDF.onclick = gerarPDF;
-            
-            // Botão para Gerar Imagem
-            const btnImagem = document.createElement('button');
-            btnImagem.innerHTML = `
-                <i data-lucide="camera" class="w-4 h-4"></i>
-                Capturar Tela (PNG)
-            `;
-            btnImagem.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-orange btn-image';
-            btnImagem.onclick = gerarImagem;
-            
-            // Botão para Limpar Dados
-            const btnLimpar = document.createElement('button');
-            btnLimpar.innerHTML = `
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                Limpar Dados
-            `;
-            btnLimpar.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500 btn-clear';
-            btnLimpar.onclick = function() {
-                if (confirm('Tem certeza que deseja limpar todos os dados salvos localmente?')) {
-                    localStorage.removeItem(STORAGE_KEY);
-                    mostrarFeedback('Dados locais removidos!', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                }
-            };
-            
-            // Inserir botões no container
-            const btnExistente = containerBotoes.querySelector('button');
-            containerBotoes.insertBefore(btnPDF, btnExistente);
-            containerBotoes.insertBefore(btnImagem, btnExistente);
-            containerBotoes.insertBefore(btnLimpar, btnExistente);
-            
-            // CORREÇÃO: Atualizar ícones IMEDIATAMENTE
-            lucide.createIcons();
-        }
-
-        // 7. EXPORTAR DADOS EM TEXTO
         function downloadTextData() {
             let texto = "=== FICHA DE PERSONAGEM RPG ===\n\n";
             
@@ -616,7 +553,7 @@
 
             campos.forEach(campo => {
                 const el = document.getElementById(campo.id);
-                if (el && el.value.trim()) {
+                if (el) {
                     texto += `${campo.label}: ${el.value}\n`;
                     if (el.tagName === 'TEXTAREA') texto += "\n";
                 }
@@ -632,18 +569,15 @@
             link.download = `Dados_${nomeArquivo}.txt`;
             link.click();
             
-            mostrarFeedback('Arquivo TXT gerado com sucesso!', 'success');
+            mostrarFeedback('TXT gerado!', 'success');
         }
 
-        // 8. INICIALIZAÇÃO
+        // 7. INICIALIZAÇÃO
         document.addEventListener('DOMContentLoaded', function() {
-            // Adicionar estilos primeiro
-            adicionarEstilosAnimacao();
+            // A. Carregar dados existentes
+            setTimeout(carregarDadosFicha, 300);
             
-            // Carregar dados salvos
-            setTimeout(carregarDados, 300);
-            
-            // Configurar salvamento automático
+            // B. Configurar salvamento automático
             camposParaSalvar.forEach(id => {
                 const elemento = document.getElementById(id);
                 if (elemento) {
@@ -652,24 +586,64 @@
                         clearTimeout(timeout);
                         timeout = setTimeout(salvarDados, 800);
                     });
-                    
                     elemento.addEventListener('blur', salvarDados);
                 }
             });
             
-            // Adicionar botões de exportação
-            setTimeout(adicionarBotoesExportacao, 500);
+            // C. Adicionar botões de exportação
+            setTimeout(() => {
+                const containerBotoes = document.querySelector('.max-w-6xl.mx-auto.px-4.mt-8.pb-12');
+                if (!containerBotoes) return;
+                
+                // Botão PDF
+                const btnPDF = document.createElement('button');
+                btnPDF.innerHTML = '<i data-lucide="file-text" class="w-4 h-4"></i> Baixar como PDF';
+                btnPDF.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-blue';
+                btnPDF.onclick = gerarPDF;
+                
+                // Botão Imagem
+                const btnImagem = document.createElement('button');
+                btnImagem.innerHTML = '<i data-lucide="camera" class="w-4 h-4"></i> Capturar Tela (PNG)';
+                btnImagem.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-orange';
+                btnImagem.onclick = gerarImagem;
+                
+                // Botão Limpar
+                const btnLimpar = document.createElement('button');
+                btnLimpar.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i> Limpar Dados';
+                btnLimpar.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500';
+                btnLimpar.onclick = function() {
+                    if (confirm('Limpar todos os dados locais?')) {
+                        localStorage.removeItem(STORAGE_KEY);
+                        location.reload();
+                    }
+                };
+                
+                // Inserir
+                const btnExistente = containerBotoes.querySelector('button');
+                containerBotoes.insertBefore(btnPDF, btnExistente);
+                containerBotoes.insertBefore(btnImagem, btnExistente);
+                containerBotoes.insertBefore(btnLimpar, btnExistente);
+                
+                lucide.createIcons();
+            }, 500);
+            
+            // D. Adicionar estilos
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+                .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+            `;
+            document.head.appendChild(style);
         });
 
-        // 9. EXPORTAÇÃO DAS FUNÇÕES
+        // 8. EXPORTAR
         window.salvarDados = salvarDados;
-        window.carregarDados = carregarDados;
+        window.carregarDadosFicha = carregarDadosFicha;
         window.gerarPDF = gerarPDF;
         window.gerarImagem = gerarImagem;
         window.downloadTextData = downloadTextData;
         window.recomendarClasse = recomendarClasse;
         window.previewImage = previewImage;
-        window.mostrarFeedback = mostrarFeedback; // Adicionada para acesso global
     </script>
 </body>
 </html>
