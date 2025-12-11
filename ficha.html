@@ -270,7 +270,7 @@
 
         // 2. FUNÇÃO PARA CARREGAR DADOS (CORREÇÃO DO PROBLEMA 1)
         function carregarDadosFicha() {
-            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+            const dadosSalvos = localStorage.getItem('grimorio_ficha_personagem');
             
             if (!dadosSalvos) {
                 console.log('Nenhum dado salvo encontrado para carregar.');
@@ -298,19 +298,31 @@
                     }
                 });
                 
-                // Carregar avatar (CORREÇÃO IMPORTANTE)
+                // CARREGAR AVATAR - PRIMEIRO TENTA DA CHAVE ESPECÍFICA
                 const avatarContainer = document.getElementById('avatar-container');
-                if (avatarContainer && dados.avatar) {
-                    const placeholder = avatarContainer.querySelector('.avatar-placeholder');
-                    // Aplicar a imagem de fundo
-                    avatarContainer.style.backgroundImage = dados.avatar;
-                    if (placeholder) {
-                        placeholder.style.opacity = '0';
+                if (avatarContainer) {
+                    // 1. Tenta carregar da chave específica do avatar
+                    let imagemAvatar = localStorage.getItem('grimorio_avatar');
+                    
+                    // 2. Se não encontrar, tenta do objeto geral da ficha
+                    if (!imagemAvatar && dados.avatar) {
+                        imagemAvatar = dados.avatar;
                     }
-                    console.log('Avatar carregado');
+                    
+                    // 3. Se encontrou alguma imagem, aplica
+                    if (imagemAvatar && imagemAvatar !== 'null' && imagemAvatar !== 'undefined') {
+                        const placeholder = avatarContainer.querySelector('.avatar-placeholder');
+                        avatarContainer.style.backgroundImage = `url('${imagemAvatar}')`;
+                        if (placeholder) {
+                            placeholder.style.opacity = '0';
+                        }
+                        console.log('Avatar carregado com sucesso');
+                    } else {
+                        console.log('Nenhum avatar salvo encontrado');
+                    }
                 }
                 
-                // Mostrar feedback
+                // Mostrar quando foi salvo pela última vez
                 if (dados.ultimaAtualizacao) {
                     const data = new Date(dados.ultimaAtualizacao);
                     console.log(`Ficha carregada - Última atualização: ${data.toLocaleString()}`);
@@ -352,6 +364,7 @@
         function salvarDados() {
             const dados = {};
             
+            // Salvar campos de texto
             camposParaSalvar.forEach(id => {
                 const elemento = document.getElementById(id);
                 if (elemento) {
@@ -359,81 +372,29 @@
                 }
             });
             
+            // Salvar avatar (apenas a referência, não o Base64 completo no objeto principal)
             const avatarContainer = document.getElementById('avatar-container');
             if (avatarContainer && avatarContainer.style.backgroundImage && 
                 avatarContainer.style.backgroundImage !== 'none') {
-                dados.avatar = avatarContainer.style.backgroundImage;
+                // Extrai o Base64 da URL de background
+                const bg = avatarContainer.style.backgroundImage;
+                const base64Match = bg.match(/url\(["']?(.*?)["']?\)/);
+                if (base64Match && base64Match[1]) {
+                    dados.avatar = base64Match[1];
+                }
             }
             
             dados.ultimaAtualizacao = new Date().toISOString();
+            
+            // Salvar no localStorage
             localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
             
-            mostrarFeedback('Dados salvos!', 'success');
-            console.log('Dados salvos:', dados);
+            // Feedback visual
+            mostrarFeedback('Dados salvos automaticamente!', 'success');
+            console.log('Dados salvos:', Object.keys(dados).length + ' campos');
         }
 
-        // 5. FUNÇÕES DE EXPORTAÇÃO CORRIGIDAS (PROBLEMA 2)
-        function gerarPDF() {
-            const elemento = document.getElementById('ficha-content');
-            const nome = document.getElementById('inp-nome').value || 'Personagem';
-            
-            // Backup do avatar
-            const avatarContainer = document.getElementById('avatar-container');
-            let avatarBackup = null;
-            if (avatarContainer && avatarContainer.style.backgroundImage) {
-                avatarBackup = avatarContainer.style.backgroundImage;
-            }
-            
-            const opcoes = {
-                margin: [10, 10, 10, 10],
-                filename: `Ficha_${nome}.pdf`,
-                image: { type: 'jpeg', quality: 0.95 },
-                html2canvas: { 
-                    scale: 1.5, // Reduzido para melhor performance
-                    useCORS: true,
-                    backgroundColor: '#0a0a0c',
-                    logging: false,
-                    onclone: function(clonedDoc) {
-                        // Remover elementos problemáticos
-                        const problematicos = clonedDoc.querySelectorAll('.avatar-upload, [style*="backdrop"]');
-                        problematicos.forEach(el => {
-                            el.style.backdropFilter = 'none';
-                            el.style.backgroundImage = 'none';
-                            el.style.backgroundColor = '#0f0f12';
-                        });
-                        
-                        // Converter todas as imagens de fundo
-                        const bgs = clonedDoc.querySelectorAll('[style*="background"]');
-                        bgs.forEach(el => {
-                            if (el.style.backgroundImage && el.style.backgroundImage.includes('url')) {
-                                el.style.backgroundImage = 'none';
-                                el.style.backgroundColor = '#0f0f12';
-                            }
-                        });
-                    }
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            
-            html2pdf().set(opcoes).from(elemento).save()
-                .then(() => {
-                    mostrarFeedback('PDF gerado!', 'success');
-                    // Restaurar avatar
-                    if (avatarBackup && avatarContainer) {
-                        setTimeout(() => {
-                            avatarContainer.style.backgroundImage = avatarBackup;
-                        }, 500);
-                    }
-                })
-                .catch(error => {
-                    console.error('PDF Error:', error);
-                    mostrarFeedback('Erro no PDF. Tente a opção de imagem.', 'error');
-                    if (avatarBackup && avatarContainer) {
-                        avatarContainer.style.backgroundImage = avatarBackup;
-                    }
-                });
-        }
-
+        
         function gerarImagem() {
             const elemento = document.getElementById('ficha-content');
             
@@ -514,14 +475,149 @@
             const placeholder = container.querySelector('.avatar-placeholder');
 
             if (input.files && input.files[0]) {
+                const file = input.files[0];
+                
+                // Verificar se a imagem não é muito grande (máx 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('A imagem é muito grande! Escolha uma imagem menor que 2MB.');
+                    return;
+                }
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    container.style.backgroundImage = `url('${e.target.result}')`;
-                    placeholder.style.opacity = '0';
-                    setTimeout(salvarDados, 500);
+                    // Redimensionar a imagem antes de salvar (para não ocupar muito espaço)
+                    redimensionarECompressarImagem(e.target.result, 400, 400, function(imagemComprimida) {
+                        // Aplicar ao container
+                        container.style.backgroundImage = `url('${imagemComprimida}')`;
+                        placeholder.style.opacity = '0';
+                        
+                        // Salvar a imagem comprimida
+                        salvarAvatar(imagemComprimida);
+                    });
                 }
-                reader.readAsDataURL(input.files[0]);
+                reader.readAsDataURL(file);
             }
+        }
+
+        // Função para redimensionar e comprimir a imagem
+        function redimensionarECompressarImagem(base64Str, maxWidth, maxHeight, callback) {
+            const img = new Image();
+            img.src = base64Str;
+            
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Calcular novas dimensões mantendo proporção
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Comprimir para JPEG com 80% de qualidade
+                const imagemComprimida = canvas.toDataURL('image/jpeg', 0.8);
+                callback(imagemComprimida);
+            };
+        }
+
+        // Função específica para salvar o avatar
+        function salvarAvatarAlternativo(imagemBase64) {
+            try {
+                // Tenta salvar normalmente
+                localStorage.setItem('grimorio_avatar', imagemBase64);
+                console.log('Avatar salvo normalmente');
+            } catch (e) {
+                // Se falhar (imagem muito grande), usar sistema alternativo
+                console.log('Imagem muito grande, usando sistema alternativo...');
+                
+                // 1. Comprimir mais
+                const img = new Image();
+                img.src = imagemBase64;
+                
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 200; // Tamanho mínimo
+                    canvas.height = 200;
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 200, 200);
+                    
+                    // Comprimir para qualidade baixa
+                    const imagemMuitoComprimida = canvas.toDataURL('image/jpeg', 0.5);
+                    
+                    // Tenta salvar novamente
+                    try {
+                        localStorage.setItem('grimorio_avatar', imagemMuitoComprimida);
+                        console.log('Avatar salvo com compressão extrema');
+                    } catch (e2) {
+                        console.error('Não foi possível salvar o avatar:', e2);
+                        mostrarFeedback('Avatar muito grande. Use uma imagem menor.', 'error');
+                    }
+                };
+            }
+        }
+
+        // Modifique a função redimensionarECompressarImagem para usar esta alternativa quando necessário
+        function redimensionarECompressarImagem(base64Str, maxWidth, maxHeight, callback) {
+            const img = new Image();
+            img.src = base64Str;
+            
+            img.onload = function() {
+                // Verificar tamanho original
+                const tamanhoBase64 = base64Str.length;
+                const tamanhoMB = (tamanhoBase64 * 3/4) / (1024 * 1024);
+                
+                if (tamanhoMB > 1) {
+                    console.log(`Imagem grande detectada: ${tamanhoMB.toFixed(2)}MB. Comprimindo agressivamente...`);
+                    maxWidth = 300; // Reduz ainda mais
+                    maxHeight = 300;
+                }
+                
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                // Calcular novas dimensões mantendo proporção
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Qualidade baseada no tamanho
+                let qualidade = 0.8;
+                if (tamanhoMB > 2) qualidade = 0.6;
+                if (tamanhoMB > 3) qualidade = 0.4;
+                
+                const imagemComprimida = canvas.toDataURL('image/jpeg', qualidade);
+                callback(imagemComprimida);
+            };
         }
 
         function recomendarClasse() {
@@ -529,6 +625,33 @@
             return { classe: 'guerreiro', recomendacao: {}, pontuacao: 0 };
         }
 
+        // Função para salvar dados da classe (chamada quando o campo classe é alterado)
+        function salvarClasseParaStatus() {
+            const classe = document.getElementById('inp-classe').value.toLowerCase();
+            const raca = document.getElementById('inp-raca').value;
+            const nome = document.getElementById('inp-nome').value;
+            
+            // Salvar no localStorage para acesso pela página de status
+            localStorage.setItem('grimorio_classe_personagem', classe);
+            localStorage.setItem('grimorio_raca_personagem', raca);
+            localStorage.setItem('grimorio_nome_personagem', nome);
+            
+            // Também salva no objeto geral da ficha
+            salvarDados();
+        }
+
+        // Adicionar evento ao campo de classe
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... código existente ...
+            
+            // Adicionar evento específico para o campo classe
+            const campoClasse = document.getElementById('inp-classe');
+            if (campoClasse) {
+                campoClasse.addEventListener('input', function() {
+                    salvarClasseParaStatus();
+                });
+            }
+        });
         function downloadTextData() {
             let texto = "=== FICHA DE PERSONAGEM RPG ===\n\n";
             
@@ -612,7 +735,44 @@
                     }
                 };
                 
-                // Inserir
+                // Adicione este botão junto com os outros na função adicionarBotoesExportacao()
+                const btnLimparAvatar = document.createElement('button');
+                btnLimparAvatar.innerHTML = `
+                    <i data-lucide="user-x" class="w-4 h-4"></i>
+                    Remover Avatar
+                `;
+                btnLimparAvatar.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500 btn-clear-avatar';
+                btnLimparAvatar.onclick = function() {
+                    if (confirm('Deseja remover a imagem do avatar?')) {
+                        const avatarContainer = document.getElementById('avatar-container');
+                        const placeholder = avatarContainer.querySelector('.avatar-placeholder');
+                        
+                        avatarContainer.style.backgroundImage = 'none';
+                        if (placeholder) {
+                            placeholder.style.opacity = '1';
+                        }
+                        
+                        // Remover do localStorage
+                        localStorage.removeItem('grimorio_avatar');
+                        
+                        // Remover do objeto da ficha
+                        const dadosAtuais = localStorage.getItem('grimorio_ficha_personagem');
+                        if (dadosAtuais) {
+                            try {
+                                const dados = JSON.parse(dadosAtuais);
+                                delete dados.avatar;
+                                localStorage.setItem('grimorio_ficha_personagem', JSON.stringify(dados));
+                            } catch (e) {
+                                console.error('Erro ao remover avatar:', e);
+                            }
+                        }
+                        
+                        mostrarFeedback('Avatar removido!', 'success');
+                    }
+                };
+
+                // Inserir na lista de botões (antes do botão existente)
+                containerBotoes.insertBefore(btnLimparAvatar, btnExistente);
                 const btnExistente = containerBotoes.querySelector('button');
                 containerBotoes.insertBefore(btnPDF, btnExistente);
                 containerBotoes.insertBefore(btnImagem, btnExistente);
