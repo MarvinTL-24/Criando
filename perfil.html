@@ -812,7 +812,44 @@
             // Mostrar indicador ativo
             el('profile-active-indicator').classList.remove('hidden');
         }
-        
+        // ====================================================================
+        // FUNÇÃO DE DEBUG PARA VER ESTRUTURA DOS DADOS
+        // ====================================================================
+        function debugDataStructure() {
+            console.log("=== DEBUG: Estrutura de Dados do Perfil ===");
+            
+            // Verificar se há perfil ativo
+            const perfilAtivoId = localStorage.getItem('perfil_ativo');
+            console.log("ID do perfil ativo:", perfilAtivoId);
+            
+            // Verificar todos os perfis salvos
+            const perfis = localStorage.getItem('rpg_sistema_perfis');
+            if (perfis) {
+                const perfisObj = JSON.parse(perfis);
+                console.log("Perfis encontrados:", Object.keys(perfisObj));
+                
+                if (perfilAtivoId && perfisObj[perfilAtivoId]) {
+                    const perfil = perfisObj[perfilAtivoId];
+                    console.log("Estrutura do perfil ativo:", perfil);
+                    console.log("Dados do perfil:", JSON.stringify(perfil, null, 2));
+                }
+            }
+            
+            // Verificar chaves específicas
+            console.log("=== Verificando localStorage ===");
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.includes('rpg') || key.includes('perfil') || key.includes('ficha')) {
+                    console.log(`Chave: ${key}`);
+                    try {
+                        const value = JSON.parse(localStorage.getItem(key));
+                        console.log(`Valor:`, value);
+                    } catch {
+                        console.log(`Valor (não-JSON):`, localStorage.getItem(key));
+                    }
+                }
+            }
+        }
         // ====================================================================
         // INTERPRETAÇÃO DO DESTINO
         // ====================================================================
@@ -911,9 +948,96 @@
         // ====================================================================
         // FUNÇÕES DE AÇÃO
         // ====================================================================
-        function refreshProfile() {
-            loadActiveProfile();
-            mostrarFeedback("Perfil atualizado com sucesso!", "success");
+        // ====================================================================
+        // CARREGAR PERFIL ATIVO (VERSÃO CORRIGIDA)
+        // ====================================================================
+        function loadActiveProfile() {
+            try {
+                debugDataStructure(); // Para ver o que está errado
+                
+                // Método 1: Tentar carregar do sistema de perfis
+                let perfis = localStorage.getItem('rpg_sistema_perfis');
+                let perfilAtivoId = localStorage.getItem('perfil_ativo');
+                
+                // Método 2: Se não encontrar, tentar carregar da ficha antiga
+                if (!perfis || !perfilAtivoId) {
+                    console.log("Tentando método alternativo...");
+                    
+                    // Tentar carregar ficha direta
+                    const fichaData = localStorage.getItem('ficha_rpg_data');
+                    if (fichaData) {
+                        console.log("Encontrada ficha direta");
+                        activeProfileData = {
+                            nome: localStorage.getItem('nome_personagem') || 'Personagem',
+                            dados: JSON.parse(fichaData)
+                        };
+                        updateProfileDisplay();
+                        mostrarFeedback("Dados carregados da ficha", "success");
+                        return true;
+                    }
+                    
+                    // Tentar encontrar qualquer perfil
+                    const allKeys = Object.keys(localStorage);
+                    const profileKeys = allKeys.filter(key => key.startsWith('perfil_') || key.includes('ficha'));
+                    
+                    if (profileKeys.length > 0) {
+                        const firstKey = profileKeys[0];
+                        const profileData = JSON.parse(localStorage.getItem(firstKey));
+                        console.log(`Carregando do primeiro perfil encontrado: ${firstKey}`, profileData);
+                        
+                        activeProfileData = profileData;
+                        updateProfileDisplay();
+                        mostrarFeedback(`Carregado: ${firstKey}`, "success");
+                        return true;
+                    }
+                    
+                    showWarning("Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.");
+                    return false;
+                }
+                
+                const perfisObj = JSON.parse(perfis);
+                activeProfileData = perfisObj[perfilAtivoId];
+                
+                if (!activeProfileData) {
+                    showWarning("Perfil ativo inválido. Crie uma nova ficha.");
+                    return false;
+                }
+                
+                // Verificar estrutura e corrigir se necessário
+                if (!activeProfileData.dados) {
+                    console.log("Estrutura de dados incompleta, tentando corrigir...");
+                    
+                    // Se não tem 'dados', talvez os dados estejam na raiz
+                    if (activeProfileData.atributos || activeProfileData.raca) {
+                        // Mover tudo para dentro de 'dados'
+                        activeProfileData.dados = { ...activeProfileData };
+                        
+                        // Limpar campos duplicados
+                        Object.keys(activeProfileData.dados).forEach(key => {
+                            if (key !== 'dados' && key !== 'nome' && key !== 'id') {
+                                delete activeProfileData[key];
+                            }
+                        });
+                        
+                        // Salvar corrigido
+                        perfisObj[perfilAtivoId] = activeProfileData;
+                        localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
+                        console.log("Estrutura corrigida automaticamente");
+                    }
+                }
+                
+                // Atualizar interface
+                updateProfileDisplay();
+                setupNavButtons();
+                
+                mostrarFeedback("Perfil carregado com sucesso!", "success");
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                showWarning(`Erro ao carregar o perfil: ${error.message}`);
+                return false;
+            }
         }
         
         function exportProfile() {
