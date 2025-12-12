@@ -282,7 +282,13 @@
                     </div>
                 </div>
             </section>
-
+            <!-- ADICIONE ISSO -->
+            <div class="ml-auto flex items-center gap-3">
+                <a href="status.html" class="flex items-center gap-2 px-3 py-2 text-sm bg-theme-panel hover:bg-theme-panel/80 border border-theme-border rounded transition-colors">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Status</span>
+                </a>
+            </div>
         </div>
     </div>
 
@@ -707,6 +713,28 @@
         window.downloadTextData = downloadTextData;
         window.previewImage = previewImage;
         window.removerAvatar = removerAvatar;
+
+        // Quando salvar a ficha, salve também informações básicas
+        function salvarFichaCompleta() {
+            // ... seu código existente ...
+            
+            // Salvar também informações básicas para o status usar
+            const dadosBasicos = {
+                nome: document.getElementById('nome-personagem').value,
+                classe: document.getElementById('classe-personagem').value,
+                raca: document.getElementById('raca-personagem').value
+            };
+            
+            // Salvar no localStorage para o status acessar
+            localStorage.setItem('grimorio_nome_personagem', dadosBasicos.nome);
+            localStorage.setItem('grimorio_classe_personagem', dadosBasicos.classe);
+            localStorage.setItem('grimorio_raca_personagem', dadosBasicos.raca);
+            
+            // Se tiver sistema de perfis, salvar também lá
+            if (window.saveToProfile) {
+                window.saveToProfile('basico', dadosBasicos);
+            }
+        }
     </script>
 </body>
 </html>
