@@ -135,56 +135,22 @@
                     </div>
                 </div>
 
-                <!-- MENU CLASSES (substituindo Responsabilidade) -->
                 <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-classes', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#8b5cf6] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#8b5cf6]">
-                        <i data-lucide="swords" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Classes</span>
+                    <button onclick="toggleMenu('menu-sistema', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#f59e0b] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#f59e0b]">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span class="font-cinzel">Sistema</span>
                         <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
                     </button>
-                    <div id="menu-classes" class="dropdown-content absolute top-full left-0 min-w-[280px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50 rounded-b-lg">
-                        <!-- Classes Padrão -->
-                        <div class="px-5 py-3 border-b border-[#2a2a2e]">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="shield" class="w-3 h-3 text-[#dc2626]"></i>
-                                <span class="text-xs font-semibold text-[#a0a0a0] uppercase tracking-wider">Classes Padrão</span>
-                            </div>
-                            <a href="javascript:void(0);" onclick="abrirClasse('guerreiro')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#dc2626]/10 hover:text-[#dc2626] hover:pl-5 border-l-2 border-transparent hover:border-[#dc2626]">⚔️ Guerreiro</a>
-                            <a href="javascript:void(0);" onclick="abrirClasse('mago')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-5 border-l-2 border-transparent hover:border-[#4a9eff]">✨ Mago</a>
-                            <a href="javascript:void(0);" onclick="abrirClasse('arqueiro')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#22c55e]/10 hover:text-[#22c55e] hover:pl-5 border-l-2 border-transparent hover:border-[#22c55e]">🎯 Arqueiro</a>
-                            <a href="javascript:void(0);" onclick="abrirClasse('ladino')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#f59e0b]/10 hover:text-[#f59e0b] hover:pl-5 border-l-2 border-transparent hover:border-[#f59e0b]">🗡️ Ladino</a>
-                            <a href="javascript:void(0);" onclick="abrirClasse('paladino')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] hover:pl-5 border-l-2 border-transparent hover:border-[#8b5cf6]">🛡️ Paladino</a>
-                            <a href="javascript:void(0);" onclick="abrirClasse('bardo')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:pl-5 border-l-2 border-transparent hover:border-[#ec4899]">🎵 Bardo</a>
-                        </div>
-                        
-                        <!-- Classes por Estilo -->
-                        <div class="px-5 py-3 border-b border-[#2a2a2e]">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="sparkles" class="w-3 h-3 text-[#8b5cf6]"></i>
-                                <span class="text-xs font-semibold text-[#a0a0a0] uppercase tracking-wider">Por Estilo</span>
-                            </div>
-                            <a href="javascript:void(0);" onclick="filtrarPorEstilo('combate')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#dc2626]/10 hover:text-[#dc2626] hover:pl-5 border-l-2 border-transparent hover:border-[#dc2626]">⚔️ Combate</a>
-                            <a href="javascript:void(0);" onclick="filtrarPorEstilo('magia')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-5 border-l-2 border-transparent hover:border-[#4a9eff]">🔮 Magia</a>
-                            <a href="javascript:void(0);" onclick="filtrarPorEstilo('suporte')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#22c55e]/10 hover:text-[#22c55e] hover:pl-5 border-l-2 border-transparent hover:border-[#22c55e]">💚 Suporte</a>
-                            <a href="javascript:void(0);" onclick="filtrarPorEstilo('furtivo')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#f59e0b]/10 hover:text-[#f59e0b] hover:pl-5 border-l-2 border-transparent hover:border-[#f59e0b]">👤 Furtivo</a>
-                            <a href="javascript:void(0);" onclick="filtrarPorEstilo('distancia')" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#84cc16]/10 hover:text-[#84cc16] hover:pl-5 border-l-2 border-transparent hover:border-[#84cc16]">🏹 Distância</a>
-                        </div>
-                        
-                        <!-- Sistema de Classes -->
-                        <div class="px-5 py-3">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i data-lucide="library" class="w-3 h-3 text-[#4a9eff]"></i>
-                                <span class="text-xs font-semibold text-[#a0a0a0] uppercase tracking-wider">Sistema</span>
-                            </div>
-                            <a href="javascript:void(0);" onclick="irParaCriarClasse()" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] hover:pl-5 border-l-2 border-transparent hover:border-[#8b5cf6]">
-                                <i data-lucide="plus" class="w-3 h-3 inline mr-2"></i>
-                                Criar Nova Classe
-                            </a>
-                            <a href="classes.html" class="block px-3 py-2 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-5 border-l-2 border-transparent hover:border-[#4a9eff]">
-                                <i data-lucide="book-open" class="w-3 h-3 inline mr-2"></i>
-                                Biblioteca de Classes
-                            </a>
-                        </div>
+                    <div id="menu-sistema" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
+                        <a href="perfil.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:pl-7 border-l-2 border-transparent hover:border-[#ec4899]">
+                            <i data-lucide="users" class="w-3 h-3"></i> Perfis
+                        </a>
+                        <a href="salvamento.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#f59e0b]/10 hover:text-[#f59e0b] hover:pl-7 border-l-2 border-transparent hover:border-[#f59e0b]">
+                            <i data-lucide="hard-drive" class="w-3 h-3"></i> Backup/Salvamento
+                        </a>
+                        <a href="classes.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] hover:pl-7 border-l-2 border-transparent hover:border-[#8b5cf6]">
+                            <i data-lucide="swords" class="w-3 h-3"></i> Classes
+                        </a>
                     </div>
                 </div>
 
@@ -264,6 +230,22 @@
                     </div>
                     <span class="font-cinzel text-sm text-theme-text group-hover:text-[#8b5cf6] transition-colors">Classes</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-[#8b5cf6] group-hover:translate-x-1 transition-all"></i>
+                </a>
+                <!-- ADICIONE ESTES DOIS NOVOS CARDS -->
+                <a href="perfil.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-[#ec4899]/50 transition-all duration-300 rounded">
+                    <div class="p-2 rounded bg-[#ec4899]/20 text-[#ec4899]">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-cinzel text-sm text-theme-text group-hover:text-[#ec4899] transition-colors">Perfis</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-[#ec4899] group-hover:translate-x-1 transition-all"></i>
+                </a>
+
+                <a href="salvamento.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-[#f59e0b]/50 transition-all duration-300 rounded">
+                    <div class="p-2 rounded bg-[#f59e0b]/20 text-[#f59e0b]">
+                        <i data-lucide="hard-drive" class="w-5 h-5"></i>
+                    </div>
+                    <span class="font-cinzel text-sm text-theme-text group-hover:text-[#f59e0b] transition-colors">Backup</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-[#f59e0b] group-hover:translate-x-1 transition-all"></i>
                 </a>
             </div>
         </div>
@@ -382,6 +364,27 @@
                             <p class="text-[#808080] text-sm leading-relaxed mt-1">Seu companheiro possui sua própria mini-ficha de evolução.</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- ... outros cards existentes ... -->
+                    
+                    <!-- ADICIONE ESTES DOIS NOVOS CARDS -->
+                    <a href="perfil.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-[#ec4899]/50 transition-all duration-300 rounded">
+                        <div class="p-2 rounded bg-[#ec4899]/20 text-[#ec4899]">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-cinzel text-sm text-theme-text group-hover:text-[#ec4899] transition-colors">Perfis</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-[#ec4899] group-hover:translate-x-1 transition-all"></i>
+                    </a>
+
+                    <a href="salvamento.html" class="group flex items-center gap-3 p-4 bg-theme-panel border border-theme-border hover:border-[#f59e0b]/50 transition-all duration-300 rounded">
+                        <div class="p-2 rounded bg-[#f59e0b]/20 text-[#f59e0b]">
+                            <i data-lucide="hard-drive" class="w-5 h-5"></i>
+                        </div>
+                        <span class="font-cinzel text-sm text-theme-text group-hover:text-[#f59e0b] transition-colors">Backup</span>
+                        <i data-lucide="chevron-right" class="w-4 h-4 ml-auto text-theme-border group-hover:text-[#f59e0b] group-hover:translate-x-1 transition-all"></i>
+                    </a>
                 </div>
 
                 <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-orange/30 transition-all duration-500 rounded">
