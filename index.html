@@ -668,55 +668,6 @@
             }, 3000);
         }
 
-        // 4. Simular recebimento de dados de outras páginas
-        function simularRecebimentoDados() {
-            // Esta função simula como outras páginas enviariam dados para o perfil ativo
-            // Em um sistema real, cada página salvaria dados no localStorage com uma chave específica
-            
-            // Dados da ficha.html
-            const dadosFicha = {
-                nome: "Elara Silvershadow",
-                titulo: "Ladina das Sombras",
-                raca: "Elfo Noturno",
-                idade: "87 anos",
-                altura: "1.75m",
-                peso: "65kg",
-                historia: "Uma ladina exilada de sua cidade natal...",
-                avatar: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=400&h=400&fit=crop&crop=face"
-            };
-            
-            // Dados do status.html
-            const dadosStatus = {
-                forca: 14,
-                destreza: 18,
-                constituicao: 12,
-                inteligencia: 16,
-                sabedoria: 13,
-                carisma: 15,
-                vidaMax: 28,
-                manaMax: 42
-            };
-            
-            // Combinar dados no perfil ativo
-            const perfilAtual = localStorage.getItem('grimorio_perfil_ativo');
-            if (perfilAtual) {
-                try {
-                    const perfil = JSON.parse(perfilAtual);
-                    const perfilAtualizado = {
-                        ...perfil,
-                        ...dadosFicha,
-                        status: dadosStatus,
-                        ultimaAtualizacao: new Date().toISOString()
-                    };
-                    
-                    localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(perfilAtualizado));
-                    console.log('Dados de outras páginas foram integrados ao perfil ativo.');
-                } catch (error) {
-                    console.error('Erro ao integrar dados:', error);
-                }
-            }
-        }
-
         // 5. Inicializar
         document.addEventListener('DOMContentLoaded', function() {
             // Carregar perfil ativo
