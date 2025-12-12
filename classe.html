@@ -1,0 +1,2328 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimório Digital - Sistema de Classes</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            pink: '#ec4899',
+                            red: '#dc2626',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            blue: '#4a9eff',
+                            green: '#22c55e',
+                            cyan: '#06b6d4',
+                            orange: '#ff6b35',
+                            teal: '#14b8a6',
+                            indigo: '#6366f1',
+                            rose: '#f43f5e',
+                            amber: '#fbbf24',
+                            lime: '#84cc16',
+                            emerald: '#10b981',
+                            sky: '#0ea5e9',
+                            violet: '#7c3aed',
+                            fuchsia: '#d946ef',
+                            muted: '#606060'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Modal */
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-content {
+            background: #0f0f12; border: 1px solid #2a2a2e;
+            border-radius: 12px; width: 100%; max-width: 700px;
+            max-height: 90vh; overflow-y: auto;
+        }
+        
+        /* Cards de classe */
+        .class-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        .class-card.selected {
+            border-color: currentColor;
+            box-shadow: 0 0 0 2px currentColor;
+        }
+        
+        /* Sistema de cores */
+        .color-option {
+            width: 32px; height: 32px; border-radius: 6px;
+            cursor: pointer; transition: all 0.2s ease;
+        }
+        .color-option:hover { transform: scale(1.1); }
+        .color-option.selected { border: 3px solid white; box-shadow: 0 0 10px currentColor; }
+        
+        /* Atributos slider */
+        .attr-slider-container { position: relative; }
+        .attr-slider { width: 100%; height: 8px; -webkit-appearance: none; appearance: none; background: transparent; }
+        .attr-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+            background: currentColor; cursor: pointer; border: 3px solid #0a0a0c;
+            box-shadow: 0 0 10px currentColor;
+        }
+        .attr-slider::-webkit-slider-runnable-track {
+            width: 100%; height: 8px; cursor: pointer;
+            background: linear-gradient(90deg, currentColor, color-mix(in srgb, currentColor 50%, transparent));
+            border-radius: 4px;
+        }
+        
+        /* Tags */
+        .tag { display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 12px; font-size: 11px;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        
+        /* Dificuldade */
+        .difficulty-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 12px; font-size: 11px;
+        }
+        .difficulty-easy { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); color: #22c55e; }
+        .difficulty-medium { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; }
+        .difficulty-hard { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; }
+        .difficulty-expert { background: rgba(139, 92, 246, 0.2); border: 1px solid rgba(139, 92, 246, 0.4); color: #8b5cf6; }
+    </style>
+</head>
+<body class="min-h-screen font-sans">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="text-sm text-theme-muted">Sistema de Classes</span>
+        </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 space-y-6">
+
+        <!-- Cabeçalho -->
+        <header class="flex items-center gap-4 mb-8 anim-entry">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-theme-purple/20 to-pink-600/20 border border-theme-purple/30">
+                <i data-lucide="swords" class="w-8 h-8 text-theme-purple"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Classes</h1>
+                <p class="text-gray-400">Crie, edite e personalize classes totalmente customizáveis</p>
+            </div>
+        </header>
+
+        <!-- Seção 1: Sistema de Classes -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #8b5cf6;">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple">
+                    <i data-lucide="library" class="w-4 h-4"></i> Biblioteca de Classes
+                </h3>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                        <i data-lucide="download" class="w-3 h-3 inline mr-1"></i> Exportar
+                    </button>
+                    <button onclick="importClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                        <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Importar
+                    </button>
+                    <button onclick="openClassEditor()" class="px-4 py-2 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity text-sm">
+                        <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Nova Classe
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtros -->
+            <div class="mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterClasses('all')" id="filter-all" class="px-3 py-1 bg-theme-purple text-white rounded-lg text-sm font-medium">
+                        Todas
+                    </button>
+                    <button onclick="filterClasses('default')" id="filter-default" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                        <i data-lucide="shield" class="w-3 h-3 inline mr-1"></i> Padrão
+                    </button>
+                    <button onclick="filterClasses('custom')" id="filter-custom" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                        <i data-lucide="sparkles" class="w-3 h-3 inline mr-1"></i> Personalizadas
+                    </button>
+                    <button onclick="filterClasses('favorite')" id="filter-favorite" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                        <i data-lucide="star" class="w-3 h-3 inline mr-1"></i> Favoritas
+                    </button>
+                    <div class="flex-1"></div>
+                    <input type="text" id="search-classes" placeholder="Buscar classe..." 
+                           class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 outline-none focus:border-theme-purple text-sm w-48"
+                           oninput="searchClasses()">
+                </div>
+            </div>
+            
+            <!-- Lista de Classes -->
+            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Classes serão inseridas aqui -->
+            </div>
+            
+            <div class="mt-6 text-center">
+                <p class="text-sm text-theme-muted">
+                    <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                    Clique em uma classe para editar ou usar no personagem
+                </p>
+            </div>
+        </section>
+
+        <!-- Seção 2: Estatísticas -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #4a9eff;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
+                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Estatísticas do Sistema
+            </h3>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-white mb-1" id="stats-total">0</div>
+                    <div class="text-xs text-theme-muted">Total de Classes</div>
+                </div>
+                
+                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-theme-green mb-1" id="stats-custom">0</div>
+                    <div class="text-xs text-theme-muted">Personalizadas</div>
+                </div>
+                
+                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-theme-yellow mb-1" id="stats-favorites">0</div>
+                    <div class="text-xs text-theme-muted">Favoritas</div>
+                </div>
+                
+                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
+                    <div class="text-2xl font-bold text-theme-purple mb-1" id="stats-used">0</div>
+                    <div class="text-xs text-theme-muted">Em Uso</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Configurações do Sistema -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-6">
+                <i data-lucide="settings" class="w-4 h-4"></i> Configurações do Sistema
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="shield-off" class="w-5 h-5 text-theme-yellow"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Desativar Classes Padrão</h4>
+                            <p class="text-sm text-theme-muted">Mostrar apenas classes personalizadas</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="disable-default-classes" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer 
+                                    peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] 
+                                    after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                    peer-checked:bg-theme-yellow"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="copy" class="w-5 h-5 text-theme-blue"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Duplicar ao Editar</h4>
+                            <p class="text-sm text-theme-muted">Criar cópia ao editar classes padrão</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="duplicate-on-edit" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer 
+                                    peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] 
+                                    after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                    peer-checked:bg-theme-blue"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-theme-red"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Resetar Sistema</h4>
+                            <p class="text-sm text-theme-muted">Restaurar classes padrão e limpar personalizadas</p>
+                        </div>
+                    </div>
+                    <button onclick="resetClassSystem()" 
+                            class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg border border-red-800 transition-colors text-sm">
+                        Resetar Tudo
+                    </button>
+                </div>
+                
+                <div class="p-4 bg-theme-bg/50 rounded-lg border border-theme-border">
+                    <h4 class="font-medium text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="lightbulb" class="w-4 h-4 text-theme-green"></i>
+                        Dicas de Criação
+                    </h4>
+                    <ul class="text-sm text-theme-muted space-y-1">
+                        <li>• Distribua no máximo 20 pontos entre os 6 atributos</li>
+                        <li>• Classes balanceadas têm soma de atributos entre 15-25</li>
+                        <li>• Use cores diferentes para cada tipo de classe</li>
+                        <li>• Adicione habilidades únicas para tornar a classe especial</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 4: Pré-visualização -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.4s; border-left: 4px solid #22c55e;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
+                <i data-lucide="eye" class="w-4 h-4"></i> Pré-visualização
+            </h3>
+            
+            <div id="preview-container" class="bg-theme-bg border border-theme-border rounded-lg p-6">
+                <div class="text-center py-12">
+                    <i data-lucide="swords" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                    <p class="text-theme-muted">Selecione uma classe para ver a pré-visualização</p>
+                    <p class="text-xs text-theme-muted mt-1">Clique em uma classe na lista acima</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Modal Editor de Classe -->
+    <div id="class-editor-modal" class="modal-backdrop hidden">
+        <div class="modal-content p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-cinzel text-xl font-bold" id="modal-title" style="color: var(--class-color, #8b5cf6)">
+                    <i data-lucide="plus-circle" class="w-5 h-5 inline mr-2"></i>
+                    Criar Nova Classe
+                </h3>
+                <button onclick="closeClassEditor()" class="text-theme-muted hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <!-- Informações Básicas -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Informações Básicas</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-theme-muted mb-2">Nome da Classe</label>
+                            <input type="text" id="class-name" placeholder="Ex: Necromante, Engenheiro, Druida..."
+                                   class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-current outline-none">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-theme-muted mb-2">Dificuldade</label>
+                            <select id="class-difficulty" 
+                                    class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-current outline-none cursor-pointer">
+                                <option value="easy" style="color: #22c55e">Fácil</option>
+                                <option value="medium" style="color: #f59e0b">Médio</option>
+                                <option value="hard" style="color: #ef4444">Difícil</option>
+                                <option value="expert" style="color: #8b5cf6">Especialista</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <label class="block text-sm text-theme-muted mb-2">Descrição</label>
+                        <textarea id="class-description" placeholder="Descreva a classe, seu papel no grupo, estilo de jogo..."
+                                  class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-current outline-none h-24 resize-none"></textarea>
+                    </div>
+                </div>
+                
+                <!-- Cor e Ícone -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Aparência</h4>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm text-theme-muted mb-2">Cor da Classe</label>
+                            <div class="grid grid-cols-8 gap-2">
+                                <!-- Cores serão inseridas via JavaScript -->
+                            </div>
+                            <input type="color" id="custom-color" class="mt-3 w-full h-10 cursor-pointer bg-transparent border-0">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm text-theme-muted mb-2">Ícone</label>
+                            <div class="grid grid-cols-8 gap-2">
+                                <!-- Ícones serão inseridos via JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Atributos Base -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Atributos Base</h4>
+                    <div class="space-y-4" id="attributes-container">
+                        <!-- Atributos serão inseridos via JavaScript -->
+                    </div>
+                    <div class="mt-4 p-3 bg-theme-bg/50 rounded-lg border border-theme-border">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-theme-muted">Total de Pontos</span>
+                            <span class="font-bold text-white" id="total-points">0</span>
+                        </div>
+                        <div class="mt-2 text-xs text-theme-muted">
+                            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                            Distribua pontos entre os atributos (máximo 20)
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Habilidades Especiais -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Habilidades Especiais</h4>
+                    <div id="skills-container">
+                        <!-- Habilidades serão inseridas via JavaScript -->
+                    </div>
+                    <button onclick="addSkill()" class="mt-2 w-full py-2 border border-dashed border-theme-border rounded-lg text-theme-muted hover:text-white hover:border-current transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
+                        Adicionar Habilidade
+                    </button>
+                </div>
+                
+                <!-- Tags e Categorias -->
+                <div>
+                    <h4 class="font-semibold text-white mb-3">Tags</h4>
+                    <div class="flex flex-wrap gap-2 mb-3" id="tags-container">
+                        <!-- Tags serão inseridas via JavaScript -->
+                    </div>
+                    <div class="flex gap-2">
+                        <input type="text" id="new-tag" placeholder="Nova tag..." 
+                               class="flex-1 bg-theme-bg border border-theme-border rounded-lg px-3 py-2 text-white outline-none focus:border-current text-sm">
+                        <button onclick="addTag()" class="px-3 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                            Adicionar
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Ações -->
+                <div class="flex gap-3 pt-4 border-t border-theme-border">
+                    <button onclick="closeClassEditor()" 
+                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                        Cancelar
+                    </button>
+                    <button onclick="testClass()" 
+                            class="flex-1 px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                        Testar
+                    </button>
+                    <button onclick="saveClass()" id="save-class-btn"
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                        Salvar Classe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Teste -->
+    <div id="test-modal" class="modal-backdrop hidden">
+        <div class="modal-content p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-cinzel text-xl font-bold" id="test-title" style="color: var(--test-color)">
+                    <i data-lucide="beaker" class="w-5 h-5 inline mr-2"></i>
+                    Testar Classe
+                </h3>
+                <button onclick="closeTestModal()" class="text-theme-muted hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div id="test-content" class="space-y-4">
+                <!-- Conteúdo do teste será inserido aqui -->
+            </div>
+            
+            <div class="flex gap-3 pt-4 border-t border-theme-border">
+                <button onclick="closeTestModal()" 
+                        class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                    Voltar
+                </button>
+                <button onclick="useClass()" 
+                        class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                    Usar esta Classe
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Importação -->
+    <div id="import-modal" class="modal-backdrop hidden">
+        <div class="modal-content p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-cinzel text-xl font-bold text-theme-green">
+                    <i data-lucide="upload" class="w-5 h-5 inline mr-2"></i>
+                    Importar Classes
+                </h3>
+                <button onclick="closeImportModal()" class="text-theme-muted hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-6">
+                <div class="border-2 border-dashed border-theme-border rounded-lg p-8 text-center cursor-pointer hover:border-theme-green transition-colors"
+                     onclick="document.getElementById('import-file').click()">
+                    <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                    <p class="text-white font-medium mb-1">Clique para selecionar arquivo</p>
+                    <p class="text-sm text-theme-muted">Formato: .json ou .txt do Grimório Digital</p>
+                </div>
+                <input type="file" id="import-file" accept=".json,.txt" class="hidden" onchange="handleImportFile(event)">
+                
+                <div class="flex gap-3">
+                    <button onclick="closeImportModal()" 
+                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                        Cancelar
+                    </button>
+                    <button onclick="processImport()" id="process-import-btn" disabled
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                        Importar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 mt-8 pb-12">
+        <div class="text-center text-sm text-theme-muted">
+            <p><i data-lucide="code" class="w-3 h-3 inline mr-1"></i> Sistema de Classes Totalmente Customizável - Crie sua própria biblioteca!</p>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // ====================================================================
+        // SISTEMA DE CLASSES - COMPLETAMENTE CUSTOMIZÁVEL
+        // ====================================================================
+        
+        // Classes padrão (podem ser substituídas)
+        const DEFAULT_CLASSES = [
+            {
+                id: 'guerreiro',
+                name: 'Guerreiro',
+                description: 'Mestre das armas e da armadura pesada. Excelente em combate corpo a corpo.',
+                color: '#dc2626',
+                icon: 'sword',
+                difficulty: 'medium',
+                attributes: { for: 4, dex: 2, con: 4, int: 1, wis: 2, cha: 1 },
+                skills: ['Provocar', 'Postura de Combate', 'Golpe Poderoso'],
+                tags: ['combate', 'tanque', 'corpo-a-corpo'],
+                isDefault: true,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'mago',
+                name: 'Mago',
+                description: 'Estudioso das artes arcanas. Conjurador poderoso de magias elementais.',
+                color: '#4a9eff',
+                icon: 'sparkles',
+                difficulty: 'hard',
+                attributes: { for: 1, dex: 2, con: 2, int: 6, wis: 4, cha: 3 },
+                skills: ['Conjurar Magia', 'Foco Arcano', 'Barreira Mágica'],
+                tags: ['magia', 'suporte', 'dano'],
+                isDefault: true,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'arqueiro',
+                name: 'Arqueiro',
+                description: 'Especialista em combate à distância. Precisão mortal com arcos e bestas.',
+                color: '#22c55e',
+                icon: 'target',
+                difficulty: 'easy',
+                attributes: { for: 2, dex: 6, con: 3, int: 3, wis: 3, cha: 1 },
+                skills: ['Tiro Preciso', 'Foco em Alvo', 'Disparo Rápido'],
+                tags: ['distância', 'precisão', 'mobilidade'],
+                isDefault: true,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'ladino',
+                name: 'Ladino',
+                description: 'Mestre da furtividade e ataques sorrateiros. Especialista em armadilhas.',
+                color: '#f59e0b',
+                icon: 'eye-off',
+                difficulty: 'medium',
+                attributes: { for: 2, dex: 6, con: 2, int: 3, wis: 2, cha: 3 },
+                skills: ['Furtividade', 'Ataque Furtivo', 'Armadilhas'],
+                tags: ['furtivo', 'crítico', 'utilidade'],
+                isDefault: true,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'paladino',
+                name: 'Paladino',
+                description: 'Cavaleiro sagrado que combina combate com magias divinas. Defensor dos justos.',
+                color: '#8b5cf6',
+                icon: 'shield',
+                difficulty: 'medium',
+                attributes: { for: 5, dex: 1, con: 4, int: 2, wis: 3, cha: 4 },
+                skills: ['Cura Divina', 'Proteção Sagrada', 'Golpe Santificado'],
+                tags: ['divino', 'tanque', 'suporte'],
+                isDefault: true,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            },
+            {
+                id: 'bardo',
+                name: 'Bardo',
+                description: 'Artista carismático que inspira aliados e confunde inimigos com música e magia.',
+                color: '#ec4899',
+                icon: 'music',
+                difficulty: 'easy',
+                attributes: { for: 1, dex: 3, con: 2, int: 4, wis: 3, cha: 6 },
+                skills: ['Inspirar Aliados', 'Canção de Batalha', 'Encantar'],
+                tags: ['suporte', 'carisma', 'controle'],
+                isDefault: true,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            }
+        ];
+
+        // Paleta de cores disponíveis
+        const COLOR_PALETTE = [
+            '#dc2626', '#ea580c', '#d97706', '#ca8a04', '#65a30d', '#16a34a',
+            '#059669', '#0d9488', '#0891b2', '#0284c7', '#2563eb', '#4f46e5',
+            '#7c3aed', '#9333ea', '#c026d3', '#db2777', '#e11d48', '#8b5cf6',
+            '#ec4899', '#f43f5e', '#f59e0b', '#84cc16', '#10b981', '#06b6d4',
+            '#3b82f6', '#6366f1', '#a855f7', '#d946ef', '#f97316', '#22c55e'
+        ];
+
+        // Ícones disponíveis
+        const ICON_PALETTE = [
+            'sword', 'shield', 'axe', 'hammer', 'target', 'crosshair', 'zap', 'sparkles',
+            'flame', 'droplet', 'wind', 'mountain', 'brain', 'heart', 'skull', 'ghost',
+            'eye', 'eye-off', 'users', 'user', 'user-plus', 'user-check', 'star', 'crown',
+            'trending-up', 'activity', 'heart-pulse', 'shield-alert', 'shield-check',
+            'target', 'cross', 'moon', 'sun', 'cloud', 'cloud-rain', 'cloud-lightning',
+            'feather', 'leaf', 'tree-pine', 'mountain-snow', 'tornado', 'volcano'
+        ];
+
+        // Tags sugeridas
+        const SUGGESTED_TAGS = [
+            'combate', 'magia', 'suporte', 'tanque', 'dano', 'controle', 'utilidade',
+            'corpo-a-corpo', 'distância', 'furtivo', 'divino', 'arcano', 'natureza',
+            'tecnologia', 'psíquico', 'mobilidade', 'precisão', 'defesa', 'ofensivo',
+            'versátil', 'especialista', 'generalista', 'complexo', 'simples', 'iniciante'
+        ];
+
+        let classes = [];
+        let editingClass = null;
+        let importData = null;
+        let currentFilter = 'all';
+
+        // ====================================================================
+        // INICIALIZAÇÃO
+        // ====================================================================
+        function initClassSystem() {
+            loadClasses();
+            renderClasses();
+            updateStatistics();
+            initColorPalette();
+            initIconPalette();
+            initAttributes();
+            initSuggestedTags();
+            
+            // Configurar eventos
+            setupEventListeners();
+        }
+
+        function loadClasses() {
+            const saved = localStorage.getItem('grimorio_custom_classes');
+            if (saved) {
+                const customClasses = JSON.parse(saved);
+                classes = [...DEFAULT_CLASSES, ...customClasses];
+            } else {
+                classes = [...DEFAULT_CLASSES];
+            }
+        }
+
+        function saveClasses() {
+            const customClasses = classes.filter(c => !c.isDefault);
+            localStorage.setItem('grimorio_custom_classes', JSON.stringify(customClasses));
+        }
+
+        // ====================================================================
+        // RENDERIZAÇÃO DE CLASSES
+        // ====================================================================
+        function renderClasses() {
+            const container = document.getElementById('classes-container');
+            container.innerHTML = '';
+            
+            let filteredClasses = classes;
+            
+            // Aplicar filtro
+            if (currentFilter === 'custom') {
+                filteredClasses = classes.filter(c => !c.isDefault);
+            } else if (currentFilter === 'default') {
+                filteredClasses = classes.filter(c => c.isDefault);
+            } else if (currentFilter === 'favorite') {
+                filteredClasses = classes.filter(c => c.isFavorite);
+            }
+            
+            // Aplicar busca
+            const searchTerm = document.getElementById('search-classes').value.toLowerCase();
+            if (searchTerm) {
+                filteredClasses = filteredClasses.filter(c => 
+                    c.name.toLowerCase().includes(searchTerm) ||
+                    c.description.toLowerCase().includes(searchTerm) ||
+                    c.tags.some(tag => tag.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Atualizar contador
+            document.getElementById('stats-total').textContent = filteredClasses.length;
+            
+            if (filteredClasses.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
+                        <i data-lucide="search" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                        <p class="text-theme-muted">Nenhuma classe encontrada</p>
+                        <p class="text-xs text-theme-muted mt-1">Tente outro filtro ou crie uma nova classe</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            filteredClasses.forEach(cls => {
+                const classElement = createClassCard(cls);
+                container.appendChild(classElement);
+            });
+            
+            lucide.createIcons();
+        }
+
+        function createClassCard(cls) {
+            const element = document.createElement('div');
+            element.className = 'class-card bg-theme-bg border border-theme-border p-4 rounded-lg cursor-pointer';
+            element.style.setProperty('--class-color', cls.color);
+            element.onclick = () => openClassEditor(cls.id);
+            
+            // Calcular soma de atributos
+            const attrSum = Object.values(cls.attributes).reduce((a, b) => a + b, 0);
+            
+            element.innerHTML = `
+                <div class="flex items-start justify-between mb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: ${cls.color}20; color: ${cls.color}">
+                            <i data-lucide="${cls.icon}" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white">${cls.name}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="difficulty-${cls.difficulty}">
+                                    ${getDifficultyText(cls.difficulty)}
+                                </span>
+                                ${cls.isDefault ? '<span class="tag"><i data-lucide="shield" class="w-2 h-2"></i>Padrão</span>' : ''}
+                                ${cls.isFavorite ? '<span class="tag" style="color: #fbbf24"><i data-lucide="star" class="w-2 h-2"></i>Favorita</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex gap-1">
+                        <button onclick="event.stopPropagation(); toggleFavorite('${cls.id}')" 
+                                class="p-1 ${cls.isFavorite ? 'text-amber-400 hover:text-amber-300' : 'text-theme-muted hover:text-white'}">
+                            <i data-lucide="${cls.isFavorite ? 'star' : 'star'}" class="w-4 h-4 ${cls.isFavorite ? 'fill-current' : ''}"></i>
+                        </button>
+                        ${!cls.isDefault ? `
+                        <button onclick="event.stopPropagation(); deleteClass('${cls.id}')" 
+                                class="p-1 text-theme-muted hover:text-red-400">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                        ` : ''}
+                    </div>
+                </div>
+                
+                <p class="text-sm text-theme-muted mb-3 line-clamp-2">${cls.description}</p>
+                
+                <div class="mb-3">
+                    <div class="flex justify-between text-xs text-white mb-1">
+                        <span>Atributos</span>
+                        <span>${attrSum} pontos</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 text-xs">
+                        ${Object.entries(cls.attributes).map(([attr, value]) => `
+                            <div class="flex justify-between">
+                                <span class="text-theme-muted">${attr.substring(0, 3).toUpperCase()}</span>
+                                <span class="font-bold" style="color: ${cls.color}">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap gap-1">
+                    ${cls.tags.slice(0, 3).map(tag => `
+                        <span class="tag">${tag}</span>
+                    `).join('')}
+                    ${cls.tags.length > 3 ? `<span class="tag">+${cls.tags.length - 3}</span>` : ''}
+                </div>
+                
+                <div class="mt-3 pt-3 border-t border-theme-border flex items-center justify-between text-xs">
+                    <span class="text-theme-muted">${cls.usageCount} uso${cls.usageCount !== 1 ? 's' : ''}</span>
+                    <button onclick="event.stopPropagation(); testClassPreview('${cls.id}')" 
+                            class="px-2 py-1 rounded bg-theme-bg border border-theme-border text-white hover:bg-white/5 transition-colors">
+                        Testar
+                    </button>
+                </div>
+            `;
+            
+            return element;
+        }
+
+        function getDifficultyText(difficulty) {
+            const texts = {
+                'easy': 'Fácil',
+                'medium': 'Médio', 
+                'hard': 'Difícil',
+                'expert': 'Especialista'
+            };
+            return texts[difficulty] || difficulty;
+        }
+
+        // ====================================================================
+        // EDITOR DE CLASSES
+        // ====================================================================
+        function openClassEditor(classId = null) {
+            if (classId) {
+                // Editar classe existente
+                const cls = classes.find(c => c.id === classId);
+                if (!cls) return;
+                
+                editingClass = { ...cls };
+                
+                // Se for classe padrão e a opção de duplicar estiver ativa, criar cópia
+                const duplicateOnEdit = document.getElementById('duplicate-on-edit')?.checked;
+                if (cls.isDefault && duplicateOnEdit) {
+                    editingClass.id = 'custom_' + Date.now();
+                    editingClass.name = `${cls.name} (Cópia)`;
+                    editingClass.isDefault = false;
+                }
+            } else {
+                // Criar nova classe
+                editingClass = {
+                    id: 'custom_' + Date.now(),
+                    name: '',
+                    description: '',
+                    color: COLOR_PALETTE[0],
+                    icon: ICON_PALETTE[0],
+                    difficulty: 'medium',
+                    attributes: { for: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+                    skills: [],
+                    tags: [],
+                    isDefault: false,
+                    isFavorite: false,
+                    usageCount: 0,
+                    createdAt: new Date().toISOString()
+                };
+            }
+            
+            // Preencher formulário
+            document.getElementById('class-name').value = editingClass.name;
+            document.getElementById('class-description').value = editingClass.description;
+            document.getElementById('class-difficulty').value = editingClass.difficulty;
+            document.getElementById('custom-color').value = editingClass.color;
+            
+            // Atualizar título
+            const title = document.getElementById('modal-title');
+            title.textContent = classId ? 'Editar Classe' : 'Criar Nova Classe';
+            title.style.color = editingClass.color;
+            
+            // Atualizar atributos
+            updateAttributesForm();
+            
+            // Atualizar habilidades
+            updateSkillsForm();
+            
+            // Atualizar tags
+            updateTagsForm();
+            
+            // Selecionar cor e ícone atuais
+            selectColor(editingClass.color);
+            selectIcon(editingClass.icon);
+            
+            // Abrir modal
+            document.getElementById('class-editor-modal').classList.remove('hidden');
+            
+            // Atualizar pontos totais
+            updateTotalPoints();
+        }
+
+        function closeClassEditor() {
+            document.getElementById('class-editor-modal').classList.add('hidden');
+            editingClass = null;
+        }
+
+        function initColorPalette() {
+            const container = document.querySelector('#class-editor-modal .grid.grid-cols-8');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            COLOR_PALETTE.forEach(color => {
+                const colorElement = document.createElement('div');
+                colorElement.className = 'color-option';
+                colorElement.style.backgroundColor = color;
+                colorElement.onclick = () => selectColor(color);
+                container.appendChild(colorElement);
+            });
+        }
+
+        function initIconPalette() {
+            const container = document.querySelectorAll('#class-editor-modal .grid.grid-cols-8')[1];
+            if (!container) return;
+            
+            container.innerHTML = '';
+            ICON_PALETTE.forEach(icon => {
+                const iconElement = document.createElement('button');
+                iconElement.type = 'button';
+                iconElement.className = 'p-2 rounded-lg border border-theme-border hover:border-current bg-theme-bg';
+                iconElement.innerHTML = `<i data-lucide="${icon}" class="w-4 h-4 text-white mx-auto"></i>`;
+                iconElement.onclick = () => selectIcon(icon);
+                container.appendChild(iconElement);
+            });
+            lucide.createIcons();
+        }
+
+        function initAttributes() {
+            const container = document.getElementById('attributes-container');
+            const attributes = [
+                { key: 'for', name: 'Força', desc: 'Potência física, capacidade de carga' },
+                { key: 'dex', name: 'Destreza', desc: 'Agilidade, reflexos, precisão' },
+                { key: 'con', name: 'Constituição', desc: 'Vitalidade, resistência, saúde' },
+                { key: 'int', name: 'Inteligência', desc: 'Raciocínio, conhecimento, lógica' },
+                { key: 'wis', name: 'Sabedoria', desc: 'Percepção, intuição, vontade' },
+                { key: 'cha', name: 'Carisma', desc: 'Persuasão, liderança, presença' }
+            ];
+            
+            container.innerHTML = attributes.map(attr => `
+                <div class="attr-slider-container">
+                    <div class="flex justify-between mb-1">
+                        <div>
+                            <span class="font-medium text-white">${attr.name}</span>
+                            <span class="text-xs text-theme-muted ml-2">${attr.desc}</span>
+                        </div>
+                        <span class="font-bold text-white" id="attr-value-${attr.key}">0</span>
+                    </div>
+                    <input type="range" min="0" max="10" value="0" 
+                           class="attr-slider" id="attr-slider-${attr.key}"
+                           oninput="updateAttribute('${attr.key}', this.value)"
+                           style="color: var(--class-color, #8b5cf6)">
+                </div>
+            `).join('');
+        }
+
+        function initSuggestedTags() {
+            const container = document.getElementById('tags-container');
+            container.innerHTML = SUGGESTED_TAGS.map(tag => `
+                <button onclick="addTagFromSuggestions('${tag}')" 
+                        class="px-2 py-1 bg-theme-bg border border-theme-border rounded text-xs text-white hover:bg-white/5">
+                    ${tag}
+                </button>
+            `).join('');
+        }
+
+        function selectColor(color) {
+            editingClass.color = color;
+            document.getElementById('custom-color').value = color;
+            
+            // Atualizar cor no modal
+            const modal = document.getElementById('class-editor-modal');
+            modal.style.setProperty('--class-color', color);
+            
+            // Atualizar sliders
+            document.querySelectorAll('.attr-slider').forEach(slider => {
+                slider.style.color = color;
+            });
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Adicionar seleção atual
+            const colorElement = Array.from(document.querySelectorAll('.color-option'))
+                .find(el => el.style.backgroundColor === color);
+            if (colorElement) {
+                colorElement.classList.add('selected');
+            }
+        }
+
+        function selectIcon(icon) {
+            editingClass.icon = icon;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('#class-editor-modal button').forEach(btn => {
+                btn.classList.remove('border-current', 'bg-current/20');
+            });
+            
+            // Adicionar seleção atual
+            event.currentTarget.classList.add('border-current', 'bg-current/20');
+        }
+
+        function updateAttribute(key, value) {
+            editingClass.attributes[key] = parseInt(value);
+            document.getElementById(`attr-value-${key}`).textContent = value;
+            updateTotalPoints();
+        }
+
+        function updateAttributesForm() {
+            Object.entries(editingClass.attributes).forEach(([key, value]) => {
+                const slider = document.getElementById(`attr-slider-${key}`);
+                const display = document.getElementById(`attr-value-${key}`);
+                if (slider) slider.value = value;
+                if (display) display.textContent = value;
+            });
+        }
+
+        function updateTotalPoints() {
+            const total = Object.values(editingClass.attributes).reduce((a, b) => a + b, 0);
+            document.getElementById('total-points').textContent = total;
+            
+            // Atualizar cor baseada no total
+            const pointsElement = document.getElementById('total-points');
+            if (total > 20) {
+                pointsElement.style.color = '#ef4444';
+            } else if (total >= 15) {
+                pointsElement.style.color = '#22c55e';
+            } else {
+                pointsElement.style.color = '#f59e0b';
+            }
+        }
+
+        function addSkill() {
+            editingClass.skills.push('');
+            updateSkillsForm();
+        }
+
+        function updateSkillsForm() {
+            const container = document.getElementById('skills-container');
+            container.innerHTML = editingClass.skills.map((skill, index) => `
+                <div class="flex gap-2 mb-2">
+                    <input type="text" value="${skill}" placeholder="Nome da habilidade..."
+                           oninput="updateSkill(${index}, this.value)"
+                           class="flex-1 bg-theme-bg border border-theme-border rounded-lg px-3 py-2 text-white outline-none focus:border-current text-sm">
+                    <button onclick="removeSkill(${index})" 
+                            class="px-3 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        function updateSkill(index, value) {
+            editingClass.skills[index] = value;
+        }
+
+        function removeSkill(index) {
+            editingClass.skills.splice(index, 1);
+            updateSkillsForm();
+        }
+
+        function addTag() {
+            const input = document.getElementById('new-tag');
+            const tag = input.value.trim().toLowerCase();
+            
+            if (tag && !editingClass.tags.includes(tag)) {
+                editingClass.tags.push(tag);
+                updateTagsForm();
+                input.value = '';
+            }
+        }
+
+        function addTagFromSuggestions(tag) {
+            if (!editingClass.tags.includes(tag)) {
+                editingClass.tags.push(tag);
+                updateTagsForm();
+            }
+        }
+
+        function updateTagsForm() {
+            const container = document.getElementById('tags-container');
+            const activeTags = editingClass.tags.map(tag => `
+                <div class="flex items-center gap-1 px-2 py-1 bg-current/20 rounded text-xs" style="color: var(--class-color, #8b5cf6); border: 1px solid currentColor">
+                    <span>${tag}</span>
+                    <button onclick="removeTag('${tag}')" class="ml-1 hover:opacity-70">
+                        <i data-lucide="x" class="w-3 h-3"></i>
+                    </button>
+                </div>
+            `).join('');
+            
+            container.innerHTML = activeTags;
+            lucide.createIcons();
+        }
+
+        function removeTag(tag) {
+            editingClass.tags = editingClass.tags.filter(t => t !== tag);
+            updateTagsForm();
+        }
+
+        function saveClass() {
+            // Validar
+            if (!editingClass.name.trim()) {
+                alert('Por favor, insira um nome para a classe.');
+                return;
+            }
+            
+            const totalPoints = Object.values(editingClass.attributes).reduce((a, b) => a + b, 0);
+            if (totalPoints > 20) {
+                if (!confirm(`Esta classe tem ${totalPoints} pontos (máximo recomendado: 20). Deseja salvar mesmo assim?`)) {
+                    return;
+                }
+            }
+            
+            // Atualizar ou adicionar
+            const index = classes.findIndex(c => c.id === editingClass.id);
+            if (index !== -1) {
+                classes[index] = { ...editingClass };
+            } else {
+                classes.unshift({ ...editingClass });
+            }
+            
+            // Salvar
+            saveClasses();
+            renderClasses();
+            updateStatistics();
+            closeClassEditor();
+            
+            showNotification(`Classe "${editingClass.name}" salva com sucesso!`, 'success');
+        }
+
+        // ====================================================================
+        // TESTE E USO DE CLASSES
+        // ====================================================================
+        function testClass() {
+            const modal = document.getElementById('test-modal');
+            const title = document.getElementById('test-title');
+            const content = document.getElementById('test-content');
+            
+            modal.style.setProperty('--test-color', editingClass.color);
+            title.innerHTML = `<i data-lucide="beaker" class="w-5 h-5 inline mr-2"></i>Testar: ${editingClass.name}`;
+            
+            const attrSum = Object.values(editingClass.attributes).reduce((a, b) => a + b, 0);
+            
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-lg flex items-center justify-center" style="background: ${editingClass.color}20; color: ${editingClass.color}">
+                            <i data-lucide="${editingClass.icon}" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white">${editingClass.name}</h4>
+                            <p class="text-sm text-theme-muted">${editingClass.description}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
+                            <div class="text-xs text-theme-muted mb-1">Dificuldade</div>
+                            <div class="font-medium text-white">${getDifficultyText(editingClass.difficulty)}</div>
+                        </div>
+                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
+                            <div class="text-xs text-theme-muted mb-1">Total de Pontos</div>
+                            <div class="font-medium ${attrSum > 20 ? 'text-red-400' : attrSum >= 15 ? 'text-green-400' : 'text-amber-400'}">${attrSum}</div>
+                        </div>
+                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
+                            <div class="text-xs text-theme-muted mb-1">Habilidades</div>
+                            <div class="font-medium text-white">${editingClass.skills.length}</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h5 class="font-medium text-white mb-2">Atributos</h5>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${Object.entries(editingClass.attributes).map(([key, value]) => `
+                                <div class="flex justify-between items-center p-2 bg-theme-bg/50 rounded">
+                                    <span class="text-sm text-theme-muted">${key.toUpperCase()}</span>
+                                    <span class="font-bold" style="color: ${editingClass.color}">${value}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    ${editingClass.skills.length > 0 ? `
+                    <div>
+                        <h5 class="font-medium text-white mb-2">Habilidades Especiais</h5>
+                        <div class="space-y-1">
+                            ${editingClass.skills.map(skill => `
+                                <div class="flex items-center gap-2 p-2 bg-theme-bg/50 rounded">
+                                    <i data-lucide="zap" class="w-3 h-3" style="color: ${editingClass.color}"></i>
+                                    <span class="text-sm text-white">${skill}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${editingClass.tags.length > 0 ? `
+                    <div>
+                        <h5 class="font-medium text-white mb-2">Tags</h5>
+                        <div class="flex flex-wrap gap-1">
+                            ${editingClass.tags.map(tag => `
+                                <span class="px-2 py-1 bg-current/20 rounded text-xs" style="color: ${editingClass.color}; border: 1px solid currentColor">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            lucide.createIcons();
+            closeClassEditor();
+            modal.classList.remove('hidden');
+        }
+
+        function testClassPreview(classId) {
+            const cls = classes.find(c => c.id === classId);
+            if (!cls) return;
+            
+            editingClass = { ...cls };
+            testClass();
+        }
+
+        function closeTestModal() {
+            document.getElementById('test-modal').classList.add('hidden');
+            editingClass = null;
+        }
+
+        function useClass() {
+            if (!editingClass) return;
+            
+            // Incrementar contador de uso
+            const index = classes.findIndex(c => c.id === editingClass.id);
+            if (index !== -1) {
+                classes[index].usageCount++;
+                saveClasses();
+                updateStatistics();
+            }
+            
+            // Salvar no perfil atual (se houver)
+            const currentProfileId = localStorage.getItem('current_profile_id');
+            if (currentProfileId) {
+                const profiles = JSON.parse(localStorage.getItem('grimorio_profiles') || '[]');
+                const profileIndex = profiles.findIndex(p => p.id === currentProfileId);
+                if (profileIndex !== -1) {
+                    profiles[profileIndex].class = editingClass.name;
+                    profiles[profileIndex].classId = editingClass.id;
+                    localStorage.setItem('grimorio_profiles', JSON.stringify(profiles));
+                }
+            }
+            
+            // Salvar na ficha principal
+            localStorage.setItem('grimorio_classe_personagem', editingClass.name);
+            localStorage.setItem('grimorio_classe_detalhes', JSON.stringify(editingClass));
+            
+            showNotification(`Classe "${editingClass.name}" aplicada ao personagem!`, 'success');
+            closeTestModal();
+            
+            // Redirecionar para a ficha
+            setTimeout(() => {
+                window.location.href = 'ficha.html';
+            }, 1500);
+        }
+
+        // ====================================================================
+        // GERENCIAMENTO DE CLASSES
+        // ====================================================================
+        function toggleFavorite(classId) {
+            const index = classes.findIndex(c => c.id === classId);
+            if (index !== -1) {
+                classes[index].isFavorite = !classes[index].isFavorite;
+                saveClasses();
+                renderClasses();
+                updateStatistics();
+            }
+        }
+
+        function deleteClass(classId) {
+            if (!confirm('Tem certeza que deseja excluir esta classe? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+            
+            const index = classes.findIndex(c => c.id === classId);
+            if (index !== -1 && !classes[index].isDefault) {
+                classes.splice(index, 1);
+                saveClasses();
+                renderClasses();
+                updateStatistics();
+                showNotification('Classe excluída com sucesso!', 'success');
+            }
+        }
+
+        function filterClasses(filter) {
+            currentFilter = filter;
+            
+            // Atualizar botões ativos
+            ['all', 'default', 'custom', 'favorite'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (btn) {
+                    if (f === filter) {
+                        btn.classList.add('bg-theme-purple', 'text-white');
+                        btn.classList.remove('bg-theme-bg', 'border');
+                    } else {
+                        btn.classList.remove('bg-theme-purple', 'text-white');
+                        btn.classList.add('bg-theme-bg', 'border');
+                    }
+                }
+            });
+            
+            renderClasses();
+        }
+
+        function searchClasses() {
+            renderClasses();
+        }
+
+        function updateStatistics() {
+            const total = classes.length;
+            const custom = classes.filter(c => !c.isDefault).length;
+            const favorites = classes.filter(c => c.isFavorite).length;
+            const used = classes.reduce((sum, c) => sum + c.usageCount, 0);
+            
+            document.getElementById('stats-total').textContent = total;
+            document.getElementById('stats-custom').textContent = custom;
+            document.getElementById('stats-favorites').textContent = favorites;
+            document.getElementById('stats-used').textContent = used;
+        }
+
+        // ====================================================================
+        // IMPORT/EXPORT
+        // ====================================================================
+        function exportClasses() {
+            const data = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                classes: classes.filter(c => !c.isDefault), // Exportar apenas customizadas
+                settings: {
+                    duplicateOnEdit: document.getElementById('duplicate-on-edit')?.checked || true,
+                    disableDefault: document.getElementById('disable-default-classes')?.checked || false
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Grimorio_Classes_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showNotification(`${data.classes.length} classes exportadas!`, 'success');
+        }
+
+        function importClasses() {
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+            importData = null;
+            document.getElementById('process-import-btn').disabled = true;
+        }
+
+        function handleImportFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    importData = JSON.parse(e.target.result);
+                    document.getElementById('process-import-btn').disabled = false;
+                } catch (error) {
+                    showNotification('Erro ao ler arquivo. Verifique o formato.', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function processImport() {
+            if (!importData || !importData.classes) {
+                showNotification('Arquivo inválido.', 'error');
+                return;
+            }
+            
+            // Verificar conflitos
+            const newClasses = importData.classes;
+            let added = 0;
+            let skipped = 0;
+            
+            newClasses.forEach(newClass => {
+                // Gerar novo ID para evitar conflitos
+                newClass.id = 'imported_' + Date.now() + '_' + newClass.id;
+                newClass.isDefault = false;
+                newClass.createdAt = newClass.createdAt || new Date().toISOString();
+                
+                // Verificar se já existe classe com mesmo nome
+                const exists = classes.some(c => c.name === newClass.name && !c.isDefault);
+                if (!exists) {
+                    classes.unshift(newClass);
+                    added++;
+                } else {
+                    skipped++;
+                }
+            });
+            
+            saveClasses();
+            renderClasses();
+            closeImportModal();
+            
+            showNotification(`${added} classes importadas${skipped > 0 ? `, ${skipped} ignoradas (nomes duplicados)` : ''}!`, 'success');
+        }
+
+        function resetClassSystem() {
+            if (!confirm('Tem certeza que deseja resetar o sistema de classes? Todas as classes personalizadas serão perdidas.')) {
+                return;
+            }
+            
+            localStorage.removeItem('grimorio_custom_classes');
+            initClassSystem();
+            showNotification('Sistema de classes resetado!', 'success');
+        }
+
+        // ====================================================================
+        // UTILITÁRIOS
+        // ====================================================================
+        function showNotification(message, type = 'info') {
+            // Implementação simplificada
+            alert(`[${type.toUpperCase()}] ${message}`);
+        }
+
+        function setupEventListeners() {
+            // Configurar eventos dos sliders de atributos
+            document.addEventListener('input', (e) => {
+                if (e.target.classList.contains('attr-slider')) {
+                    updateTotalPoints();
+                }
+            });
+            
+            // Configurar cor personalizada
+            document.getElementById('custom-color')?.addEventListener('input', (e) => {
+                selectColor(e.target.value);
+            });
+            
+            // Configurar desativação de classes padrão
+            document.getElementById('disable-default-classes')?.addEventListener('change', (e) => {
+                localStorage.setItem('disable_default_classes', e.target.checked);
+                renderClasses();
+            });
+            
+            // Configurar duplicação ao editar
+            document.getElementById('duplicate-on-edit')?.addEventListener('change', (e) => {
+                localStorage.setItem('duplicate_on_edit', e.target.checked);
+            });
+        }
+
+        // ====================================================================
+        // INICIALIZAÇÃO
+        // ====================================================================
+        window.addEventListener('load', () => {
+            initClassSystem();
+            lucide.createIcons();
+        });
+
+        // ====================================================================
+        // API PARA OUTRAS PÁGINAS
+        // ====================================================================
+        
+        // Obter todas as classes disponíveis
+        window.getAllClasses = function() {
+            const disableDefault = localStorage.getItem('disable_default_classes') === 'true';
+            if (disableDefault) {
+                return classes.filter(c => !c.isDefault);
+            }
+            return [...classes];
+        };
+        
+        // Obter classe por ID
+        window.getClassById = function(classId) {
+            return classes.find(c => c.id === classId);
+        };
+        
+        // Aplicar bônus de classe a um personagem
+        window.applyClassBonuses = function(classId, characterAttributes) {
+            const cls = classes.find(c => c.id === classId);
+            if (!cls) return characterAttributes;
+            
+            // Aplicar bônus
+            const result = { ...characterAttributes };
+            Object.keys(cls.attributes).forEach(attr => {
+                result[attr] = (result[attr] || 0) + cls.attributes[attr];
+            });
+            
+            return result;
+        };
+        
+        // Criar classe programaticamente (para desenvolvedores)
+        window.createCustomClass = function(classData) {
+            const newClass = {
+                id: 'custom_' + Date.now(),
+                name: classData.name,
+                description: classData.description || '',
+                color: classData.color || COLOR_PALETTE[0],
+                icon: classData.icon || ICON_PALETTE[0],
+                difficulty: classData.difficulty || 'medium',
+                attributes: classData.attributes || { for: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+                skills: classData.skills || [],
+                tags: classData.tags || [],
+                isDefault: false,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString
+            }
+        }
+        // ====================================================================
+        // COMPLETAÇÃO DO CÓDIGO
+        // ====================================================================
+
+        function completeCreation() {
+            showNotification('Classe criada com sucesso!', 'success');
+            renderClasses();
+            updateStatistics();
+            closeClassEditor();
+        }
+
+        // ====================================================================
+        // FUNÇÕES AUXILIARES ADICIONAIS
+        // ====================================================================
+
+        function generateClassId(name) {
+            return name.toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+                .replace(/[^a-z0-9]/g, '_')
+                .replace(/_+/g, '_')
+                .replace(/^_|_$/g, '');
+        }
+
+        function validateClassData(classData) {
+            const errors = [];
+            
+            if (!classData.name || classData.name.trim().length < 2) {
+                errors.push('Nome da classe deve ter pelo menos 2 caracteres');
+            }
+            
+            if (!classData.description || classData.description.trim().length < 10) {
+                errors.push('Descrição deve ter pelo menos 10 caracteres');
+            }
+            
+            const totalPoints = Object.values(classData.attributes).reduce((a, b) => a + b, 0);
+            if (totalPoints > 25) {
+                errors.push(`Total de pontos (${totalPoints}) excede o limite de 25`);
+            }
+            
+            if (classData.skills.length === 0) {
+                errors.push('Adicione pelo menos uma habilidade especial');
+            }
+            
+            return errors;
+        }
+
+        function calculateClassPower(classData) {
+            // Calcula um "nível de poder" baseado nos atributos e habilidades
+            const attrSum = Object.values(classData.attributes).reduce((a, b) => a + b, 0);
+            const skillBonus = classData.skills.length * 2;
+            const difficultyMultiplier = {
+                'easy': 0.8,
+                'medium': 1.0,
+                'hard': 1.2,
+                'expert': 1.5
+            };
+            
+            return Math.round((attrSum + skillBonus) * difficultyMultiplier[classData.difficulty]);
+        }
+
+        // ====================================================================
+        // SISTEMA DE VERSÕES E BACKUP
+        // ====================================================================
+
+        function createBackup() {
+            const backup = {
+                version: '2.0',
+                timestamp: new Date().toISOString(),
+                classes: classes.filter(c => !c.isDefault),
+                metadata: {
+                    totalClasses: classes.length,
+                    customClasses: classes.filter(c => !c.isDefault).length,
+                    system: 'Grimório Digital - Sistema de Classes'
+                }
+            };
+            
+            return JSON.stringify(backup, null, 2);
+        }
+
+        function restoreBackup(backupData) {
+            try {
+                const backup = JSON.parse(backupData);
+                
+                if (backup.version && backup.classes) {
+                    // Remover classes personalizadas existentes
+                    classes = classes.filter(c => c.isDefault);
+                    
+                    // Adicionar classes do backup
+                    backup.classes.forEach(cls => {
+                        cls.id = 'backup_' + Date.now() + '_' + cls.id;
+                        classes.push(cls);
+                    });
+                    
+                    saveClasses();
+                    renderClasses();
+                    updateStatistics();
+                    
+                    showNotification(`Backup restaurado com ${backup.classes.length} classes!`, 'success');
+                    return true;
+                }
+            } catch (error) {
+                showNotification('Erro ao restaurar backup: ' + error.message, 'error');
+            }
+            return false;
+        }
+
+        // ====================================================================
+        // SISTEMA DE COMPARAÇÃO DE CLASSES
+        // ====================================================================
+
+        function compareClasses(classId1, classId2) {
+            const class1 = classes.find(c => c.id === classId1);
+            const class2 = classes.find(c => c.id === classId2);
+            
+            if (!class1 || !class2) {
+                return null;
+            }
+            
+            const comparison = {
+                classes: [class1, class2],
+                attributes: {},
+                totals: {},
+                powers: {}
+            };
+            
+            // Comparar atributos
+            Object.keys(class1.attributes).forEach(attr => {
+                comparison.attributes[attr] = {
+                    class1: class1.attributes[attr],
+                    class2: class2.attributes[attr],
+                    difference: class1.attributes[attr] - class2.attributes[attr]
+                };
+            });
+            
+            // Calcular totais
+            comparison.totals.class1 = Object.values(class1.attributes).reduce((a, b) => a + b, 0);
+            comparison.totals.class2 = Object.values(class2.attributes).reduce((a, b) => a + b, 0);
+            
+            // Calcular poderes
+            comparison.powers.class1 = calculateClassPower(class1);
+            comparison.powers.class2 = calculateClassPower(class2);
+            
+            return comparison;
+        }
+
+        // ====================================================================
+        // SISTEMA DE RECOMENDAÇÕES
+        // ====================================================================
+
+        function recommendClasses(playstyle) {
+            const playstyleTags = {
+                'combate': ['combate', 'dano', 'tanque', 'corpo-a-corpo'],
+                'magia': ['magia', 'arcano', 'controle', 'suporte'],
+                'suporte': ['suporte', 'cura', 'divino', 'utilidade'],
+                'furtivo': ['furtivo', 'precisão', 'mobilidade', 'distância'],
+                'versátil': ['versátil', 'generalista', 'complexo']
+            };
+            
+            const tags = playstyleTags[playstyle] || [];
+            const recommendations = [];
+            
+            classes.forEach(cls => {
+                let score = 0;
+                tags.forEach(tag => {
+                    if (cls.tags.includes(tag)) {
+                        score += 2;
+                    }
+                });
+                
+                if (score > 0) {
+                    recommendations.push({
+                        class: cls,
+                        score: score,
+                        power: calculateClassPower(cls)
+                    });
+                }
+            });
+            
+            return recommendations.sort((a, b) => b.score - a.score);
+        }
+
+        // ====================================================================
+        // SISTEMA DE TEMPLATES
+        // ====================================================================
+
+        const CLASS_TEMPLATES = {
+            'tanque': {
+                name: 'Tanque',
+                description: 'Especialista em defesa e aguentar dano',
+                color: '#3b82f6',
+                icon: 'shield',
+                difficulty: 'medium',
+                attributes: { for: 4, dex: 1, con: 6, int: 1, wis: 3, cha: 2 },
+                skills: ['Defesa Total', 'Provocação', 'Regeneração'],
+                tags: ['tanque', 'defesa', 'corpo-a-corpo']
+            },
+            'atirador': {
+                name: 'Atirador',
+                description: 'Especialista em combate à distância',
+                color: '#10b981',
+                icon: 'target',
+                difficulty: 'easy',
+                attributes: { for: 2, dex: 6, con: 2, int: 3, wis: 4, cha: 1 },
+                skills: ['Mira Precisão', 'Tiro Rápido', 'Posição Elevada'],
+                tags: ['distância', 'precisão', 'mobilidade']
+            },
+            'invocador': {
+                name: 'Invocador',
+                description: 'Conjura criaturas e aliados para lutar por você',
+                color: '#8b5cf6',
+                icon: 'ghost',
+                difficulty: 'hard',
+                attributes: { for: 1, dex: 2, con: 2, int: 6, wis: 4, cha: 3 },
+                skills: ['Invocar Aliado', 'Vínculo Espiritual', 'Controle de Horda'],
+                tags: ['magia', 'invocação', 'controle']
+            },
+            'bardo': {
+                name: 'Bardo',
+                description: 'Suporte através de música e encantamentos',
+                color: '#ec4899',
+                icon: 'music',
+                difficulty: 'medium',
+                attributes: { for: 1, dex: 3, con: 2, int: 3, wis: 4, cha: 5 },
+                skills: ['Canção de Batalha', 'Inspirar Aliados', 'Encantar Inimigos'],
+                tags: ['suporte', 'carisma', 'controle']
+            }
+        };
+
+        function applyTemplate(templateName) {
+            const template = CLASS_TEMPLATES[templateName];
+            if (!template) return;
+            
+            editingClass = {
+                id: 'template_' + Date.now(),
+                name: template.name,
+                description: template.description,
+                color: template.color,
+                icon: template.icon,
+                difficulty: template.difficulty,
+                attributes: { ...template.attributes },
+                skills: [...template.skills],
+                tags: [...template.tags],
+                isDefault: false,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            // Preencher formulário
+            document.getElementById('class-name').value = editingClass.name;
+            document.getElementById('class-description').value = editingClass.description;
+            document.getElementById('class-difficulty').value = editingClass.difficulty;
+            document.getElementById('custom-color').value = editingClass.color;
+            
+            updateAttributesForm();
+            updateSkillsForm();
+            updateTagsForm();
+            selectColor(editingClass.color);
+            selectIcon(editingClass.icon);
+            updateTotalPoints();
+            
+            showNotification(`Template "${template.name}" aplicado!`, 'success');
+        }
+
+        // ====================================================================
+        // SISTEMA DE EXPORTAÇÃO AVANÇADA
+        // ====================================================================
+
+        function exportToHTML() {
+            let html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Classes do Grimório Digital</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .class-card { border: 1px solid #ccc; border-radius: 8px; padding: 20px; margin: 20px 0; }
+        .class-header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .attributes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .skill { background: #f0f0f0; padding: 5px 10px; border-radius: 4px; display: inline-block; margin: 2px; }
+        .tag { background: #e0e0e0; padding: 2px 8px; border-radius: 10px; font-size: 12px; margin: 2px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Classes do Grimório Digital</h1>
+    <p>Exportado em: ${new Date().toLocaleDateString()}</p>
+    <hr>
+            `;
+            
+            classes.forEach(cls => {
+                html += `
+    <div class="class-card">
+        <div class="class-header">
+            <h2 style="color: ${cls.color}">${cls.name}</h2>
+            <span>(${getDifficultyText(cls.difficulty)})</span>
+        </div>
+        <p>${cls.description}</p>
+        
+        <h4>Atributos:</h4>
+        <div class="attributes">
+        ${Object.entries(cls.attributes).map(([attr, value]) => `
+            <div><strong>${attr.toUpperCase()}:</strong> ${value}</div>
+        `).join('')}
+        </div>
+        
+        ${cls.skills.length > 0 ? `
+        <h4>Habilidades:</h4>
+        <div>${cls.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}</div>
+        ` : ''}
+        
+        ${cls.tags.length > 0 ? `
+        <h4>Tags:</h4>
+        <div>${cls.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>
+        ` : ''}
+        
+        <p><small>Usos: ${cls.usageCount} | Criada: ${new Date(cls.createdAt).toLocaleDateString()}</small></p>
+    </div>
+                `;
+            });
+            
+            html += `
+</body>
+</html>
+            `;
+            
+            const blob = new Blob([html], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Grimorio_Classes_${new Date().toISOString().split('T')[0]}.html`;
+            link.click();
+            
+            showNotification('Exportado para HTML!', 'success');
+        }
+
+        // ====================================================================
+        // SISTEMA DE PREVIEW DINÂMICO
+        // ====================================================================
+
+        function updatePreview() {
+            if (!editingClass) return;
+            
+            const preview = document.getElementById('preview-container');
+            const attrSum = Object.values(editingClass.attributes).reduce((a, b) => a + b, 0);
+            
+            preview.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-16 h-16 rounded-lg flex items-center justify-center" style="background: ${editingClass.color}20; color: ${editingClass.color}">
+                            <i data-lucide="${editingClass.icon}" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white" style="color: ${editingClass.color}">${editingClass.name || 'Nova Classe'}</h3>
+                            <p class="text-sm text-theme-muted">${editingClass.description || 'Adicione uma descrição...'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
+                            <div class="text-xs text-theme-muted mb-1">Dificuldade</div>
+                            <div class="font-medium text-white">${getDifficultyText(editingClass.difficulty)}</div>
+                        </div>
+                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
+                            <div class="text-xs text-theme-muted mb-1">Total de Pontos</div>
+                            <div class="font-medium ${attrSum > 20 ? 'text-red-400' : attrSum >= 15 ? 'text-green-400' : 'text-amber-400'}">${attrSum}</div>
+                        </div>
+                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
+                            <div class="text-xs text-theme-muted mb-1">Habilidades</div>
+                            <div class="font-medium text-white">${editingClass.skills.length}</div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-medium text-white mb-2">Atributos</h4>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${Object.entries(editingClass.attributes).map(([key, value]) => `
+                                <div class="flex justify-between items-center p-2 bg-theme-bg/50 rounded">
+                                    <span class="text-sm text-theme-muted">${key.toUpperCase()}</span>
+                                    <span class="font-bold" style="color: ${editingClass.color}">${value}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    ${editingClass.skills.length > 0 ? `
+                    <div>
+                        <h4 class="font-medium text-white mb-2">Habilidades</h4>
+                        <div class="space-y-1">
+                            ${editingClass.skills.map(skill => `
+                                <div class="flex items-center gap-2 p-2 bg-theme-bg/50 rounded">
+                                    <i data-lucide="zap" class="w-3 h-3" style="color: ${editingClass.color}"></i>
+                                    <span class="text-sm text-white">${skill}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${editingClass.tags.length > 0 ? `
+                    <div>
+                        <h4 class="font-medium text-white mb-2">Tags</h4>
+                        <div class="flex flex-wrap gap-1">
+                            ${editingClass.tags.map(tag => `
+                                <span class="px-2 py-1 bg-current/20 rounded text-xs" style="color: ${editingClass.color}; border: 1px solid currentColor">${tag}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="pt-4 border-t border-theme-border">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-theme-muted">Poder Estimado:</span>
+                            <span class="font-bold" style="color: ${editingClass.color}">${calculateClassPower(editingClass)}</span>
+                        </div>
+                        <div class="text-xs text-theme-muted mt-1">
+                            Baseado em atributos, habilidades e dificuldade
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            lucide.createIcons();
+        }
+
+        // ====================================================================
+        // SISTEMA DE ARRASTAR E SOLTAR
+        // ====================================================================
+
+        function enableDragAndDrop() {
+            const container = document.getElementById('classes-container');
+            
+            let dragged = null;
+            
+            container.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('class-card')) {
+                    dragged = e.target;
+                    e.target.style.opacity = '0.5';
+                }
+            });
+            
+            container.addEventListener('dragend', function(e) {
+                if (dragged) {
+                    dragged.style.opacity = '';
+                    dragged = null;
+                }
+            });
+            
+            container.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                return false;
+            });
+            
+            container.addEventListener('drop', function(e) {
+                e.preventDefault();
+                
+                if (dragged && e.target.classList.contains('class-card')) {
+                    const allCards = Array.from(container.querySelectorAll('.class-card'));
+                    const draggedIndex = allCards.indexOf(dragged);
+                    const targetIndex = allCards.indexOf(e.target);
+                    
+                    if (draggedIndex !== -1 && targetIndex !== -1 && draggedIndex !== targetIndex) {
+                        // Reordenar no array de classes
+                        const draggedClass = classes.find(c => c.id === dragged.dataset.classId);
+                        const targetClass = classes.find(c => c.id === e.target.dataset.classId);
+                        
+                        if (draggedClass && targetClass) {
+                            const draggedArrayIndex = classes.indexOf(draggedClass);
+                            const targetArrayIndex = classes.indexOf(targetClass);
+                            
+                            // Remover e inserir no novo local
+                            classes.splice(draggedArrayIndex, 1);
+                            classes.splice(targetArrayIndex, 0, draggedClass);
+                            
+                            saveClasses();
+                            renderClasses();
+                        }
+                    }
+                }
+                
+                return false;
+            });
+        }
+
+        // ====================================================================
+        // FUNÇÕES DE NOTIFICAÇÃO MELHORADAS
+        // ====================================================================
+
+        function showAdvancedNotification(message, type = 'info', duration = 3000) {
+            // Remove notificações anteriores
+            const existing = document.querySelector('.notification-toast');
+            if (existing) existing.remove();
+            
+            // Cria nova notificação
+            const notification = document.createElement('div');
+            notification.className = `notification-toast fixed top-4 right-4 p-4 rounded-lg border shadow-lg z-[9999] transform transition-all duration-300 translate-x-full`;
+            
+            const colors = {
+                success: { bg: 'bg-emerald-900/90', border: 'border-emerald-700', text: 'text-emerald-100' },
+                error: { bg: 'bg-red-900/90', border: 'border-red-700', text: 'text-red-100' },
+                warning: { bg: 'bg-amber-900/90', border: 'border-amber-700', text: 'text-amber-100' },
+                info: { bg: 'bg-blue-900/90', border: 'border-blue-700', text: 'text-blue-100' }
+            };
+            
+            const style = colors[type] || colors.info;
+            
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'alert-circle' : type === 'warning' ? 'alert-triangle' : 'info'}" 
+                       class="w-5 h-5"></i>
+                    <span class="font-medium">${message}</span>
+                </div>
+            `;
+            
+            notification.classList.add(style.bg, style.border, style.text);
+            document.body.appendChild(notification);
+            
+            // Animação de entrada
+            setTimeout(() => {
+                notification.classList.remove('translate-x-full');
+                notification.classList.add('translate-x-0');
+            }, 10);
+            
+            // Animação de saída
+            setTimeout(() => {
+                notification.classList.remove('translate-x-0');
+                notification.classList.add('translate-x-full');
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+            
+            lucide.createIcons();
+        }
+
+                // ====================================================================
+        // INICIALIZAÇÃO
+        // ====================================================================
+        function initClassSystem() {
+            loadClasses();
+            renderClasses();
+            updateStatistics();
+            initColorPalette();
+            initIconPalette();
+            initAttributes();
+            initSuggestedTags();
+            
+            // Configurar eventos
+            setupEventListeners();
+            
+            // Configurar preview em tempo real
+            setupPreviewUpdates();
+        }
+
+        function setupPreviewUpdates() {
+            // Atualizar preview quando editar
+            const previewObserver = new MutationObserver(updatePreview);
+            const previewContainer = document.getElementById('preview-container');
+            if (previewContainer) {
+                previewObserver.observe(previewContainer, { childList: true, subtree: true });
+            }
+        }
+
+        // ====================================================================
+        // CORREÇÃO DA FUNÇÃO selectIcon
+        // ====================================================================
+        function selectIcon(icon) {
+            editingClass.icon = icon;
+            
+            // Remover seleção anterior
+            document.querySelectorAll('#class-editor-modal .grid.grid-cols-8 button').forEach(btn => {
+                btn.classList.remove('border-current', 'bg-current/20');
+                btn.style.borderColor = '';
+                btn.style.backgroundColor = '';
+            });
+            
+            // Adicionar seleção atual
+            const buttons = document.querySelectorAll('#class-editor-modal .grid.grid-cols-8 button');
+            const buttonIndex = ICON_PALETTE.indexOf(icon);
+            if (buttonIndex !== -1 && buttons[buttonIndex]) {
+                buttons[buttonIndex].classList.add('border-current', 'bg-current/20');
+                buttons[buttonIndex].style.borderColor = editingClass.color;
+                buttons[buttonIndex].style.backgroundColor = editingClass.color + '20';
+            }
+        }
+
+        // ====================================================================
+        // CORREÇÃO DA FUNÇÃO showNotification
+        // ====================================================================
+        function showNotification(message, type = 'info') {
+            // Se a notificação avançada não funcionar, usar alert simples
+            try {
+                showAdvancedNotification(message, type);
+            } catch (error) {
+                console.log(`[${type.toUpperCase()}] ${message}`);
+                
+                // Fallback para alert
+                const colors = {
+                    'success': '#10b981',
+                    'error': '#ef4444',
+                    'warning': '#f59e0b',
+                    'info': '#3b82f6'
+                };
+                
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 flex items-center justify-center z-50 p-4';
+                modal.innerHTML = `
+                    <div class="fixed inset-0 bg-black/50" onclick="this.parentElement.remove()"></div>
+                    <div class="relative bg-theme-panel border rounded-lg p-6 max-w-sm w-full" 
+                         style="border-color: ${colors[type] || '#3b82f6'}">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center"
+                                 style="background: ${colors[type]}20; color: ${colors[type]}">
+                                <i data-lucide="${type === 'success' ? 'check-circle' : type === 'error' ? 'x-circle' : type === 'warning' ? 'alert-triangle' : 'info'}"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">${type === 'success' ? 'Sucesso!' : type === 'error' ? 'Erro!' : type === 'warning' ? 'Aviso!' : 'Informação'}</h4>
+                                <p class="text-sm text-theme-muted">${message}</p>
+                            </div>
+                        </div>
+                        <button onclick="this.closest('.fixed').remove()"
+                                class="w-full py-2 rounded-lg border border-theme-border hover:bg-white/5 transition-colors">
+                            Fechar
+                        </button>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                lucide.createIcons();
+                
+                // Auto-remover após 3 segundos
+                setTimeout(() => {
+                    if (modal.parentElement) {
+                        modal.remove();
+                    }
+                }, 3000);
+            }
+        }
+
+        // ====================================================================
+        // CORREÇÃO DA FUNÇÃO showAdvancedNotification
+        // ====================================================================
+        function showAdvancedNotification(message, type = 'info', duration = 3000) {
+            // Remove notificações anteriores
+            const existing = document.querySelectorAll('.notification-toast');
+            existing.forEach(el => el.remove());
+            
+            // Cria nova notificação
+            const notification = document.createElement('div');
+            notification.className = 'notification-toast';
+            
+            // Estilos inline para garantir funcionamento
+            const styles = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 16px;
+                border-radius: 8px;
+                z-index: 9999;
+                transform: translateX(120%);
+                transition: transform 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                max-width: 320px;
+                backdrop-filter: blur(10px);
+            `;
+            
+            const typeStyles = {
+                'success': `
+                    background: rgba(16, 185, 129, 0.9);
+                    border: 1px solid rgba(16, 185, 129, 0.7);
+                    color: #ffffff;
+                    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+                `,
+                'error': `
+                    background: rgba(239, 68, 68, 0.9);
+                    border: 1px solid rgba(239, 68, 68, 0.7);
+                    color: #ffffff;
+                    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+                `,
+                'warning': `
+                    background: rgba(245, 158, 11, 0.9);
+                    border: 1px solid rgba(245, 158, 11, 0.7);
+                    color: #ffffff;
+                    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+                `,
+                'info': `
+                    background: rgba(59, 130, 246, 0.9);
+                    border: 1px solid rgba(59, 130, 246, 0.7);
+                    color: #ffffff;
+                    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+                `
+            };
+            
+            notification.style.cssText = styles + (typeStyles[type] || typeStyles.info);
+            
+            const icons = {
+                'success': 'check-circle',
+                'error': 'alert-circle',
+                'warning': 'alert-triangle',
+                'info': 'info'
+            };
+            
+            notification.innerHTML = `
+                <i data-lucide="${icons[type]}" class="w-5 h-5 flex-shrink-0"></i>
+                <span class="font-medium text-sm">${message}</span>
+            `;
+            
+            document.body.appendChild(notification);
+            lucide.createIcons();
+            
+            // Animação de entrada
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 10);
+            
+            // Animação de saída
+            setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, duration);
+        }
+
+        // ====================================================================
+        // CORREÇÃO DA FUNÇÃO createCustomClass
+        // ====================================================================
+        window.createCustomClass = function(classData) {
+            const newClass = {
+                id: 'custom_' + Date.now(),
+                name: classData.name,
+                description: classData.description || '',
+                color: classData.color || COLOR_PALETTE[0],
+                icon: classData.icon || ICON_PALETTE[0],
+                difficulty: classData.difficulty || 'medium',
+                attributes: classData.attributes || { for: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
+                skills: classData.skills || [],
+                tags: classData.tags || [],
+                isDefault: false,
+                isFavorite: false,
+                usageCount: 0,
+                createdAt: new Date().toISOString() // PARÊNTESES ADICIONADOS AQUI
+            };
+            
+            classes.unshift(newClass);
+            saveClasses();
+            renderClasses();
+            
+            // Disparar evento se configurado
+            if (window.GrimorioClassSystem && window.GrimorioClassSystem.onClassCreated) {
+                window.GrimorioClassSystem.onClassCreated(newClass);
+            }
+            
+            return newClass;
+        };
+
+        // ====================================================================
+        // REMOVA AS FUNÇÕES DUPLICADAS
+        // ====================================================================
+        // Mantenha apenas UMA versão de cada função:
+        // - completeCreation (a primeira)
+        // - generateClassId (a primeira) 
+        // - validateClassData (a primeira)
+        // - calculateClassPower (a primeira)
+        // - etc.
+
+        // ====================================================================
+        // FUNÇÃO PARA VERIFICAR E CORRIGIR DADOS
+        // ====================================================================
+        function validateAndFixClassData() {
+            classes.forEach(cls => {
+                // Garantir que createdAt existe e está no formato correto
+                if (!cls.createdAt) {
+                    cls.createdAt = new Date().toISOString();
+                }
+                
+                // Garantir que todos os atributos existem
+                const defaultAttributes = { for: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 };
+                cls.attributes = { ...defaultAttributes, ...cls.attributes };
+                
+                // Garantir que arrays existem
+                cls.skills = cls.skills || [];
+                cls.tags = cls.tags || [];
+                
+                // Garantir valores booleanos
+                cls.isDefault = !!cls.isDefault;
+                cls.isFavorite = !!cls.isFavorite;
+                cls.usageCount = cls.usageCount || 0;
+            });
+            
+            saveClasses();
+        }
+
+        // ====================================================================
+        // INICIALIZAÇÃO MELHORADA
+        // ====================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validar dados antes de inicializar
+            validateAndFixClassData();
+            
+            // Inicializar sistema
+            initCompleteSystem();
+            
+            // Configurar preview inicial
+            updatePreview();
+            
+            console.log('✅ Sistema de Classes inicializado com sucesso!');
+            console.log(`📊 Total de classes: ${classes.length}`);
+            console.log(`🎨 Cores disponíveis: ${COLOR_PALETTE.length}`);
+            console.log(`✨ Ícones disponíveis: ${ICON_PALETTE.length}`);
+        });
+    </script>
+</body>
+</html>

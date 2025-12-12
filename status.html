@@ -40,6 +40,35 @@
                 }
             }
         }
+        // Verificar se há perfil ativo
+        window.addEventListener('load', function() {
+            if (window.hasActiveProfile && window.hasActiveProfile()) {
+                const profileInfo = window.getActiveProfileInfo();
+                console.log('Trabalhando no perfil:', profileInfo.name);
+                
+                // Carregar dados específicos desta página
+                const dados = window.loadFromProfile('status'); // 'status' muda por página
+                if (dados) {
+                    preencherCampos(dados);
+                }
+            }
+        });
+
+        // Ao salvar na página
+        function salvarNaPagina() {
+            const dados = coletarDadosDaPagina();
+            
+            // Salvar localmente (compatibilidade com versão antiga)
+            localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
+            
+            // Salvar no perfil ativo (novo sistema)
+            if (window.saveToProfile) {
+                const success = window.saveToProfile('status', dados);
+                if (success) {
+                    alert('Salvo no perfil também!');
+                }
+            }
+        }
     </script>
 
     <style>
