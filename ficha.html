@@ -35,35 +35,6 @@
                 }
             }
         }
-        // Verificar se há perfil ativo
-        window.addEventListener('load', function() {
-            if (window.hasActiveProfile && window.hasActiveProfile()) {
-                const profileInfo = window.getActiveProfileInfo();
-                console.log('Trabalhando no perfil:', profileInfo.name);
-                
-                // Carregar dados específicos desta página
-                const dados = window.loadFromProfile('status'); // 'status' muda por página
-                if (dados) {
-                    preencherCampos(dados);
-                }
-            }
-        });
-
-        // Ao salvar na página
-        function salvarNaPagina() {
-            const dados = coletarDadosDaPagina();
-            
-            // Salvar localmente (compatibilidade com versão antiga)
-            localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
-            
-            // Salvar no perfil ativo (novo sistema)
-            if (window.saveToProfile) {
-                const success = window.saveToProfile('status', dados);
-                if (success) {
-                    alert('Salvo no perfil também!');
-                }
-            }
-        }
     </script>
 
     <style>
@@ -117,18 +88,59 @@
 
     <div id="ficha-content">
 
+        <!-- NAVEGAÇÃO MELHORADA -->
         <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
-            <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-                <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </a>
-                <div class="h-6 w-[1px] bg-theme-border"></div>
-                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-blue">Grimório Digital </span>
+            <div class="max-w-7xl mx-auto px-4">
+                <div class="flex items-center justify-between gap-4 py-4">
+                    <div class="flex items-center gap-4">
+                        <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        </a>
+                        <div class="h-6 w-[1px] bg-theme-border"></div>
+                        <span class="font-cinzel font-bold text-lg tracking-wide text-theme-blue">Grimório Digital</span>
+                    </div>
+                    
+                    <!-- Botões de Navegação -->
+                    <div class="flex items-center gap-2">
+                        <button onclick="voltarParaPerfil()" class="flex items-center gap-2 px-4 py-2 text-sm border border-theme-border rounded-lg hover:border-theme-blue hover:bg-[#4a9eff]/10 transition-colors">
+                            <i data-lucide="users" class="w-4 h-4"></i>
+                            Voltar ao Perfil
+                        </button>
+                        <button onclick="irParaStatus()" class="flex items-center gap-2 px-4 py-2 text-sm bg-gradient-to-r from-theme-orange to-orange-600 rounded-lg text-white hover:opacity-90 transition-opacity">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                            Ir para Status
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
         </nav>
 
         <div class="max-w-6xl mx-auto px-4 space-y-6">
+
+            <!-- CABEÇALHO COM INFORMAÇÕES DO PERFIL ATIVO -->
+            <div class="anim-entry">
+                <div class="bg-theme-panel border border-theme-border p-4 rounded-lg mb-4">
+                    <div class="flex items-center justify-between">
+                        <div id="profile-info" class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-theme-purple/20 to-pink-600/20 flex items-center justify-center">
+                                <i data-lucide="user" class="w-5 h-5 text-theme-purple"></i>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium text-white" id="current-profile-name">Carregando perfil...</div>
+                                <div class="text-xs text-theme-muted" id="current-profile-info">Clique para salvar no perfil</div>
+                            </div>
+                        </div>
+                        
+                        <button onclick="saveToActiveProfile()" 
+                                id="save-profile-btn"
+                                class="px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-opacity">
+                            <i data-lucide="save" class="w-3 h-3 inline mr-2"></i>
+                            Salvar no Perfil
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <header class="flex items-center gap-4 mb-8 anim-entry">
                 <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
@@ -136,15 +148,16 @@
                 </div>
                 <div>
                     <h1 class="text-3xl font-cinzel font-bold text-white">Ficha do Personagem</h1>
-                    <p class="text-gray-400">Lore & Corpo</p>
+                    <p class="text-gray-400">Lore & Corpo - Imagem será salva no perfil</p>
                 </div>
             </header>
 
+            <!-- SEÇÃO IDENTIDADE COM AVATAR -->
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
                 
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
-                    <i data-lucide="user" class="w-4 h-4"></i> Identidade
+                    <i data-lucide="user" class="w-4 h-4"></i> Identidade & Avatar
                 </h3>
 
                 <div class="flex flex-col md:flex-row gap-8">
@@ -158,6 +171,7 @@
                             <div class="avatar-placeholder absolute inset-0 flex flex-col items-center justify-center text-center p-4">
                                 <i data-lucide="camera" class="w-8 h-8 text-theme-muted mb-2 group-hover:text-theme-blue transition-colors"></i>
                                 <span class="text-xs text-[#606060] group-hover:text-theme-blue">Adicionar Imagem</span>
+                                <span class="text-xs text-[#404040] mt-1">(Salva no perfil)</span>
                             </div>
                         </div>
                     </div>
@@ -195,6 +209,7 @@
                 </div>
             </section>
 
+            <!-- OUTRAS SEÇÕES (mantidas do código original) -->
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange"></div>
                 
@@ -209,7 +224,7 @@
                         <textarea id="inp-cabeca" class="custom-textarea orange h-20 data-field"></textarea>
                     </div>
                     <div class="space-y-2">
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">pernas</label>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel">Pernas</label>
                         <textarea id="inp-pernas" class="custom-textarea orange h-20 data-field"></textarea>
                     </div>
                     <div class="space-y-2">
@@ -224,7 +239,7 @@
             </section>
 
             <section class="bg-[#0f120f] border border-[#1a3d1a] p-6 rounded-lg anim-entry delay-3 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-[#32cd32]"></div> <!-- Verde vibrante -->
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#32cd32]"></div>
                 
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#32cd32] mb-6">
                     <i data-lucide="book-open" class="w-4 h-4"></i> História & Passado
@@ -236,12 +251,11 @@
                 </div>
             </section>
 
-
             <section class="bg-[#141307] border border-[#4d4300] p-6 rounded-lg anim-entry delay-2 relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-1 h-full bg-[#ffd700]"></div> <!-- Amarelo ouro -->
+                <div class="absolute top-0 left-0 w-1 h-full bg-[#ffd700]"></div>
 
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#ffd700] mb-2">
-                    <i data-lucide="palette" class="w-4 h-4"></i> Traços de personalidade
+                    <i data-lucide="palette" class="w-4 h-4"></i> Traços de Personalidade
                 </h3>
 
                 <p class="text-[#8c8c5a] text-sm mb-6">Descreva o comportamento ou defeitos psicológicos.</p>
@@ -269,10 +283,10 @@
                 </div>
             </section>
 
-
         </div>
     </div>
 
+    <!-- BOTÕES DE AÇÃO -->
     <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry delay-3" data-html2pdf-ignore="true">
         
         <button onclick="downloadTextData()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
@@ -286,218 +300,176 @@
         // Inicializar ícones Lucide
         lucide.createIcons();
 
-        // 1. CONSTANTES E CONFIGURAÇÕES
+        // 1. CONSTANTES
         const STORAGE_KEY = 'grimorio_ficha_personagem';
-        const CLASS_RECOMMENDATIONS = {
-            guerreiro: { for: 15, agi: 10, int: 5, vit: 12, arma: 'Espada Longa', habilidade: 'Investida Poderosa' },
-            arqueiro: { for: 8, agi: 18, int: 10, vit: 8, arma: 'Arco Composto', habilidade: 'Tiro Certeiro' },
-            mago: { for: 5, agi: 8, int: 20, vit: 7, arma: 'Cajado Arcano', habilidade: 'Bola de Fogo' },
-            ladino: { for: 10, agi: 17, int: 12, vit: 9, arma: 'Adagas Duplas', habilidade: 'Ataque Furtivo' },
-            paladino: { for: 14, agi: 9, int: 10, vit: 15, arma: 'Martelo de Guerra', habilidade: 'Julgamento Divino' },
-            bardo: { for: 7, agi: 12, int: 16, vit: 9, arma: 'Alaúde Encantado', habilidade: 'Canção Inspiradora' }
-        };
+        let currentAvatarBase64 = null;
 
-        // 2. FUNÇÃO PARA CARREGAR DADOS (CORREÇÃO DO PROBLEMA 1)
+        // 2. FUNÇÃO PARA CARREGAR DADOS DO PERFIL ATIVO
         function carregarDadosFicha() {
-            const dadosSalvos = localStorage.getItem('grimorio_ficha_personagem');
+            // Primeiro verifica se há perfil ativo usando o sistema de perfis
+            if (window.hasActiveProfile && window.hasActiveProfile()) {
+                const profileInfo = window.getActiveProfileInfo();
+                console.log('Trabalhando no perfil:', profileInfo);
+                
+                // Atualizar informação do perfil ativo
+                document.getElementById('current-profile-name').textContent = profileInfo.name || 'Personagem Sem Nome';
+                document.getElementById('current-profile-info').textContent = 
+                    `${profileInfo.class || 'Sem classe'} | ${profileInfo.race || 'Sem raça'}`;
+                
+                // Tentar carregar dados específicos da ficha do perfil
+                if (window.loadFromProfile) {
+                    const dadosFicha = window.loadFromProfile('ficha');
+                    if (dadosFicha) {
+                        console.log('Dados carregados do perfil:', dadosFicha);
+                        preencherCampos(dadosFicha);
+                        return;
+                    }
+                }
+            }
             
-            if (!dadosSalvos) {
-                console.log('Nenhum dado salvo encontrado para carregar.');
+            // Fallback: carregar do localStorage antigo
+            carregarDadosLocalStorage();
+        }
+
+        function preencherCampos(dados) {
+            const campos = [
+                'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
+                'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-pernas', 'inp-torso',
+                'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
+                'inp-ideais', 'inp-observar'
+            ];
+            
+            campos.forEach(id => {
+                const elemento = document.getElementById(id);
+                if (elemento && dados[id] !== undefined) {
+                    elemento.value = dados[id];
+                }
+            });
+            
+            // Carregar avatar se existir
+            if (dados.avatar) {
+                const avatarContainer = document.getElementById('avatar-container');
+                const placeholder = avatarContainer.querySelector('.avatar-placeholder');
+                avatarContainer.style.backgroundImage = `url('${dados.avatar}')`;
+                if (placeholder) placeholder.style.opacity = '0';
+                currentAvatarBase64 = dados.avatar;
+            }
+        }
+
+        function carregarDadosLocalStorage() {
+            const dadosSalvos = localStorage.getItem(STORAGE_KEY);
+            if (dadosSalvos) {
+                try {
+                    const dados = JSON.parse(dadosSalvos);
+                    preencherCampos(dados);
+                } catch (error) {
+                    console.error('Erro ao carregar dados locais:', error);
+                }
+            }
+        }
+
+        // 3. FUNÇÃO PARA SALVAR NO PERFIL ATIVO
+        function saveToActiveProfile() {
+            if (!window.saveToProfile) {
+                mostrarFeedback('Sistema de perfis não disponível!', 'error');
                 return;
             }
             
-            try {
-                const dados = JSON.parse(dadosSalvos);
-                console.log('Dados carregados do localStorage:', dados);
-                
-                // Lista de todos os campos
-                const todosCampos = [
-                    'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
-                    'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-pernas', 'inp-torso',
-                    'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
-                    'inp-ideais', 'inp-observar'
-                ];
-                
-                // Carregar cada campo
-                todosCampos.forEach(id => {
-                    const elemento = document.getElementById(id);
-                    if (elemento && dados[id] !== undefined && dados[id] !== null) {
-                        elemento.value = dados[id];
-                        console.log(`Campo ${id} carregado: ${dados[id]}`);
-                    }
-                });
-                
-                // CARREGAR AVATAR - PRIMEIRO TENTA DA CHAVE ESPECÍFICA
-                const avatarContainer = document.getElementById('avatar-container');
-                if (avatarContainer) {
-                    // 1. Tenta carregar da chave específica do avatar
-                    let imagemAvatar = localStorage.getItem('grimorio_avatar');
-                    
-                    // 2. Se não encontrar, tenta do objeto geral da ficha
-                    if (!imagemAvatar && dados.avatar) {
-                        imagemAvatar = dados.avatar;
-                    }
-                    
-                    // 3. Se encontrou alguma imagem, aplica
-                    if (imagemAvatar && imagemAvatar !== 'null' && imagemAvatar !== 'undefined') {
-                        const placeholder = avatarContainer.querySelector('.avatar-placeholder');
-                        avatarContainer.style.backgroundImage = `url('${imagemAvatar}')`;
-                        if (placeholder) {
-                            placeholder.style.opacity = '0';
-                        }
-                        console.log('Avatar carregado com sucesso');
-                    } else {
-                        console.log('Nenhum avatar salvo encontrado');
-                    }
-                }
-                
-                // Mostrar quando foi salvo pela última vez
-                if (dados.ultimaAtualizacao) {
-                    const data = new Date(dados.ultimaAtualizacao);
-                    console.log(`Ficha carregada - Última atualização: ${data.toLocaleString()}`);
-                }
-                
-            } catch (error) {
-                console.error('Erro detalhado ao carregar dados:', error);
+            if (!window.hasActiveProfile || !window.hasActiveProfile()) {
+                mostrarFeedback('Nenhum perfil ativo! Volte ao hub e selecione um perfil.', 'error');
+                return;
+            }
+            
+            const dados = coletarDadosFicha();
+            
+            // Salvar no sistema de perfis
+            const success = window.saveToProfile('ficha', dados);
+            
+            if (success) {
+                // Atualizar dados básicos do personagem no perfil
+                atualizarInformacoesBasicasNoPerfil();
+                mostrarFeedback('Ficha salva no perfil com sucesso!', 'success');
+            } else {
+                mostrarFeedback('Erro ao salvar no perfil!', 'error');
             }
         }
 
-        // 3. FUNÇÕES AUXILIARES
-        function mostrarFeedback(mensagem, tipo = 'info') {
-            const feedbackAnterior = document.querySelector('.feedback-message');
-            if (feedbackAnterior) feedbackAnterior.remove();
-            
-            const feedback = document.createElement('div');
-            feedback.className = `feedback-message fixed top-4 right-4 px-4 py-3 rounded-lg border z-[100] animate-fadeIn ${
-                tipo === 'success' ? 'bg-green-900/20 border-green-700 text-green-300' :
-                tipo === 'error' ? 'bg-red-900/20 border-red-700 text-red-300' :
-                'bg-blue-900/20 border-blue-700 text-blue-300'
-            }`;
-            feedback.textContent = mensagem;
-            document.body.appendChild(feedback);
-            
-            setTimeout(() => {
-                feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-                setTimeout(() => feedback.remove(), 500);
-            }, 3000);
-        }
-
-        // 4. SISTEMA DE SALVAMENTO
-        const camposParaSalvar = [
-            'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
-            'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-pernas', 'inp-torso',
-            'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
-            'inp-ideais', 'inp-observar'
-        ];
-
-        function salvarDados() {
+        function coletarDadosFicha() {
             const dados = {};
+            const campos = [
+                'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
+                'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-pernas', 'inp-torso',
+                'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
+                'inp-ideais', 'inp-observar'
+            ];
             
-            // Salvar campos de texto
-            camposParaSalvar.forEach(id => {
+            campos.forEach(id => {
                 const elemento = document.getElementById(id);
                 if (elemento) {
                     dados[id] = elemento.value;
                 }
             });
             
-            // Salvar avatar (apenas a referência, não o Base64 completo no objeto principal)
-            const avatarContainer = document.getElementById('avatar-container');
-            if (avatarContainer && avatarContainer.style.backgroundImage && 
-                avatarContainer.style.backgroundImage !== 'none') {
-                // Extrai o Base64 da URL de background
-                const bg = avatarContainer.style.backgroundImage;
-                const base64Match = bg.match(/url\(["']?(.*?)["']?\)/);
-                if (base64Match && base64Match[1]) {
-                    dados.avatar = base64Match[1];
-                }
+            // Adicionar avatar se existir
+            if (currentAvatarBase64) {
+                dados.avatar = currentAvatarBase64;
             }
             
             dados.ultimaAtualizacao = new Date().toISOString();
             
-            // Salvar no localStorage
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
-            
-            // Feedback visual
-            mostrarFeedback('Dados salvos automaticamente!', 'success');
-            console.log('Dados salvos:', Object.keys(dados).length + ' campos');
+            return dados;
         }
 
-        
-        function gerarImagem() {
-            const elemento = document.getElementById('ficha-content');
+        function atualizarInformacoesBasicasNoPerfil() {
+            const nome = document.getElementById('inp-nome').value;
+            const classe = document.getElementById('inp-classe').value;
+            const raca = document.getElementById('inp-raca').value;
             
-            // Criar uma cópia simplificada para captura
-            const clone = elemento.cloneNode(true);
+            // Salvar informações básicas para uso em outras páginas
+            localStorage.setItem('grimorio_nome_personagem', nome);
+            localStorage.setItem('grimorio_classe_personagem', classe);
+            localStorage.setItem('grimorio_raca_personagem', raca);
             
-            // Remover elementos problemáticos do clone
-            const avatarClone = clone.querySelector('#avatar-container');
-            if (avatarClone) {
-                avatarClone.style.backgroundImage = 'none';
-                avatarClone.style.backgroundColor = '#1a1a1e';
+            // Atualizar exibição
+            document.getElementById('current-profile-name').textContent = nome || 'Personagem Sem Nome';
+            document.getElementById('current-profile-info').textContent = 
+                `${classe || 'Sem classe'} | ${raca || 'Sem raça'}`;
+        }
+
+        // 4. FUNÇÕES DE NAVEGAÇÃO
+        function voltarParaPerfil() {
+            if (window.hasActiveProfile && window.hasActiveProfile()) {
+                // Primeiro salvar dados atuais
+                salvarDadosLocal();
+                
+                // Redirecionar para perfis.html
+                window.location.href = 'perfis.html';
+            } else {
+                window.location.href = 'index.html';
             }
-            
-            // Remover transparências
-            const transparentElements = clone.querySelectorAll('[class*="/"]');
-            transparentElements.forEach(el => {
-                if (el.className.includes('bg-[') && el.className.includes('/')) {
-                    el.style.backgroundColor = '#0f0f12';
-                }
-            });
-            
-            // Temporariamente adicionar ao corpo
-            clone.style.position = 'fixed';
-            clone.style.left = '-9999px';
-            clone.style.top = '0';
-            document.body.appendChild(clone);
-            
-            const opcoes = {
-                scale: 1.5,
-                useCORS: true,
-                backgroundColor: '#0a0a0c',
-                logging: false,
-                width: clone.scrollWidth,
-                height: clone.scrollHeight
-            };
-            
-            html2canvas(clone, opcoes)
-                .then(canvas => {
-                    // Ajustar brilho
-                    const ctx = canvas.getContext('2d');
-                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    const data = imageData.data;
-                    
-                    for (let i = 0; i < data.length; i += 4) {
-                        // Leve aumento de brilho para compensar fundo escuro
-                        if (data[i] < 30 && data[i+1] < 30 && data[i+2] < 30) {
-                            data[i] += 15;
-                            data[i+1] += 15;
-                            data[i+2] += 15;
-                        }
-                    }
-                    
-                    ctx.putImageData(imageData, 0, 0);
-                    
-                    // Download
-                    const link = document.createElement('a');
-                    const nomeArquivo = `Ficha_${document.getElementById('inp-nome').value || 'Personagem'}.png`;
-                    link.href = canvas.toDataURL('image/png');
-                    link.download = nomeArquivo;
-                    link.click();
-                    
-                    mostrarFeedback('Imagem gerada!', 'success');
-                })
-                .catch(error => {
-                    console.error('Imagem Error:', error);
-                    mostrarFeedback('Erro na imagem: ' + error.message, 'error');
-                })
-                .finally(() => {
-                    // Remover clone
-                    document.body.removeChild(clone);
-                });
         }
 
-        // 6. FUNÇÕES EXISTENTES
+        function irParaStatus() {
+            if (window.hasActiveProfile && window.hasActiveProfile()) {
+                // Primeiro salvar dados atuais
+                salvarDadosLocal();
+                
+                // Redirecionar para status.html
+                window.location.href = 'status.html';
+            } else {
+                mostrarFeedback('Selecione um perfil primeiro!', 'error');
+                setTimeout(() => {
+                    window.location.href = 'perfis.html';
+                }, 1500);
+            }
+        }
+
+        function salvarDadosLocal() {
+            const dados = coletarDadosFicha();
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+        }
+
+        // 5. SISTEMA DE AVATAR
         function previewImage(event) {
             const input = event.target;
             const container = document.getElementById('avatar-container');
@@ -506,7 +478,7 @@
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 
-                // Verificar se a imagem não é muito grande (máx 2MB)
+                // Verificar tamanho
                 if (file.size > 2 * 1024 * 1024) {
                     alert('A imagem é muito grande! Escolha uma imagem menor que 2MB.');
                     return;
@@ -514,21 +486,27 @@
                 
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    // Redimensionar a imagem antes de salvar (para não ocupar muito espaço)
+                    // Redimensionar e comprimir a imagem
                     redimensionarECompressarImagem(e.target.result, 400, 400, function(imagemComprimida) {
                         // Aplicar ao container
                         container.style.backgroundImage = `url('${imagemComprimida}')`;
                         placeholder.style.opacity = '0';
                         
-                        // Salvar a imagem comprimida
-                        salvarAvatar(imagemComprimida);
+                        // Salvar na variável global
+                        currentAvatarBase64 = imagemComprimida;
+                        
+                        // Salvar automaticamente no perfil se houver um ativo
+                        if (window.hasActiveProfile && window.hasActiveProfile()) {
+                            setTimeout(saveToActiveProfile, 500);
+                        }
+                        
+                        mostrarFeedback('Avatar atualizado!', 'success');
                     });
                 }
                 reader.readAsDataURL(file);
             }
         }
 
-        // Função para redimensionar e comprimir a imagem
         function redimensionarECompressarImagem(base64Str, maxWidth, maxHeight, callback) {
             const img = new Image();
             img.src = base64Str;
@@ -563,124 +541,42 @@
             };
         }
 
-        // Função específica para salvar o avatar
-        function salvarAvatarAlternativo(imagemBase64) {
-            try {
-                // Tenta salvar normalmente
-                localStorage.setItem('grimorio_avatar', imagemBase64);
-                console.log('Avatar salvo normalmente');
-            } catch (e) {
-                // Se falhar (imagem muito grande), usar sistema alternativo
-                console.log('Imagem muito grande, usando sistema alternativo...');
-                
-                // 1. Comprimir mais
-                const img = new Image();
-                img.src = imagemBase64;
-                
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 200; // Tamanho mínimo
-                    canvas.height = 200;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, 200, 200);
-                    
-                    // Comprimir para qualidade baixa
-                    const imagemMuitoComprimida = canvas.toDataURL('image/jpeg', 0.5);
-                    
-                    // Tenta salvar novamente
-                    try {
-                        localStorage.setItem('grimorio_avatar', imagemMuitoComprimida);
-                        console.log('Avatar salvo com compressão extrema');
-                    } catch (e2) {
-                        console.error('Não foi possível salvar o avatar:', e2);
-                        mostrarFeedback('Avatar muito grande. Use uma imagem menor.', 'error');
-                    }
-                };
+        function removerAvatar() {
+            const container = document.getElementById('avatar-container');
+            const placeholder = container.querySelector('.avatar-placeholder');
+            
+            container.style.backgroundImage = 'none';
+            placeholder.style.opacity = '1';
+            currentAvatarBase64 = null;
+            
+            // Atualizar no perfil se houver um ativo
+            if (window.hasActiveProfile && window.hasActiveProfile()) {
+                saveToActiveProfile();
             }
+            
+            mostrarFeedback('Avatar removido!', 'success');
         }
 
-        // Modifique a função redimensionarECompressarImagem para usar esta alternativa quando necessário
-        function redimensionarECompressarImagem(base64Str, maxWidth, maxHeight, callback) {
-            const img = new Image();
-            img.src = base64Str;
+        // 6. FUNÇÕES UTILITÁRIAS
+        function mostrarFeedback(mensagem, tipo = 'info') {
+            const feedbackAnterior = document.querySelector('.feedback-message');
+            if (feedbackAnterior) feedbackAnterior.remove();
             
-            img.onload = function() {
-                // Verificar tamanho original
-                const tamanhoBase64 = base64Str.length;
-                const tamanhoMB = (tamanhoBase64 * 3/4) / (1024 * 1024);
-                
-                if (tamanhoMB > 1) {
-                    console.log(`Imagem grande detectada: ${tamanhoMB.toFixed(2)}MB. Comprimindo agressivamente...`);
-                    maxWidth = 300; // Reduz ainda mais
-                    maxHeight = 300;
-                }
-                
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-                
-                // Calcular novas dimensões mantendo proporção
-                if (width > height) {
-                    if (width > maxWidth) {
-                        height = Math.round((height * maxWidth) / width);
-                        width = maxWidth;
-                    }
-                } else {
-                    if (height > maxHeight) {
-                        width = Math.round((width * maxHeight) / height);
-                        height = maxHeight;
-                    }
-                }
-                
-                canvas.width = width;
-                canvas.height = height;
-                
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-                
-                // Qualidade baseada no tamanho
-                let qualidade = 0.8;
-                if (tamanhoMB > 2) qualidade = 0.6;
-                if (tamanhoMB > 3) qualidade = 0.4;
-                
-                const imagemComprimida = canvas.toDataURL('image/jpeg', qualidade);
-                callback(imagemComprimida);
-            };
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-message fixed top-4 right-4 px-4 py-3 rounded-lg border z-[100] animate-fadeIn ${
+                tipo === 'success' ? 'bg-green-900/20 border-green-700 text-green-300' :
+                tipo === 'error' ? 'bg-red-900/20 border-red-700 text-red-300' :
+                'bg-blue-900/20 border-blue-700 text-blue-300'
+            }`;
+            feedback.textContent = mensagem;
+            document.body.appendChild(feedback);
+            
+            setTimeout(() => {
+                feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                setTimeout(() => feedback.remove(), 500);
+            }, 3000);
         }
 
-        function recomendarClasse() {
-            // Para uso futuro
-            return { classe: 'guerreiro', recomendacao: {}, pontuacao: 0 };
-        }
-
-        // Função para salvar dados da classe (chamada quando o campo classe é alterado)
-        function salvarClasseParaStatus() {
-            const classe = document.getElementById('inp-classe').value.toLowerCase();
-            const raca = document.getElementById('inp-raca').value;
-            const nome = document.getElementById('inp-nome').value;
-            
-            // Salvar no localStorage para acesso pela página de status
-            localStorage.setItem('grimorio_classe_personagem', classe);
-            localStorage.setItem('grimorio_raca_personagem', raca);
-            localStorage.setItem('grimorio_nome_personagem', nome);
-            
-            // Também salva no objeto geral da ficha
-            salvarDados();
-        }
-
-        // Adicionar evento ao campo de classe
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... código existente ...
-            
-            // Adicionar evento específico para o campo classe
-            const campoClasse = document.getElementById('inp-classe');
-            if (campoClasse) {
-                campoClasse.addEventListener('input', function() {
-                    salvarClasseParaStatus();
-                });
-            }
-        });
         function downloadTextData() {
             let texto = "=== FICHA DE PERSONAGEM RPG ===\n\n";
             
@@ -693,7 +589,7 @@
                 { id: 'inp-raca', label: 'Raça' },
                 { id: 'inp-classe', label: 'Classe' },
                 { id: 'inp-cabeca', label: 'Cabeça' },
-                { id: 'inp-pernas', label: 'pernas' },
+                { id: 'inp-pernas', label: 'Pernas' },
                 { id: 'inp-torso', label: 'Torso' },
                 { id: 'inp-bracos', label: 'Braços' },
                 { id: 'inp-historia', label: 'História' },
@@ -718,114 +614,99 @@
             const nomeArquivo = document.getElementById('inp-nome').value || 'Personagem';
             
             link.href = URL.createObjectURL(blob);
-            link.download = `Dados_${nomeArquivo}.txt`;
+            link.download = `Ficha_${nomeArquivo}.txt`;
             link.click();
             
-            mostrarFeedback('TXT gerado!', 'success');
+            mostrarFeedback('Ficha exportada em TXT!', 'success');
         }
 
         // 7. INICIALIZAÇÃO
         document.addEventListener('DOMContentLoaded', function() {
-            // A. Carregar dados existentes
+            // A. Carregar dados
             setTimeout(carregarDadosFicha, 300);
             
             // B. Configurar salvamento automático
+            const camposParaSalvar = [
+                'inp-nome', 'inp-titulo', 'inp-idade', 'inp-altura', 'inp-peso',
+                'inp-raca', 'inp-classe', 'inp-cabeca', 'inp-pernas', 'inp-torso',
+                'inp-bracos', 'inp-historia', 'inp-personalidade', 'inp-defeito',
+                'inp-ideais', 'inp-observar'
+            ];
+            
             camposParaSalvar.forEach(id => {
                 const elemento = document.getElementById(id);
                 if (elemento) {
                     let timeout;
                     elemento.addEventListener('input', function() {
                         clearTimeout(timeout);
-                        timeout = setTimeout(salvarDados, 800);
+                        timeout = setTimeout(salvarDadosLocal, 800);
+                        
+                        // Se for nome, classe ou raça, atualizar exibição
+                        if (['inp-nome', 'inp-classe', 'inp-raca'].includes(id)) {
+                            atualizarInformacoesBasicasNoPerfil();
+                        }
                     });
-                    elemento.addEventListener('blur', salvarDados);
+                    elemento.addEventListener('blur', salvarDadosLocal);
                 }
             });
             
-            // C. Adicionar botões de exportação
+            // C. Adicionar botões extras
             setTimeout(() => {
                 const containerBotoes = document.querySelector('.max-w-6xl.mx-auto.px-4.mt-8.pb-12');
                 if (!containerBotoes) return;
                 
-                // Botão Imagem
+                // Botão Gerar Imagem PNG
                 const btnImagem = document.createElement('button');
-                btnImagem.innerHTML = '<i data-lucide="camera" class="w-4 h-4"></i> Capturar Tela (PNG)';
+                btnImagem.innerHTML = '<i data-lucide="camera" class="w-4 h-4"></i> Gerar Imagem (PNG)';
                 btnImagem.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-theme-orange';
                 btnImagem.onclick = gerarImagem;
                 
-                // Botão Limpar
-                const btnLimpar = document.createElement('button');
-                btnLimpar.innerHTML = '<i data-lucide="trash-2" class="w-4 h-4"></i> Limpar Dados';
-                btnLimpar.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500';
-                btnLimpar.onclick = function() {
-                    if (confirm('Limpar todos os dados locais?')) {
-                        localStorage.removeItem(STORAGE_KEY);
-                        location.reload();
-                    }
-                };
+                // Botão Remover Avatar
+                const btnRemoverAvatar = document.createElement('button');
+                btnRemoverAvatar.innerHTML = '<i data-lucide="user-x" class="w-4 h-4"></i> Remover Avatar';
+                btnRemoverAvatar.className = 'flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500';
+                btnRemoverAvatar.onclick = removerAvatar;
                 
-                // Adicione este botão junto com os outros na função adicionarBotoesExportacao()
-                const btnLimparAvatar = document.createElement('button');
-                btnLimparAvatar.innerHTML = `
-                    <i data-lucide="user-x" class="w-4 h-4"></i>
-                    Remover Avatar
-                `;
-                btnLimparAvatar.className = 'btn-export flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm hover:border-red-500 btn-clear-avatar';
-                btnLimparAvatar.onclick = function() {
-                    if (confirm('Deseja remover a imagem do avatar?')) {
-                        const avatarContainer = document.getElementById('avatar-container');
-                        const placeholder = avatarContainer.querySelector('.avatar-placeholder');
-                        
-                        avatarContainer.style.backgroundImage = 'none';
-                        if (placeholder) {
-                            placeholder.style.opacity = '1';
-                        }
-                        
-                        // Remover do localStorage
-                        localStorage.removeItem('grimorio_avatar');
-                        
-                        // Remover do objeto da ficha
-                        const dadosAtuais = localStorage.getItem('grimorio_ficha_personagem');
-                        if (dadosAtuais) {
-                            try {
-                                const dados = JSON.parse(dadosAtuais);
-                                delete dados.avatar;
-                                localStorage.setItem('grimorio_ficha_personagem', JSON.stringify(dados));
-                            } catch (e) {
-                                console.error('Erro ao remover avatar:', e);
-                            }
-                        }
-                        
-                        mostrarFeedback('Avatar removido!', 'success');
-                    }
-                };
-
-                // Inserir na lista de botões (antes do botão existente)
-                containerBotoes.insertBefore(btnLimparAvatar, btnExistente);
-                const btnExistente = containerBotoes.querySelector('button');
-                containerBotoes.insertBefore(btnPDF, btnExistente);
-                containerBotoes.insertBefore(btnImagem, btnExistente);
-                containerBotoes.insertBefore(btnLimpar, btnExistente);
+                // Adicionar botões na ordem desejada
+                containerBotoes.insertBefore(btnImagem, containerBotoes.firstChild);
+                containerBotoes.insertBefore(btnRemoverAvatar, btnImagem);
                 
                 lucide.createIcons();
             }, 500);
             
-            // D. Adicionar estilos
+            // D. Adicionar estilos de animação
             const style = document.createElement('style');
             style.textContent = `
                 @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
                 .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
             `;
             document.head.appendChild(style);
+            
+            // E. Verificar se há perfil ativo
+            if (window.hasActiveProfile && !window.hasActiveProfile()) {
+                document.getElementById('save-profile-btn').disabled = true;
+                document.getElementById('save-profile-btn').innerHTML = 
+                    '<i data-lucide="alert-circle" class="w-3 h-3 inline mr-2"></i> Selecione um perfil';
+                document.getElementById('save-profile-btn').classList.remove('from-theme-blue', 'to-cyan-600');
+                document.getElementById('save-profile-btn').classList.add('bg-gray-600');
+                
+                mostrarFeedback('Nenhum perfil ativo! Selecione um perfil no hub.', 'error');
+            }
         });
 
-        // 8. EXPORTAR
-        window.salvarDados = salvarDados;
-        window.carregarDadosFicha = carregarDadosFicha;
-        window.gerarImagem = gerarImagem;
+        // 8. FUNÇÃO PARA GERAR IMAGEM (opcional)
+        function gerarImagem() {
+            // Implementação da função de captura de tela
+            mostrarFeedback('Funcionalidade de imagem em desenvolvimento', 'info');
+        }
+
+        // 9. EXPORTAR FUNÇÕES
+        window.saveToActiveProfile = saveToActiveProfile;
+        window.voltarParaPerfil = voltarParaPerfil;
+        window.irParaStatus = irParaStatus;
         window.downloadTextData = downloadTextData;
-        window.recomendarClasse = recomendarClasse;
         window.previewImage = previewImage;
+        window.removerAvatar = removerAvatar;
     </script>
 </body>
 </html>

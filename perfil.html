@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Perfil de Personagem</title>
+    <title>Grimório Digital - Sistema de Perfis</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,38 +48,38 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Animações */
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Modal */
         .modal-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
             background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
             z-index: 1000; display: flex; align-items: center; justify-content: center;
             padding: 1rem;
         }
-        .modal-content {
-            background: #0f0f12; border: 1px solid #2a2a2e;
-            border-radius: 12px; width: 100%; max-width: 500px;
-            max-height: 90vh; overflow-y: auto;
-        }
         
-        /* Cards de perfil */
         .profile-card {
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
-        .profile-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        .profile-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
+        .profile-card.active { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.05); }
+        
+        .progress-bar {
+            height: 6px; background: #2a2a2e; border-radius: 3px; overflow: hidden;
         }
-        .profile-card.active {
-            border-color: #8b5cf6;
-            background: rgba(139, 92, 246, 0.05);
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #a855f7); }
+        
+        .section-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .section-card:hover {
+            transform: translateY(-2px);
+            border-color: #4a9eff !important;
+            box-shadow: 0 5px 15px rgba(74, 158, 255, 0.1);
         }
         
-        /* Tags de status */
         .status-tag {
             display: inline-flex; align-items: center; gap: 4px;
             padding: 2px 8px; border-radius: 12px; font-size: 11px;
@@ -87,15 +87,6 @@
         .status-complete { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); color: #22c55e; }
         .status-partial { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; }
         .status-empty { background: rgba(96, 96, 96, 0.2); border: 1px solid rgba(96, 96, 96, 0.4); color: #606060; }
-        
-        /* Progress bar */
-        .progress-bar {
-            height: 6px; background: #2a2a2e; border-radius: 3px; overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%; background: linear-gradient(90deg, #8b5cf6, #a855f7);
-            transition: width 0.3s ease;
-        }
     </style>
 </head>
 <body class="min-h-screen font-sans">
@@ -108,7 +99,7 @@
             <div class="h-6 w-[1px] bg-theme-border"></div>
             <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
             <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="text-sm text-theme-muted">Perfis de Personagem</span>
+            <span class="text-sm text-theme-muted">Sistema de Perfis</span>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
     </nav>
@@ -121,117 +112,83 @@
                 <i data-lucide="users" class="w-8 h-8 text-theme-purple"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Perfis de Personagem</h1>
-                <p class="text-gray-400">Gerencie todos os dados do seu personagem em um único lugar</p>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Perfis</h1>
+                <p class="text-gray-400">Gerencie usuários e personagens separadamente</p>
             </div>
         </header>
 
-        <!-- Seção 1: Criar Novo Perfil -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #8b5cf6;">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple">
-                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Criar Novo Perfil
-                </h3>
-                <span class="text-sm text-theme-muted" id="total-profiles">0 perfis</span>
+        <!-- Seção 1: Gerenciar Usuário -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
+                <i data-lucide="user" class="w-4 h-4"></i> Usuário Atual
+            </h3>
+            
+            <div id="current-user-display" class="mb-6 p-4 bg-theme-bg border border-theme-border rounded-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600/20 to-cyan-600/20 flex items-center justify-center">
+                            <i data-lucide="user" class="w-6 h-6 text-theme-blue"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white" id="user-name">Usuário Não Definido</h4>
+                            <p class="text-sm text-theme-muted">Gerencie seus personagens</p>
+                        </div>
+                    </div>
+                    <button onclick="openUserModal()" class="px-4 py-2 bg-theme-blue hover:bg-[#3a7bd5] text-white rounded-lg transition-colors">
+                        Alterar Usuário
+                    </button>
+                </div>
             </div>
             
-            <div class="grid md:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Nome do Personagem</label>
-                        <input type="text" id="profile-name" placeholder="Ex: Aragorn, Gandalf, Legolas..." 
-                               class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-purple outline-none">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Classe</label>
-                        <select id="profile-class" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-purple outline-none cursor-pointer">
-                            <option value="">Selecione uma classe</option>
-                            <option value="guerreiro">Guerreiro</option>
-                            <option value="mago">Mago</option>
-                            <option value="arqueiro">Arqueiro</option>
-                            <option value="ladino">Ladino</option>
-                            <option value="paladino">Paladino</option>
-                            <option value="bardo">Bardo</option>
-                            <option value="clérigo">Clérigo</option>
-                            <option value="druida">Druida</option>
-                            <option value="feiticeiro">Feiticeiro</option>
-                            <option value="barbaro">Bárbaro</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Raça</label>
-                        <input type="text" id="profile-race" placeholder="Ex: Humano, Elfo, Anão..." 
-                               class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-purple outline-none">
-                    </div>
-                </div>
+            <div class="grid md:grid-cols-3 gap-4">
+                <button onclick="createNewProfile()" class="p-4 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                    <i data-lucide="plus-circle" class="w-5 h-5 inline mr-2"></i>
+                    Novo Personagem
+                </button>
                 
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-white mb-2">Descrição (Opcional)</label>
-                        <textarea id="profile-description" placeholder="Breve descrição do personagem..." 
-                                  class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-purple outline-none h-32 resize-none"></textarea>
-                    </div>
-                    
-                    <div class="flex gap-3 pt-2">
-                        <button onclick="createNewProfile()" 
-                                class="flex-1 px-6 py-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                            <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
-                            Criar Perfil
-                        </button>
-                        
-                        <button onclick="importProfileFromTXT()" 
-                                class="flex-1 px-6 py-3 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
-                            <i data-lucide="upload" class="w-4 h-4 inline mr-2"></i>
-                            Importar TXT
-                        </button>
-                    </div>
-                </div>
+                <button onclick="importProfileFromTXT()" class="p-4 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                    <i data-lucide="upload" class="w-5 h-5 inline mr-2"></i>
+                    Importar Personagem
+                </button>
+                
+                <button onclick="exportAllData()" class="p-4 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                    <i data-lucide="download" class="w-5 h-5 inline mr-2"></i>
+                    Exportar Tudo
+                </button>
             </div>
         </section>
 
-        <!-- Seção 2: Lista de Perfis -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #4a9eff;">
+        <!-- Seção 2: Lista de Personagens -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s;">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue">
-                    <i data-lucide="list" class="w-4 h-4"></i> Meus Perfis
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple">
+                    <i data-lucide="swords" class="w-4 h-4"></i> Meus Personagens
                 </h3>
-                <div class="flex items-center gap-2">
-                    <button onclick="refreshProfiles()" class="p-2 text-theme-muted hover:text-white rounded-lg">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                    </button>
-                    <button onclick="exportAllProfiles()" class="p-2 text-theme-muted hover:text-theme-green rounded-lg">
-                        <i data-lucide="download" class="w-4 h-4"></i>
-                    </button>
-                </div>
+                <span class="text-sm text-theme-muted" id="total-profiles">0 personagens</span>
             </div>
             
             <div id="profiles-container" class="space-y-4">
-                <!-- Perfis serão inseridos aqui -->
+                <!-- Personagens serão inseridos aqui -->
                 <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
                     <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                    <p class="text-theme-muted">Nenhum perfil criado</p>
-                    <p class="text-xs text-theme-muted mt-1">Crie seu primeiro perfil acima</p>
+                    <p class="text-theme-muted">Nenhum personagem criado</p>
+                    <button onclick="createNewProfile()" class="mt-3 px-4 py-2 text-sm text-theme-blue hover:text-theme-purple transition-colors">
+                        Criar primeiro personagem
+                    </button>
                 </div>
-            </div>
-            
-            <div class="mt-6 text-sm text-theme-muted">
-                <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
-                Clique em um perfil para gerenciar todos os dados do personagem
             </div>
         </section>
 
         <!-- Seção 3: Estatísticas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #22c55e;">
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s;">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
                 <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Estatísticas
             </h3>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
                     <div class="text-2xl font-bold text-white mb-1" id="stats-total">0</div>
-                    <div class="text-xs text-theme-muted">Total de Perfis</div>
+                    <div class="text-xs text-theme-muted">Personagens</div>
                 </div>
                 
                 <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
@@ -245,107 +202,293 @@
                 </div>
                 
                 <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-muted mb-1" id="stats-empty">0</div>
-                    <div class="text-xs text-theme-muted">Vazios</div>
+                    <div class="text-2xl font-bold text-theme-blue mb-1" id="stats-active">0</div>
+                    <div class="text-xs text-theme-muted">Ativos</div>
                 </div>
             </div>
             
-            <div class="mt-6">
-                <div class="flex justify-between text-sm text-white mb-2">
-                    <span>Progresso Médio dos Perfis</span>
-                    <span id="avg-progress">0%</span>
-                </div>
-                <div class="progress-bar">
-                    <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
-                </div>
+            <div class="text-sm text-theme-muted">
+                <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                Clique em um personagem para gerenciar todas as suas seções
             </div>
         </section>
 
     </div>
 
-    <!-- Modal de Gerenciamento de Perfil -->
+    <!-- Modal de Usuário -->
+    <div id="user-modal" class="modal-backdrop hidden">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 w-full max-w-md">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-cinzel text-xl font-bold text-theme-blue">
+                    <i data-lucide="user" class="w-5 h-5 inline mr-2"></i>
+                    Gerenciar Usuário
+                </h3>
+                <button onclick="closeUserModal()" class="text-theme-muted hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-2">Nome do Usuário</label>
+                    <input type="text" id="user-name-input" placeholder="Seu nome ou apelido" 
+                           class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-blue outline-none">
+                </div>
+                
+                <div class="pt-4 border-t border-theme-border">
+                    <h4 class="font-medium text-white mb-3">Dados Salvos</h4>
+                    <div class="text-sm text-theme-muted space-y-2">
+                        <div class="flex justify-between">
+                            <span>Personagens salvos:</span>
+                            <span id="user-char-count">0</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Último acesso:</span>
+                            <span id="user-last-access"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-3 pt-4">
+                    <button onclick="saveUser()" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                        Salvar Usuário
+                    </button>
+                    <button onclick="deleteUserData()" 
+                            class="flex-1 px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                        Limpar Dados
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Personagem -->
     <div id="profile-modal" class="modal-backdrop hidden">
-        <div class="modal-content p-6">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="font-cinzel text-xl font-bold text-theme-purple" id="modal-profile-name">
                     <i data-lucide="user" class="w-5 h-5 inline mr-2"></i>
-                    Gerenciar Perfil
+                    Gerenciar Personagem
                 </h3>
                 <button onclick="closeProfileModal()" class="text-theme-muted hover:text-white">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
             
-            <div class="space-y-6">
-                <!-- Informações Básicas -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3 flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4"></i>
-                        Informações Básicas
-                    </h4>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
-                            <div class="text-xs text-theme-muted mb-1">Classe</div>
-                            <div class="font-medium text-white" id="modal-class"></div>
-                        </div>
-                        <div class="bg-theme-bg border border-theme-border rounded-lg p-3">
-                            <div class="text-xs text-theme-muted mb-1">Raça</div>
-                            <div class="font-medium text-white" id="modal-race"></div>
+            <!-- Informações Básicas -->
+            <div class="mb-6 p-4 bg-theme-bg border border-theme-border rounded-lg">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h4 class="font-bold text-white text-lg" id="modal-char-name">Personagem</h4>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="text-xs px-3 py-1 rounded bg-theme-purple/20 text-theme-purple border border-theme-purple/30" id="modal-char-class"></span>
+                            <span class="text-xs px-3 py-1 rounded bg-theme-blue/20 text-theme-blue border border-theme-blue/30" id="modal-char-race"></span>
+                            <span class="text-xs px-3 py-1 rounded bg-theme-green/20 text-theme-green border border-theme-green/30" id="modal-char-level"></span>
                         </div>
                     </div>
-                </div>
-                
-                <!-- Status das Seções -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3 flex items-center gap-2">
-                        <i data-lucide="check-square" class="w-4 h-4"></i>
-                        Status das Seções
-                    </h4>
-                    <div id="section-status" class="space-y-2">
-                        <!-- Status será inserido aqui -->
-                    </div>
-                </div>
-                
-                <!-- Ações -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3 flex items-center gap-2">
-                        <i data-lucide="zap" class="w-4 h-4"></i>
-                        Ações
-                    </h4>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="loadProfileToApp()" 
-                                class="bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg p-3 text-white font-medium hover:opacity-90 transition-opacity">
-                            <i data-lucide="upload" class="w-4 h-4 inline mr-2"></i>
-                            Carregar no App
-                        </button>
-                        <button onclick="exportProfile()" 
-                                class="bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg p-3 text-white font-medium hover:opacity-90 transition-opacity">
-                            <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>
-                            Exportar TXT
-                        </button>
-                        <button onclick="syncFromApp()" 
-                                class="bg-theme-bg border border-theme-border rounded-lg p-3 text-white hover:bg-white/5 transition-colors">
-                            <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
-                            Sinc. do App
+                    
+                    <div class="flex gap-3">
+                        <button onclick="setActiveProfile()" 
+                                class="px-4 py-2 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
+                            Tornar Ativo
                         </button>
                         <button onclick="deleteProfile()" 
-                                class="bg-theme-bg border border-red-800 rounded-lg p-3 text-red-400 hover:bg-red-900/20 transition-colors">
-                            <i data-lucide="trash-2" class="w-4 h-4 inline mr-2"></i>
-                            Excluir
+                                class="px-4 py-2 bg-theme-bg border border-red-800 rounded-lg text-red-400 hover:bg-red-900/20 transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Seções do Personagem -->
+            <div class="mb-6">
+                <h4 class="font-semibold text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                    Seções do Personagem
+                </h4>
                 
-                <!-- Informações Técnicas -->
-                <div class="pt-4 border-t border-theme-border">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-theme-muted">Última atualização</span>
-                        <span class="text-white" id="modal-last-update"></span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Ficha -->
+                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('ficha')">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-blue-900/20 flex items-center justify-center">
+                                    <i data-lucide="file-text" class="w-5 h-5 text-theme-blue"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-white">Ficha</div>
+                                    <div class="text-xs text-theme-muted">Dados básicos e aparência</div>
+                                </div>
+                            </div>
+                            <span class="status-tag status-empty" id="section-ficha-status">Vazia</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-theme-muted" id="section-ficha-date">Nunca editado</span>
+                            <button onclick="event.stopPropagation(); exportSection('ficha')" class="text-theme-blue hover:text-white transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex items-center justify-between text-sm mt-1">
-                        <span class="text-theme-muted">ID do Perfil</span>
-                        <span class="text-theme-muted font-mono text-xs" id="modal-profile-id"></span>
+                    
+                    <!-- Status -->
+                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('status')">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-orange-900/20 flex items-center justify-center">
+                                    <i data-lucide="activity" class="w-5 h-5 text-theme-orange"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-white">Status</div>
+                                    <div class="text-xs text-theme-muted">Atributos e pontos</div>
+                                </div>
+                            </div>
+                            <span class="status-tag status-empty" id="section-status-status">Vazia</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-theme-muted" id="section-status-date">Nunca editado</span>
+                            <button onclick="event.stopPropagation(); exportSection('status')" class="text-theme-blue hover:text-white transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                            </button>
+                        </div>
                     </div>
+                    
+                    <!-- Habilidades -->
+                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('habilidades')">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-purple-900/20 flex items-center justify-center">
+                                    <i data-lucide="zap" class="w-5 h-5 text-theme-purple"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-white">Habilidades</div>
+                                    <div class="text-xs text-theme-muted">Poderes e magias</div>
+                                </div>
+                            </div>
+                            <span class="status-tag status-empty" id="section-habilidades-status">Vazia</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-theme-muted" id="section-habilidades-date">Nunca editado</span>
+                            <button onclick="event.stopPropagation(); exportSection('habilidades')" class="text-theme-blue hover:text-white transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Proficiências -->
+                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('proficiencias')">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-yellow-900/20 flex items-center justify-center">
+                                    <i data-lucide="award" class="w-5 h-5 text-theme-yellow"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-white">Proficiências</div>
+                                    <div class="text-xs text-theme-muted">Talentos e ofícios</div>
+                                </div>
+                            </div>
+                            <span class="status-tag status-empty" id="section-proficiencias-status">Vazia</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-theme-muted" id="section-proficiencias-date">Nunca editado</span>
+                            <button onclick="event.stopPropagation(); exportSection('proficiencias')" class="text-theme-blue hover:text-white transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Itens -->
+                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('itens')">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-green-900/20 flex items-center justify-center">
+                                    <i data-lucide="package" class="w-5 h-5 text-theme-green"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-white">Itens</div>
+                                    <div class="text-xs text-theme-muted">Inventário e equipamentos</div>
+                                </div>
+                            </div>
+                            <span class="status-tag status-empty" id="section-itens-status">Vazia</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-theme-muted" id="section-itens-date">Nunca editado</span>
+                            <button onclick="event.stopPropagation(); exportSection('itens')" class="text-theme-blue hover:text-white transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Mascote -->
+                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('mascote')">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-teal-900/20 flex items-center justify-center">
+                                    <i data-lucide="dog" class="w-5 h-5 text-teal-500"></i>
+                                </div>
+                                <div>
+                                    <div class="font-medium text-white">Mascote</div>
+                                    <div class="text-xs text-theme-muted">Companheiro de aventura</div>
+                                </div>
+                            </div>
+                            <span class="status-tag status-empty" id="section-mascote-status">Vazia</span>
+                        </div>
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="text-theme-muted" id="section-mascote-date">Nunca editado</span>
+                            <button onclick="event.stopPropagation(); exportSection('mascote')" class="text-theme-blue hover:text-white transition-colors">
+                                <i data-lucide="download" class="w-3 h-3"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Ações de Exportação -->
+            <div class="pt-4 border-t border-theme-border">
+                <h4 class="font-semibold text-white mb-3 flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Exportação
+                </h4>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <button onclick="exportProfile()" 
+                            class="p-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
+                        <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>
+                        Personagem Completo
+                    </button>
+                    
+                    <button onclick="exportAllSections()" 
+                            class="p-3 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
+                        <i data-lucide="layers" class="w-4 h-4 inline mr-2"></i>
+                        Todas as Seções
+                    </button>
+                    
+                    <button onclick="syncAllSections()" 
+                            class="p-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
+                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
+                        Sincronizar Tudo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Informações Técnicas -->
+            <div class="pt-4 border-t border-theme-border mt-6">
+                <div class="flex flex-wrap gap-4 text-sm">
+                    <div>
+                        <span class="text-theme-muted">Criado em:</span>
+                        <span class="text-white ml-2" id="modal-created-at"></span>
+                    </div>
+                    <div>
+                        <span class="text-theme-muted">Última atualização:</span>
+                        <span class="text-white ml-2" id="modal-updated-at"></span>
+                    </div>
+                    <div>
+                        <span class="text-theme-muted">Progresso:</span>
+                        <span class="text-white ml-2" id="modal-progress">0%</span>
+                    </div>
+                </div>
+                <div class="text-xs text-theme-muted mt-2">
+                    ID: <span class="font-mono" id="modal-profile-id"></span>
                 </div>
             </div>
         </div>
@@ -353,35 +496,58 @@
 
     <!-- Modal de Importação -->
     <div id="import-modal" class="modal-backdrop hidden">
-        <div class="modal-content p-6">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 w-full max-w-md">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="font-cinzel text-xl font-bold text-theme-green">
                     <i data-lucide="upload" class="w-5 h-5 inline mr-2"></i>
-                    Importar Perfil TXT
+                    Importar Personagem
                 </h3>
                 <button onclick="closeImportModal()" class="text-theme-muted hover:text-white">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
             
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <div>
-                    <div class="border-2 border-dashed border-theme-border rounded-lg p-8 text-center cursor-pointer hover:border-theme-green transition-colors"
-                         onclick="document.getElementById('file-input').click()">
-                        <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                        <p class="text-white font-medium mb-1">Clique para selecionar arquivo</p>
-                        <p class="text-sm text-theme-muted">Formato: .txt do Grimório Digital</p>
-                    </div>
-                    <input type="file" id="file-input" accept=".txt" class="hidden" onchange="handleTXTImport(event)">
+                    <label class="block text-sm font-medium text-white mb-2">Selecione o que importar:</label>
+                    <select id="import-type" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-green outline-none">
+                        <option value="full">Personagem Completo</option>
+                        <option value="section">Apenas uma Seção</option>
+                    </select>
                 </div>
                 
-                <div class="flex gap-3">
+                <div id="section-select-container" class="hidden">
+                    <label class="block text-sm font-medium text-white mb-2">Selecione a seção:</label>
+                    <select id="import-section" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-green outline-none">
+                        <option value="ficha">Ficha</option>
+                        <option value="status">Status</option>
+                        <option value="habilidades">Habilidades</option>
+                        <option value="proficiencias">Proficiências</option>
+                        <option value="itens">Itens</option>
+                        <option value="mascote">Mascote</option>
+                    </select>
+                </div>
+                
+                <div class="border-2 border-dashed border-theme-border rounded-lg p-6 text-center cursor-pointer hover:border-theme-green transition-colors"
+                     onclick="document.getElementById('file-input').click()">
+                    <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                    <p class="text-white font-medium mb-1">Clique para selecionar arquivo</p>
+                    <p class="text-sm text-theme-muted">Formato: .txt do Grimório Digital</p>
+                </div>
+                <input type="file" id="file-input" accept=".txt" class="hidden" onchange="handleTXTImport(event)">
+                
+                <div class="text-sm text-theme-muted">
+                    <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
+                    Os dados serão adicionados ao seu usuário atual
+                </div>
+                
+                <div class="flex gap-3 pt-4">
                     <button onclick="closeImportModal()" 
                             class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
                         Cancelar
                     </button>
                     <button onclick="processTXTImport()" id="import-btn" disabled
-                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
                         Importar
                     </button>
                 </div>
@@ -389,99 +555,126 @@
         </div>
     </div>
 
-    <div class="max-w-6xl mx-auto px-4 mt-8 pb-12">
-        <div class="text-center text-sm text-theme-muted">
-            <p><i data-lucide="database" class="w-3 h-3 inline mr-1"></i> Sistema de Perfis - Vincula todos os dados do seu personagem em um único arquivo</p>
-        </div>
-    </div>
-
     <script>
         lucide.createIcons();
 
         // ====================================================================
-        // SISTEMA DE PERFIS - GERENCIAMENTO CENTRALIZADO
+        // SISTEMA DE USUÁRIOS E PERSONAGENS
         // ====================================================================
         
-        // Estrutura de um perfil completo
-        const PROFILE_STRUCTURE = {
-            id: '',
-            name: '',
-            class: '',
-            race: '',
-            description: '',
-            createdAt: '',
-            lastUpdated: '',
-            sections: {
-                ficha: { data: null, updated: null },
-                status: { data: null, updated: null },
-                mascote: { data: null, updated: null },
-                itens: { data: null, updated: null },
-                proficiencias: { data: null, updated: null },
-                habilidades: { data: null, updated: null },
-                magias: { data: null, updated: null }
-            },
-            metadata: {
-                nivel: 1,
-                xp: 0,
-                complete: false
-            }
-        };
-
+        let currentUser = null;
         let currentProfile = null;
         let profiles = [];
         let importFile = null;
 
+        // Estrutura de um usuário
+        const USER_STRUCTURE = {
+            id: '',
+            name: '',
+            createdAt: '',
+            lastAccess: '',
+            settings: {}
+        };
+
+        // Estrutura de um personagem
+        const PROFILE_STRUCTURE = {
+            id: '',
+            userId: '', // Vincula ao usuário
+            name: '',
+            class: '',
+            race: '',
+            level: 1,
+            createdAt: '',
+            lastUpdated: '',
+            sections: {
+                ficha: { data: null, updated: null, complete: false },
+                status: { data: null, updated: null, complete: false },
+                habilidades: { data: null, updated: null, complete: false },
+                proficiencias: { data: null, updated: null, complete: false },
+                itens: { data: null, updated: null, complete: false },
+                mascote: { data: null, updated: null, complete: false }
+            },
+            isActive: false
+        };
+
         // ====================================================================
-        // FUNÇÕES DE PERFIL
+        // INICIALIZAÇÃO DO USUÁRIO
+        // ====================================================================
+        function initUser() {
+            // Verificar se já existe um usuário
+            const savedUser = localStorage.getItem('grimorio_current_user');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+            } else {
+                // Criar usuário padrão
+                currentUser = {
+                    ...USER_STRUCTURE,
+                    id: 'user_' + Date.now(),
+                    name: 'Aventureiro',
+                    createdAt: new Date().toISOString(),
+                    lastAccess: new Date().toISOString()
+                };
+                localStorage.setItem('grimorio_current_user', JSON.stringify(currentUser));
+            }
+            
+            // Atualizar último acesso
+            currentUser.lastAccess = new Date().toISOString();
+            saveUserData();
+            
+            // Carregar personagens do usuário
+            loadProfiles();
+            updateUserDisplay();
+        }
+
+        function saveUserData() {
+            localStorage.setItem('grimorio_current_user', JSON.stringify(currentUser));
+            
+            // Salvar personagens do usuário
+            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
+            localStorage.setItem(`grimorio_profiles_${currentUser.id}`, JSON.stringify(userProfiles));
+            
+            updateUserDisplay();
+        }
+
+        function updateUserDisplay() {
+            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
+            
+            document.getElementById('user-name').textContent = currentUser.name;
+            document.getElementById('user-char-count').textContent = userProfiles.length;
+            document.getElementById('user-last-access').textContent = formatDateShort(currentUser.lastAccess);
+            
+            if (document.getElementById('user-name-input')) {
+                document.getElementById('user-name-input').value = currentUser.name;
+            }
+        }
+
+        // ====================================================================
+        // FUNÇÕES DE PERSONAGEM
         // ====================================================================
         function createNewProfile() {
-            const name = document.getElementById('profile-name').value.trim();
-            const charClass = document.getElementById('profile-class').value;
-            const race = document.getElementById('profile-race').value.trim();
-            const description = document.getElementById('profile-description').value.trim();
-            
-            if (!name) {
-                showNotification('Por favor, insira um nome para o personagem.', 'error');
-                return;
-            }
-            
-            if (!charClass) {
-                showNotification('Por favor, selecione uma classe.', 'error');
-                return;
-            }
-            
-            // Verificar se já existe perfil com este nome
-            if (profiles.some(p => p.name.toLowerCase() === name.toLowerCase())) {
-                showNotification('Já existe um perfil com este nome.', 'error');
-                return;
-            }
+            const name = prompt("Digite o nome do novo personagem:");
+            if (!name || name.trim() === '') return;
             
             const newProfile = {
                 ...JSON.parse(JSON.stringify(PROFILE_STRUCTURE)),
                 id: 'profile_' + Date.now(),
-                name: name,
-                class: charClass,
-                race: race || 'Desconhecida',
-                description: description,
+                userId: currentUser.id,
+                name: name.trim(),
+                class: 'Não definida',
+                race: 'Não definida',
                 createdAt: new Date().toISOString(),
                 lastUpdated: new Date().toISOString()
             };
             
             profiles.unshift(newProfile);
-            saveProfiles();
+            saveUserData();
+            renderProfiles();
             
-            // Limpar formulário
-            document.getElementById('profile-name').value = '';
-            document.getElementById('profile-class').value = '';
-            document.getElementById('profile-race').value = '';
-            document.getElementById('profile-description').value = '';
-            
-            showNotification(`Perfil "${name}" criado com sucesso!`, 'success');
-            loadProfiles();
+            showNotification(`Personagem "${name}" criado!`, 'success');
         }
 
         function loadProfiles() {
-            const saved = localStorage.getItem('grimorio_profiles');
+            const saved = localStorage.getItem(`grimorio_profiles_${currentUser.id}`);
             if (saved) {
                 profiles = JSON.parse(saved);
             } else {
@@ -492,62 +685,62 @@
             updateStatistics();
         }
 
-        function saveProfiles() {
-            localStorage.setItem('grimorio_profiles', JSON.stringify(profiles));
-        }
-
         function renderProfiles() {
             const container = document.getElementById('profiles-container');
             const totalElement = document.getElementById('total-profiles');
+            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
             
-            totalElement.textContent = `${profiles.length} perfil${profiles.length !== 1 ? 'is' : ''}`;
+            totalElement.textContent = `${userProfiles.length} personagem${userProfiles.length !== 1 ? 'ns' : ''}`;
             
-            if (profiles.length === 0) {
+            if (userProfiles.length === 0) {
                 container.innerHTML = `
                     <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
                         <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                        <p class="text-theme-muted">Nenhum perfil criado</p>
-                        <p class="text-xs text-theme-muted mt-1">Crie seu primeiro perfil acima</p>
+                        <p class="text-theme-muted">Nenhum personagem criado</p>
+                        <button onclick="createNewProfile()" class="mt-3 px-4 py-2 text-sm text-theme-blue hover:text-theme-purple transition-colors">
+                            Criar primeiro personagem
+                        </button>
                     </div>
                 `;
                 return;
             }
             
             container.innerHTML = '';
-            profiles.forEach(profile => {
+            userProfiles.forEach(profile => {
                 const completion = calculateProfileCompletion(profile);
                 const sectionCount = countCompletedSections(profile);
                 
                 const profileElement = document.createElement('div');
-                profileElement.className = 'profile-card bg-theme-bg border border-theme-border p-4 rounded-lg cursor-pointer';
+                profileElement.className = `profile-card bg-theme-bg border ${profile.isActive ? 'border-theme-purple' : 'border-theme-border'} p-4 rounded-lg cursor-pointer`;
                 profileElement.onclick = () => openProfileModal(profile.id);
                 
                 profileElement.innerHTML = `
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-600/20 to-pink-600/20 flex items-center justify-center">
-                                <i data-lucide="user" class="w-6 h-6 text-theme-purple"></i>
+                            <div class="w-12 h-12 rounded-lg ${profile.isActive ? 'bg-gradient-to-br from-purple-600/20 to-pink-600/20' : 'bg-gray-800/50'} flex items-center justify-center">
+                                <i data-lucide="${profile.isActive ? 'user-check' : 'user'}" class="w-6 h-6 ${profile.isActive ? 'text-theme-purple' : 'text-gray-500'}"></i>
                             </div>
                             <div>
-                                <h4 class="font-semibold text-white">${profile.name}</h4>
+                                <h4 class="font-semibold text-white">${profile.name} ${profile.isActive ? '<span class="text-xs text-theme-purple">(Ativo)</span>' : ''}</h4>
                                 <div class="flex items-center gap-2 mt-1">
                                     <span class="text-xs px-2 py-1 rounded bg-theme-purple/20 text-theme-purple border border-theme-purple/30">
                                         ${profile.class}
                                     </span>
                                     <span class="text-xs text-theme-muted">${profile.race}</span>
+                                    <span class="text-xs text-theme-muted">Nível ${profile.level}</span>
                                 </div>
                             </div>
                         </div>
                         <div class="flex flex-col items-end">
                             <span class="text-lg font-bold text-white">${completion}%</span>
-                            <span class="text-xs text-theme-muted">completo</span>
+                            <span class="text-xs text-theme-muted">${sectionCount}/6 seções</span>
                         </div>
                     </div>
                     
                     <div class="mb-3">
                         <div class="flex justify-between text-xs text-white mb-1">
                             <span>Progresso</span>
-                            <span>${sectionCount}/7 seções</span>
+                            <span>${completion}% completo</span>
                         </div>
                         <div class="progress-bar">
                             <div class="progress-fill" style="width: ${completion}%"></div>
@@ -573,27 +766,32 @@
 
         function calculateProfileCompletion(profile) {
             let completed = 0;
-            let total = 0;
+            let total = Object.keys(profile.sections).length;
             
-            // Verificar cada seção
             Object.values(profile.sections).forEach(section => {
-                total++;
-                if (section.data !== null) {
+                if (section.data !== null && section.data !== '') {
                     completed++;
                 }
             });
-            
-            // Adicionar peso para informações básicas
-            if (profile.name) completed += 0.5;
-            if (profile.class) completed += 0.5;
-            
-            total += 1; // Para as informações básicas
             
             return Math.round((completed / total) * 100);
         }
 
         function countCompletedSections(profile) {
-            return Object.values(profile.sections).filter(s => s.data !== null).length;
+            return Object.values(profile.sections).filter(s => s.data !== null && s.data !== '').length;
+        }
+
+        function updateStatistics() {
+            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
+            const total = userProfiles.length;
+            const complete = userProfiles.filter(p => calculateProfileCompletion(p) >= 80).length;
+            const partial = userProfiles.filter(p => calculateProfileCompletion(p) >= 30 && calculateProfileCompletion(p) < 80).length;
+            const active = userProfiles.filter(p => p.isActive).length;
+            
+            document.getElementById('stats-total').textContent = total;
+            document.getElementById('stats-complete').textContent = complete;
+            document.getElementById('stats-partial').textContent = partial;
+            document.getElementById('stats-active').textContent = active;
         }
 
         function getCompletionClass(percentage) {
@@ -608,45 +806,33 @@
             return 'Vazio';
         }
 
-        function updateStatistics() {
-            const total = profiles.length;
-            const complete = profiles.filter(p => calculateProfileCompletion(p) >= 80).length;
-            const partial = profiles.filter(p => calculateProfileCompletion(p) >= 30 && calculateProfileCompletion(p) < 80).length;
-            const empty = profiles.filter(p => calculateProfileCompletion(p) < 30).length;
-            
-            // Calcular progresso médio
-            let avgProgress = 0;
-            if (total > 0) {
-                const totalProgress = profiles.reduce((sum, p) => sum + calculateProfileCompletion(p), 0);
-                avgProgress = Math.round(totalProgress / total);
-            }
-            
-            document.getElementById('stats-total').textContent = total;
-            document.getElementById('stats-complete').textContent = complete;
-            document.getElementById('stats-partial').textContent = partial;
-            document.getElementById('stats-empty').textContent = empty;
-            document.getElementById('avg-progress').textContent = `${avgProgress}%`;
-            document.getElementById('progress-fill').style.width = `${avgProgress}%`;
+        // ====================================================================
+        // MODAIS
+        // ====================================================================
+        function openUserModal() {
+            document.getElementById('user-modal').classList.remove('hidden');
         }
 
-        // ====================================================================
-        // MODAL DE PERFIL
-        // ====================================================================
+        function closeUserModal() {
+            document.getElementById('user-modal').classList.add('hidden');
+        }
+
         function openProfileModal(profileId) {
             currentProfile = profiles.find(p => p.id === profileId);
             if (!currentProfile) return;
             
-            // Preencher informações do modal
             document.getElementById('modal-profile-name').innerHTML = 
                 `<i data-lucide="user" class="w-5 h-5 inline mr-2"></i>${currentProfile.name}`;
-            document.getElementById('modal-class').textContent = currentProfile.class;
-            document.getElementById('modal-race').textContent = currentProfile.race;
-            document.getElementById('modal-last-update').textContent = formatDate(currentProfile.lastUpdated);
+            document.getElementById('modal-char-name').textContent = currentProfile.name;
+            document.getElementById('modal-char-class').textContent = currentProfile.class;
+            document.getElementById('modal-char-race').textContent = currentProfile.race;
+            document.getElementById('modal-char-level').textContent = `Nível ${currentProfile.level}`;
+            document.getElementById('modal-created-at').textContent = formatDateShort(currentProfile.createdAt);
+            document.getElementById('modal-updated-at').textContent = formatDateShort(currentProfile.lastUpdated);
+            document.getElementById('modal-progress').textContent = `${calculateProfileCompletion(currentProfile)}%`;
             document.getElementById('modal-profile-id').textContent = currentProfile.id.substring(0, 8) + '...';
             
-            // Atualizar status das seções
             updateSectionStatus();
-            
             document.getElementById('profile-modal').classList.remove('hidden');
         }
 
@@ -656,135 +842,103 @@
         }
 
         function updateSectionStatus() {
-            const container = document.getElementById('section-status');
-            container.innerHTML = '';
-            
-            const sections = [
-                { key: 'ficha', name: 'Ficha Básica', icon: 'file-text' },
-                { key: 'status', name: 'Status/Atributos', icon: 'activity' },
-                { key: 'mascote', name: 'Mascote', icon: 'dog' },
-                { key: 'itens', name: 'Inventário', icon: 'package' },
-                { key: 'proficiencias', name: 'Proficiências', icon: 'target' },
-                { key: 'habilidades', name: 'Habilidades', icon: 'zap' },
-                { key: 'magias', name: 'Magias', icon: 'sparkles' }
-            ];
-            
-            sections.forEach(section => {
-                const sectionData = currentProfile.sections[section.key];
-                const hasData = sectionData && sectionData.data !== null;
-                const statusClass = hasData ? 'status-complete' : 'status-empty';
-                const statusText = hasData ? 'Preenchida' : 'Vazia';
-                const dateText = hasData ? formatDateShort(sectionData.updated) : 'Nunca';
-                
-                const sectionElement = document.createElement('div');
-                sectionElement.className = 'flex items-center justify-between p-3 bg-theme-bg border border-theme-border rounded-lg';
-                sectionElement.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center ${hasData ? 'bg-green-900/20' : 'bg-gray-800'}">
-                            <i data-lucide="${section.icon}" class="w-4 h-4 ${hasData ? 'text-green-500' : 'text-gray-500'}"></i>
-                        </div>
-                        <div>
-                            <div class="font-medium text-white">${section.name}</div>
-                            <div class="text-xs text-theme-muted">${dateText}</div>
-                        </div>
-                    </div>
-                    <span class="${statusClass}">${statusText}</span>
-                `;
-                
-                // Adicionar funcionalidade de clique
-                sectionElement.onclick = () => manageSection(section.key);
-                
-                container.appendChild(sectionElement);
-            });
-            
-            lucide.createIcons();
-        }
-
-        function manageSection(sectionKey) {
             if (!currentProfile) return;
             
-            const actions = {
-                ficha: () => window.location.href = 'ficha.html',
-                status: () => window.location.href = 'status.html',
-                mascote: () => window.location.href = 'mascote.html',
-                itens: () => window.location.href = 'itens.html',
-                proficiencias: () => window.location.href = 'proficiencias.html',
-                habilidades: () => window.location.href = 'habilidades.html',
-                magias: () => window.location.href = 'magias.html'
+            const sections = ['ficha', 'status', 'habilidades', 'proficiencias', 'itens', 'mascote'];
+            sections.forEach(section => {
+                const sectionData = currentProfile.sections[section];
+                const hasData = sectionData && sectionData.data !== null && sectionData.data !== '';
+                const statusClass = hasData ? 'status-complete' : 'status-empty';
+                const statusText = hasData ? 'Preenchida' : 'Vazia';
+                const dateText = hasData ? formatDateShort(sectionData.updated) : 'Nunca editado';
+                
+                document.getElementById(`section-${section}-status`).className = `status-tag ${statusClass}`;
+                document.getElementById(`section-${section}-status`).textContent = statusText;
+                document.getElementById(`section-${section}-date`).textContent = dateText;
+            });
+        }
+
+        // ====================================================================
+        // FUNÇÕES DE NAVEGAÇÃO E SINCRONIZAÇÃO
+        // ====================================================================
+        function navigateToSection(sectionKey) {
+            if (!currentProfile) return;
+            
+            // Salvar ID do personagem atual
+            localStorage.setItem('current_profile_id', currentProfile.id);
+            
+            // Mapear seções para páginas
+            const sectionPages = {
+                ficha: 'ficha.html',
+                status: 'status.html',
+                habilidades: 'habilidades.html',
+                proficiencias: 'proficiencias.html',
+                itens: 'inventario.html',
+                mascote: 'mascote.html'
             };
             
-            if (actions[sectionKey]) {
-                // Salvar ID do perfil atual para a próxima página
-                localStorage.setItem('current_profile_id', currentProfile.id);
-                
-                // Mostrar instrução
-                showNotification(`Abrindo ${sectionKey}. Salve os dados nesta página para vincular ao perfil.`, 'info');
-                
-                // Fechar modal e redirecionar
-                closeProfileModal();
-                setTimeout(() => actions[sectionKey](), 500);
+            if (sectionPages[sectionKey]) {
+                showNotification(`Abrindo ${sectionKey} para "${currentProfile.name}"`, 'info');
+                setTimeout(() => {
+                    window.location.href = sectionPages[sectionKey];
+                }, 500);
             }
         }
 
-        // ====================================================================
-        // SINCORNIZAÇÃO COM AS PÁGINAS DO APP
-        // ====================================================================
-        
-        // Esta função deve ser chamada ao salvar dados em qualquer página
-        function syncProfileData(sectionKey, data) {
+        // Função para salvar dados de qualquer página
+        window.saveToProfile = function(sectionKey, data) {
             const profileId = localStorage.getItem('current_profile_id');
             if (!profileId) return false;
             
+            const profiles = JSON.parse(localStorage.getItem(`grimorio_profiles_${currentUser.id}`) || '[]');
             const profile = profiles.find(p => p.id === profileId);
+            
             if (!profile) return false;
             
-            // Atualizar a seção específica
+            // Atualizar seção
             profile.sections[sectionKey] = {
                 data: data,
-                updated: new Date().toISOString()
+                updated: new Date().toISOString(),
+                complete: true
             };
             
-            // Atualizar timestamp do perfil
+            // Atualizar timestamp
             profile.lastUpdated = new Date().toISOString();
             
             // Salvar alterações
-            saveProfiles();
+            localStorage.setItem(`grimorio_profiles_${currentUser.id}`, JSON.stringify(profiles));
             
-            // Se estiver na página de perfis, atualizar a interface
+            // Atualizar se estiver na página de perfis
             if (window.location.pathname.includes('perfis.html')) {
                 loadProfiles();
+                if (currentProfile && currentProfile.id === profileId) {
+                    updateSectionStatus();
+                }
             }
             
             return true;
-        }
+        };
 
-        function loadProfileToApp() {
+        // Função para carregar dados em qualquer página
+        window.loadFromProfile = function(sectionKey) {
+            const profileId = localStorage.getItem('current_profile_id');
+            if (!profileId) return null;
+            
+            const profiles = JSON.parse(localStorage.getItem(`grimorio_profiles_${currentUser.id}`) || '[]');
+            const profile = profiles.find(p => p.id === profileId);
+            
+            if (profile && profile.sections[sectionKey] && profile.sections[sectionKey].data) {
+                return profile.sections[sectionKey].data;
+            }
+            
+            return null;
+        };
+
+        function syncAllSections() {
             if (!currentProfile) return;
             
-            // Salvar ID do perfil atual
-            localStorage.setItem('current_profile_id', currentProfile.id);
-            
-            // Carregar dados nas respectivas páginas
-            Object.entries(currentProfile.sections).forEach(([key, section]) => {
-                if (section.data) {
-                    localStorage.setItem(`profile_${currentProfile.id}_${key}`, JSON.stringify(section.data));
-                }
-            });
-            
-            // Salvar informações básicas
-            localStorage.setItem('grimorio_nome_personagem', currentProfile.name);
-            localStorage.setItem('grimorio_classe_personagem', currentProfile.class);
-            localStorage.setItem('grimorio_raca_personagem', currentProfile.race);
-            
-            showNotification(`Perfil "${currentProfile.name}" carregado no app!`, 'success');
-            closeProfileModal();
-        }
-
-        function syncFromApp() {
-            if (!currentProfile) return;
-            
-            // Buscar dados atuais do app
-            const sections = ['ficha', 'status', 'mascote', 'itens', 'proficiencias', 'habilidades', 'magias'];
+            // Sincronizar todas as seções do app
+            const sections = ['ficha', 'status', 'habilidades', 'proficiencias', 'itens', 'mascote'];
             let updated = false;
             
             sections.forEach(sectionKey => {
@@ -792,7 +946,8 @@
                 if (data) {
                     currentProfile.sections[sectionKey] = {
                         data: JSON.parse(data),
-                        updated: new Date().toISOString()
+                        updated: new Date().toISOString(),
+                        complete: true
                     };
                     updated = true;
                 }
@@ -800,18 +955,236 @@
             
             if (updated) {
                 currentProfile.lastUpdated = new Date().toISOString();
-                saveProfiles();
+                saveUserData();
                 updateSectionStatus();
-                showNotification('Dados sincronizados do app!', 'success');
+                showNotification('Todas as seções sincronizadas!', 'success');
             } else {
-                showNotification('Nenhum dado encontrado no app.', 'info');
+                showNotification('Nenhum dado encontrado para sincronizar.', 'info');
             }
         }
 
+        function setActiveProfile() {
+            if (!currentProfile) return;
+            
+            // Desativar todos os outros personagens
+            profiles.forEach(p => {
+                p.isActive = (p.id === currentProfile.id);
+            });
+            
+            saveUserData();
+            renderProfiles();
+            showNotification(`"${currentProfile.name}" é agora o personagem ativo!`, 'success');
+        }
+
         // ====================================================================
-        // IMPORT/EXPORT DE TXT
+        // EXPORTAÇÃO
+        // ====================================================================
+        function exportSection(sectionKey) {
+            if (!currentProfile || !currentProfile.sections[sectionKey].data) {
+                showNotification('Não há dados para exportar nesta seção.', 'error');
+                return;
+            }
+            
+            const sectionNames = {
+                ficha: 'Ficha',
+                status: 'Status',
+                habilidades: 'Habilidades',
+                proficiencias: 'Proficiências',
+                itens: 'Itens',
+                mascote: 'Mascote'
+            };
+            
+            const content = generateSectionTXT(currentProfile, sectionKey);
+            const filename = `${currentUser.name}_${currentProfile.name}_${sectionNames[sectionKey]}`;
+            downloadTXT(content, filename);
+            
+            showNotification(`${sectionNames[sectionKey]} exportada!`, 'success');
+        }
+
+        function exportAllSections() {
+            if (!currentProfile) return;
+            
+            let hasData = false;
+            Object.values(currentProfile.sections).forEach(section => {
+                if (section.data) hasData = true;
+            });
+            
+            if (!hasData) {
+                showNotification('Nenhuma seção com dados para exportar.', 'error');
+                return;
+            }
+            
+            const content = generateAllSectionsTXT(currentProfile);
+            const filename = `${currentUser.name}_${currentProfile.name}_Todas_Seções`;
+            downloadTXT(content, filename);
+            
+            showNotification('Todas as seções exportadas!', 'success');
+        }
+
+        function exportProfile() {
+            if (!currentProfile) return;
+            
+            const content = generateFullProfileTXT(currentProfile);
+            const filename = `${currentUser.name}_${currentProfile.name}_Personagem_Completo`;
+            downloadTXT(content, filename);
+            
+            showNotification('Personagem completo exportado!', 'success');
+        }
+
+        function exportAllData() {
+            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
+            if (userProfiles.length === 0) {
+                showNotification('Nenhum personagem para exportar.', 'info');
+                return;
+            }
+            
+            const content = generateAllDataTXT(userProfiles);
+            const filename = `${currentUser.name}_Todos_Personagens`;
+            downloadTXT(content, filename);
+            
+            showNotification(`${userProfiles.length} personagens exportados!`, 'success');
+        }
+
+        function generateSectionTXT(profile, sectionKey) {
+            const sectionNames = {
+                ficha: 'FICHA DO PERSONAGEM',
+                status: 'STATUS E ATRIBUTOS',
+                habilidades: 'HABILIDADES',
+                proficiencias: 'PROFICIÊNCIAS',
+                itens: 'INVENTÁRIO E ITENS',
+                mascote: 'MASCOTE'
+            };
+            
+            let txt = '='.repeat(60) + '\n';
+            txt += `          ${sectionNames[sectionKey] || sectionKey.toUpperCase()}\n`;
+            txt += '='.repeat(60) + '\n\n';
+            
+            txt += `Personagem: ${profile.name}\n`;
+            txt += `Usuário: ${currentUser.name}\n`;
+            txt += `Classe: ${profile.class}\n`;
+            txt += `Raça: ${profile.race}\n`;
+            txt += `Nível: ${profile.level}\n`;
+            txt += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+            
+            txt += 'Dados:\n';
+            txt += '-'.repeat(40) + '\n';
+            
+            if (typeof profile.sections[sectionKey].data === 'string') {
+                txt += profile.sections[sectionKey].data + '\n';
+            } else {
+                txt += JSON.stringify(profile.sections[sectionKey].data, null, 2) + '\n';
+            }
+            
+            txt += '\n' + '='.repeat(60);
+            txt += '\nFim da seção\n';
+            
+            return txt;
+        }
+
+        function generateAllSectionsTXT(profile) {
+            let txt = '='.repeat(60) + '\n';
+            txt += '          TODAS AS SEÇÕES DO PERSONAGEM\n';
+            txt += '='.repeat(60) + '\n\n';
+            
+            txt += `Personagem: ${profile.name}\n`;
+            txt += `Usuário: ${currentUser.name}\n`;
+            txt += `Classe: ${profile.class}\n`;
+            txt += `Raça: ${profile.race}\n`;
+            txt += `Nível: ${profile.level}\n`;
+            txt += `Progresso: ${calculateProfileCompletion(profile)}%\n`;
+            txt += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+            
+            Object.entries(profile.sections).forEach(([key, section]) => {
+                if (section.data) {
+                    const sectionNames = {
+                        ficha: 'FICHA',
+                        status: 'STATUS',
+                        habilidades: 'HABILIDADES',
+                        proficiencias: 'PROFICIÊNCIAS',
+                        itens: 'ITENS',
+                        mascote: 'MASCOTE'
+                    };
+                    
+                    txt += '\n' + '='.repeat(60) + '\n';
+                    txt += `          ${sectionNames[key] || key.toUpperCase()}\n`;
+                    txt += '='.repeat(60) + '\n\n';
+                    
+                    if (typeof section.data === 'string') {
+                        txt += section.data + '\n';
+                    } else {
+                        txt += JSON.stringify(section.data, null, 2) + '\n';
+                    }
+                }
+            });
+            
+            txt += '\n' + '='.repeat(60);
+            txt += '\nFim do arquivo\n';
+            
+            return txt;
+        }
+
+        function generateFullProfileTXT(profile) {
+            return generateAllSectionsTXT(profile);
+        }
+
+        function generateAllDataTXT(userProfiles) {
+            let txt = '='.repeat(60) + '\n';
+            txt += '          TODOS OS PERSONAGENS - GRIMÓRIO DIGITAL\n';
+            txt += '='.repeat(60) + '\n\n';
+            
+            txt += `Usuário: ${currentUser.name}\n`;
+            txt += `Total de personagens: ${userProfiles.length}\n`;
+            txt += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
+            
+            userProfiles.forEach((profile, index) => {
+                txt += '\n' + '='.repeat(60) + '\n';
+                txt += `          PERSONAGEM ${index + 1}: ${profile.name}\n`;
+                txt += '='.repeat(60) + '\n\n';
+                
+                txt += `Classe: ${profile.class}\n`;
+                txt += `Raça: ${profile.race}\n`;
+                txt += `Nível: ${profile.level}\n`;
+                txt += `Progresso: ${calculateProfileCompletion(profile)}%\n`;
+                txt += `Criado em: ${formatDate(profile.createdAt)}\n`;
+                txt += `Última atualização: ${formatDate(profile.lastUpdated)}\n`;
+                txt += `Ativo: ${profile.isActive ? 'Sim' : 'Não'}\n`;
+                txt += `Seções preenchidas: ${countCompletedSections(profile)}/6\n`;
+                
+                // Listar seções com dados
+                const sectionsWithData = Object.entries(profile.sections)
+                    .filter(([_, s]) => s.data)
+                    .map(([key, _]) => key);
+                
+                if (sectionsWithData.length > 0) {
+                    txt += `Seções: ${sectionsWithData.join(', ')}\n`;
+                }
+                
+                txt += `ID: ${profile.id}\n`;
+            });
+            
+            txt += '\n' + '='.repeat(60);
+            txt += '\nFim da exportação\n';
+            
+            return txt;
+        }
+
+        function downloadTXT(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${filename}_${new Date().toISOString().split('T')[0]}.txt`;
+            link.click();
+        }
+
+        // ====================================================================
+        // IMPORTAR TXT
         // ====================================================================
         function importProfileFromTXT() {
+            document.getElementById('import-type').addEventListener('change', function() {
+                const sectionContainer = document.getElementById('section-select-container');
+                sectionContainer.classList.toggle('hidden', this.value !== 'section');
+            });
+            
             document.getElementById('import-modal').classList.remove('hidden');
         }
 
@@ -838,35 +1211,49 @@
         function processTXTImport() {
             if (!importFile) return;
             
+            const importType = document.getElementById('import-type').value;
+            const section = document.getElementById('import-section').value;
+            
             const reader = new FileReader();
             
             reader.onload = function(e) {
                 try {
                     const content = e.target.result;
-                    const profile = parseProfileTXT(content);
                     
-                    // Verificar se já existe perfil com este nome
-                    const existingIndex = profiles.findIndex(p => p.name === profile.name);
-                    if (existingIndex !== -1) {
-                        if (confirm(`Já existe um perfil chamado "${profile.name}". Deseja sobrescrever?`)) {
-                            profiles[existingIndex] = profile;
-                        } else {
-                            // Adicionar sufixo ao nome
-                            profile.name = `${profile.name} (importado)`;
-                            profiles.unshift(profile);
-                        }
-                    } else {
+                    if (importType === 'full') {
+                        // Importar personagem completo
+                        const profile = parseProfileTXT(content);
+                        profile.userId = currentUser.id;
+                        profile.id = 'imported_' + Date.now();
+                        
                         profiles.unshift(profile);
+                        showNotification(`Personagem "${profile.name}" importado!`, 'success');
+                    } else {
+                        // Importar apenas uma seção
+                        const profileId = localStorage.getItem('current_profile_id');
+                        if (!profileId) {
+                            showNotification('Selecione um personagem primeiro.', 'error');
+                            return;
+                        }
+                        
+                        const profile = profiles.find(p => p.id === profileId);
+                        if (profile) {
+                            profile.sections[section] = {
+                                data: content,
+                                updated: new Date().toISOString(),
+                                complete: true
+                            };
+                            profile.lastUpdated = new Date().toISOString();
+                            showNotification(`Seção "${section}" importada!`, 'success');
+                        }
                     }
                     
-                    saveProfiles();
+                    saveUserData();
                     loadProfiles();
-                    
-                    showNotification(`Perfil "${profile.name}" importado com sucesso!`, 'success');
                     closeImportModal();
                 } catch (error) {
                     console.error('Erro ao importar:', error);
-                    showNotification('Erro ao processar arquivo. Verifique o formato.', 'error');
+                    showNotification('Erro ao processar arquivo.', 'error');
                 }
             };
             
@@ -877,177 +1264,37 @@
             const lines = content.split('\n');
             const profile = JSON.parse(JSON.stringify(PROFILE_STRUCTURE));
             
-            let currentSection = null;
-            let sectionData = [];
-            
-            // Adicionar marcador de importação
-            profile.id = 'imported_' + Date.now();
+            profile.id = 'profile_' + Date.now();
+            profile.userId = currentUser.id;
             profile.createdAt = new Date().toISOString();
             profile.lastUpdated = new Date().toISOString();
+            
+            let currentSection = null;
             
             for (const line of lines) {
                 const trimmed = line.trim();
                 
-                // Detectar seção
-                if (trimmed.includes('===')) {
-                    // Finalizar seção anterior
-                    if (currentSection && sectionData.length > 0) {
-                        profile.sections[currentSection].data = sectionData.join('\n');
-                        sectionData = [];
-                    }
-                    
-                    // Nova seção
-                    const sectionMatch = trimmed.toLowerCase();
-                    if (sectionMatch.includes('ficha')) currentSection = 'ficha';
-                    else if (sectionMatch.includes('status') || sectionMatch.includes('atributos')) currentSection = 'status';
-                    else if (sectionMatch.includes('mascote')) currentSection = 'mascote';
-                    else if (sectionMatch.includes('inventário') || sectionMatch.includes('itens')) currentSection = 'itens';
-                    else if (sectionMatch.includes('proficiência')) currentSection = 'proficiencias';
-                    else if (sectionMatch.includes('habilidade')) currentSection = 'habilidades';
-                    else if (sectionMatch.includes('magia')) currentSection = 'magias';
-                    else currentSection = null;
-                    
-                } else if (trimmed) {
-                    // Coletar informações básicas
-                    if (trimmed.startsWith('Nome:')) {
-                        profile.name = trimmed.substring(5).trim();
-                    } else if (trimmed.startsWith('Classe:')) {
-                        profile.class = trimmed.substring(7).trim();
-                    } else if (trimmed.startsWith('Raça:')) {
-                        profile.race = trimmed.substring(5).trim();
-                    } else if (trimmed.startsWith('Nível:')) {
-                        const nivel = parseInt(trimmed.substring(6).trim());
-                        if (!isNaN(nivel)) profile.metadata.nivel = nivel;
-                    }
-                    
-                    // Adicionar à seção atual
-                    if (currentSection) {
-                        sectionData.push(trimmed);
-                    }
+                if (trimmed.includes('Personagem:')) {
+                    profile.name = trimmed.split('Personagem:')[1].trim();
+                } else if (trimmed.includes('Classe:')) {
+                    profile.class = trimmed.split('Classe:')[1].trim();
+                } else if (trimmed.includes('Raça:')) {
+                    profile.race = trimmed.split('Raça:')[1].trim();
+                } else if (trimmed.includes('Nível:')) {
+                    const nivel = parseInt(trimmed.split('Nível:')[1].trim());
+                    if (!isNaN(nivel)) profile.level = nivel;
                 }
-            }
-            
-            // Finalizar última seção
-            if (currentSection && sectionData.length > 0) {
-                profile.sections[currentSection].data = sectionData.join('\n');
+                
+                // Detectar início de seção
+                if (trimmed.includes('FICHA')) currentSection = 'ficha';
+                else if (trimmed.includes('STATUS')) currentSection = 'status';
+                else if (trimmed.includes('HABILIDADES')) currentSection = 'habilidades';
+                else if (trimmed.includes('PROFICIÊNCIAS')) currentSection = 'proficiencias';
+                else if (trimmed.includes('ITENS')) currentSection = 'itens';
+                else if (trimmed.includes('MASCOTE')) currentSection = 'mascote';
             }
             
             return profile;
-        }
-
-        function exportProfile() {
-            if (!currentProfile) return;
-            
-            const content = generateProfileTXT(currentProfile);
-            downloadTXT(content, currentProfile.name);
-            
-            showNotification(`Perfil "${currentProfile.name}" exportado!`, 'success');
-        }
-
-        function exportAllProfiles() {
-            if (profiles.length === 0) {
-                showNotification('Nenhum perfil para exportar.', 'info');
-                return;
-            }
-            
-            const content = generateAllProfilesTXT();
-            downloadTXT(content, 'todos_perfis');
-            
-            showNotification(`${profiles.length} perfis exportados!`, 'success');
-        }
-
-        function generateProfileTXT(profile) {
-            let txt = '='.repeat(60) + '\n';
-            txt += '                PERFIL DE PERSONAGEM - GRIMÓRIO DIGITAL\n';
-            txt += '='.repeat(60) + '\n\n';
-            
-            // Informações básicas
-            txt += `Nome: ${profile.name}\n`;
-            txt += `Classe: ${profile.class}\n`;
-            txt += `Raça: ${profile.race}\n`;
-            if (profile.description) txt += `Descrição: ${profile.description}\n`;
-            txt += `Nível: ${profile.metadata.nivel}\n`;
-            txt += `Criado em: ${formatDate(profile.createdAt)}\n`;
-            txt += `Última atualização: ${formatDate(profile.lastUpdated)}\n\n`;
-            
-            // Adicionar cada seção com dados
-            Object.entries(profile.sections).forEach(([key, section]) => {
-                if (section.data) {
-                    const sectionNames = {
-                        ficha: 'FICHA BÁSICA',
-                        status: 'STATUS E ATRIBUTOS',
-                        mascote: 'MASCOTE',
-                        itens: 'INVENTÁRIO',
-                        proficiencias: 'PROFICIÊNCIAS',
-                        habilidades: 'HABILIDADES',
-                        magias: 'MAGIAS'
-                    };
-                    
-                    txt += '\n' + '='.repeat(60) + '\n';
-                    txt += `                 ${sectionNames[key] || key.toUpperCase()}\n`;
-                    txt += '='.repeat(60) + '\n\n';
-                    
-                    if (typeof section.data === 'string') {
-                        txt += section.data + '\n';
-                    } else {
-                        txt += JSON.stringify(section.data, null, 2) + '\n';
-                    }
-                }
-            });
-            
-            txt += '\n' + '='.repeat(60) + '\n';
-            txt += '                    FIM DO PERFIL\n';
-            txt += '='.repeat(60);
-            
-            return txt;
-        }
-
-        function generateAllProfilesTXT() {
-            let txt = '='.repeat(60) + '\n';
-            txt += '                TODOS OS PERFIS - GRIMÓRIO DIGITAL\n';
-            txt += '='.repeat(60) + '\n\n';
-            
-            txt += `Total de perfis: ${profiles.length}\n`;
-            txt += `Data da exportação: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            
-            profiles.forEach((profile, index) => {
-                txt += '\n' + '='.repeat(60) + '\n';
-                txt += `                   PERFIL ${index + 1} de ${profiles.length}\n`;
-                txt += '='.repeat(60) + '\n\n';
-                
-                txt += `Nome: ${profile.name}\n`;
-                txt += `Classe: ${profile.class}\n`;
-                txt += `Raça: ${profile.race}\n`;
-                txt += `Nível: ${profile.metadata.nivel}\n`;
-                txt += `Completude: ${calculateProfileCompletion(profile)}%\n`;
-                txt += `Seções preenchidas: ${countCompletedSections(profile)}/7\n`;
-                txt += `Última atualização: ${formatDate(profile.lastUpdated)}\n`;
-                
-                // Listar seções com dados
-                const sectionsWithData = Object.entries(profile.sections)
-                    .filter(([_, s]) => s.data)
-                    .map(([key, _]) => key);
-                
-                if (sectionsWithData.length > 0) {
-                    txt += `Seções ativas: ${sectionsWithData.join(', ')}\n`;
-                }
-                
-                txt += `ID do perfil: ${profile.id}\n`;
-            });
-            
-            txt += '\n' + '='.repeat(60) + '\n';
-            txt += '                  FIM DA EXPORTAÇÃO\n';
-            txt += '='.repeat(60);
-            
-            return txt;
-        }
-
-        function downloadTXT(content, filename) {
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Grimorio_Perfil_${filename}_${new Date().toISOString().split('T')[0]}.txt`;
-            link.click();
         }
 
         // ====================================================================
@@ -1069,7 +1316,6 @@
             if (diffDays === 0) return 'Hoje';
             if (diffDays === 1) return 'Ontem';
             if (diffDays < 7) return `${diffDays} dias atrás`;
-            if (diffDays < 30) return `${Math.floor(diffDays / 7)} semanas atrás`;
             
             return date.toLocaleDateString('pt-BR');
         }
@@ -1077,7 +1323,7 @@
         function showNotification(message, type = 'info') {
             // Criar elemento de notificação
             const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg border shadow-lg transition-all duration-500 animate-in slide-in-from-right-10 ${
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg border shadow-lg transition-all duration-500 ${
                 type === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
                 type === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
                 'bg-blue-900/30 border-blue-700 text-blue-300'
@@ -1104,23 +1350,42 @@
             }, 5000);
         }
 
-        function refreshProfiles() {
-            loadProfiles();
-            showNotification('Perfis atualizados!', 'success');
-        }
-
         function deleteProfile() {
             if (!currentProfile) return;
             
-            if (confirm(`Tem certeza que deseja excluir o perfil "${currentProfile.name}"? Esta ação não pode ser desfeita.`)) {
+            if (confirm(`Tem certeza que deseja excluir o personagem "${currentProfile.name}"?`)) {
                 const index = profiles.findIndex(p => p.id === currentProfile.id);
                 if (index !== -1) {
                     profiles.splice(index, 1);
-                    saveProfiles();
+                    saveUserData();
                     loadProfiles();
                     closeProfileModal();
-                    showNotification(`Perfil "${currentProfile.name}" excluído.`, 'success');
+                    showNotification(`Personagem "${currentProfile.name}" excluído.`, 'success');
                 }
+            }
+        }
+
+        function saveUser() {
+            const userName = document.getElementById('user-name-input').value.trim();
+            if (!userName) {
+                showNotification('Digite um nome de usuário.', 'error');
+                return;
+            }
+            
+            currentUser.name = userName;
+            currentUser.lastAccess = new Date().toISOString();
+            saveUserData();
+            closeUserModal();
+            showNotification(`Usuário alterado para "${userName}"`, 'success');
+        }
+
+        function deleteUserData() {
+            if (confirm('Tem certeza que deseja limpar TODOS os dados deste usuário? Esta ação não pode ser desfeita.')) {
+                localStorage.removeItem(`grimorio_profiles_${currentUser.id}`);
+                profiles = profiles.filter(p => p.userId !== currentUser.id);
+                initUser();
+                closeUserModal();
+                showNotification('Dados do usuário limpos.', 'success');
             }
         }
 
@@ -1128,62 +1393,50 @@
         // INICIALIZAÇÃO
         // ====================================================================
         window.addEventListener('load', () => {
-            loadProfiles();
+            initUser();
             lucide.createIcons();
-            
-            // Verificar se há perfil atual para sincronizar
-            const currentProfileId = localStorage.getItem('current_profile_id');
-            if (currentProfileId && window.location.pathname.includes('perfis.html')) {
-                const profile = profiles.find(p => p.id === currentProfileId);
-                if (profile) {
-                    openProfileModal(profile.id);
-                }
-            }
             
             // Configurar tecla Escape para fechar modais
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape') {
                     closeProfileModal();
                     closeImportModal();
+                    closeUserModal();
                 }
+            });
+            
+            // Configurar import type
+            document.getElementById('import-type').addEventListener('change', function() {
+                const sectionContainer = document.getElementById('section-select-container');
+                sectionContainer.classList.toggle('hidden', this.value !== 'section');
             });
         });
 
         // ====================================================================
-        // FUNÇÕES PARA AS OUTRAS PÁGINAS USAREM
+        // FUNÇÕES PARA OUTRAS PÁGINAS USAREM
         // ====================================================================
         
-        // Função para salvar dados da página atual no perfil
+        // Salvar dados da página atual
         window.saveToProfile = function(sectionKey, data) {
-            return syncProfileData(sectionKey, data);
+            return saveToProfile(sectionKey, data);
         };
 
-        // Função para carregar dados do perfil na página atual
+        // Carregar dados da página atual
         window.loadFromProfile = function(sectionKey) {
-            const profileId = localStorage.getItem('current_profile_id');
-            if (!profileId) return null;
-            
-            const profiles = JSON.parse(localStorage.getItem('grimorio_profiles') || '[]');
-            const profile = profiles.find(p => p.id === profileId);
-            
-            if (profile && profile.sections[sectionKey] && profile.sections[sectionKey].data) {
-                return profile.sections[sectionKey].data;
-            }
-            
-            return null;
+            return loadFromProfile(sectionKey);
         };
 
-        // Função para verificar se há perfil ativo
+        // Verificar se há personagem ativo
         window.hasActiveProfile = function() {
             return !!localStorage.getItem('current_profile_id');
         };
 
-        // Função para obter informações do perfil ativo
+        // Obter informações do personagem ativo
         window.getActiveProfileInfo = function() {
             const profileId = localStorage.getItem('current_profile_id');
             if (!profileId) return null;
             
-            const profiles = JSON.parse(localStorage.getItem('grimorio_profiles') || '[]');
+            const profiles = JSON.parse(localStorage.getItem(`grimorio_profiles_${currentUser.id}`) || '[]');
             const profile = profiles.find(p => p.id === profileId);
             
             if (profile) {
@@ -1191,11 +1444,22 @@
                     name: profile.name,
                     class: profile.class,
                     race: profile.race,
-                    level: profile.metadata.nivel
+                    level: profile.level,
+                    progress: calculateProfileCompletion(profile)
                 };
             }
             
             return null;
+        };
+
+        // Verificar se há usuário ativo
+        window.hasActiveUser = function() {
+            return !!currentUser;
+        };
+
+        // Obter informações do usuário atual
+        window.getCurrentUser = function() {
+            return currentUser;
         };
     </script>
 </body>
