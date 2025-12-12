@@ -29,16 +29,15 @@
                             text: '#e8e4dc',
                             blue: '#4a9eff',
                             orange: '#ff6b35',
+                            green: '#10b981',
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            yellow: '#f59e0b'
                         }
                     }
                 }
             }
         }
-
-        // Sistema de Perfis
-        window.addEventListener('load', function() {
-            carregarPerfilAtivo();
-        });
     </script>
 
     <style>
@@ -53,6 +52,7 @@
         /* Efeitos de Glow */
         .text-shadow-glow { text-shadow: 0 0 10px rgba(74, 158, 255, 0.5); }
         .hover-glow-blue:hover { box-shadow: 0 0 20px rgba(74, 158, 255, 0.15); border-color: rgba(74, 158, 255, 0.5); }
+        .hover-glow-orange:hover { box-shadow: 0 0 20px rgba(255, 107, 53, 0.15); border-color: rgba(255, 107, 53, 0.5); }
 
         /* Animações */
         .anim-entry {
@@ -87,6 +87,57 @@
 
         .chevron { transition: transform 0.3s ease; }
         .chevron.rotate { transform: rotate(180deg); }
+
+        /* Botão de Salvamento */
+        .save-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .save-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .save-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(20, 20);
+                opacity: 0;
+            }
+        }
+        
+        /* Feedback de Salvamento */
+        .save-feedback {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans flex flex-col">
@@ -96,50 +147,17 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-center flex-wrap" id="nav-container">
                 
-                <!-- PERFIL (Ficha + Status) -->
-                <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-personagem', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                        <i data-lucide="user" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Perfil</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
-                    </button>
-                    <div id="menu-personagem" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
-                        <a href="ficha.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="scroll-text" class="w-3 h-3"></i> Ficha (Lore & Corpo)
-                        </a>
-                        <!-- Card para Status -->
-                        <a href="status.html" class="group bg-theme-panel border border-theme-border p-6 rounded-lg hover:border-theme-orange transition-all hover:scale-[1.02]">
-                            <div class="flex items-center gap-4 mb-4">
-                                <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
-                                    <i data-lucide="zap" class="w-6 h-6 text-theme-orange"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-cinzel font-bold text-lg">Status</h3>
-                                    <p class="text-sm text-gray-400">Atributos e Progressão</p>
-                                </div>
-                            </div>
-                        </a>
-                    </div>     
-                </div>
-                <!-- SISTEMA (Classe + Perfil + Backup) -->
-                <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-sistema', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#f59e0b] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#f59e0b]">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Sistema</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
-                    </button>
-                    <div id="menu-sistema" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
-                        <a href="classe.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] hover:pl-7 border-l-2 border-transparent hover:border-[#8b5cf6]">
-                            <i data-lucide="swords" class="w-3 h-3"></i> Classes
-                        </a>
-                        <a href="perfil.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:pl-7 border-l-2 border-transparent hover:border-[#ec4899]">
-                            <i data-lucide="users" class="w-3 h-3"></i> Perfil
-                        </a>
-                        <a href="backup.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#f59e0b]/10 hover:text-[#f59e0b] hover:pl-7 border-l-2 border-transparent hover:border-[#f59e0b]">
-                            <i data-lucide="hard-drive" class="w-3 h-3"></i> Backup
-                        </a>
-                    </div>
-                </div>
+                <!-- FICHA -->
+                <a href="ficha.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
+                    <i data-lucide="scroll-text" class="w-4 h-4"></i>
+                    <span class="font-cinzel">Ficha</span>
+                </a>
+
+                <!-- Perfil -->
+                <a href="perfil.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#ff6b35] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#ff6b35]">
+                    <i data-lucide="zap" class="w-4 h-4"></i>
+                    <span class="font-cinzel">Perfil</span>
+                </a>
 
                 <!-- CONJUNTO (Habilidades + Itens + Proficiências) -->
                 <div class="relative group dropdown-container">
@@ -161,17 +179,38 @@
                     </div>
                 </div>
 
-                <!-- MASCOTE (Apenas Mascote) -->
+                <!-- MASCOTE -->
                 <a href="mascote.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#10b981] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#10b981]">
                     <i data-lucide="dog" class="w-4 h-4"></i>
                     <span class="font-cinzel">Mascote</span>
                 </a>
+
+                <!-- SISTEMA (Classe + Perfis + Backup) -->
+                <div class="relative group dropdown-container">
+                    <button onclick="toggleMenu('menu-sistema', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#8b5cf6] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#8b5cf6]">
+                        <i data-lucide="settings" class="w-4 h-4"></i>
+                        <span class="font-cinzel">Sistema</span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
+                    </button>
+                    <div id="menu-sistema" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
+                        <a href="classe.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] hover:pl-7 border-l-2 border-transparent hover:border-[#8b5cf6]">
+                            <i data-lucide="swords" class="w-3 h-3"></i> Classes
+                        </a>
+                        <a href="perfil.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:pl-7 border-l-2 border-transparent hover:border-[#ec4899]">
+                            <i data-lucide="users" class="w-3 h-3"></i> Perfis
+                        </a>
+                        <a href="backup.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#f59e0b]/10 hover:text-[#f59e0b] hover:pl-7 border-l-2 border-transparent hover:border-[#f59e0b]">
+                            <i data-lucide="hard-drive" class="w-3 h-3"></i> Backup
+                        </a>
+                    </div>
+                </div>
 
             </div>
         </div>
         <div class="h-[2px] bg-gradient-to-r from-transparent via-[#4a9eff] to-transparent"></div>
     </nav>
 
+    <!-- Container principal -->
     <main class="flex-grow">
         <!-- Banner Hero -->
         <div class="relative w-full h-[30vh] min-h-[250px] overflow-hidden anim-entry">
@@ -205,44 +244,22 @@
                     </div>
                     
                     <div class="flex-grow text-center md:text-left">
-                        <div id="perfil-sem-dados">
-                            <p class="text-[#606060] mb-2">Nenhum perfil ativo encontrado.</p>
-                            <button onclick="criarNovoPerfil()" class="inline-flex items-center gap-2 text-theme-blue hover:text-theme-orange transition-colors text-sm">
-                                <i data-lucide="plus" class="w-3 h-3"></i>
-                                Criar seu primeiro perfil
-                            </button>
-                        </div>
-                        
-                        <div id="perfil-com-dados" class="hidden">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div>
-                                    <h4 id="perfil-nome" class="font-cinzel font-bold text-white text-xl"></h4>
-                                    <div class="flex flex-wrap gap-2 mt-2">
-                                        <span id="perfil-classe" class="px-3 py-1 bg-[#4a9eff]/10 text-theme-blue text-xs rounded-full border border-theme-border"></span>
-                                        <span id="perfil-raca" class="px-3 py-1 bg-[#ff6b35]/10 text-theme-orange text-xs rounded-full border border-theme-border"></span>
-                                        <span id="perfil-nivel" class="px-3 py-1 bg-[#10b981]/10 text-[#10b981] text-xs rounded-full border border-theme-border"></span>
-                                    </div>
-                                    <p id="perfil-titulo" class="text-[#a0a0a0] text-sm mt-2 italic"></p>
-                                </div>
-                                
-                                <button onclick="entrarNoPerfil()" class="flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-[#3a7bd5] text-white rounded transition-colors text-sm">
-                                    <i data-lucide="log-in" class="w-3 h-3"></i>
-                                    Entrar no Perfil
-                                </button>
-                            </div>
+                        <!-- No index.html, adicione esta seção -->
+                        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-6">
+                            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-4">
+                                <i data-lucide="user-check" class="w-5 h-5 text-theme-green"></i>
+                                Perfil Ativo
+                            </h3>
                             
-                            <div class="mt-4 pt-4 border-t border-theme-border flex gap-3 text-xs text-[#606060]">
-                                <div class="flex items-center gap-1">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
-                                    <span id="perfil-criacao"></span>
-                                </div>
-                                <span>•</span>
-                                <div class="flex items-center gap-1">
-                                    <i data-lucide="refresh-cw" class="w-3 h-3"></i>
-                                    <span id="perfil-atualizacao"></span>
+                            <div id="active-profile-display" class="bg-[#0a0a0c] border border-theme-border p-4 rounded">
+                                <!-- Conteúdo será carregado dinamicamente -->
+                                <div class="text-center text-gray-500 py-8" id="no-active-profile">
+                                    <i data-lucide="user-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                                    <p>Nenhum perfil ativo</p>
+                                    <p class="text-sm mt-2">Crie uma ficha para começar</p>
                                 </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
                 </div>
             </div>
@@ -252,114 +269,78 @@
         <div class="max-w-6xl mx-auto px-4 pb-8 anim-entry anim-delay-2">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 
-                <!-- ÍCONE 1: PERFIL (Ficha + Status) -->
-                <div class="icon-card group p-5 bg-theme-panel border border-theme-border hover-glow-blue transition-all duration-300 rounded-lg h-full">
+                <!-- ÍCONE 1: FICHA -->
+                <a href="ficha.html" class="icon-card group p-5 bg-theme-panel border border-theme-border hover-glow-blue transition-all duration-300 rounded-lg h-full block">
                     <div class="flex flex-col items-center text-center h-full">
                         <div class="p-3 rounded-full bg-[#4a9eff]/10 text-theme-blue mb-4">
-                            <i data-lucide="user-circle" class="w-8 h-8"></i>
+                            <i data-lucide="scroll-text" class="w-8 h-8"></i>
                         </div>
-                        <h4 class="font-cinzel font-semibold text-white mb-2">Perfil</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Ficha + Status</p>
+                        <h4 class="font-cinzel font-semibold text-white mb-2">Ficha</h4>
+                        <p class="text-[#a0a0a0] text-sm mb-4">Lore & Corpo</p>
                         <div class="mt-auto w-full">
                             <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-left">
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="scroll-text" class="w-3 h-3 text-theme-blue"></i>
-                                    <span>Ficha Completa</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0]">
-                                    <i data-lucide="zap" class="w-3 h-3 text-theme-orange"></i>
-                                    <span>Status e Atributos</span>
-                                </div>
+                            <div class="text-center">
+                                <p class="text-xs text-[#a0a0a0]">Aparência, História e Personalidade</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
 
-                <!-- ÍCONE 2: SISTEMA (Classe + Perfil + Backup) -->
-                <div class="icon-card group p-5 bg-theme-panel border border-theme-border hover:border-[#8b5cf6]/50 transition-all duration-300 rounded-lg h-full">
-                    <div class="flex flex-col items-center text-center h-full">
-                        <div class="p-3 rounded-full bg-[#8b5cf6]/10 text-[#8b5cf6] mb-4">
-                            <i data-lucide="settings" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="font-cinzel font-semibold text-white mb-2">Sistema</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Classe + Perfil + Backup</p>
-                        <div class="mt-auto w-full">
-                            <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-left">
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="swords" class="w-3 h-3 text-[#8b5cf6]"></i>
-                                    <span>Sistema de Classes</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="users" class="w-3 h-3 text-[#ec4899]"></i>
-                                    <span>Gerenciar Perfis</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0]">
-                                    <i data-lucide="hard-drive" class="w-3 h-3 text-[#f59e0b]"></i>
-                                    <span>Backup e Salvamento</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ÍCONE 3: CONJUNTO (Habilidades + Itens + Proficiências) -->
-                <div class="icon-card group p-5 bg-theme-panel border border-theme-border hover:border-[#ff6b35]/50 transition-all duration-300 rounded-lg h-full">
+                <!-- ÍCONE 2: STATUS -->
+                <a href="perfil.html" class="icon-card group p-5 bg-theme-panel border border-theme-border hover-glow-orange transition-all duration-300 rounded-lg h-full block">
                     <div class="flex flex-col items-center text-center h-full">
                         <div class="p-3 rounded-full bg-[#ff6b35]/10 text-[#ff6b35] mb-4">
+                            <i data-lucide="zap" class="w-8 h-8"></i>
+                        </div>
+                        <h4 class="font-cinzel font-semibold text-white mb-2">Perfil</h4>
+                        <p class="text-[#a0a0a0] text-sm mb-4">Atributos & Progressão</p>
+                        <div class="mt-auto w-full">
+                            <div class="h-px bg-theme-border mb-3"></div>
+                            <div class="text-center">
+                                <p class="text-xs text-[#a0a0a0]">Atributos, Pontos de Vida e Mana</p>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+
+                <!-- ÍCONE 3: CONJUNTO -->
+                <a href="habilidades.html" class="icon-card group p-5 bg-theme-panel border border-theme-border hover:border-[#4a9eff]/50 transition-all duration-300 rounded-lg h-full block">
+                    <div class="flex flex-col items-center text-center h-full">
+                        <div class="p-3 rounded-full bg-[#4a9eff]/10 text-[#4a9eff] mb-4">
                             <i data-lucide="layers" class="w-8 h-8"></i>
                         </div>
                         <h4 class="font-cinzel font-semibold text-white mb-2">Conjunto</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Habilidades + Itens + Proficiências</p>
+                        <p class="text-[#a0a0a0] text-sm mb-4">Habilidades + Itens</p>
                         <div class="mt-auto w-full">
                             <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-left">
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="sparkles" class="w-3 h-3 text-theme-blue"></i>
-                                    <span>Habilidades de Combate</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="backpack" class="w-3 h-3 text-theme-blue"></i>
-                                    <span>Inventário e Itens</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0]">
-                                    <i data-lucide="award" class="w-3 h-3 text-theme-blue"></i>
-                                    <span>Proficiências e Talentos</span>
-                                </div>
+                            <div class="text-center">
+                                <p class="text-xs text-[#a0a0a0]">Poderes, Inventário e Talentos</p>
                             </div>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- ÍCONE 4: MASCOTE -->
-                <div class="icon-card group p-5 bg-theme-panel border border-theme-border hover:border-[#10b981]/50 transition-all duration-300 rounded-lg h-full">
-                    <div class="flex flex-col items-center text-center h-full">
-                        <div class="p-3 rounded-full bg-[#10b981]/10 text-[#10b981] mb-4">
-                            <i data-lucide="dog" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="font-cinzel font-semibold text-white mb-2">Mascote</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Companheiro de Aventura</p>
-                        <div class="mt-auto w-full">
-                            <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-left">
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="heart" class="w-3 h-3 text-[#10b981]"></i>
-                                    <span>Status do Mascote</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0] mb-1">
-                                    <i data-lucide="star" class="w-3 h-3 text-[#10b981]"></i>
-                                    <span>Habilidades Especiais</span>
-                                </div>
-                                <div class="flex items-center gap-2 text-xs text-[#a0a0a0]">
-                                    <i data-lucide="shield" class="w-3 h-3 text-[#10b981]"></i>
-                                    <span>Equipamentos Exclusivos</span>
-                                </div>
-                            </div>
+                <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-6">
+                    <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-4">
+                        <i data-lucide="dog" class="w-5 h-5 text-theme-pink"></i>
+                        Mascote
+                    </h3>
+                    
+                    <div id="mascote-display" class="bg-[#0a0a0c] border border-theme-border p-4 rounded">
+                        <!-- Conteúdo será carregado dinamicamente -->
+                        <div class="text-center text-gray-500 py-8" id="no-mascote">
+                            <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                            <p>Nenhum mascote criado</p>
+                            <p class="text-sm mt-2">Crie um companheiro para seu personagem</p>
+                            <button onclick="window.location.href='mascote.html'" 
+                                    class="mt-3 px-4 py-2 bg-gradient-to-r from-theme-pink to-purple-600 rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
+                                Criar Mascote
+                            </button>
                         </div>
                     </div>
-                </div>
-
+                </section>
             </div>
         </div>
 
@@ -367,70 +348,74 @@
         <div class="max-w-6xl mx-auto px-4 pb-12 anim-entry anim-delay-3">
             <div class="grid md:grid-cols-2 gap-6">
                 
-                <!-- PERFIL -->
+                <!-- FICHA -->
                 <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500 rounded">
                     <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
                         <div class="p-2 rounded bg-[#4a9eff]/15 text-theme-blue">
-                            <i data-lucide="user-circle" class="w-5 h-5"></i>
+                            <i data-lucide="scroll-text" class="w-5 h-5"></i>
                         </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-theme-blue">Perfil (Ficha + Status)</h3>
+                        <h3 class="font-cinzel text-lg font-semibold text-theme-blue">Ficha (Lore & Corpo)</h3>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <span class="text-theme-text font-medium block">Ficha:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">A identidade completa do personagem: aparência detalhada (slots de corpo), história, personalidade, backstory e todas as informações narrativas que definem quem ele é.</p>
+                            <span class="text-theme-text font-medium block">Aparência Detalhada:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Slots de corpo para definir cada aspecto físico do personagem - rosto, cabelo, olhos, marcas, cicatrizes, tatuagens e características únicas.</p>
                         </div>
                         <div>
-                            <span class="text-theme-text font-medium block">Status:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">A parte mecânica: atributos numéricos (força, agilidade, inteligência), pontos de vida/mana, perícias e todos os cálculos necessários para o jogo.</p>
+                            <span class="text-theme-text font-medium block">História e Personalidade:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Backstory completa, motivações, traços de personalidade, relações importantes e eventos marcantes que definem quem o personagem é.</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium block">Identidade Visual:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Upload de imagem do personagem, cores características e elementos visuais que representam sua essência.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- SISTEMA -->
-                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#8b5cf6]/30 transition-all duration-500 rounded">
+                <!-- STATUS -->
+                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#ff6b35]/30 transition-all duration-500 rounded">
                     <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
-                        <div class="p-2 rounded bg-[#8b5cf6]/15 text-[#8b5cf6]">
-                            <i data-lucide="settings" class="w-5 h-5"></i>
+                        <div class="p-2 rounded bg-[#ff6b35]/15 text-[#ff6b35]">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
                         </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-[#8b5cf6]">Sistema (Classe + Perfil + Backup)</h3>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#ff6b35]">Perfil (Atributos & Progressão do personagem)</h3>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <span class="text-theme-text font-medium block">Classe:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Sistema completo de classes personalizáveis com atributos customizados, habilidades especiais, progressão e aparência visual adaptável ao seu estilo de jogo.</p>
+                            <span class="text-theme-text font-medium block">Atributos Numéricos:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Força, Agilidade, Inteligência, Constituição, Carisma e outros atributos essenciais para o sistema de jogo.</p>
                         </div>
                         <div>
-                            <span class="text-theme-text font-medium block">Perfil:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Gerenciamento de múltiplos personagens, troca entre perfis ativos e organização centralizada de todas as fichas criadas.</p>
+                            <span class="text-theme-text font-medium block">Pontos de Vida e Mana:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Sistema completo de recursos, com valores máximos, atuais e regeneração baseada em atributos.</p>
                         </div>
                         <div>
-                            <span class="text-theme-text font-medium block">Backup:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Exportação e importação de dados completos, salvamento em nuvem e recuperação de personagens em qualquer dispositivo.</p>
+                            <span class="text-theme-text font-medium block">Progressão de Nível:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Experiência, pontos de atributo disponíveis, melhorias e evolução do personagem ao longo da campanha.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- CONJUNTO -->
-                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#ff6b35]/30 transition-all duration-500 rounded">
+                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#4a9eff]/30 transition-all duration-500 rounded">
                     <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
-                        <div class="p-2 rounded bg-[#ff6b35]/15 text-[#ff6b35]">
+                        <div class="p-2 rounded bg-[#4a9eff]/15 text-[#4a9eff]">
                             <i data-lucide="layers" class="w-5 h-5"></i>
                         </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-[#ff6b35]">Conjunto (Habilidades + Itens + Proficiências)</h3>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#4a9eff]">Conjunto (Habilidades + Itens + Proficiências)</h3>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <span class="text-theme-text font-medium block">Habilidades:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Poderes ativos de combate, magias, técnicas especiais e habilidades únicas que podem ser usadas em batalha ou situações específicas.</p>
+                            <span class="text-theme-text font-medium block">Habilidades de Combate:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Poderes ativos, magias, técnicas especiais com custos, efeitos e cooldowns para uso em batalha.</p>
                         </div>
                         <div>
-                            <span class="text-theme-text font-medium block">Itens:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Inventário completo com armas, armaduras, consumíveis, equipamentos mágicos e todos os objetos coletados durante a aventura.</p>
+                            <span class="text-theme-text font-medium block">Inventário Completo:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Sistema de slots para armas, armaduras, acessórios, consumíveis e itens mágicos com estatísticas detalhadas.</p>
                         </div>
                         <div>
-                            <span class="text-theme-text font-medium block">Proficiências:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Talentos passivos, ofícios (ferreiro, alquimia, culinária), perícias sociais e maestria com tipos específicos de armas ou magias.</p>
+                            <span class="text-theme-text font-medium block">Proficiências e Talentos:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Perícias sociais, ofícios, especializações em armas/magias e bônus passivos que definem o expertise do personagem.</p>
                         </div>
                     </div>
                 </div>
@@ -441,20 +426,20 @@
                         <div class="p-2 rounded bg-[#10b981]/15 text-[#10b981]">
                             <i data-lucide="dog" class="w-5 h-5"></i>
                         </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-[#10b981]">Mascote</h3>
+                        <h3 class="font-cinzel text-lg font-semibold text-[#10b981]">Mascote (Companheiro)</h3>
                     </div>
                     <div class="space-y-4">
                         <div>
-                            <span class="text-theme-text font-medium block">Companheiro:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Cada personagem pode ter um mascote com sistema próprio de evolução, níveis, habilidades especiais e equipamentos exclusivos.</p>
-                        </div>
-                        <div>
                             <span class="text-theme-text font-medium block">Sistema Próprio:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">O mascote possui sua própria mini-ficha com status, árvore de habilidades, equipamentos especiais e interações únicas com o personagem principal.</p>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">O mascote possui sua própria ficha com status, nível, experiência e habilidades únicas.</p>
                         </div>
                         <div>
-                            <span class="text-theme-text font-medium block">Sinergia:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Certas habilidades do personagem podem ser aprimoradas ou novas podem ser desbloqueadas com base no mascote escolhido e em seu nível de vínculo.</p>
+                            <span class="text-theme-text font-medium block">Equipamentos Exclusivos:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Itens especiais que apenas o mascote pode utilizar, oferecendo bônus e habilidades adicionais.</p>
+                        </div>
+                        <div>
+                            <span class="text-theme-text font-medium block">Vínculo com o Personagem:</span>
+                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Habilidades conjuntas que são desbloqueadas conforme o nível de vínculo entre personagem e mascote aumenta.</p>
                         </div>
                     </div>
                 </div>
@@ -471,6 +456,22 @@
         </div>
         <p class="text-center text-[#606060] text-xs mt-4">Grimório Digital - Sistema de RPG v1.0</p>
     </footer>
+
+    <!-- Botão de Salvamento Flutuante (aparecerá em todas as páginas) -->
+    <div id="floating-save-btn" class="fixed bottom-6 right-6 z-50 hidden">
+        <button onclick="salvarPerfilAtivo()" class="save-btn flex items-center gap-2 px-4 py-3 bg-theme-green hover:bg-[#0ea271] text-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span class="font-medium">Salvar Perfil</span>
+        </button>
+    </div>
+
+    <!-- Feedback de Salvamento -->
+    <div id="save-feedback" class="fixed top-6 right-6 z-50 hidden">
+        <div class="save-feedback flex items-center gap-2 px-4 py-3 bg-theme-panel border border-theme-green text-theme-green rounded-lg shadow-lg">
+            <i data-lucide="check-circle" class="w-4 h-4"></i>
+            <span>Perfil salvo com sucesso!</span>
+        </div>
+    </div>
 
     <script>
         // 1. Inicializar Ícones Lucide
@@ -513,6 +514,18 @@
             const containerVazio = document.getElementById('perfil-sem-dados');
             const containerComDados = document.getElementById('perfil-com-dados');
             const avatarContainer = document.getElementById('perfil-avatar');
+            const floatingSaveBtn = document.getElementById('floating-save-btn');
+            
+            // Verificar se estamos em uma página de edição (ficha, status, etc)
+            const paginasEdicao = ['ficha.html', 'status.html', 'habilidades.html', 'inventario.html', 
+                                  'proficiencias.html', 'mascote.html', 'classe.html'];
+            const paginaAtual = window.location.pathname.split('/').pop();
+            
+            if (paginasEdicao.includes(paginaAtual)) {
+                if (floatingSaveBtn) {
+                    floatingSaveBtn.classList.remove('hidden');
+                }
+            }
             
             if (!dadosSalvos) {
                 // Mostrar estado vazio
@@ -551,12 +564,12 @@
                     document.getElementById('perfil-nivel').textContent = `Nível ${nivel}`;
                 }
                 
-                // Carregar avatar (imagem salva ao finalizar a ficha)
+                // Carregar avatar
                 if (avatarContainer && dados.avatar) {
                     avatarContainer.style.backgroundImage = `url(${dados.avatar})`;
                     avatarContainer.style.backgroundSize = 'cover';
                     avatarContainer.style.backgroundPosition = 'center';
-                    avatarContainer.innerHTML = ''; // Remove o ícone padrão
+                    avatarContainer.innerHTML = '';
                 }
                 
                 // Formatar datas
@@ -593,68 +606,148 @@
             }
         }
         
-        function criarNovoPerfil() {
-            // Simulação: em um sistema real, isso redirecionaria para a criação de ficha
-            alert('Redirecionando para criação de novo perfil...\n\nAqui você preencherá a ficha completa e poderá salvar uma imagem do personagem ao finalizar.');
+        // 4. Função de Salvamento Universal
+        function salvarPerfilAtivo() {
+            const dadosSalvos = localStorage.getItem('grimorio_perfil_ativo');
             
-            // Criar dados de exemplo para demonstração
-            const novoPerfil = {
-                nome: "Elara Silvershadow",
-                titulo: "Ladina das Sombras",
-                classe: "Ladino",
-                raca: "Elfo Noturno",
-                nivel: 3,
-                avatar: "https://images.unsplash.com/photo-1546182990-dffeafbe841d?w=400&h=400&fit=crop&crop=face",
-                dataCriacao: new Date().toISOString(),
-                ultimaAtualizacao: new Date().toISOString()
-            };
+            if (!dadosSalvos) {
+                mostrarFeedback('Erro: Nenhum perfil encontrado para salvar.', 'error');
+                return;
+            }
             
-            // Salvar no localStorage
-            localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(novoPerfil));
-            
-            // Recarregar para mostrar o novo perfil
-            carregarPerfilAtivo();
-            
-            // Feedback visual
-            mostrarFeedback('Perfil criado com sucesso!', 'success');
+            try {
+                let dados = JSON.parse(dadosSalvos);
+                
+                // Atualizar data de modificação
+                dados.ultimaAtualizacao = new Date().toISOString();
+                
+                // Coletar dados específicos da página atual
+                const paginaAtual = window.location.pathname.split('/').pop();
+                
+                switch(paginaAtual) {
+                    case 'ficha.html':
+                        // Coletar dados da ficha
+                        dados = coletarDadosFicha(dados);
+                        break;
+                    case 'status.html':
+                        // Coletar dados do status
+                        dados = coletarDadosStatus(dados);
+                        break;
+                    case 'habilidades.html':
+                        // Coletar dados de habilidades
+                        dados = coletarDadosHabilidades(dados);
+                        break;
+                    case 'inventario.html':
+                        // Coletar dados do inventário
+                        dados = coletarDadosInventario(dados);
+                        break;
+                    case 'proficiencias.html':
+                        // Coletar dados de proficiências
+                        dados = coletarDadosProficiencias(dados);
+                        break;
+                    case 'mascote.html':
+                        // Coletar dados do mascote
+                        dados = coletarDadosMascote(dados);
+                        break;
+                    case 'classe.html':
+                        // Coletar dados da classe
+                        dados = coletarDadosClasse(dados);
+                        break;
+                }
+                
+                // Salvar no localStorage
+                localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(dados));
+                
+                // Mostrar feedback
+                mostrarFeedback('Perfil salvo com sucesso!', 'success');
+                
+                // Atualizar display
+                setTimeout(carregarPerfilAtivo, 500);
+                
+            } catch (error) {
+                console.error('Erro ao salvar perfil:', error);
+                mostrarFeedback('Erro ao salvar perfil.', 'error');
+            }
         }
         
-        function entrarNoPerfil() {
-            // Verificar se há perfil ativo
+        // Funções auxiliares para coletar dados (serão implementadas nas páginas específicas)
+        function coletarDadosFicha(dadosAtuais) {
+            // Esta função será sobrescrita na página ficha.html
+            return dadosAtuais;
+        }
+        
+        function coletarDadosStatus(dadosAtuais) {
+            // Esta função será sobrescrita na página status.html
+            return dadosAtuais;
+        }
+        
+        function coletarDadosHabilidades(dadosAtuais) {
+            // Esta função será sobrescrita na página habilidades.html
+            return dadosAtuais;
+        }
+        
+        function coletarDadosInventario(dadosAtuais) {
+            // Esta função será sobrescrita na página inventario.html
+            return dadosAtuais;
+        }
+        
+        function coletarDadosProficiencias(dadosAtuais) {
+            // Esta função será sobrescrita na página proficiencias.html
+            return dadosAtuais;
+        }
+        
+        function coletarDadosMascote(dadosAtuais) {
+            // Esta função será sobrescrita na página mascote.html
+            return dadosAtuais;
+        }
+        
+        function coletarDadosClasse(dadosAtuais) {
+            // Esta função será sobrescrita na página classe.html
+            return dadosAtuais;
+        }
+        
+        function criarNovoPerfil() {
+            // Redirecionar para criação de ficha
+            window.location.href = 'ficha.html?novo=true';
+        }
+        
+        function entrarNoPerfil(tipo) {
             const dadosSalvos = localStorage.getItem('grimorio_perfil_ativo');
             if (!dadosSalvos) {
                 mostrarFeedback('Nenhum perfil ativo encontrado. Crie um perfil primeiro.', 'error');
                 return;
             }
             
-            // Em um sistema real, isso redirecionaria para a página do perfil (que contém ficha + status)
-            mostrarFeedback('Abrindo perfil... Redirecionando para Ficha e Status.', 'info');
-            
-            // Simulação: mostrar detalhes do perfil
-            try {
-                const perfil = JSON.parse(dadosSalvos);
-                alert(`Acessando perfil de: ${perfil.nome}\n\nClasse: ${perfil.classe}\nRaça: ${perfil.raca}\nNível: ${perfil.nivel}\n\nNa versão completa, isso abriria a página com Ficha e Status do personagem.`);
-            } catch (error) {
-                console.error('Erro ao acessar perfil:', error);
+            if (tipo === 'ficha') {
+                window.location.href = 'ficha.html';
+            } else if (tipo === 'status') {
+                window.location.href = 'status.html';
             }
         }
         
         function mostrarFeedback(mensagem, tipo) {
-            const cores = {
-                success: 'bg-green-900/20 border-green-700 text-green-300',
-                error: 'bg-red-900/20 border-red-700 text-red-300',
-                info: 'bg-blue-900/20 border-blue-700 text-blue-300'
+            const feedback = document.getElementById('save-feedback');
+            const icones = {
+                success: 'check-circle',
+                error: 'alert-circle',
+                info: 'info'
             };
             
-            const feedback = document.createElement('div');
-            feedback.className = `fixed top-4 right-4 px-4 py-3 rounded-lg ${cores[tipo] || cores.info} border z-[100] animate-fadeIn`;
-            feedback.textContent = mensagem;
-            document.body.appendChild(feedback);
-            
-            setTimeout(() => {
-                feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-                setTimeout(() => feedback.remove(), 500);
-            }, 3000);
+            if (feedback) {
+                feedback.innerHTML = `
+                    <div class="save-feedback flex items-center gap-2 px-4 py-3 bg-theme-panel border ${tipo === 'success' ? 'border-theme-green text-theme-green' : tipo === 'error' ? 'border-red-500 text-red-500' : 'border-theme-blue text-theme-blue'} rounded-lg shadow-lg">
+                        <i data-lucide="${icones[tipo] || 'info'}" class="w-4 h-4"></i>
+                        <span>${mensagem}</span>
+                    </div>
+                `;
+                
+                feedback.classList.remove('hidden');
+                if (window.lucide) lucide.createIcons();
+                
+                setTimeout(() => {
+                    feedback.classList.add('hidden');
+                }, 3000);
+            }
         }
 
         // 5. Inicializar
@@ -662,56 +755,232 @@
             // Carregar perfil ativo
             carregarPerfilAtivo();
             
-            // Simular recebimento de dados após um tempo
-            setTimeout(simularRecebimentoDados, 2000);
-            
             // Atualizar periodicamente (caso o perfil seja editado em outra aba)
             setInterval(carregarPerfilAtivo, 5000);
+            
+            // Adicionar evento de teclado para salvar (Ctrl+S)
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                    e.preventDefault();
+                    salvarPerfilAtivo();
+                }
+            });
         });
         
-        // 6. Adicionar estilo para animação de feedback
-        const estiloAnimacao = document.createElement('style');
-        estiloAnimacao.textContent = `
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(-10px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-            .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-            
-            .icon-card {
-                cursor: default;
-            }
-            
-            .icon-card:hover .icon {
-                transform: scale(1.1);
-                transition: transform 0.3s ease;
-            }
-        `;
-        document.head.appendChild(estiloAnimacao);
-        // Função para compartilhar dados entre páginas
-        function getActiveProfileData() {
-            const activeProfile = getActiveProfile();
-            return activeProfile ? activeProfile.data : null;
-        }
-
-        // Função para verificar se há perfil ativo
-        function hasActiveProfile() {
-            return getActiveProfile() !== null;
-        }
-
-        // Função para obter informações do perfil
-        function getActiveProfileInfo() {
-            const profile = getActiveProfile();
-            if (!profile) return null;
+        // 6. Sistema de Perfis (funções globais)
+        window.getActiveProfileData = function() {
+            const dados = localStorage.getItem('grimorio_perfil_ativo');
+            return dados ? JSON.parse(dados) : null;
+        };
+        
+        window.hasActiveProfile = function() {
+            return localStorage.getItem('grimorio_perfil_ativo') !== null;
+        };
+        
+        window.getActiveProfileInfo = function() {
+            const dados = window.getActiveProfileData();
+            if (!dados) return null;
             
             return {
-                id: profile.id,
-                name: profile.name,
-                classe: profile.classe || 'Não definida',
-                raca: profile.raca || 'Não definida',
-                nivel: profile.nivel || 1
+                id: dados.id || 'default',
+                nome: dados.nome || dados['inp-nome'] || 'Sem nome',
+                classe: dados.classe || dados['inp-classe'] || 'Não definida',
+                raca: dados.raca || dados['inp-raca'] || 'Não definida',
+                nivel: dados.nivel || dados['inp-nivel'] || 1,
+                avatar: dados.avatar || null
             };
+        };
+        // No index.html, função para carregar perfil ativo
+        function loadActiveProfileDisplay() {
+            const display = document.getElementById('active-profile-display');
+            const noProfile = document.getElementById('no-active-profile');
+            
+            try {
+                const perfis = localStorage.getItem('rpg_sistema_perfis');
+                const perfilAtivoId = localStorage.getItem('perfil_ativo');
+                
+                if (!perfis || !perfilAtivoId) {
+                    noProfile.classList.remove('hidden');
+                    return;
+                }
+                
+                const perfisObj = JSON.parse(perfis);
+                const perfilAtivo = perfisObj[perfilAtivoId];
+                
+                if (!perfilAtivo) {
+                    noProfile.classList.remove('hidden');
+                    return;
+                }
+                
+                noProfile.classList.add('hidden');
+                
+                const dados = perfilAtivo.dados || {};
+                const basico = dados.basico || {};
+                
+                display.innerHTML = `
+                    <div class="flex items-start gap-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-theme-orange to-theme-red flex items-center justify-center">
+                            <i data-lucide="user" class="w-8 h-8 text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-cinzel font-bold text-xl text-white">${basico.nome || 'Personagem'}</h4>
+                                    <p class="text-gray-400">
+                                        ${basico.raca || 'Raça'} • ${basico.classe || 'Classe'} • Nível ${dados.progressao?.nivel || 1}
+                                    </p>
+                                </div>
+                                <span class="px-2 py-1 text-xs rounded-full bg-theme-green/20 text-theme-green">
+                                    Ativo
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-theme-orange">${dados.atributos?.forca || 0}</div>
+                                    <div class="text-xs text-gray-500">Força</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-theme-blue">${dados.atributos?.inteligencia || 0}</div>
+                                    <div class="text-xs text-gray-500">Inteligência</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-theme-green">${dados.progressao?.xp_atual || 0}</div>
+                                    <div class="text-xs text-gray-500">XP</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-theme-purple">${dados.destino?.valor || '--'}</div>
+                                    <div class="text-xs text-gray-500">Destino</div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex gap-2 mt-4">
+                                <button onclick="window.location.href='perfil.html'" 
+                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-blue/20 hover:bg-theme-blue/30 text-theme-blue border border-theme-blue/30 rounded text-sm transition-colors">
+                                    <i data-lucide="eye" class="w-3 h-3"></i>
+                                    Ver Perfil
+                                </button>
+                                <button onclick="window.location.href='ficha.html'" 
+                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded text-sm transition-colors">
+                                    <i data-lucide="edit-3" class="w-3 h-3"></i>
+                                    Editar Ficha
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                lucide.createIcons();
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil ativo:', error);
+                noProfile.classList.remove('hidden');
+            }
         }
+
+        // Chame esta função quando a página carregar
+        window.addEventListener('load', loadActiveProfileDisplay);
+    // No index.html, função para carregar mascote
+    function loadMascoteDisplay() {
+        const display = document.getElementById('mascote-display');
+        const noMascote = document.getElementById('no-mascote');
+        
+        try {
+            // Primeiro tentar carregar do perfil ativo
+            const perfis = localStorage.getItem('rpg_sistema_perfis');
+            const perfilAtivoId = localStorage.getItem('perfil_ativo');
+            
+            let mascoteData = null;
+            
+            if (perfis && perfilAtivoId) {
+                const perfisObj = JSON.parse(perfis);
+                const perfilAtivo = perfisObj[perfilAtivoId];
+                
+                if (perfilAtivo?.dados?.mascote) {
+                    mascoteData = perfilAtivo.dados.mascote;
+                }
+            }
+            
+            // Se não encontrar no perfil, tentar localStorage
+            if (!mascoteData) {
+                const mascoteLocal = localStorage.getItem('grimorio_mascote_index');
+                if (mascoteLocal) {
+                    mascoteData = JSON.parse(mascoteLocal);
+                }
+            }
+            
+            if (!mascoteData || !mascoteData.temMascote) {
+                noMascote.classList.remove('hidden');
+                return;
+            }
+            
+            noMascote.classList.add('hidden');
+            
+            display.innerHTML = `
+                <div class="flex items-start gap-4">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center border-2" 
+                        style="border-color: ${mascoteData.cor || '#ec4899'}80; background: ${mascoteData.cor || '#ec4899'}20">
+                        <i data-lucide="${mascoteData.icone || 'dog'}" 
+                        style="color: ${mascoteData.cor || '#ec4899'}" 
+                        class="w-8 h-8"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-cinzel font-bold text-xl text-white">${mascoteData.nome || 'Mascote'}</h4>
+                                <p class="text-gray-400">
+                                    ${mascoteData.tipo || 'Tipo'} • Nível ${mascoteData.nivel || 1}
+                                </p>
+                            </div>
+                            <span class="px-2 py-1 text-xs rounded-full bg-theme-pink/20 text-theme-pink">
+                                Companheiro
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
+                            <div class="text-center p-2 bg-theme-bg rounded border border-theme-border">
+                                <div class="text-lg font-bold text-theme-green">${mascoteData.nivel || 1}</div>
+                                <div class="text-xs text-gray-500">Nível</div>
+                            </div>
+                            <div class="text-center p-2 bg-theme-bg rounded border border-theme-border">
+                                <div class="text-lg font-bold" style="color: ${mascoteData.cor || '#ec4899'}">${mascoteData.tipo || 'Tipo'}</div>
+                                <div class="text-xs text-gray-500">Tipo</div>
+                            </div>
+                            <div class="text-center p-2 bg-theme-bg rounded border border-theme-border">
+                                <div class="text-lg font-bold text-theme-blue">Vinculado</div>
+                                <div class="text-xs text-gray-500">Ao Personagem</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="window.location.href='mascote.html'" 
+                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-pink/20 hover:bg-theme-pink/30 text-theme-pink border border-theme-pink/30 rounded text-sm transition-colors">
+                                <i data-lucide="eye" class="w-3 h-3"></i>
+                                Ver Mascote
+                            </button>
+                            <button onclick="window.location.href='mascote.html'" 
+                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded text-sm transition-colors">
+                                <i data-lucide="edit-3" class="w-3 h-3"></i>
+                                Editar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            lucide.createIcons();
+            
+        } catch (error) {
+            console.error('Erro ao carregar mascote:', error);
+            noMascote.classList.remove('hidden');
+        }
+    }
+
+    // Chame esta função junto com as outras no load
+    window.addEventListener('load', function() {
+        loadActiveProfileDisplay();
+        loadMascoteDisplay(); // Adicionar esta linha
+    });
     </script>
 </body>
 </html>

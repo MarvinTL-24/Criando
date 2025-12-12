@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Sistema de Perfis</title>
+    <title>Grimório Digital - Perfil do Personagem</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -27,17 +27,15 @@
                             panel: '#0f0f12',
                             border: '#2a2a2e',
                             text: '#e8e4dc',
-                            pink: '#ec4899',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
                             red: '#dc2626',
+                            green: '#22c55e',
                             purple: '#8b5cf6',
                             yellow: '#f59e0b',
-                            blue: '#4a9eff',
-                            green: '#22c55e',
-                            cyan: '#06b6d4',
-                            orange: '#ff6b35',
-                            teal: '#14b8a6',
-                            indigo: '#6366f1',
-                            muted: '#606060'
+                            pink: '#ec4899',
+                            gold: '#d4a76a',
+                            copper: '#8b7355'
                         }
                     }
                 }
@@ -48,1419 +46,1052 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .modal-backdrop {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            padding: 1rem;
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+
+        .anim-entry { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+
+        .stat-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        .profile-card {
+        /* Cores para seções */
+        .section-vital { border-left-color: #dc2626; }
+        .section-vital h3 { color: #dc2626; }
+        
+        .section-attributes { border-left-color: #4a9eff; }
+        .section-attributes h3 { color: #4a9eff; }
+        
+        .section-progression { border-left-color: #ff6b35; }
+        .section-progression h3 { color: #ff6b35; }
+        
+        .section-destiny { border-left-color: #8b5cf6; }
+        .section-destiny h3 { color: #8b5cf6; }
+        
+        .section-summary { border-left-color: #22c55e; }
+        .section-summary h3 { color: #22c55e; }
+
+        /* Card de personagem */
+        .character-card {
+            background: linear-gradient(145deg, #1a1510, #2a2318);
+            border: 2px solid #8b7355;
             transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        .profile-card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2); }
-        .profile-card.active { border-color: #8b5cf6; background: rgba(139, 92, 246, 0.05); }
-        
-        .progress-bar {
-            height: 6px; background: #2a2a2e; border-radius: 3px; overflow: hidden;
-        }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #a855f7); }
-        
-        .section-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .section-card:hover {
-            transform: translateY(-2px);
-            border-color: #4a9eff !important;
-            box-shadow: 0 5px 15px rgba(74, 158, 255, 0.1);
         }
         
-        .status-tag {
-            display: inline-flex; align-items: center; gap: 4px;
-            padding: 2px 8px; border-radius: 12px; font-size: 11px;
+        .character-card:hover {
+            border-color: #d4a76a;
+            box-shadow: 0 8px 32px rgba(139, 115, 85, 0.2);
         }
-        .status-complete { background: rgba(34, 197, 94, 0.2); border: 1px solid rgba(34, 197, 94, 0.4); color: #22c55e; }
-        .status-partial { background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); color: #f59e0b; }
-        .status-empty { background: rgba(96, 96, 96, 0.2); border: 1px solid rgba(96, 96, 96, 0.4); color: #606060; }
+
+        /* Tema de sorte/destino */
+        .bg-destiny-1 { background-color: #1a1510; }
+        .bg-destiny-2 { background-color: #2a2318; }
+        .border-destiny { border-color: #8b7355; }
+        .text-destiny-gold { color: #d4a76a; }
+        .text-destiny-light { color: #f4d29a; }
+        .text-destiny-dark { color: #8b7355; }
+
+        /* Indicador de perfil ativo */
+        .profile-active-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            box-shadow: 0 0 10px #22c55e;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* Badge de nível */
+        .level-badge {
+            background: linear-gradient(45deg, #8b7355, #d4a76a);
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
-<body class="min-h-screen font-sans">
+<body class="min-h-screen font-sans pb-20">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="text-sm text-theme-muted">Sistema de Perfis</span>
+    <!-- Navbar -->
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                </a>
+                <div class="h-6 w-[1px] bg-theme-border"></div>
+                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Perfil do Personagem</span>
+            </div>
+            
+            <div class="flex items-center gap-3" id="nav-buttons">
+                <!-- Botões serão inseridos aqui dinamicamente -->
+            </div>
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
+    <div class="max-w-6xl mx-auto px-4 space-y-6" id="profile-content">
 
-        <!-- Cabeçalho -->
-        <header class="flex items-center gap-4 mb-8 anim-entry">
-            <div class="p-3 rounded-lg bg-gradient-to-br from-theme-purple/20 to-pink-600/20 border border-theme-purple/30">
-                <i data-lucide="users" class="w-8 h-8 text-theme-purple"></i>
+        <!-- Cabeçalho do Perfil -->
+        <header class="flex items-center justify-between mb-8 anim-entry">
+            <div class="flex items-center gap-4">
+                <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
+                    <i data-lucide="user" class="w-8 h-8 text-theme-orange"></i>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-cinzel font-bold text-white" id="profile-title">Carregando Perfil...</h1>
+                    <p class="text-gray-400">Status, Atributos e Progressão</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Perfis</h1>
-                <p class="text-gray-400">Gerencie usuários e personagens separadamente</p>
+            
+            <div class="relative">
+                <div class="text-right">
+                    <span class="text-xs uppercase text-gray-500">Perfil Ativo</span>
+                    <div id="active-profile-name" class="font-cinzel font-bold text-theme-gold">Carregando...</div>
+                </div>
+                <div id="profile-active-indicator" class="profile-active-indicator hidden"></div>
             </div>
         </header>
 
-        <!-- Seção 1: Gerenciar Usuário -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
-                <i data-lucide="user" class="w-4 h-4"></i> Usuário Atual
-            </h3>
-            
-            <div id="current-user-display" class="mb-6 p-4 bg-theme-bg border border-theme-border rounded-lg">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600/20 to-cyan-600/20 flex items-center justify-center">
-                            <i data-lucide="user" class="w-6 h-6 text-theme-blue"></i>
-                        </div>
+        <!-- Seção 1: Card de Resumo do Personagem -->
+        <section class="character-card p-6 rounded-xl anim-entry delay-0 relative">
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Informações Básicas -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <i data-lucide="user-circle" class="w-6 h-6 text-theme-gold"></i>
+                        <h3 class="font-cinzel text-xl font-bold text-theme-gold">Informações do Personagem</h3>
+                    </div>
+                    
+                    <div class="space-y-4">
                         <div>
-                            <h4 class="font-semibold text-white" id="user-name">Usuário Não Definido</h4>
-                            <p class="text-sm text-theme-muted">Gerencie seus personagens</p>
+                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Nome do Personagem</label>
+                            <div class="text-2xl font-cinzel font-bold text-white" id="display-nome">-</div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Raça</label>
+                                <div class="text-lg font-bold text-white" id="display-raca">-</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Classe</label>
+                                <div class="text-lg font-bold text-theme-orange" id="display-classe">-</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Origem</label>
+                                <div class="text-lg font-bold text-white" id="display-origem">-</div>
+                            </div>
+                            <div>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Idade</label>
+                                <div class="text-lg font-bold text-white" id="display-idade">-</div>
+                            </div>
                         </div>
                     </div>
-                    <button onclick="openUserModal()" class="px-4 py-2 bg-theme-blue hover:bg-[#3a7bd5] text-white rounded-lg transition-colors">
-                        Alterar Usuário
-                    </button>
                 </div>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-4">
-                <button onclick="createNewProfile()" class="p-4 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                    <i data-lucide="plus-circle" class="w-5 h-5 inline mr-2"></i>
-                    Novo Personagem
-                </button>
                 
-                <button onclick="importProfileFromTXT()" class="p-4 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
-                    <i data-lucide="upload" class="w-5 h-5 inline mr-2"></i>
-                    Importar Personagem
-                </button>
-                
-                <button onclick="exportAllData()" class="p-4 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                    <i data-lucide="download" class="w-5 h-5 inline mr-2"></i>
-                    Exportar Tudo
-                </button>
+                <!-- Nível e Progressão -->
+                <div class="bg-destiny-1 border border-destiny rounded-lg p-4">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i data-lucide="crown" class="w-5 h-5 text-theme-gold"></i>
+                        <h4 class="font-cinzel font-bold text-theme-gold">Progressão</h4>
+                    </div>
+                    
+                    <div class="text-center mb-3">
+                        <div class="level-badge text-4xl font-bold w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-2">
+                            <span id="display-nivel">1</span>
+                        </div>
+                        <div class="text-sm text-gray-400">Nível</div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-400">XP Acumulado</span>
+                                <span class="font-mono text-theme-orange" id="display-xp">0/1000</span>
+                            </div>
+                            <div class="h-2 bg-destiny-2 rounded-full overflow-hidden">
+                                <div id="display-xp-bar" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="pt-2 border-t border-destiny/20">
+                            <div class="text-sm text-gray-400 mb-1">Próximo Nível</div>
+                            <div class="font-mono text-lg text-white" id="display-proximo-nivel">-</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Seção 2: Lista de Personagens -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s;">
+        <!-- Seção 2: Atributos Base -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden section-attributes">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
+            
             <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple">
-                    <i data-lucide="swords" class="w-4 h-4"></i> Meus Personagens
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold">
+                    <i data-lucide="activity" class="w-4 h-4"></i> Atributos Base
                 </h3>
-                <span class="text-sm text-theme-muted" id="total-profiles">0 personagens</span>
+                <div class="text-sm text-gray-500 font-mono">
+                    Total: <span id="total-atributos" class="text-theme-blue font-bold">0</span> pontos
+                </div>
             </div>
-            
-            <div id="profiles-container" class="space-y-4">
-                <!-- Personagens serão inseridos aqui -->
-                <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
-                    <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                    <p class="text-theme-muted">Nenhum personagem criado</p>
-                    <button onclick="createNewProfile()" class="mt-3 px-4 py-2 text-sm text-theme-blue hover:text-theme-purple transition-colors">
-                        Criar primeiro personagem
-                    </button>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                <!-- Força -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-red/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-red/10 flex items-center justify-center">
+                        <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
+                    </div>
+                    <label class="text-xs uppercase text-gray-500 font-cinzel">Força</label>
+                    <div class="text-2xl font-bold font-mono text-theme-red mt-2" id="display-forca">0</div>
+                </div>
+
+                <!-- Destreza -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-green/10 flex items-center justify-center">
+                        <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
+                    </div>
+                    <label class="text-xs uppercase text-gray-500 font-cinzel">Destreza</label>
+                    <div class="text-2xl font-bold font-mono text-theme-green mt-2" id="display-destreza">0</div>
+                </div>
+
+                <!-- Constituição -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-yellow/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-yellow/10 flex items-center justify-center">
+                        <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
+                    </div>
+                    <label class="text-xs uppercase text-gray-500 font-cinzel">Constituição</label>
+                    <div class="text-2xl font-bold font-mono text-theme-yellow mt-2" id="display-constituicao">0</div>
+                </div>
+
+                <!-- Inteligência -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-blue/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-blue/10 flex items-center justify-center">
+                        <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
+                    </div>
+                    <label class="text-xs uppercase text-gray-500 font-cinzel">Inteligência</label>
+                    <div class="text-2xl font-bold font-mono text-theme-blue mt-2" id="display-inteligencia">0</div>
+                </div>
+
+                <!-- Sabedoria -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-purple/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-purple/10 flex items-center justify-center">
+                        <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
+                    </div>
+                    <label class="text-xs uppercase text-gray-500 font-cinzel">Sabedoria</label>
+                    <div class="text-2xl font-bold font-mono text-theme-purple mt-2" id="display-sabedoria">0</div>
+                </div>
+
+                <!-- Carisma -->
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-pink/50 transition-colors">
+                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-pink/10 flex items-center justify-center">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-theme-pink"></i>
+                    </div>
+                    <label class="text-xs uppercase text-gray-500 font-cinzel">Carisma</label>
+                    <div class="text-2xl font-bold font-mono text-theme-pink mt-2" id="display-carisma">0</div>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 3: Estatísticas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
-                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Estatísticas
+        <!-- Seção 3: Recursos Vitais -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden section-vital">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-red"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
+                <i data-lucide="heart" class="w-4 h-4"></i> Recursos Vitais
             </h3>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Vida -->
+                <div class="resource-group">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                            <span class="text-sm font-medium text-theme-red">Vida</span>
+                        </div>
+                        <span class="font-mono text-lg text-white" id="display-vida">0/0</span>
+                    </div>
+                    <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                        <div id="display-vida-bar" class="h-full bg-gradient-to-r from-red-600 to-red-400 stat-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 text-right">Base: <span id="display-vida-base" class="text-white">0</span></div>
+                </div>
+
+                <!-- Mana -->
+                <div class="resource-group">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="flame" class="w-4 h-4 text-theme-blue"></i>
+                            <span class="text-sm font-medium text-theme-blue">Mana</span>
+                        </div>
+                        <span class="font-mono text-lg text-white" id="display-mana">0/0</span>
+                    </div>
+                    <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                        <div id="display-mana-bar" class="h-full bg-gradient-to-r from-blue-600 to-blue-400 stat-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 text-right">Base: <span id="display-mana-base" class="text-white">0</span></div>
+                </div>
+
+                <!-- Estamina -->
+                <div class="resource-group">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="wind" class="w-4 h-4 text-theme-green"></i>
+                            <span class="text-sm font-medium text-theme-green">Estamina</span>
+                        </div>
+                        <span class="font-mono text-lg text-white" id="display-estamina">0/0</span>
+                    </div>
+                    <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
+                        <div id="display-estamina-bar" class="h-full bg-gradient-to-r from-green-600 to-green-400 stat-bar-fill" style="width: 0%"></div>
+                    </div>
+                    <div class="text-xs text-gray-500 text-right">Base: <span id="display-estamina-base" class="text-white">0</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 4: Destino e Sorte -->
+        <section class="bg-destiny-1 border border-destiny p-6 rounded-lg anim-entry delay-3 relative overflow-hidden section-destiny">
+            <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-theme-purple via-theme-pink to-theme-gold"></div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-white mb-1" id="stats-total">0</div>
-                    <div class="text-xs text-theme-muted">Personagens</div>
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-destiny-light">
+                    <i data-lucide="clover" class="w-4 h-4"></i> Destino & Sorte
+                </h3>
+                <div class="flex items-center gap-2">
+                    <span class="text-sm text-destiny-dark">Status:</span>
+                    <span id="destiny-status" class="text-sm font-bold text-destiny-gold">Não Definido</span>
                 </div>
-                
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-green mb-1" id="stats-complete">0</div>
-                    <div class="text-xs text-theme-muted">Completos</div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Card de Destino -->
+                <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-theme-purple to-theme-pink flex items-center justify-center shadow-lg">
+                        <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
+                    </div>
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-2">Índice de Destino</h4>
+                    <div class="text-5xl font-bold font-mono text-destiny-gold mb-2" id="display-sorte">--</div>
+                    <div class="text-sm text-destiny-dark mb-4">porcentagem</div>
+                    
+                    <div class="h-2 bg-destiny-1 rounded-full overflow-hidden mb-3">
+                        <div id="display-sorte-bar" class="h-full bg-gradient-to-r from-theme-purple to-theme-pink stat-bar-fill" style="width: 0%"></div>
+                    </div>
+                    
+                    <div class="flex justify-between text-xs text-destiny-dark">
+                        <span>Azar</span>
+                        <span>Neutro</span>
+                        <span>Sorte</span>
+                    </div>
                 </div>
-                
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-yellow mb-1" id="stats-partial">0</div>
-                    <div class="text-xs text-theme-muted">Parciais</div>
-                </div>
-                
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-blue mb-1" id="stats-active">0</div>
-                    <div class="text-xs text-theme-muted">Ativos</div>
+
+                <!-- Dados de Destino -->
+                <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl">
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4 flex items-center gap-2">
+                        <i data-lucide="dice-5" class="w-4 h-4"></i> Dados do Destino
+                    </h4>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="text-center">
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
+                                <span class="text-xl font-bold text-destiny-light" id="display-dado1">0</span>
+                            </div>
+                            <div class="text-xs text-destiny-dark">Fé</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
+                                <span class="text-xl font-bold text-destiny-light" id="display-dado2">0</span>
+                            </div>
+                            <div class="text-xs text-destiny-dark">Sorte</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
+                                <span class="text-xl font-bold text-destiny-light" id="display-dado3">0</span>
+                            </div>
+                            <div class="text-xs text-destiny-dark">Destino</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-destiny-dark">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i data-lucide="info" class="w-3 h-3"></i>
+                            <span>Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2</span>
+                        </div>
+                        <div id="destiny-formula-display" class="font-mono text-xs text-destiny-light bg-destiny-1 p-2 rounded border border-destiny/30">
+                            ((0 + 0) × 2 - 0) ÷ 2 = 0
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="text-sm text-theme-muted">
-                <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
-                Clique em um personagem para gerenciar todas as suas seções
+            <!-- Interpretação do Destino -->
+            <div class="mt-6 pt-6 border-t border-destiny/20">
+                <h4 class="font-cinzel font-bold text-destiny-light text-sm mb-3">Interpretação do Destino</h4>
+                <div id="destiny-interpretation" class="text-sm text-destiny-light italic">
+                    Seu destino ainda não foi revelado. Role os dados para descobrir seu caminho.
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 5: Resumo de Equipamentos e Habilidades -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden section-summary">
+            <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
+            
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
+                <i data-lucide="package" class="w-4 h-4"></i> Resumo & Equipamentos
+            </h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Equipamentos Principais -->
+                <div>
+                    <h4 class="font-cinzel font-bold text-white text-sm mb-3">Equipamentos Principais</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 bg-[#0a0a0c] rounded border border-theme-border">
+                            <i data-lucide="sword" class="w-4 h-4 text-theme-red"></i>
+                            <div class="flex-1">
+                                <div class="font-bold text-white" id="display-arma-principal">Não equipado</div>
+                                <div class="text-xs text-gray-500">Arma Principal</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 p-3 bg-[#0a0a0c] rounded border border-theme-border">
+                            <i data-lucide="shield" class="w-4 h-4 text-theme-yellow"></i>
+                            <div class="flex-1">
+                                <div class="font-bold text-white" id="display-armadura">Não equipado</div>
+                                <div class="text-xs text-gray-500">Armadura</div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center gap-3 p-3 bg-[#0a0a0c] rounded border border-theme-border">
+                            <i data-lucide="star" class="w-4 h-4 text-theme-blue"></i>
+                            <div class="flex-1">
+                                <div class="font-bold text-white" id="display-amuleto">Não equipado</div>
+                                <div class="text-xs text-gray-500">Amuleto/Anel</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Habilidades Chave -->
+                <div>
+                    <h4 class="font-cinzel font-bold text-white text-sm mb-3">Habilidades Chave</h4>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-[#0a0a0c] rounded border border-theme-border">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-white" id="display-habilidade1">Ataque Básico</span>
+                                <span class="text-xs px-2 py-1 rounded bg-theme-red/20 text-theme-red">Lv. 1</span>
+                            </div>
+                            <div class="text-xs text-gray-500" id="display-desc-habilidade1">Dano físico básico</div>
+                        </div>
+                        
+                        <div class="p-3 bg-[#0a0a0c] rounded border border-theme-border">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-white" id="display-habilidade2">Defesa</span>
+                                <span class="text-xs px-2 py-1 rounded bg-theme-yellow/20 text-theme-yellow">Lv. 1</span>
+                            </div>
+                            <div class="text-xs text-gray-500" id="display-desc-habilidade2">Proteção básica</div>
+                        </div>
+                        
+                        <div class="p-3 bg-[#0a0a0c] rounded border border-theme-border">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="font-bold text-white" id="display-habilidade3">Habilidade de Classe</span>
+                                <span class="text-xs px-2 py-1 rounded bg-theme-purple/20 text-theme-purple">Lv. 1</span>
+                            </div>
+                            <div class="text-xs text-gray-500" id="display-desc-habilidade3">Baseado na classe</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 6: Estatísticas Avançadas -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
+                <i data-lucide="bar-chart" class="w-4 h-4"></i> Estatísticas Avançadas
+            </h3>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-white font-mono" id="display-blindagem">0</div>
+                    <div class="text-xs uppercase text-gray-500 mt-1">Blindagem</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-white font-mono" id="display-velocidade">0</div>
+                    <div class="text-xs uppercase text-gray-500 mt-1">Velocidade</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-white font-mono" id="display-iniciativa">0</div>
+                    <div class="text-xs uppercase text-gray-500 mt-1">Iniciativa</div>
+                </div>
+                
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-white font-mono" id="display-percepcao">0</div>
+                    <div class="text-xs uppercase text-gray-500 mt-1">Percepção</div>
+                </div>
             </div>
         </section>
 
     </div>
-
-    <!-- Modal de Usuário -->
-    <div id="user-modal" class="modal-backdrop hidden">
-        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 w-full max-w-md">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-cinzel text-xl font-bold text-theme-blue">
-                    <i data-lucide="user" class="w-5 h-5 inline mr-2"></i>
-                    Gerenciar Usuário
-                </h3>
-                <button onclick="closeUserModal()" class="text-theme-muted hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-white mb-2">Nome do Usuário</label>
-                    <input type="text" id="user-name-input" placeholder="Seu nome ou apelido" 
-                           class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-blue outline-none">
-                </div>
-                
-                <div class="pt-4 border-t border-theme-border">
-                    <h4 class="font-medium text-white mb-3">Dados Salvos</h4>
-                    <div class="text-sm text-theme-muted space-y-2">
-                        <div class="flex justify-between">
-                            <span>Personagens salvos:</span>
-                            <span id="user-char-count">0</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Último acesso:</span>
-                            <span id="user-last-access"></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button onclick="saveUser()" 
-                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                        Salvar Usuário
-                    </button>
-                    <button onclick="deleteUserData()" 
-                            class="flex-1 px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
-                        Limpar Dados
-                    </button>
-                </div>
+    <!-- No perfil.html, adicione esta seção após Estatísticas Avançadas -->
+    <section class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg anim-entry delay-4">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#f4d29a]">
+                <i data-lucide="dog" class="w-4 h-4"></i> Mascote Companheiro
+            </h3>
+            <button onclick="window.location.href='mascote.html'" 
+                    class="flex items-center gap-2 px-3 py-2 text-sm bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded transition-colors">
+                <i data-lucide="edit-3" class="w-3 h-3"></i>
+                Editar
+            </button>
+        </div>
+        
+        <div id="mascote-summary">
+            <!-- Conteúdo será carregado dinamicamente -->
+            <div class="text-center py-8 text-[#8b7355]">
+                <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                <p>Nenhum mascote vinculado</p>
+                <p class="text-sm mt-2">Crie um mascote para acompanhar seu personagem</p>
             </div>
         </div>
+    </section>
+
+    <!-- Rodapé com Botões de Ação -->
+    <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
+        <button onclick="goToFicha()" 
+            class="group flex items-center gap-2 px-6 py-2 bg-theme-orange hover:bg-orange-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="edit-3" class="w-4 h-4"></i>
+            <span>Editar Ficha</span>
+        </button>
+        
+        <button onclick="exportProfile()" 
+            class="group flex items-center gap-2 px-6 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Exportar Perfil</span>
+        </button>
+        
+        <button onclick="refreshProfile()" 
+            class="group flex items-center gap-2 px-6 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            <span>Atualizar</span>
+        </button>
     </div>
 
-    <!-- Modal de Personagem -->
-    <div id="profile-modal" class="modal-backdrop hidden">
-        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-cinzel text-xl font-bold text-theme-purple" id="modal-profile-name">
-                    <i data-lucide="user" class="w-5 h-5 inline mr-2"></i>
-                    Gerenciar Personagem
-                </h3>
-                <button onclick="closeProfileModal()" class="text-theme-muted hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+    <!-- Modal de Aviso -->
+    <div id="warning-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="alert-triangle" class="w-8 h-8 text-theme-orange"></i>
+                <h3 class="font-cinzel font-bold text-xl text-white">Aviso</h3>
+            </div>
+            
+            <p id="warning-message" class="text-gray-300 mb-6">
+                Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.
+            </p>
+            
+            <div class="flex justify-end gap-3">
+                <button onclick="hideWarning()" 
+                    class="px-4 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors">
+                    Cancelar
                 </button>
-            </div>
-            
-            <!-- Informações Básicas -->
-            <div class="mb-6 p-4 bg-theme-bg border border-theme-border rounded-lg">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <h4 class="font-bold text-white text-lg" id="modal-char-name">Personagem</h4>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="text-xs px-3 py-1 rounded bg-theme-purple/20 text-theme-purple border border-theme-purple/30" id="modal-char-class"></span>
-                            <span class="text-xs px-3 py-1 rounded bg-theme-blue/20 text-theme-blue border border-theme-blue/30" id="modal-char-race"></span>
-                            <span class="text-xs px-3 py-1 rounded bg-theme-green/20 text-theme-green border border-theme-green/30" id="modal-char-level"></span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="setActiveProfile()" 
-                                class="px-4 py-2 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
-                            Tornar Ativo
-                        </button>
-                        <button onclick="deleteProfile()" 
-                                class="px-4 py-2 bg-theme-bg border border-red-800 rounded-lg text-red-400 hover:bg-red-900/20 transition-colors">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Seções do Personagem -->
-            <div class="mb-6">
-                <h4 class="font-semibold text-white mb-4 flex items-center gap-2">
-                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                    Seções do Personagem
-                </h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Ficha -->
-                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('ficha')">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-blue-900/20 flex items-center justify-center">
-                                    <i data-lucide="file-text" class="w-5 h-5 text-theme-blue"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-white">Ficha</div>
-                                    <div class="text-xs text-theme-muted">Dados básicos e aparência</div>
-                                </div>
-                            </div>
-                            <span class="status-tag status-empty" id="section-ficha-status">Vazia</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-theme-muted" id="section-ficha-date">Nunca editado</span>
-                            <button onclick="event.stopPropagation(); exportSection('ficha')" class="text-theme-blue hover:text-white transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Status -->
-                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('status')">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-orange-900/20 flex items-center justify-center">
-                                    <i data-lucide="activity" class="w-5 h-5 text-theme-orange"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-white">Status</div>
-                                    <div class="text-xs text-theme-muted">Atributos e pontos</div>
-                                </div>
-                            </div>
-                            <span class="status-tag status-empty" id="section-status-status">Vazia</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-theme-muted" id="section-status-date">Nunca editado</span>
-                            <button onclick="event.stopPropagation(); exportSection('status')" class="text-theme-blue hover:text-white transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Habilidades -->
-                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('habilidades')">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-purple-900/20 flex items-center justify-center">
-                                    <i data-lucide="zap" class="w-5 h-5 text-theme-purple"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-white">Habilidades</div>
-                                    <div class="text-xs text-theme-muted">Poderes e magias</div>
-                                </div>
-                            </div>
-                            <span class="status-tag status-empty" id="section-habilidades-status">Vazia</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-theme-muted" id="section-habilidades-date">Nunca editado</span>
-                            <button onclick="event.stopPropagation(); exportSection('habilidades')" class="text-theme-blue hover:text-white transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Proficiências -->
-                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('proficiencias')">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-yellow-900/20 flex items-center justify-center">
-                                    <i data-lucide="award" class="w-5 h-5 text-theme-yellow"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-white">Proficiências</div>
-                                    <div class="text-xs text-theme-muted">Talentos e ofícios</div>
-                                </div>
-                            </div>
-                            <span class="status-tag status-empty" id="section-proficiencias-status">Vazia</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-theme-muted" id="section-proficiencias-date">Nunca editado</span>
-                            <button onclick="event.stopPropagation(); exportSection('proficiencias')" class="text-theme-blue hover:text-white transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Itens -->
-                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('itens')">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-green-900/20 flex items-center justify-center">
-                                    <i data-lucide="package" class="w-5 h-5 text-theme-green"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-white">Itens</div>
-                                    <div class="text-xs text-theme-muted">Inventário e equipamentos</div>
-                                </div>
-                            </div>
-                            <span class="status-tag status-empty" id="section-itens-status">Vazia</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-theme-muted" id="section-itens-date">Nunca editado</span>
-                            <button onclick="event.stopPropagation(); exportSection('itens')" class="text-theme-blue hover:text-white transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Mascote -->
-                    <div class="section-card p-4 bg-theme-bg border border-theme-border rounded-lg" onclick="navigateToSection('mascote')">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-lg bg-teal-900/20 flex items-center justify-center">
-                                    <i data-lucide="dog" class="w-5 h-5 text-teal-500"></i>
-                                </div>
-                                <div>
-                                    <div class="font-medium text-white">Mascote</div>
-                                    <div class="text-xs text-theme-muted">Companheiro de aventura</div>
-                                </div>
-                            </div>
-                            <span class="status-tag status-empty" id="section-mascote-status">Vazia</span>
-                        </div>
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="text-theme-muted" id="section-mascote-date">Nunca editado</span>
-                            <button onclick="event.stopPropagation(); exportSection('mascote')" class="text-theme-blue hover:text-white transition-colors">
-                                <i data-lucide="download" class="w-3 h-3"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Ações de Exportação -->
-            <div class="pt-4 border-t border-theme-border">
-                <h4 class="font-semibold text-white mb-3 flex items-center gap-2">
-                    <i data-lucide="download" class="w-4 h-4"></i>
-                    Exportação
-                </h4>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <button onclick="exportProfile()" 
-                            class="p-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
-                        <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>
-                        Personagem Completo
-                    </button>
-                    
-                    <button onclick="exportAllSections()" 
-                            class="p-3 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
-                        <i data-lucide="layers" class="w-4 h-4 inline mr-2"></i>
-                        Todas as Seções
-                    </button>
-                    
-                    <button onclick="syncAllSections()" 
-                            class="p-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-medium hover:opacity-90 transition-opacity">
-                        <i data-lucide="refresh-cw" class="w-4 h-4 inline mr-2"></i>
-                        Sincronizar Tudo
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Informações Técnicas -->
-            <div class="pt-4 border-t border-theme-border mt-6">
-                <div class="flex flex-wrap gap-4 text-sm">
-                    <div>
-                        <span class="text-theme-muted">Criado em:</span>
-                        <span class="text-white ml-2" id="modal-created-at"></span>
-                    </div>
-                    <div>
-                        <span class="text-theme-muted">Última atualização:</span>
-                        <span class="text-white ml-2" id="modal-updated-at"></span>
-                    </div>
-                    <div>
-                        <span class="text-theme-muted">Progresso:</span>
-                        <span class="text-white ml-2" id="modal-progress">0%</span>
-                    </div>
-                </div>
-                <div class="text-xs text-theme-muted mt-2">
-                    ID: <span class="font-mono" id="modal-profile-id"></span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Importação -->
-    <div id="import-modal" class="modal-backdrop hidden">
-        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 w-full max-w-md">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-cinzel text-xl font-bold text-theme-green">
-                    <i data-lucide="upload" class="w-5 h-5 inline mr-2"></i>
-                    Importar Personagem
-                </h3>
-                <button onclick="closeImportModal()" class="text-theme-muted hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <button onclick="goToFicha()" 
+                    class="px-4 py-2 bg-theme-orange hover:bg-orange-600 rounded text-white">
+                    Criar Ficha
                 </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-white mb-2">Selecione o que importar:</label>
-                    <select id="import-type" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-green outline-none">
-                        <option value="full">Personagem Completo</option>
-                        <option value="section">Apenas uma Seção</option>
-                    </select>
-                </div>
-                
-                <div id="section-select-container" class="hidden">
-                    <label class="block text-sm font-medium text-white mb-2">Selecione a seção:</label>
-                    <select id="import-section" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-theme-green outline-none">
-                        <option value="ficha">Ficha</option>
-                        <option value="status">Status</option>
-                        <option value="habilidades">Habilidades</option>
-                        <option value="proficiencias">Proficiências</option>
-                        <option value="itens">Itens</option>
-                        <option value="mascote">Mascote</option>
-                    </select>
-                </div>
-                
-                <div class="border-2 border-dashed border-theme-border rounded-lg p-6 text-center cursor-pointer hover:border-theme-green transition-colors"
-                     onclick="document.getElementById('file-input').click()">
-                    <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                    <p class="text-white font-medium mb-1">Clique para selecionar arquivo</p>
-                    <p class="text-sm text-theme-muted">Formato: .txt do Grimório Digital</p>
-                </div>
-                <input type="file" id="file-input" accept=".txt" class="hidden" onchange="handleTXTImport(event)">
-                
-                <div class="text-sm text-theme-muted">
-                    <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
-                    Os dados serão adicionados ao seu usuário atual
-                </div>
-                
-                <div class="flex gap-3 pt-4">
-                    <button onclick="closeImportModal()" 
-                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
-                        Cancelar
-                    </button>
-                    <button onclick="processTXTImport()" id="import-btn" disabled
-                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50">
-                        Importar
-                    </button>
-                </div>
             </div>
         </div>
     </div>
 
     <script>
         lucide.createIcons();
-
-        // ====================================================================
-        // SISTEMA DE USUÁRIOS E PERSONAGENS
-        // ====================================================================
         
-        let currentUser = null;
-        let currentProfile = null;
-        let profiles = [];
-        let importFile = null;
-
-        // Estrutura de um usuário
-        const USER_STRUCTURE = {
-            id: '',
-            name: '',
-            createdAt: '',
-            lastAccess: '',
-            settings: {}
-        };
-
-        // Estrutura de um personagem
-        const PROFILE_STRUCTURE = {
-            id: '',
-            userId: '', // Vincula ao usuário
-            name: '',
-            class: '',
-            race: '',
-            level: 1,
-            createdAt: '',
-            lastUpdated: '',
-            sections: {
-                ficha: { data: null, updated: null, complete: false },
-                status: { data: null, updated: null, complete: false },
-                habilidades: { data: null, updated: null, complete: false },
-                proficiencias: { data: null, updated: null, complete: false },
-                itens: { data: null, updated: null, complete: false },
-                mascote: { data: null, updated: null, complete: false }
-            },
-            isActive: false
-        };
-
         // ====================================================================
-        // INICIALIZAÇÃO DO USUÁRIO
+        // VARIÁVEIS E CONSTANTES
         // ====================================================================
-        function initUser() {
-            // Verificar se já existe um usuário
-            const savedUser = localStorage.getItem('grimorio_current_user');
-            if (savedUser) {
-                currentUser = JSON.parse(savedUser);
+        let activeProfileData = null;
+        let profileStats = null;
+        
+        // ====================================================================
+        // FUNÇÕES UTILITÁRIAS
+        // ====================================================================
+        function el(id) { return document.getElementById(id); }
+        function showWarning(message) {
+            el('warning-message').textContent = message;
+            el('warning-modal').classList.remove('hidden');
+        }
+        function hideWarning() { el('warning-modal').classList.add('hidden'); }
+        
+        // ====================================================================
+        // NAVEGAÇÃO
+        // ====================================================================
+        function goToFicha() {
+            window.location.href = 'ficha.html';
+        }
+        
+        function goToIndex() {
+            window.location.href = 'index.html';
+        }
+        
+        // ====================================================================
+        // CARREGAR PERFIL ATIVO
+        // ====================================================================
+        function loadActiveProfile() {
+            try {
+                // Tentar carregar do sistema de perfis
+                const perfis = localStorage.getItem('rpg_sistema_perfis');
+                const perfilAtivoId = localStorage.getItem('perfil_ativo');
+                
+                if (!perfis || !perfilAtivoId) {
+                    showWarning("Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.");
+                    return false;
+                }
+                
+                const perfisObj = JSON.parse(perfis);
+                activeProfileData = perfisObj[perfilAtivoId];
+                
+                if (!activeProfileData) {
+                    showWarning("Perfil ativo inválido. Crie uma nova ficha.");
+                    return false;
+                }
+                
+                // Atualizar interface
+                updateProfileDisplay();
+                setupNavButtons();
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                showWarning("Erro ao carregar o perfil. Tente novamente.");
+                return false;
+            }
+        }
+        
+        // ====================================================================
+        // ATUALIZAR DISPLAY DO PERFIL
+        // ====================================================================
+        function updateProfileDisplay() {
+            if (!activeProfileData) return;
+            
+            // 1. Informações básicas
+            const nome = activeProfileData.nome || 'Personagem Sem Nome';
+            el('profile-title').textContent = nome;
+            el('active-profile-name').textContent = nome;
+            el('display-nome').textContent = nome;
+            
+            // 2. Raça e Classe
+            if (activeProfileData.dados?.basico) {
+                const basico = activeProfileData.dados.basico;
+                el('display-raca').textContent = basico.raca || 'Não definido';
+                el('display-classe').textContent = basico.classe || 'Não definido';
+                el('display-origem').textContent = basico.origem || 'Não definido';
+                el('display-idade').textContent = basico.idade || 'Não definido';
+            }
+            
+            // 3. Progressão
+            if (activeProfileData.dados?.progressao) {
+                const progressao = activeProfileData.dados.progressao;
+                const nivel = parseInt(progressao.nivel) || 1;
+                const xpAtual = parseInt(progressao.xp_atual) || 0;
+                const xpProximo = 1000; // Valor fixo por enquanto
+                
+                el('display-nivel').textContent = nivel;
+                el('display-xp').textContent = `${xpAtual}/${xpProximo}`;
+                
+                const xpPercent = Math.min(100, (xpAtual / xpProximo) * 100);
+                el('display-xp-bar').style.width = `${xpPercent}%`;
+                
+                const xpRestante = xpProximo - xpAtual;
+                el('display-proximo-nivel').textContent = `${xpRestante} XP restante`;
+            }
+            
+            // 4. Atributos
+            if (activeProfileData.dados?.atributos) {
+                const attrs = activeProfileData.dados.atributos;
+                
+                // Valores diretos
+                el('display-forca').textContent = attrs.forca || 0;
+                el('display-destreza').textContent = attrs.destreza || 0;
+                el('display-constituicao').textContent = attrs.constituicao || 0;
+                el('display-inteligencia').textContent = attrs.inteligencia || 0;
+                el('display-sabedoria').textContent = attrs.sabedoria || 0;
+                el('display-carisma').textContent = attrs.carisma || 0;
+                
+                // Calcular total
+                const total = Object.values(attrs).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                el('total-atributos').textContent = total;
+            }
+            
+            // 5. Recursos
+            if (activeProfileData.dados?.recursos) {
+                const recursos = activeProfileData.dados.recursos;
+                
+                // Vida
+                const vidaAtual = parseInt(recursos.vida_atual) || 0;
+                const vidaMax = parseInt(recursos.vida_max) || 0;
+                el('display-vida').textContent = `${vidaAtual}/${vidaMax}`;
+                el('display-vida-bar').style.width = vidaMax > 0 ? `${(vidaAtual / vidaMax) * 100}%` : '0%';
+                el('display-vida-base').textContent = recursos.vida_base || 0;
+                
+                // Mana
+                const manaAtual = parseInt(recursos.mana_atual) || 0;
+                const manaMax = parseInt(recursos.mana_max) || 0;
+                el('display-mana').textContent = `${manaAtual}/${manaMax}`;
+                el('display-mana-bar').style.width = manaMax > 0 ? `${(manaAtual / manaMax) * 100}%` : '0%';
+                el('display-mana-base').textContent = recursos.mana_base || 0;
+                
+                // Estamina
+                const estaminaAtual = parseInt(recursos.estamina_atual) || 0;
+                const estaminaMax = parseInt(recursos.estamina_max) || 0;
+                el('display-estamina').textContent = `${estaminaAtual}/${estaminaMax}`;
+                el('display-estamina-bar').style.width = estaminaMax > 0 ? `${(estaminaAtual / estaminaMax) * 100}%` : '0%';
+                el('display-estamina-base').textContent = recursos.estamina_base || 0;
+            }
+            
+            // 6. Destino/Sorte
+            if (activeProfileData.dados?.destino) {
+                const destino = activeProfileData.dados.destino;
+                const sorte = parseInt(destino.valor) || 0;
+                
+                el('display-sorte').textContent = sorte > 0 ? `${sorte}%` : '--';
+                el('display-sorte-bar').style.width = `${sorte}%`;
+                el('destiny-status').textContent = destino.fixada ? 'Fixado' : 'Variável';
+                
+                // Dados
+                el('display-dado1').textContent = destino.dados?.[0] || 0;
+                el('display-dado2').textContent = destino.dados?.[1] || 0;
+                el('display-dado3').textContent = destino.dados?.[2] || 0;
+                
+                // Fórmula
+                if (destino.dados && destino.dados.length >= 3) {
+                    const calc = `((${destino.dados[0]} + ${destino.dados[2]}) × 2 - ${destino.dados[1]}) ÷ 2 = ${sorte}`;
+                    el('destiny-formula-display').textContent = calc;
+                }
+                
+                // Interpretação
+                updateDestinyInterpretation(sorte);
+            }
+            
+            // 7. Equipamentos (da ficha)
+            if (activeProfileData.dados?.ficha) {
+                const ficha = activeProfileData.dados.ficha;
+                
+                // Arma principal
+                if (ficha.armas && ficha.armas.length > 0) {
+                    el('display-arma-principal').textContent = ficha.armas[0].nome || 'Arma';
+                }
+                
+                // Armadura
+                if (ficha.equipamentos) {
+                    const armadura = ficha.equipamentos.find(e => e.tipo === 'armadura');
+                    if (armadura) {
+                        el('display-armadura').textContent = armadura.nome || 'Armadura';
+                    }
+                }
+            }
+            
+            // 8. Estatísticas derivadas
+            calculateDerivedStats();
+            
+            // Mostrar indicador ativo
+            el('profile-active-indicator').classList.remove('hidden');
+        }
+        
+        // ====================================================================
+        // INTERPRETAÇÃO DO DESTINO
+        // ====================================================================
+        function updateDestinyInterpretation(sorte) {
+            const elInterpretation = el('destiny-interpretation');
+            if (!elInterpretation) return;
+            
+            let interpretation = '';
+            let colorClass = 'text-destiny-light';
+            
+            if (sorte >= 90) {
+                interpretation = '✨ DESTINO GLORIOSO! Os deuses sorriem para você. Seu caminho é iluminado pela sorte e oportunidades abundam.';
+                colorClass = 'text-yellow-300';
+            } else if (sorte >= 75) {
+                interpretation = '🎲 Sorte excelente! O vento sopra a seu favor. Momentos oportunos surgirão em sua jornada.';
+                colorClass = 'text-green-300';
+            } else if (sorte >= 60) {
+                interpretation = '🍀 Fortuna favorável. As probabilidades estão do seu lado na maioria dos desafios.';
+                colorClass = 'text-green-400';
+            } else if (sorte >= 40) {
+                interpretation = '⚖️ Destino equilibrado. Seu caminho é uma mistura de altos e baixos, como a maioria.';
+                colorClass = 'text-blue-300';
+            } else if (sorte >= 25) {
+                interpretation = '🌘 Sorte abaixo da média. Cuidado com decisões arriscadas - a prudência será sua aliada.';
+                colorClass = 'text-orange-300';
+            } else if (sorte >= 1) {
+                interpretation = '🌑 Sorte crítica. O destino testará sua resiliência. Grandes recompensas exigem grandes esforços.';
+                colorClass = 'text-red-300';
             } else {
-                // Criar usuário padrão
-                currentUser = {
-                    ...USER_STRUCTURE,
-                    id: 'user_' + Date.now(),
-                    name: 'Aventureiro',
-                    createdAt: new Date().toISOString(),
-                    lastAccess: new Date().toISOString()
-                };
-                localStorage.setItem('grimorio_current_user', JSON.stringify(currentUser));
+                interpretation = '🎭 Seu destino ainda não foi revelado. Role os dados para descobrir seu caminho.';
             }
             
-            // Atualizar último acesso
-            currentUser.lastAccess = new Date().toISOString();
-            saveUserData();
-            
-            // Carregar personagens do usuário
-            loadProfiles();
-            updateUserDisplay();
+            elInterpretation.innerHTML = `<span class="${colorClass}">${interpretation}</span>`;
         }
-
-        function saveUserData() {
-            localStorage.setItem('grimorio_current_user', JSON.stringify(currentUser));
-            
-            // Salvar personagens do usuário
-            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
-            localStorage.setItem(`grimorio_profiles_${currentUser.id}`, JSON.stringify(userProfiles));
-            
-            updateUserDisplay();
-        }
-
-        function updateUserDisplay() {
-            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
-            
-            document.getElementById('user-name').textContent = currentUser.name;
-            document.getElementById('user-char-count').textContent = userProfiles.length;
-            document.getElementById('user-last-access').textContent = formatDateShort(currentUser.lastAccess);
-            
-            if (document.getElementById('user-name-input')) {
-                document.getElementById('user-name-input').value = currentUser.name;
-            }
-        }
-
+        
         // ====================================================================
-        // FUNÇÕES DE PERSONAGEM
+        // CÁLCULO DE ESTATÍSTICAS DERIVADAS
         // ====================================================================
-        function createNewProfile() {
-            const name = prompt("Digite o nome do novo personagem:");
-            if (!name || name.trim() === '') return;
+        function calculateDerivedStats() {
+            if (!activeProfileData?.dados?.atributos) return;
             
-            const newProfile = {
-                ...JSON.parse(JSON.stringify(PROFILE_STRUCTURE)),
-                id: 'profile_' + Date.now(),
-                userId: currentUser.id,
-                name: name.trim(),
-                class: 'Não definida',
-                race: 'Não definida',
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString()
-            };
+            const attrs = activeProfileData.dados.atributos;
             
-            profiles.unshift(newProfile);
-            saveUserData();
-            renderProfiles();
+            // Fórmulas simples (pode ser ajustado)
+            const forca = parseInt(attrs.forca) || 0;
+            const destreza = parseInt(attrs.destreza) || 0;
+            const constituicao = parseInt(attrs.constituicao) || 0;
+            const inteligencia = parseInt(attrs.inteligencia) || 0;
+            const sabedoria = parseInt(attrs.sabedoria) || 0;
             
-            showNotification(`Personagem "${name}" criado!`, 'success');
+            // Blindagem = Constituição * 2 + Força
+            const blindagem = constituicao * 2 + forca;
+            el('display-blindagem').textContent = blindagem;
+            
+            // Velocidade = Destreza * 3
+            const velocidade = destreza * 3;
+            el('display-velocidade').textContent = velocidade;
+            
+            // Iniciativa = Destreza + Inteligência
+            const iniciativa = destreza + inteligencia;
+            el('display-iniciativa').textContent = iniciativa;
+            
+            // Percepção = Sabedoria * 2
+            const percepcao = sabedoria * 2;
+            el('display-percepcao').textContent = percepcao;
         }
-
-        function loadProfiles() {
-            const saved = localStorage.getItem(`grimorio_profiles_${currentUser.id}`);
-            if (saved) {
-                profiles = JSON.parse(saved);
-            } else {
-                profiles = [];
+        
+        // ====================================================================
+        // CONFIGURAR BOTÕES DE NAVEGAÇÃO
+        // ====================================================================
+        function setupNavButtons() {
+            const navButtons = el('nav-buttons');
+            if (!navButtons) return;
+            
+            navButtons.innerHTML = `
+                <button onclick="goToIndex()" 
+                    class="flex items-center gap-2 px-4 py-2 text-sm bg-theme-panel hover:bg-theme-panel/80 border border-theme-border rounded transition-colors">
+                    <i data-lucide="home" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Início</span>
+                </button>
+                <button onclick="goToFicha()" 
+                    class="flex items-center gap-2 px-4 py-2 text-sm bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded transition-colors">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Editar Ficha</span>
+                </button>
+                <button onclick="refreshProfile()" 
+                    class="flex items-center gap-2 px-4 py-2 text-sm bg-theme-blue/20 hover:bg-theme-blue/30 text-theme-blue border border-theme-blue/30 rounded transition-colors">
+                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                    <span class="hidden sm:inline">Atualizar</span>
+                </button>
+            `;
+            
+            lucide.createIcons();
+        }
+        
+        // ====================================================================
+        // FUNÇÕES DE AÇÃO
+        // ====================================================================
+        function refreshProfile() {
+            loadActiveProfile();
+            mostrarFeedback("Perfil atualizado com sucesso!", "success");
+        }
+        
+        function exportProfile() {
+            if (!activeProfileData) {
+                mostrarFeedback("Nenhum perfil para exportar", "error");
+                return;
             }
             
-            renderProfiles();
-            updateStatistics();
+            const dataStr = JSON.stringify(activeProfileData, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `perfil_${activeProfileData.nome || 'personagem'}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            mostrarFeedback("Perfil exportado como JSON!", "success");
         }
-
-        function renderProfiles() {
-            const container = document.getElementById('profiles-container');
-            const totalElement = document.getElementById('total-profiles');
-            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
+        
+        // ====================================================================
+        // FUNÇÃO DE FEEDBACK
+        // ====================================================================
+        function mostrarFeedback(mensagem, tipo = 'info') {
+            console.log(`[${tipo.toUpperCase()}] ${mensagem}`);
             
-            totalElement.textContent = `${userProfiles.length} personagem${userProfiles.length !== 1 ? 'ns' : ''}`;
+            // Remover feedbacks antigos
+            const existing = document.querySelectorAll('.feedback-profile');
+            existing.forEach(el => el.remove());
             
-            if (userProfiles.length === 0) {
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-profile fixed top-4 right-4 z-50 px-4 py-3 rounded-lg border shadow-lg transition-all duration-500 animate-in slide-in-from-right-10 ${
+                tipo === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
+                tipo === 'warning' ? 'bg-yellow-900/30 border-yellow-700 text-yellow-300' :
+                tipo === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
+                'bg-blue-900/30 border-blue-700 text-blue-300'
+            }`;
+            
+            feedback.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i data-lucide="${
+                        tipo === 'success' ? 'check-circle' :
+                        tipo === 'warning' ? 'alert-triangle' :
+                        tipo === 'error' ? 'x-circle' : 'info'
+                    }" class="w-4 h-4"></i>
+                    <span class="font-medium">${mensagem}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(feedback);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+                feedback.style.transform = 'translateX(20px)';
+                setTimeout(() => feedback.remove(), 500);
+            }, 3000);
+        }
+        
+        // ====================================================================
+        // INICIALIZAÇÃO
+        // ====================================================================
+        window.addEventListener('load', function() {
+            // Tentar carregar o perfil
+            const success = loadActiveProfile();
+            
+            if (!success) {
+                // Desabilitar algumas funcionalidades se não há perfil
+                const actionButtons = document.querySelectorAll('button[onclick^="export"]');
+                actionButtons.forEach(btn => btn.disabled = true);
+            }
+            
+            // Criar ícones
+            lucide.createIcons();
+        });
+    // No perfil.html, função para carregar mascote
+    function loadMascoteSummary() {
+        const container = document.getElementById('mascote-summary');
+        
+        try {
+            // Tentar carregar do perfil ativo
+            if (!activeProfileData) return;
+            
+            const mascote = activeProfileData.dados?.mascote;
+            
+            if (!mascote) {
+                // Mostrar botão para criar
                 container.innerHTML = `
-                    <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
-                        <i data-lucide="users" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                        <p class="text-theme-muted">Nenhum personagem criado</p>
-                        <button onclick="createNewProfile()" class="mt-3 px-4 py-2 text-sm text-theme-blue hover:text-theme-purple transition-colors">
-                            Criar primeiro personagem
+                    <div class="text-center py-8 text-[#8b7355]">
+                        <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                        <p>Nenhum mascote vinculado</p>
+                        <button onclick="window.location.href='mascote.html'" 
+                                class="mt-3 px-4 py-2 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+                            <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
+                            Criar Mascote
                         </button>
                     </div>
                 `;
                 return;
             }
             
-            container.innerHTML = '';
-            userProfiles.forEach(profile => {
-                const completion = calculateProfileCompletion(profile);
-                const sectionCount = countCompletedSections(profile);
-                
-                const profileElement = document.createElement('div');
-                profileElement.className = `profile-card bg-theme-bg border ${profile.isActive ? 'border-theme-purple' : 'border-theme-border'} p-4 rounded-lg cursor-pointer`;
-                profileElement.onclick = () => openProfileModal(profile.id);
-                
-                profileElement.innerHTML = `
-                    <div class="flex items-start justify-between mb-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-lg ${profile.isActive ? 'bg-gradient-to-br from-purple-600/20 to-pink-600/20' : 'bg-gray-800/50'} flex items-center justify-center">
-                                <i data-lucide="${profile.isActive ? 'user-check' : 'user'}" class="w-6 h-6 ${profile.isActive ? 'text-theme-purple' : 'text-gray-500'}"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-white">${profile.name} ${profile.isActive ? '<span class="text-xs text-theme-purple">(Ativo)</span>' : ''}</h4>
-                                <div class="flex items-center gap-2 mt-1">
-                                    <span class="text-xs px-2 py-1 rounded bg-theme-purple/20 text-theme-purple border border-theme-purple/30">
-                                        ${profile.class}
-                                    </span>
-                                    <span class="text-xs text-theme-muted">${profile.race}</span>
-                                    <span class="text-xs text-theme-muted">Nível ${profile.level}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex flex-col items-end">
-                            <span class="text-lg font-bold text-white">${completion}%</span>
-                            <span class="text-xs text-theme-muted">${sectionCount}/6 seções</span>
-                        </div>
+            // Mostrar resumo do mascote
+            container.innerHTML = `
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-16 h-16 rounded-full flex items-center justify-center border-2" 
+                        style="border-color: ${mascote.tipoCor || '#ec4899'}; background: ${mascote.tipoCor || '#ec4899'}20">
+                        <i data-lucide="${mascote.tipoIcone || 'dog'}" 
+                        style="color: ${mascote.tipoCor || '#ec4899'}" 
+                        class="w-8 h-8"></i>
                     </div>
-                    
-                    <div class="mb-3">
-                        <div class="flex justify-between text-xs text-white mb-1">
-                            <span>Progresso</span>
-                            <span>${completion}% completo</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${completion}%"></div>
-                        </div>
+                    <div class="flex-1">
+                        <h4 class="font-cinzel font-bold text-xl text-[#f4d29a]">${mascote.nome || 'Mascote'}</h4>
+                        <p class="text-[#8b7355]">
+                            ${mascote.tipoNome || 'Tipo'} • Nível ${mascote.nivel || 1}
+                        </p>
                     </div>
-                    
-                    <div class="flex items-center justify-between text-xs">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="calendar" class="w-3 h-3 text-theme-muted"></i>
-                            <span class="text-theme-muted">${formatDateShort(profile.lastUpdated)}</span>
-                        </div>
-                        <span class="${getCompletionClass(completion)}">
-                            ${getCompletionText(completion)}
-                        </span>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.lealdade || 80}%</div>
+                        <div class="text-xs text-[#8b7355]">Lealdade</div>
                     </div>
-                `;
+                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.vidaAtual || 0}/${mascote.vidaMax || 50}</div>
+                        <div class="text-xs text-[#8b7355]">Vida</div>
+                    </div>
+                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.habilidades?.length || 0}</div>
+                        <div class="text-xs text-[#8b7355]">Habilidades</div>
+                    </div>
+                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.forca || 0}</div>
+                        <div class="text-xs text-[#8b7355]">Força</div>
+                    </div>
+                </div>
                 
-                container.appendChild(profileElement);
-            });
-            
-            lucide.createIcons();
-        }
-
-        function calculateProfileCompletion(profile) {
-            let completed = 0;
-            let total = Object.keys(profile.sections).length;
-            
-            Object.values(profile.sections).forEach(section => {
-                if (section.data !== null && section.data !== '') {
-                    completed++;
-                }
-            });
-            
-            return Math.round((completed / total) * 100);
-        }
-
-        function countCompletedSections(profile) {
-            return Object.values(profile.sections).filter(s => s.data !== null && s.data !== '').length;
-        }
-
-        function updateStatistics() {
-            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
-            const total = userProfiles.length;
-            const complete = userProfiles.filter(p => calculateProfileCompletion(p) >= 80).length;
-            const partial = userProfiles.filter(p => calculateProfileCompletion(p) >= 30 && calculateProfileCompletion(p) < 80).length;
-            const active = userProfiles.filter(p => p.isActive).length;
-            
-            document.getElementById('stats-total').textContent = total;
-            document.getElementById('stats-complete').textContent = complete;
-            document.getElementById('stats-partial').textContent = partial;
-            document.getElementById('stats-active').textContent = active;
-        }
-
-        function getCompletionClass(percentage) {
-            if (percentage >= 80) return 'status-complete';
-            if (percentage >= 30) return 'status-partial';
-            return 'status-empty';
-        }
-
-        function getCompletionText(percentage) {
-            if (percentage >= 80) return 'Completo';
-            if (percentage >= 30) return 'Parcial';
-            return 'Vazio';
-        }
-
-        // ====================================================================
-        // MODAIS
-        // ====================================================================
-        function openUserModal() {
-            document.getElementById('user-modal').classList.remove('hidden');
-        }
-
-        function closeUserModal() {
-            document.getElementById('user-modal').classList.add('hidden');
-        }
-
-        function openProfileModal(profileId) {
-            currentProfile = profiles.find(p => p.id === profileId);
-            if (!currentProfile) return;
-            
-            document.getElementById('modal-profile-name').innerHTML = 
-                `<i data-lucide="user" class="w-5 h-5 inline mr-2"></i>${currentProfile.name}`;
-            document.getElementById('modal-char-name').textContent = currentProfile.name;
-            document.getElementById('modal-char-class').textContent = currentProfile.class;
-            document.getElementById('modal-char-race').textContent = currentProfile.race;
-            document.getElementById('modal-char-level').textContent = `Nível ${currentProfile.level}`;
-            document.getElementById('modal-created-at').textContent = formatDateShort(currentProfile.createdAt);
-            document.getElementById('modal-updated-at').textContent = formatDateShort(currentProfile.lastUpdated);
-            document.getElementById('modal-progress').textContent = `${calculateProfileCompletion(currentProfile)}%`;
-            document.getElementById('modal-profile-id').textContent = currentProfile.id.substring(0, 8) + '...';
-            
-            updateSectionStatus();
-            document.getElementById('profile-modal').classList.remove('hidden');
-        }
-
-        function closeProfileModal() {
-            document.getElementById('profile-modal').classList.add('hidden');
-            currentProfile = null;
-        }
-
-        function updateSectionStatus() {
-            if (!currentProfile) return;
-            
-            const sections = ['ficha', 'status', 'habilidades', 'proficiencias', 'itens', 'mascote'];
-            sections.forEach(section => {
-                const sectionData = currentProfile.sections[section];
-                const hasData = sectionData && sectionData.data !== null && sectionData.data !== '';
-                const statusClass = hasData ? 'status-complete' : 'status-empty';
-                const statusText = hasData ? 'Preenchida' : 'Vazia';
-                const dateText = hasData ? formatDateShort(sectionData.updated) : 'Nunca editado';
+                ${mascote.passiva ? `
+                <div class="mt-4 p-3 bg-[#1a1510] rounded border border-[#8b7355]/30">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i data-lucide="zap" class="w-3 h-3 text-[#d4a76a]"></i>
+                        <span class="text-sm font-semibold text-[#d4a76a]">Passiva Especial</span>
+                    </div>
+                    <p class="text-sm text-[#f4d29a]">${mascote.passiva.substring(0, 100)}${mascote.passiva.length > 100 ? '...' : ''}</p>
+                </div>
+                ` : ''}
                 
-                document.getElementById(`section-${section}-status`).className = `status-tag ${statusClass}`;
-                document.getElementById(`section-${section}-status`).textContent = statusText;
-                document.getElementById(`section-${section}-date`).textContent = dateText;
-            });
-        }
-
-        // ====================================================================
-        // FUNÇÕES DE NAVEGAÇÃO E SINCRONIZAÇÃO
-        // ====================================================================
-        function navigateToSection(sectionKey) {
-            if (!currentProfile) return;
-            
-            // Salvar ID do personagem atual
-            localStorage.setItem('current_profile_id', currentProfile.id);
-            
-            // Mapear seções para páginas
-            const sectionPages = {
-                ficha: 'ficha.html',
-                status: 'status.html',
-                habilidades: 'habilidades.html',
-                proficiencias: 'proficiencias.html',
-                itens: 'inventario.html',
-                mascote: 'mascote.html'
-            };
-            
-            if (sectionPages[sectionKey]) {
-                showNotification(`Abrindo ${sectionKey} para "${currentProfile.name}"`, 'info');
-                setTimeout(() => {
-                    window.location.href = sectionPages[sectionKey];
-                }, 500);
-            }
-        }
-
-        // Função para salvar dados de qualquer página
-        window.saveToProfile = function(sectionKey, data) {
-            const profileId = localStorage.getItem('current_profile_id');
-            if (!profileId) return false;
-            
-            const profiles = JSON.parse(localStorage.getItem(`grimorio_profiles_${currentUser.id}`) || '[]');
-            const profile = profiles.find(p => p.id === profileId);
-            
-            if (!profile) return false;
-            
-            // Atualizar seção
-            profile.sections[sectionKey] = {
-                data: data,
-                updated: new Date().toISOString(),
-                complete: true
-            };
-            
-            // Atualizar timestamp
-            profile.lastUpdated = new Date().toISOString();
-            
-            // Salvar alterações
-            localStorage.setItem(`grimorio_profiles_${currentUser.id}`, JSON.stringify(profiles));
-            
-            // Atualizar se estiver na página de perfis
-            if (window.location.pathname.includes('perfis.html')) {
-                loadProfiles();
-                if (currentProfile && currentProfile.id === profileId) {
-                    updateSectionStatus();
-                }
-            }
-            
-            return true;
-        };
-
-        // Função para carregar dados em qualquer página
-        window.loadFromProfile = function(sectionKey) {
-            const profileId = localStorage.getItem('current_profile_id');
-            if (!profileId) return null;
-            
-            const profiles = JSON.parse(localStorage.getItem(`grimorio_profiles_${currentUser.id}`) || '[]');
-            const profile = profiles.find(p => p.id === profileId);
-            
-            if (profile && profile.sections[sectionKey] && profile.sections[sectionKey].data) {
-                return profile.sections[sectionKey].data;
-            }
-            
-            return null;
-        };
-
-        function syncAllSections() {
-            if (!currentProfile) return;
-            
-            // Sincronizar todas as seções do app
-            const sections = ['ficha', 'status', 'habilidades', 'proficiencias', 'itens', 'mascote'];
-            let updated = false;
-            
-            sections.forEach(sectionKey => {
-                const data = localStorage.getItem(`grimorio_${sectionKey}_data`);
-                if (data) {
-                    currentProfile.sections[sectionKey] = {
-                        data: JSON.parse(data),
-                        updated: new Date().toISOString(),
-                        complete: true
-                    };
-                    updated = true;
-                }
-            });
-            
-            if (updated) {
-                currentProfile.lastUpdated = new Date().toISOString();
-                saveUserData();
-                updateSectionStatus();
-                showNotification('Todas as seções sincronizadas!', 'success');
-            } else {
-                showNotification('Nenhum dado encontrado para sincronizar.', 'info');
-            }
-        }
-
-        function setActiveProfile() {
-            if (!currentProfile) return;
-            
-            // Desativar todos os outros personagens
-            profiles.forEach(p => {
-                p.isActive = (p.id === currentProfile.id);
-            });
-            
-            saveUserData();
-            renderProfiles();
-            showNotification(`"${currentProfile.name}" é agora o personagem ativo!`, 'success');
-        }
-
-        // ====================================================================
-        // EXPORTAÇÃO
-        // ====================================================================
-        function exportSection(sectionKey) {
-            if (!currentProfile || !currentProfile.sections[sectionKey].data) {
-                showNotification('Não há dados para exportar nesta seção.', 'error');
-                return;
-            }
-            
-            const sectionNames = {
-                ficha: 'Ficha',
-                status: 'Status',
-                habilidades: 'Habilidades',
-                proficiencias: 'Proficiências',
-                itens: 'Itens',
-                mascote: 'Mascote'
-            };
-            
-            const content = generateSectionTXT(currentProfile, sectionKey);
-            const filename = `${currentUser.name}_${currentProfile.name}_${sectionNames[sectionKey]}`;
-            downloadTXT(content, filename);
-            
-            showNotification(`${sectionNames[sectionKey]} exportada!`, 'success');
-        }
-
-        function exportAllSections() {
-            if (!currentProfile) return;
-            
-            let hasData = false;
-            Object.values(currentProfile.sections).forEach(section => {
-                if (section.data) hasData = true;
-            });
-            
-            if (!hasData) {
-                showNotification('Nenhuma seção com dados para exportar.', 'error');
-                return;
-            }
-            
-            const content = generateAllSectionsTXT(currentProfile);
-            const filename = `${currentUser.name}_${currentProfile.name}_Todas_Seções`;
-            downloadTXT(content, filename);
-            
-            showNotification('Todas as seções exportadas!', 'success');
-        }
-
-        function exportProfile() {
-            if (!currentProfile) return;
-            
-            const content = generateFullProfileTXT(currentProfile);
-            const filename = `${currentUser.name}_${currentProfile.name}_Personagem_Completo`;
-            downloadTXT(content, filename);
-            
-            showNotification('Personagem completo exportado!', 'success');
-        }
-
-        function exportAllData() {
-            const userProfiles = profiles.filter(p => p.userId === currentUser.id);
-            if (userProfiles.length === 0) {
-                showNotification('Nenhum personagem para exportar.', 'info');
-                return;
-            }
-            
-            const content = generateAllDataTXT(userProfiles);
-            const filename = `${currentUser.name}_Todos_Personagens`;
-            downloadTXT(content, filename);
-            
-            showNotification(`${userProfiles.length} personagens exportados!`, 'success');
-        }
-
-        function generateSectionTXT(profile, sectionKey) {
-            const sectionNames = {
-                ficha: 'FICHA DO PERSONAGEM',
-                status: 'STATUS E ATRIBUTOS',
-                habilidades: 'HABILIDADES',
-                proficiencias: 'PROFICIÊNCIAS',
-                itens: 'INVENTÁRIO E ITENS',
-                mascote: 'MASCOTE'
-            };
-            
-            let txt = '='.repeat(60) + '\n';
-            txt += `          ${sectionNames[sectionKey] || sectionKey.toUpperCase()}\n`;
-            txt += '='.repeat(60) + '\n\n';
-            
-            txt += `Personagem: ${profile.name}\n`;
-            txt += `Usuário: ${currentUser.name}\n`;
-            txt += `Classe: ${profile.class}\n`;
-            txt += `Raça: ${profile.race}\n`;
-            txt += `Nível: ${profile.level}\n`;
-            txt += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            
-            txt += 'Dados:\n';
-            txt += '-'.repeat(40) + '\n';
-            
-            if (typeof profile.sections[sectionKey].data === 'string') {
-                txt += profile.sections[sectionKey].data + '\n';
-            } else {
-                txt += JSON.stringify(profile.sections[sectionKey].data, null, 2) + '\n';
-            }
-            
-            txt += '\n' + '='.repeat(60);
-            txt += '\nFim da seção\n';
-            
-            return txt;
-        }
-
-        function generateAllSectionsTXT(profile) {
-            let txt = '='.repeat(60) + '\n';
-            txt += '          TODAS AS SEÇÕES DO PERSONAGEM\n';
-            txt += '='.repeat(60) + '\n\n';
-            
-            txt += `Personagem: ${profile.name}\n`;
-            txt += `Usuário: ${currentUser.name}\n`;
-            txt += `Classe: ${profile.class}\n`;
-            txt += `Raça: ${profile.race}\n`;
-            txt += `Nível: ${profile.level}\n`;
-            txt += `Progresso: ${calculateProfileCompletion(profile)}%\n`;
-            txt += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            
-            Object.entries(profile.sections).forEach(([key, section]) => {
-                if (section.data) {
-                    const sectionNames = {
-                        ficha: 'FICHA',
-                        status: 'STATUS',
-                        habilidades: 'HABILIDADES',
-                        proficiencias: 'PROFICIÊNCIAS',
-                        itens: 'ITENS',
-                        mascote: 'MASCOTE'
-                    };
-                    
-                    txt += '\n' + '='.repeat(60) + '\n';
-                    txt += `          ${sectionNames[key] || key.toUpperCase()}\n`;
-                    txt += '='.repeat(60) + '\n\n';
-                    
-                    if (typeof section.data === 'string') {
-                        txt += section.data + '\n';
-                    } else {
-                        txt += JSON.stringify(section.data, null, 2) + '\n';
-                    }
-                }
-            });
-            
-            txt += '\n' + '='.repeat(60);
-            txt += '\nFim do arquivo\n';
-            
-            return txt;
-        }
-
-        function generateFullProfileTXT(profile) {
-            return generateAllSectionsTXT(profile);
-        }
-
-        function generateAllDataTXT(userProfiles) {
-            let txt = '='.repeat(60) + '\n';
-            txt += '          TODOS OS PERSONAGENS - GRIMÓRIO DIGITAL\n';
-            txt += '='.repeat(60) + '\n\n';
-            
-            txt += `Usuário: ${currentUser.name}\n`;
-            txt += `Total de personagens: ${userProfiles.length}\n`;
-            txt += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            
-            userProfiles.forEach((profile, index) => {
-                txt += '\n' + '='.repeat(60) + '\n';
-                txt += `          PERSONAGEM ${index + 1}: ${profile.name}\n`;
-                txt += '='.repeat(60) + '\n\n';
-                
-                txt += `Classe: ${profile.class}\n`;
-                txt += `Raça: ${profile.race}\n`;
-                txt += `Nível: ${profile.level}\n`;
-                txt += `Progresso: ${calculateProfileCompletion(profile)}%\n`;
-                txt += `Criado em: ${formatDate(profile.createdAt)}\n`;
-                txt += `Última atualização: ${formatDate(profile.lastUpdated)}\n`;
-                txt += `Ativo: ${profile.isActive ? 'Sim' : 'Não'}\n`;
-                txt += `Seções preenchidas: ${countCompletedSections(profile)}/6\n`;
-                
-                // Listar seções com dados
-                const sectionsWithData = Object.entries(profile.sections)
-                    .filter(([_, s]) => s.data)
-                    .map(([key, _]) => key);
-                
-                if (sectionsWithData.length > 0) {
-                    txt += `Seções: ${sectionsWithData.join(', ')}\n`;
-                }
-                
-                txt += `ID: ${profile.id}\n`;
-            });
-            
-            txt += '\n' + '='.repeat(60);
-            txt += '\nFim da exportação\n';
-            
-            return txt;
-        }
-
-        function downloadTXT(content, filename) {
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${filename}_${new Date().toISOString().split('T')[0]}.txt`;
-            link.click();
-        }
-
-        // ====================================================================
-        // IMPORTAR TXT
-        // ====================================================================
-        function importProfileFromTXT() {
-            document.getElementById('import-type').addEventListener('change', function() {
-                const sectionContainer = document.getElementById('section-select-container');
-                sectionContainer.classList.toggle('hidden', this.value !== 'section');
-            });
-            
-            document.getElementById('import-modal').classList.remove('hidden');
-        }
-
-        function closeImportModal() {
-            document.getElementById('import-modal').classList.add('hidden');
-            importFile = null;
-            document.getElementById('file-input').value = '';
-            document.getElementById('import-btn').disabled = true;
-        }
-
-        function handleTXTImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            
-            if (!file.name.endsWith('.txt')) {
-                showNotification('Por favor, selecione um arquivo .txt', 'error');
-                return;
-            }
-            
-            importFile = file;
-            document.getElementById('import-btn').disabled = false;
-        }
-
-        function processTXTImport() {
-            if (!importFile) return;
-            
-            const importType = document.getElementById('import-type').value;
-            const section = document.getElementById('import-section').value;
-            
-            const reader = new FileReader();
-            
-            reader.onload = function(e) {
-                try {
-                    const content = e.target.result;
-                    
-                    if (importType === 'full') {
-                        // Importar personagem completo
-                        const profile = parseProfileTXT(content);
-                        profile.userId = currentUser.id;
-                        profile.id = 'imported_' + Date.now();
-                        
-                        profiles.unshift(profile);
-                        showNotification(`Personagem "${profile.name}" importado!`, 'success');
-                    } else {
-                        // Importar apenas uma seção
-                        const profileId = localStorage.getItem('current_profile_id');
-                        if (!profileId) {
-                            showNotification('Selecione um personagem primeiro.', 'error');
-                            return;
-                        }
-                        
-                        const profile = profiles.find(p => p.id === profileId);
-                        if (profile) {
-                            profile.sections[section] = {
-                                data: content,
-                                updated: new Date().toISOString(),
-                                complete: true
-                            };
-                            profile.lastUpdated = new Date().toISOString();
-                            showNotification(`Seção "${section}" importada!`, 'success');
-                        }
-                    }
-                    
-                    saveUserData();
-                    loadProfiles();
-                    closeImportModal();
-                } catch (error) {
-                    console.error('Erro ao importar:', error);
-                    showNotification('Erro ao processar arquivo.', 'error');
-                }
-            };
-            
-            reader.readAsText(importFile);
-        }
-
-        function parseProfileTXT(content) {
-            const lines = content.split('\n');
-            const profile = JSON.parse(JSON.stringify(PROFILE_STRUCTURE));
-            
-            profile.id = 'profile_' + Date.now();
-            profile.userId = currentUser.id;
-            profile.createdAt = new Date().toISOString();
-            profile.lastUpdated = new Date().toISOString();
-            
-            let currentSection = null;
-            
-            for (const line of lines) {
-                const trimmed = line.trim();
-                
-                if (trimmed.includes('Personagem:')) {
-                    profile.name = trimmed.split('Personagem:')[1].trim();
-                } else if (trimmed.includes('Classe:')) {
-                    profile.class = trimmed.split('Classe:')[1].trim();
-                } else if (trimmed.includes('Raça:')) {
-                    profile.race = trimmed.split('Raça:')[1].trim();
-                } else if (trimmed.includes('Nível:')) {
-                    const nivel = parseInt(trimmed.split('Nível:')[1].trim());
-                    if (!isNaN(nivel)) profile.level = nivel;
-                }
-                
-                // Detectar início de seção
-                if (trimmed.includes('FICHA')) currentSection = 'ficha';
-                else if (trimmed.includes('STATUS')) currentSection = 'status';
-                else if (trimmed.includes('HABILIDADES')) currentSection = 'habilidades';
-                else if (trimmed.includes('PROFICIÊNCIAS')) currentSection = 'proficiencias';
-                else if (trimmed.includes('ITENS')) currentSection = 'itens';
-                else if (trimmed.includes('MASCOTE')) currentSection = 'mascote';
-            }
-            
-            return profile;
-        }
-
-        // ====================================================================
-        // FUNÇÕES UTILITÁRIAS
-        // ====================================================================
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-        }
-
-        function formatDateShort(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
-            
-            if (diffDays === 0) return 'Hoje';
-            if (diffDays === 1) return 'Ontem';
-            if (diffDays < 7) return `${diffDays} dias atrás`;
-            
-            return date.toLocaleDateString('pt-BR');
-        }
-
-        function showNotification(message, type = 'info') {
-            // Criar elemento de notificação
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 z-50 px-6 py-4 rounded-lg border shadow-lg transition-all duration-500 ${
-                type === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
-                type === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
-                'bg-blue-900/30 border-blue-700 text-blue-300'
-            }`;
-            
-            notification.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <i data-lucide="${
-                        type === 'success' ? 'check-circle' :
-                        type === 'error' ? 'x-circle' : 'info'
-                    }" class="w-5 h-5"></i>
-                    <span class="font-medium">${message}</span>
+                <div class="mt-4 flex gap-2">
+                    <button onclick="window.location.href='mascote.html'" 
+                            class="flex-1 px-4 py-2 bg-gradient-to-r from-[#8b7355]/30 to-[#d4a76a]/30 text-[#f4d29a] rounded border border-[#8b7355] hover:border-[#d4a76a] transition-colors text-sm">
+                        <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>
+                        Ver Completo
+                    </button>
                 </div>
             `;
             
-            document.body.appendChild(notification);
             lucide.createIcons();
             
-            // Remover após 5 segundos
-            setTimeout(() => {
-                notification.style.opacity = '0';
-                notification.style.transform = 'translateX(20px)';
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
+        } catch (error) {
+            console.error('Erro ao carregar mascote no perfil:', error);
+            container.innerHTML = `
+                <div class="text-center py-8 text-[#8b7355]">
+                    <i data-lucide="alert-triangle" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p>Erro ao carregar mascote</p>
+                </div>
+            `;
         }
+    }
 
-        function deleteProfile() {
-            if (!currentProfile) return;
-            
-            if (confirm(`Tem certeza que deseja excluir o personagem "${currentProfile.name}"?`)) {
-                const index = profiles.findIndex(p => p.id === currentProfile.id);
-                if (index !== -1) {
-                    profiles.splice(index, 1);
-                    saveUserData();
-                    loadProfiles();
-                    closeProfileModal();
-                    showNotification(`Personagem "${currentProfile.name}" excluído.`, 'success');
-                }
-            }
-        }
-
-        function saveUser() {
-            const userName = document.getElementById('user-name-input').value.trim();
-            if (!userName) {
-                showNotification('Digite um nome de usuário.', 'error');
-                return;
-            }
-            
-            currentUser.name = userName;
-            currentUser.lastAccess = new Date().toISOString();
-            saveUserData();
-            closeUserModal();
-            showNotification(`Usuário alterado para "${userName}"`, 'success');
-        }
-
-        function deleteUserData() {
-            if (confirm('Tem certeza que deseja limpar TODOS os dados deste usuário? Esta ação não pode ser desfeita.')) {
-                localStorage.removeItem(`grimorio_profiles_${currentUser.id}`);
-                profiles = profiles.filter(p => p.userId !== currentUser.id);
-                initUser();
-                closeUserModal();
-                showNotification('Dados do usuário limpos.', 'success');
-            }
-        }
-
-        // ====================================================================
-        // INICIALIZAÇÃO
-        // ====================================================================
-        window.addEventListener('load', () => {
-            initUser();
-            lucide.createIcons();
-            
-            // Configurar tecla Escape para fechar modais
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    closeProfileModal();
-                    closeImportModal();
-                    closeUserModal();
-                }
-            });
-            
-            // Configurar import type
-            document.getElementById('import-type').addEventListener('change', function() {
-                const sectionContainer = document.getElementById('section-select-container');
-                sectionContainer.classList.toggle('hidden', this.value !== 'section');
-            });
-        });
-
-        // ====================================================================
-        // FUNÇÕES PARA OUTRAS PÁGINAS USAREM
-        // ====================================================================
+    // Chame esta função em updateProfileDisplay()
+    function updateProfileDisplay() {
+        // ... código existente ...
         
-        // Salvar dados da página atual
-        window.saveToProfile = function(sectionKey, data) {
-            return saveToProfile(sectionKey, data);
-        };
-
-        // Carregar dados da página atual
-        window.loadFromProfile = function(sectionKey) {
-            return loadFromProfile(sectionKey);
-        };
-
-        // Verificar se há personagem ativo
-        window.hasActiveProfile = function() {
-            return !!localStorage.getItem('current_profile_id');
-        };
-
-        // Obter informações do personagem ativo
-        window.getActiveProfileInfo = function() {
-            const profileId = localStorage.getItem('current_profile_id');
-            if (!profileId) return null;
-            
-            const profiles = JSON.parse(localStorage.getItem(`grimorio_profiles_${currentUser.id}`) || '[]');
-            const profile = profiles.find(p => p.id === profileId);
-            
-            if (profile) {
-                return {
-                    name: profile.name,
-                    class: profile.class,
-                    race: profile.race,
-                    level: profile.level,
-                    progress: calculateProfileCompletion(profile)
-                };
-            }
-            
-            return null;
-        };
-
-        // Verificar se há usuário ativo
-        window.hasActiveUser = function() {
-            return !!currentUser;
-        };
-
-        // Obter informações do usuário atual
-        window.getCurrentUser = function() {
-            return currentUser;
-        };
+        // Adicionar esta linha no final
+        loadMascoteSummary();
+    }
+        
     </script>
 </body>
 </html>
