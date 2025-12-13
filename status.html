@@ -98,6 +98,16 @@
             animation: slideInRight 0.3s ease-out;
         }
         
+        @keyframes diceRoll {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        
+        .dice-rolling {
+            animation: diceRoll 0.8s ease-out;
+        }
+        
         /* ESTILOS PARA SLIDERS */
         input[type="range"] {
             appearance: none;
@@ -234,12 +244,90 @@
             transform: translateX(100%);
             transition: all 0.5s ease-out;
         }
+        
         .hidden {
             display: none !important;
         }
-        /* Adicione ao final do bloco <style> existente */
-
-        /* Estilos para substituir classes Tailwind */
+        
+        /* ESTILOS PARA CARTÕES DE RECURSOS */
+        .card-vida {
+            border-color: rgba(220, 38, 38, 0.3) !important;
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05)) !important;
+        }
+        
+        .card-mana {
+            border-color: rgba(59, 130, 246, 0.3) !important;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05)) !important;
+        }
+        
+        .card-estamina {
+            border-color: rgba(34, 197, 94, 0.3) !important;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05)) !important;
+        }
+        
+        .card-sorte {
+            border-color: rgba(212, 167, 106, 0.3) !important;
+            background: linear-gradient(135deg, rgba(212, 167, 106, 0.1), rgba(139, 115, 85, 0.05)) !important;
+        }
+        
+        .high-roll {
+            box-shadow: 0 0 20px rgba(212, 167, 106, 0.5);
+            border-color: #d4a76a !important;
+        }
+        
+        /* ESTILOS PARA DERIVADOS */
+        .derivado-card {
+            transition: all 0.3s ease;
+        }
+        
+        .derivado-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* FEEDBACK */
+        .feedback-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
+        
+        .feedback-item {
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            animation: slideInRight 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid;
+            max-width: 400px;
+        }
+        
+        .feedback-success {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: rgba(34, 197, 94, 0.5);
+            color: #86efac;
+        }
+        
+        .feedback-warning {
+            background: rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.5);
+            color: #fde68a;
+        }
+        
+        .feedback-error {
+            background: rgba(220, 38, 38, 0.15);
+            border-color: rgba(220, 38, 38, 0.5);
+            color: #fca5a5;
+        }
+        
+        .feedback-info {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.5);
+            color: #93c5fd;
+        }
+        
+        /* UTILITY CLASSES */
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-center { justify-content: center; }
@@ -301,19 +389,17 @@
         .opacity-90 { opacity: 0.9; }
         .capitalize { text-transform: capitalize; }
         .flex-1 { flex: 1; }
-
-        /* Grid para substituir grid-cols- */
         .grid { display: grid; }
         .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
         .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-        /* Para responsividade */
+        
+        /* RESPONSIVIDADE */
         @media (max-width: 768px) {
             .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .md\:grid-cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
-
+        
         @media (max-width: 640px) {
             .md\:grid-cols-2 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
             .md\:grid-cols-3 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
@@ -381,6 +467,42 @@
             </div>
             
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button id="btn-importar-txt" style="
+                    padding: 0.5rem 1rem;
+                    background: rgba(59, 130, 246, 0.1);
+                    color: var(--accent-blue);
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    border-radius: 0.5rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='var(--accent-blue)'; this.style.backgroundColor='rgba(74, 158, 255, 0.1)'" 
+                   onmouseout="this.style.borderColor='rgba(59, 130, 246, 0.3)'; this.style.backgroundColor='rgba(59, 130, 246, 0.1)'">
+                    <i data-lucide="upload" style="width: 1rem; height: 1rem;"></i>
+                    Importar
+                </button>
+                
+                <button id="btn-exportar-txt" style="
+                    padding: 0.5rem 1rem;
+                    background: rgba(34, 197, 94, 0.1);
+                    color: var(--accent-green);
+                    border: 1px solid rgba(34, 197, 94, 0.3);
+                    border-radius: 0.5rem;
+                    font-weight: 500;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    transition: all 0.2s;
+                " onmouseover="this.style.borderColor='var(--accent-green)'; this.style.backgroundColor='rgba(34, 197, 94, 0.1)'" 
+                   onmouseout="this.style.borderColor='rgba(34, 197, 94, 0.3)'; this.style.backgroundColor='rgba(34, 197, 94, 0.1)'">
+                    <i data-lucide="download" style="width: 1rem; height: 1rem;"></i>
+                    Exportar
+                </button>
+                
                 <button id="btn-config" style="
                     padding: 0.5rem 1rem;
                     background: var(--bg-panel);
@@ -691,8 +813,185 @@
             </div>
         </header>
 
+        <!-- SEÇÃO DE RECURSOS VITAIS -->
+        <section id="secao-recursos" class="animate-fadeIn" style="margin-bottom: 3rem;">
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 2px solid var(--border-color);
+            ">
+                <h2 class="font-cinzel" style="
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    color: var(--accent-red);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <i data-lucide="heart" style="width: 1.5rem; height: 1.5rem;"></i>
+                    Recursos Vitais
+                </h2>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <button onclick="resetarRecursos()" style="
+                        padding: 0.5rem 1rem;
+                        background: rgba(34, 197, 94, 0.1);
+                        color: var(--accent-green);
+                        border: 1px solid rgba(34, 197, 94, 0.3);
+                        border-radius: 0.5rem;
+                        font-weight: 500;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    ">
+                        <i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i>
+                        Restaurar Tudo
+                    </button>
+                </div>
+            </div>
+            
+            <!-- CARDS DE RECURSOS -->
+            <div id="recursos-container" style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            ">
+                <!-- Cards serão gerados por JavaScript -->
+            </div>
+        </section>
+
+        <!-- SEÇÃO DE SORTE/DESTINO -->
+        <section id="secao-sorte" class="animate-fadeIn" style="margin-bottom: 3rem;">
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 2px solid var(--border-color);
+            ">
+                <h2 class="font-cinzel" style="
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    color: #d4a76a;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <i data-lucide="compass" style="width: 1.5rem; height: 1.5rem;"></i>
+                    Sistema de Destino
+                </h2>
+            </div>
+            
+            <!-- CONTEÚDO DA SORTE -->
+            <div id="conteudo-sorte" style="
+                background: linear-gradient(135deg, rgba(26, 21, 16, 0.8), rgba(42, 35, 24, 0.8));
+                border: 1px solid #8b7355;
+                border-radius: 1rem;
+                padding: 2rem;
+            ">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- DADOS DE SORTE -->
+                    <div>
+                        <h3 style="font-weight: 600; margin-bottom: 1rem; color: #f4d29a; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="dice-5" style="width: 1.25rem; height: 1.25rem;"></i>
+                            Rolagem do Destino
+                        </h3>
+                        
+                        <div class="grid grid-cols-3 gap-4 mb-6">
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-white mb-2 dado-container" id="dado-sorte-1">0</div>
+                                <div class="text-sm text-[#8b7355]">Fé</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-white mb-2 dado-container" id="dado-sorte-2">0</div>
+                                <div class="text-sm text-[#8b7355]">Sorte</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-3xl font-bold text-white mb-2 dado-container" id="dado-sorte-3">0</div>
+                                <div class="text-sm text-[#8b7355]">Destino</div>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mb-6">
+                            <div class="text-4xl font-bold font-mono text-[#d4a76a]" id="calc-sorte">--</div>
+                            <div class="text-sm text-[#8b7355] mt-2" id="calculo-sorte">
+                                ((0 + 0) × 2 - 0) ÷ 2 = 0
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button id="btn-rolar-sorte" style="
+                                flex: 1;
+                                padding: 0.75rem;
+                                background: linear-gradient(135deg, #1a1510, #2a2318);
+                                color: #d4a76a;
+                                border: 1px solid #8b7355;
+                                border-radius: 0.5rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 0.5rem;
+                                transition: all 0.2s;
+                            " onmouseover="this.style.backgroundColor='#2a2318'; this.style.borderColor='#d4a76a';" 
+                               onmouseout="this.style.backgroundColor='linear-gradient(135deg, #1a1510, #2a2318)'; this.style.borderColor='#8b7355';">
+                                <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
+                                Rolar Destino
+                            </button>
+                            <button id="btn-fixar-sorte" style="
+                                flex: 1;
+                                padding: 0.75rem;
+                                background: linear-gradient(135deg, #1a1510, #2a2318);
+                                color: #d4a76a;
+                                border: 1px solid #8b7355;
+                                border-radius: 0.5rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 0.5rem;
+                                transition: all 0.2s;
+                            " onmouseover="this.style.backgroundColor='#2a2318'; this.style.borderColor='#d4a76a';" 
+                               onmouseout="this.style.backgroundColor='linear-gradient(135deg, #1a1510, #2a2318)'; this.style.borderColor='#8b7355';">
+                                <i data-lucide="lock" style="width: 1rem; height: 1rem;"></i>
+                                Fixar Destino
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- RECOMENDAÇÕES -->
+                    <div>
+                        <h3 style="font-weight: 600; margin-bottom: 1rem; color: #f4d29a; display: flex; align-items: center; gap: 0.5rem;">
+                            <i data-lucide="target" style="width: 1.25rem; height: 1.25rem;"></i>
+                            Recomendações do Destino
+                        </h3>
+                        
+                        <div id="recomendacoes-container" style="
+                            background: rgba(26, 21, 16, 0.5);
+                            border: 1px solid #8b7355;
+                            border-radius: 0.75rem;
+                            padding: 1.5rem;
+                            min-height: 200px;
+                        ">
+                            <div style="text-align: center; padding: 2rem; color: #8b7355;">
+                                <i data-lucide="compass" style="width: 2rem; height: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                                <p>Role os dados para revelar seu destino</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- SEÇÃO DE ATRIBUTOS -->
-        <section class="animate-fadeIn" style="margin-bottom: 3rem;">
+        <section id="secao-atributos" class="animate-fadeIn" style="margin-bottom: 3rem;">
             <div style="
                 display: flex;
                 align-items: center;
@@ -732,6 +1031,72 @@
                 gap: 1.5rem;
             ">
                 <!-- Atributos serão carregados por JavaScript -->
+            </div>
+        </section>
+
+        <!-- SEÇÃO DE DERIVADOS AVANÇADOS -->
+        <section id="secao-derivados" class="animate-fadeIn" style="margin-bottom: 3rem;">
+            <div style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                margin-bottom: 1.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 2px solid var(--border-color);
+            ">
+                <h2 class="font-cinzel" style="
+                    font-size: 1.75rem;
+                    font-weight: 700;
+                    color: var(--accent-purple);
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <i data-lucide="layers" style="width: 1.5rem; height: 1.5rem;"></i>
+                    Derivados Avançados
+                </h2>
+                
+                <div style="display: flex; gap: 0.5rem;">
+                    <button onclick="calcularTodosDerivados()" style="
+                        padding: 0.5rem 1rem;
+                        background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+                        color: white;
+                        border: none;
+                        border-radius: 0.5rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    ">
+                        <i data-lucide="calculator" style="width: 1rem; height: 1rem;"></i>
+                        Calcular Todos
+                    </button>
+                    <button onclick="resetarApenasDerivados()" style="
+                        padding: 0.5rem 1rem;
+                        background: rgba(245, 158, 11, 0.1);
+                        color: var(--accent-yellow);
+                        border: 1px solid rgba(245, 158, 11, 0.3);
+                        border-radius: 0.5rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    ">
+                        <i data-lucide="rotate-ccw" style="width: 1rem; height: 1rem;"></i>
+                        Resetar
+                    </button>
+                </div>
+            </div>
+            
+            <!-- GRID DE DERIVADOS -->
+            <div id="derivados-container" style="
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 1.5rem;
+            ">
+                <!-- Derivados serão carregados por JavaScript -->
             </div>
         </section>
 
@@ -939,52 +1304,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- Seção de Destino/Sorte -->
-                <div id="secao-dados-sorte" class="hidden">
-                    <div class="bg-[#1a1510] border border-[#8b7355] p-6 rounded-xl">
-                        <h3 class="font-cinzel text-xl font-bold text-[#f4d29a] mb-4">
-                            <i data-lucide="compass" class="w-5 h-5 inline mr-2"></i>
-                            Destino Incerto
-                        </h3>
-                        
-                        <div class="grid grid-cols-3 gap-4 mb-6">
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-white mb-2" id="dado-sorte-1">0</div>
-                                <div class="text-sm text-[#8b7355]">Fé</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-white mb-2" id="dado-sorte-2">0</div>
-                                <div class="text-sm text-[#8b7355]">Sorte</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-3xl font-bold text-white mb-2" id="dado-sorte-3">0</div>
-                                <div class="text-sm text-[#8b7355]">Destino</div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center mb-6">
-                            <div class="text-4xl font-bold font-mono text-[#d4a76a]" id="calc-sorte">--</div>
-                            <div class="text-sm text-[#8b7355] mt-2" id="calculo-sorte">
-                                ((0 + 0) × 2 - 0) ÷ 2 = 0
-                            </div>
-                        </div>
-                        
-                        <div class="flex gap-3">
-                            <button id="btn-rolar-sorte" class="flex-1 px-4 py-3 bg-gradient-to-r from-[#1a1510] to-[#2a2318] border border-[#8b7355] rounded-lg text-[#d4a76a] font-semibold hover:bg-[#2a2318] transition-colors">
-                                <i data-lucide="dice-5" class="w-4 h-4 inline mr-2"></i>
-                                Rolar Destino
-                            </button>
-                            <button id="btn-fixar-sorte" class="flex-1 px-4 py-3 bg-gradient-to-r from-[#1a1510] to-[#2a2318] border border-[#8b7355] rounded-lg text-[#d4a76a] font-semibold hover:bg-[#2a2318] transition-colors">
-                                <i data-lucide="lock" class="w-4 h-4 inline mr-2"></i>
-                                Fixar Destino
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Container para derivados -->
-                <div id="derivados-container"></div>
-                    
                 
                 <!-- HISTÓRICO DE AÇÕES -->
                 <div>
@@ -1874,34 +2193,148 @@
                 return false;
             }
             
-            // EXPORTAR DADOS
-            static exportData() {
+            // EXPORTAR DADOS PARA TXT
+            static exportToTxt() {
                 const data = this.load();
-                const exportData = {
-                    ...data,
-                    exportadoEm: new Date().toISOString(),
-                    versao: '3.0'
-                };
+                const recursos = window.sistemaDerivados ? window.sistemaDerivados.recursos : null;
+                const sorte = window.sorteAtual || null;
                 
-                return JSON.stringify(exportData, null, 2);
+                let txtContent = '=== SISTEMA DE STATUS AVANÇADO ===\n';
+                txtContent += `Exportado em: ${new Date().toLocaleString()}\n\n`;
+                
+                // Atributos
+                txtContent += '=== ATRIBUTOS ===\n';
+                Object.entries(data.atributos).forEach(([attr, valor]) => {
+                    txtContent += `${attr.charAt(0).toUpperCase() + attr.slice(1)}: ${valor}/100\n`;
+                });
+                txtContent += '\n';
+                
+                // Pontos e Nível
+                txtContent += '=== PONTOS E NÍVEL ===\n';
+                txtContent += `Pontos Disponíveis: ${data.pontosDisponiveis}\n`;
+                txtContent += `Pontos Usados: ${data.pontosUsados}/${data.limiteTotalPontos}\n`;
+                txtContent += `Nível: ${data.nivel}\n`;
+                txtContent += `XP: ${data.experiencia}/${data.experienciaProximoNivel}\n`;
+                txtContent += `Pontos por Nível: ${data.pontosPorNivel}\n\n`;
+                
+                // Recursos Vitais
+                if (recursos) {
+                    txtContent += '=== RECURSOS VITAIS ===\n';
+                    txtContent += `Vida: ${recursos.vida.atual}/${recursos.vida.max}\n`;
+                    txtContent += `Mana: ${recursos.mana.atual}/${recursos.mana.max}\n`;
+                    txtContent += `Estamina: ${recursos.estamina.atual}/${recursos.estamina.max}\n\n`;
+                }
+                
+                // Sorte
+                if (sorte !== null) {
+                    txtContent += '=== DESTINO ===\n';
+                    txtContent += `Destino: ${sorte}%\n`;
+                    if (window.dadosSorte) {
+                        txtContent += `Dados: Fé=${window.dadosSorte[0]}, Sorte=${window.dadosSorte[1]}, Destino=${window.dadosSorte[2]}\n`;
+                    }
+                    txtContent += `Fixado: ${window.sorteFixada ? 'Sim' : 'Não'}\n\n`;
+                }
+                
+                // Derivados
+                if (window.sistemaDerivados && window.sistemaDerivados.derivados) {
+                    txtContent += '=== DERIVADOS AVANÇADOS ===\n';
+                    Object.entries(window.sistemaDerivados.derivados).forEach(([key, derivado]) => {
+                        if (derivado.ativo) {
+                            txtContent += `${key.replace(/([A-Z])/g, ' $1').toUpperCase()}: ${derivado.valor}/${derivado.max}\n`;
+                        }
+                    });
+                    txtContent += '\n';
+                }
+                
+                // Configurações
+                txtContent += '=== CONFIGURAÇÕES ===\n';
+                txtContent += `Limite por Atributo: ${data.limitePorAtributo}\n`;
+                txtContent += `Limite Total: ${data.limiteTotalPontos}\n`;
+                txtContent += `Mínimo para Aleatório: ${data.minimoParaAleatorio}\n`;
+                txtContent += `Pontos Distribuição Aleatória: ${data.pontosDistribuicaoAleatoria}\n`;
+                txtContent += `Modo Mestre: ${data.modoMestre ? 'Ativo' : 'Inativo'}\n`;
+                
+                return txtContent;
             }
             
-            // IMPORTAR DADOS
-            static importData(jsonString) {
+            // IMPORTAR DADOS DE TXT
+            static importFromTxt(txtContent) {
                 try {
-                    const imported = JSON.parse(jsonString);
+                    const lines = txtContent.split('\n');
+                    const data = this.load();
+                    const novosAtributos = { ...data.atributos };
                     
-                    if (imported.versao === '3.0') {
-                        localStorage.setItem(STATUS_STORAGE_KEY, jsonString);
+                    // Regex para capturar valores
+                    lines.forEach(line => {
+                        // Atributos
+                        for (const attr in data.atributos) {
+                            const regex = new RegExp(`^${attr}\\s*[=:]\\s*(\\d+)`, 'i');
+                            const match = line.match(regex);
+                            if (match) {
+                                const valor = parseInt(match[1]);
+                                novosAtributos[attr] = Math.min(100, Math.max(0, valor));
+                                return;
+                            }
+                        }
                         
-                        this.showNotification('Dados importados com sucesso!', 'success');
-                        return true;
-                    } else {
-                        this.showNotification('Versão incompatível dos dados!', 'error');
-                        return false;
+                        // Pontos e Nível
+                        if (line.toLowerCase().includes('pontos disponíveis')) {
+                            const match = line.match(/(\d+)/);
+                            if (match) data.pontosDisponiveis = parseInt(match[1]);
+                        } else if (line.toLowerCase().includes('nível')) {
+                            const match = line.match(/(\d+)/);
+                            if (match) data.nivel = parseInt(match[1]);
+                        } else if (line.toLowerCase().includes('xp:')) {
+                            const match = line.match(/(\d+)\/(\d+)/);
+                            if (match) {
+                                data.experiencia = parseInt(match[1]);
+                                data.experienciaProximoNivel = parseInt(match[2]);
+                            }
+                        }
+                    });
+                    
+                    // Atualizar atributos
+                    data.atributos = novosAtributos;
+                    data.pontosUsados = Object.values(novosAtributos).reduce((a, b) => a + b, 0);
+                    
+                    // Tentar extrair recursos
+                    const vidaMatch = txtContent.match(/vida\s*[=:]\s*(\d+)\/(\d+)/i);
+                    const manaMatch = txtContent.match(/mana\s*[=:]\s*(\d+)\/(\d+)/i);
+                    const estaminaMatch = txtContent.match(/estamina\s*[=:]\s*(\d+)\/(\d+)/i);
+                    
+                    if (vidaMatch && window.ajustarRecurso) {
+                        window.ajustarRecurso('vida', parseInt(vidaMatch[1]));
+                        window.ajustarRecurso('vida', parseInt(vidaMatch[1]));
                     }
+                    
+                    if (manaMatch && window.ajustarRecurso) {
+                        window.ajustarRecurso('mana', parseInt(manaMatch[1]));
+                    }
+                    
+                    if (estaminaMatch && window.ajustarRecurso) {
+                        window.ajustarRecurso('estamina', parseInt(estaminaMatch[1]));
+                    }
+                    
+                    // Tentar extrair sorte
+                    const sorteMatch = txtContent.match(/destino\s*[=:]\s*(\d+)%/i);
+                    if (sorteMatch && window.rolarSorte) {
+                        const sorteValor = parseInt(sorteMatch[1]);
+                        if (window.sorteAtual === null) {
+                            // Simular uma rolagem
+                            window.sorteAtual = sorteValor;
+                            window.dadosSorte = [sorteValor, sorteValor, sorteValor];
+                            window.atualizarDisplaySorte();
+                            window.gerarRecomendacoesBaseadasNaSorte(sorteValor);
+                        }
+                    }
+                    
+                    this.save(data);
+                    this.showNotification('Dados importados com sucesso!', 'success');
+                    return true;
+                    
                 } catch (error) {
-                    this.showNotification('Erro ao importar dados!', 'error');
+                    console.error('Erro ao importar dados:', error);
+                    this.showNotification('Erro ao importar dados! Formato inválido.', 'error');
                     return false;
                 }
             }
@@ -1934,16 +2367,13 @@
         }
 
         // ====================================================================
-        // SISTEMA DE SORTE/DERIVADOS (DEVE VIR ANTES DA INTERFACE)
+        // SISTEMA DE SORTE/DERIVADOS
         // ====================================================================
 
         // Variáveis globais do sistema de sorte
         let sorteAtual = null;
         let dadosSorte = [0, 0, 0];
         let sorteFixada = false;
-        let nivelAtual = 1;
-        let xpAtual = 0;
-        let xpProximoNivel = 1000;
 
         // Sistema de derivados avançados
         const sistemaDerivados = {
@@ -1996,8 +2426,8 @@
             
             atualizarDisplaySorte();
             
-            const secaoSorte = document.getElementById('secao-dados-sorte');
-            if (secaoSorte) secaoSorte.classList.remove('hidden');
+            const secaoSorte = document.getElementById('secao-sorte');
+            if (secaoSorte) secaoSorte.style.display = 'block';
             
             gerarRecomendacoesBaseadasNaSorte(sorteAtual);
             salvarSorteNoLocalStorage();
@@ -2011,16 +2441,16 @@
             
             const botaoFixar = document.getElementById('btn-fixar-sorte');
             if (botaoFixar) {
-                botaoFixar.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Destino Selado!';
-                botaoFixar.classList.remove('bg-gradient-to-r', 'from-[#1a1510]', 'to-[#2a2318]', 'hover:bg-[#2a2318]');
-                botaoFixar.classList.add('bg-gradient-to-r', 'from-[#8b7355]/30', 'to-[#d4a76a]/30', 'border-[#d4a76a]');
+                botaoFixar.innerHTML = '<i data-lucide="check" style="width: 1rem; height: 1rem;"></i> Destino Selado!';
+                botaoFixar.style.background = 'linear-gradient(135deg, rgba(139, 115, 85, 0.3), rgba(212, 167, 106, 0.3))';
+                botaoFixar.style.borderColor = '#d4a76a';
                 botaoFixar.disabled = true;
                 if (window.lucide) lucide.createIcons();
             }
             
-            const secaoSorte = document.getElementById('secao-dados-sorte');
+            const secaoSorte = document.getElementById('secao-sorte');
             if (secaoSorte) {
-                secaoSorte.classList.add('border-[#d4a76a]');
+                secaoSorte.style.borderColor = '#d4a76a';
                 secaoSorte.style.boxShadow = '0 0 30px rgba(212, 167, 106, 0.2)';
                 setTimeout(() => {
                     secaoSorte.style.boxShadow = '';
@@ -2046,17 +2476,17 @@
             if (cardSorte) {
                 cardSorte.textContent = sorteAtual !== null ? `${sorteAtual}%` : '--';
                 
-                const cardContainer = cardSorte.closest('.bg-\\[\\#1a1510\\]') || cardSorte.closest('.card-destino');
+                const cardContainer = cardSorte.closest('#conteudo-sorte');
                 if (cardContainer) {
-                    cardContainer.classList.remove('border-[#8b7355]', 'border-[#f4d29a]', 'border-[#8b4513]');
-                    cardContainer.classList.remove('shadow-lg', 'shadow-[#f4d29a]/20');
-                    
                     if (sorteAtual >= 75) {
-                        cardContainer.classList.add('border-[#f4d29a]', 'shadow-lg', 'shadow-[#f4d29a]/20');
+                        cardContainer.style.borderColor = '#f4d29a';
+                        cardContainer.style.boxShadow = '0 0 20px rgba(244, 210, 154, 0.2)';
                     } else if (sorteAtual <= 25) {
-                        cardContainer.classList.add('border-[#8b4513]');
+                        cardContainer.style.borderColor = '#8b4513';
+                        cardContainer.style.boxShadow = '';
                     } else {
-                        cardContainer.classList.add('border-[#8b7355]');
+                        cardContainer.style.borderColor = '#8b7355';
+                        cardContainer.style.boxShadow = '';
                     }
                 }
             }
@@ -2069,7 +2499,7 @@
                     setTimeout(() => {
                         elemento.textContent = dadosSorte[index];
                         
-                        const dadoContainer = elemento.closest('.rounded-xl') || elemento.closest('.dado-container');
+                        const dadoContainer = elemento.closest('.dado-container');
                         if (dadosSorte[index] > 80 && dadoContainer) {
                             dadoContainer.classList.add('high-roll');
                         } else {
@@ -2085,68 +2515,67 @@
             
             const calculoEl = document.getElementById('calculo-sorte');
             if (calculoEl) {
-                const calculo = `((<span class="text-white">${dadosSorte[0]}</span> + <span class="text-white">${dadosSorte[2]}</span>) × 2 - <span class="text-white">${dadosSorte[1]}</span>) ÷ 2 = <span class="${sorteAtual >= 75 ? 'text-[#f4d29a]' : sorteAtual <= 25 ? 'text-[#8b4513]' : 'text-[#d4a76a]'} font-bold">${sorteAtual}</span>`;
+                const calculo = `((<span style="color: white">${dadosSorte[0]}</span> + <span style="color: white">${dadosSorte[2]}</span>) × 2 - <span style="color: white">${dadosSorte[1]}</span>) ÷ 2 = <span style="color: ${sorteAtual >= 75 ? '#f4d29a' : sorteAtual <= 25 ? '#8b4513' : '#d4a76a'}; font-weight: bold">${sorteAtual}</span>`;
                 calculoEl.innerHTML = calculo;
             }
             
-            const titulo = document.querySelector('#secao-dados-sorte h3') || document.querySelector('.titulo-destino');
+            const titulo = document.querySelector('#secao-sorte h2');
             if (titulo) {
                 if (sorteAtual >= 75) {
-                    titulo.innerHTML = '<i data-lucide="crown" class="w-5 h-5 inline mr-2 text-[#f4d29a]"></i>Destino Glorioso';
+                    titulo.innerHTML = '<i data-lucide="crown" style="width: 1.5rem; height: 1.5rem;"></i> Destino Glorioso';
                 } else if (sorteAtual <= 25) {
-                    titulo.innerHTML = '<i data-lucide="cloud-rain" class="w-5 h-5 inline mr-2 text-[#8b4513]"></i>Destino Sombrio';
+                    titulo.innerHTML = '<i data-lucide="cloud-rain" style="width: 1.5rem; height: 1.5rem;"></i> Destino Sombrio';
                 } else {
-                    titulo.innerHTML = '<i data-lucide="compass" class="w-5 h-5 inline mr-2 text-[#d4a76a]"></i>Destino Incerto';
+                    titulo.innerHTML = '<i data-lucide="compass" style="width: 1.5rem; height: 1.5rem;"></i> Sistema de Destino';
                 }
                 if (window.lucide) lucide.createIcons();
             }
         }
 
         function gerarRecomendacoesBaseadasNaSorte(sorte) {
-            const container = document.getElementById('card-personagem-output') || document.getElementById('recomendacoes-container');
+            const container = document.getElementById('recomendacoes-container');
             if (!container) return;
             
             let recomendacao = '';
             let icone = '🎯';
+            let titulo = 'DESTINO: ' + sorte + '%';
             
             if (sorte >= 90) {
                 recomendacao = 'SORTE LENDÁRIA! Você é abençoado pelos deuses. Armas com crítico máximo são obrigatórias.';
                 icone = '✨';
+                titulo = '✨ DESTINO GLORIOSO: ' + sorte + '%';
             } else if (sorte >= 75) {
                 recomendacao = 'Sorte excelente! Foque em armas com alto dano crítico e efeitos especiais.';
                 icone = '🎲';
+                titulo = '🎲 DESTINO FAVORÁVEL: ' + sorte + '%';
             } else if (sorte >= 60) {
                 recomendacao = 'Sorte acima da média. Armas balanceadas com chance de crítico são ideais.';
                 icone = '🍀';
+                titulo = '🍀 DESTINO POSITIVO: ' + sorte + '%';
             } else if (sorte >= 40) {
                 recomendacao = 'Sorte mediana. Use armas confiáveis com dano constante.';
                 icone = '⚖️';
+                titulo = '⚖️ DESTINO EQUILIBRADO: ' + sorte + '%';
             } else if (sorte >= 25) {
                 recomendacao = 'Sorte abaixo da média. Prefira armas defensivas e equipamentos de proteção.';
                 icone = '🛡️';
+                titulo = '🛡️ DESTINO DESAFIADOR: ' + sorte + '%';
             } else {
                 recomendacao = 'Sorte crítica baixa. Foque em sobrevivência e evite riscos desnecessários.';
                 icone = '⚠️';
+                titulo = '⚠️ DESTINO SOMBRIO: ' + sorte + '%';
             }
             
-            let cardSorte = document.getElementById('card-recomendacao-sorte');
-            if (!cardSorte) {
-                cardSorte = document.createElement('div');
-                cardSorte.id = 'card-recomendacao-sorte';
-                cardSorte.className = `bg-[#1a1510] border border-[#8b7355] p-4 rounded-lg mb-4`;
-                container.prepend(cardSorte);
-            }
-            
-            cardSorte.innerHTML = `
-                <div class="flex items-center gap-2 mb-2">
-                    <span class="text-2xl">${icone}</span>
-                    <span class="font-cinzel font-bold text-[#f4d29a]">DESTINO: ${sorte}%</span>
+            container.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
+                    <span style="font-size: 1.5rem;">${icone}</span>
+                    <span style="font-family: Cinzel; font-weight: bold; color: #f4d29a;">${titulo}</span>
                 </div>
-                <p class="text-[#d4a76a]">${recomendacao}</p>
+                <p style="color: #d4a76a; margin-bottom: 1rem;">${recomendacao}</p>
                 ${sorte >= 75 ? `
-                <div class="mt-3 p-2 bg-[#8b7355]/10 border border-[#8b7355]/20 rounded">
-                    <p class="text-sm text-[#f4d29a] font-medium">🎯 Armas recomendadas (Alto Crítico):</p>
-                    <ul class="text-xs text-[#d4a76a] mt-1 list-disc list-inside">
+                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(139, 115, 85, 0.1); border: 1px solid rgba(139, 115, 85, 0.2); border-radius: 0.5rem;">
+                    <p style="color: #f4d29a; font-weight: 500; margin-bottom: 0.5rem;">🎯 Armas recomendadas (Alto Crítico):</p>
+                    <ul style="color: #d4a76a; font-size: 0.875rem; margin-left: 1rem;">
                         <li>Adagas Gêmeas da Sorte (19-20/x3)</li>
                         <li>Espada Vorpal (18-20/x2)</li>
                         <li>Arco do Acerto Certeiro (x4 crítico)</li>
@@ -2181,12 +2610,9 @@
                     atualizarDisplaySorte();
                     
                     if (sorteFixada) {
-                        const secaoSorte = document.getElementById('secao-dados-sorte');
-                        if (secaoSorte) secaoSorte.classList.remove('hidden');
-                        
                         const botaoFixar = document.getElementById('btn-fixar-sorte');
                         if (botaoFixar) {
-                            botaoFixar.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i> Destino Selado!';
+                            botaoFixar.innerHTML = '<i data-lucide="check" style="width: 1rem; height: 1rem;"></i> Destino Selado!';
                             botaoFixar.disabled = true;
                         }
                     }
@@ -2208,213 +2634,241 @@
             if (btnFixar) {
                 btnFixar.addEventListener('click', fixarSorte);
             }
-            
-            const btnReset = document.getElementById('btn-reset-sorte');
-            if (btnReset) {
-                btnReset.addEventListener('click', function() {
-                    if (confirm('Resetar sorte e desfazer destino fixado?')) {
-                        sorteAtual = null;
-                        dadosSorte = [0, 0, 0];
-                        sorteFixada = false;
-                        atualizarDisplaySorte();
-                        salvarSorteNoLocalStorage();
-                        mostrarFeedback('Destino resetado!', 'info');
-                    }
-                });
-            }
-        }
-        // Adicione esta função no sistema de derivados
-        function resetarDerivadosAvancados() {
-            if (!confirm('Tem certeza que deseja resetar TODOS os derivados avançados?\n\nIsso irá resetar blindagem, velocidade, iniciativa, percepção, visão noturna, esquiva e resistência para 0.')) {
-                return;
-            }
-            
-            // Resetar derivados
-            Object.keys(sistemaDerivados.derivados).forEach(key => {
-                sistemaDerivados.derivados[key].valor = 0;
-                sistemaDerivados.derivados[key].ativo = false;
-            });
-            
-            // Resetar recursos
-            sistemaDerivados.recursos.vida.atual = 100;
-            sistemaDerivados.recursos.mana.atual = 100;
-            sistemaDerivados.recursos.estamina.atual = 100;
-            
-            // Atualizar interface
-            atualizarDisplayRecurso('vida');
-            atualizarDisplayRecurso('mana');
-            atualizarDisplayRecurso('estamina');
-            gerarCardsDerivados();
-            
-            // Salvar
-            salvarDerivadosNoLocalStorage();
-            
-            mostrarFeedback('Derivados avançados resetados com sucesso!', 'success');
         }
 
-        // Adicione também uma função para resetar apenas recursos
-        function resetarRecursos() {
-            if (confirm('Resetar recursos vitais para valores máximos?')) {
-                sistemaDerivados.recursos.vida.atual = sistemaDerivados.recursos.vida.max;
-                sistemaDerivados.recursos.mana.atual = sistemaDerivados.recursos.mana.max;
-                sistemaDerivados.recursos.estamina.atual = sistemaDerivados.recursos.estamina.max;
-                
-                atualizarDisplayRecurso('vida');
-                atualizarDisplayRecurso('mana');
-                atualizarDisplayRecurso('estamina');
-                
-                salvarDerivadosNoLocalStorage();
-                mostrarFeedback('Recursos restaurados!', 'success');
-            }
-        }
-
-        // Adicione também uma função para resetar apenas derivados (sem recursos)
-        function resetarApenasDerivados() {
-            if (!confirm('Resetar apenas derivados (blindagem, velocidade, etc.) para 0?')) {
-                return;
-            }
+        // FUNÇÕES DO SISTEMA DE RECURSOS
+        function renderRecursos() {
+            const container = document.getElementById('recursos-container');
+            if (!container) return;
             
-            Object.keys(sistemaDerivados.derivados).forEach(key => {
-                sistemaDerivados.derivados[key].valor = 0;
-            });
+            const recursos = sistemaDerivados.recursos;
             
-            gerarCardsDerivados();
-            salvarDerivadosNoLocalStorage();
-            mostrarFeedback('Derivados resetados!', 'info');
+            container.innerHTML = Object.entries(recursos).map(([key, recurso]) => {
+                const porcentagem = (recurso.atual / recurso.max) * 100;
+                const classe = `card-${key}`;
+                
+                return `
+                    <div class="${classe} animate-fadeIn" style="
+                        border: 1px solid;
+                        border-radius: 1rem;
+                        padding: 1.5rem;
+                        position: relative;
+                        overflow: hidden;
+                    ">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="
+                                    width: 3rem;
+                                    height: 3rem;
+                                    background: ${recurso.cor}20;
+                                    border-radius: 0.75rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i data-lucide="${recurso.icone}" style="width: 1.5rem; height: 1.5rem; color: ${recurso.cor};"></i>
+                                </div>
+                                <div>
+                                    <h4 style="
+                                        font-weight: 600;
+                                        font-size: 1.25rem;
+                                        color: ${recurso.cor};
+                                        margin-bottom: 0.25rem;
+                                        text-transform: capitalize;
+                                    ">${key}</h4>
+                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                        Recursos vitais do personagem
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div style="text-align: right;">
+                                <div id="${key}-atual" style="
+                                    font-family: 'JetBrains Mono', monospace;
+                                    font-size: 2.5rem;
+                                    font-weight: 700;
+                                    color: ${recurso.cor};
+                                ">${recurso.atual}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                                    / <span id="${key}-max">${recurso.max}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-secondary); font-size: 0.875rem;">Progresso</span>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: ${recurso.cor};">
+                                    ${porcentagem.toFixed(1)}%
+                                </span>
+                            </div>
+                            <div style="
+                                height: 8px;
+                                background: ${recurso.cor}20;
+                                border-radius: 4px;
+                                overflow: hidden;
+                            ">
+                                <div id="barra-${key}" style="
+                                    height: 100%;
+                                    background: ${recurso.cor};
+                                    border-radius: 4px;
+                                    width: ${porcentagem}%;
+                                    transition: width 0.5s ease;
+                                "></div>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;">
+                            <input type="range" 
+                                id="input-${key}"
+                                min="0" 
+                                max="${recurso.max}" 
+                                value="${recurso.atual}" 
+                                oninput="ajustarRecurso('${key}', this.value)"
+                                style="
+                                    width: 100%;
+                                    height: 8px;
+                                    background: ${recurso.cor}20;
+                                    border-radius: 4px;
+                            ">
+                            <input type="number" 
+                                min="0" 
+                                max="${recurso.max}" 
+                                value="${recurso.atual}"
+                                onchange="ajustarRecurso('${key}', this.value)"
+                                style="
+                                    width: 60px;
+                                    padding: 0.25rem;
+                                    background: var(--bg-panel);
+                                    border: 1px solid var(--border-color);
+                                    border-radius: 0.25rem;
+                                    color: ${recurso.cor};
+                                    font-family: 'JetBrains Mono', monospace;
+                                    text-align: center;
+                            ">
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            if (window.lucide) {
+                lucide.createIcons();
+            }
         }
 
         // FUNÇÕES DO SISTEMA DE DERIVADOS
-        function inicializarSistemaDerivados() {
-            carregarDerivadosDoLocalStorage();
-            criarInterfaceDerivados();
-            configurarEventosRecursos();
-            console.log('Sistema de Derivados inicializado');
-        }
-
-        function criarInterfaceDerivados() {
-            const container = document.getElementById('derivados-container') || document.getElementById('status-container');
+        function renderDerivados() {
+            const container = document.getElementById('derivados-container');
             if (!container) return;
             
-            const estilo = document.createElement('style');
-            estilo.textContent = `
-                /* ... estilos existentes ... */
-                
-                /* Novas classes para recursos */
-                .card-vida {
-                    border-color: var(--recurso-vida) !important;
-                }
-                
-                .card-mana {
-                    border-color: var(--recurso-mana) !important;
-                }
-                
-                .card-estamina {
-                    border-color: var(--recurso-estamina) !important;
-                }
-            `;
-            document.head.appendChild(estilo);
-            
-            const derivadosHTML = `
-                <div class="mb-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-cinzel text-xl font-bold text-white flex items-center gap-2">
-                            <i data-lucide="activity" class="w-5 h-5 text-purple-400"></i>
-                            Derivados Avançados (Opcionais)
-                        </h3>
-                        <div class="flex gap-2">
-                            <button onclick="calcularTodosDerivados()" 
-                                    class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                                <i data-lucide="calculator" class="w-4 h-4"></i>
-                                Calcular Todos
-                            </button>
-                            <button onclick="resetarApenasDerivados()" 
-                                    class="px-4 py-2 bg-gradient-to-r from-yellow-600 to-orange-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-                                Resetar Derivados
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-derivados">
-                        <!-- Derivados serão gerados dinamicamente -->
-                    </div>
-                    
-                    <!-- Controles adicionais -->
-                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <button onclick="resetarRecursos()" 
-                                class="px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                            Restaurar Recursos
-                        </button>
-                        
-                        <button onclick="resetarApenasDerivados()" 
-                                class="px-4 py-3 bg-gradient-to-r from-yellow-600 to-amber-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                            <i data-lucide="shield-off" class="w-4 h-4"></i>
-                            Resetar Derivados
-                        </button>
-                        
-                        <button onclick="resetarDerivadosAvancados()" 
-                                class="px-4 py-3 bg-gradient-to-r from-red-600 to-red-800 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            Resetar Tudo
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        function gerarCardsDerivados() {
-            const grid = document.getElementById('grid-derivados');
-            if (!grid) return;
-            
-            grid.innerHTML = Object.entries(sistemaDerivados.derivados).map(([key, derivado]) => {
+            container.innerHTML = Object.entries(sistemaDerivados.derivados).map(([key, derivado]) => {
                 const porcentagem = (derivado.valor / derivado.max) * 100;
                 const ativoClass = derivado.ativo ? 'border-opacity-100' : 'border-opacity-30 opacity-70';
+                const nomeExibicao = key.replace(/([A-Z])/g, ' $1').toUpperCase();
                 
                 return `
-                    <div class="derivado-card bg-[#0f0f12] border ${ativoClass} rounded-xl p-4 cursor-pointer"
-                        onclick="toggleDerivado('${key}')"
-                        style="border-color: ${derivado.cor}">
+                    <div class="derivado-card animate-fadeIn" onclick="toggleDerivado('${key}')" style="
+                        background: var(--bg-panel);
+                        border: 1px solid ${derivado.cor};
+                        ${ativoClass ? 'border-opacity: ' + (derivado.ativo ? '1' : '0.3') + ';' : ''}
+                        ${!derivado.ativo ? 'opacity: 0.7;' : ''}
+                        border-radius: 1rem;
+                        padding: 1.5rem;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.3)';" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
                         
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center" 
-                                    style="background: ${derivado.cor}20">
-                                    <i data-lucide="${derivado.icone}" style="color: ${derivado.cor}" class="w-4 h-4"></i>
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="
+                                    width: 3rem;
+                                    height: 3rem;
+                                    background: ${derivado.cor}20;
+                                    border-radius: 0.75rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                ">
+                                    <i data-lucide="${derivado.icone}" style="width: 1.5rem; height: 1.5rem; color: ${derivado.cor};"></i>
                                 </div>
                                 <div>
-                                    <h4 class="font-semibold text-white capitalize">${key.replace(/([A-Z])/g, ' $1')}</h4>
-                                    <p class="text-xs text-gray-400">${derivado.ativo ? 'Ativo' : 'Inativo'}</p>
+                                    <h4 style="
+                                        font-weight: 600;
+                                        font-size: 1.25rem;
+                                        color: ${derivado.cor};
+                                        margin-bottom: 0.25rem;
+                                    ">${nomeExibicao}</h4>
+                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                        ${derivado.ativo ? 'Ativo' : 'Inativo'} - ${obterDescricaoDerivado(key)}
+                                    </p>
                                 </div>
                             </div>
                             
-                            <div class="text-right">
-                                <div class="font-mono text-2xl font-bold" style="color: ${derivado.cor}" 
-                                    id="valor-${key}">${derivado.valor}</div>
-                                <div class="text-xs text-gray-500">/ ${derivado.max}</div>
+                            <div style="text-align: right;">
+                                <div id="valor-${key}" style="
+                                    font-family: 'JetBrains Mono', monospace;
+                                    font-size: 2.5rem;
+                                    font-weight: 700;
+                                    color: ${derivado.cor};
+                                ">${derivado.valor}</div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                                    / ${derivado.max}
+                                </div>
                             </div>
                         </div>
                         
-                        <div class="h-2 bg-[#2a2a2e] rounded-full overflow-hidden mb-3">
-                            <div class="h-full rounded-full" id="barra-${key}" 
-                                style="width: ${porcentagem}%; background: ${derivado.cor}">
+                        <div style="margin-bottom: 1rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="color: var(--text-secondary); font-size: 0.875rem;">Progresso</span>
+                                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: ${derivado.cor};">
+                                    ${porcentagem.toFixed(1)}%
+                                </span>
+                            </div>
+                            <div style="
+                                height: 8px;
+                                background: ${derivado.cor}20;
+                                border-radius: 4px;
+                                overflow: hidden;
+                            ">
+                                <div id="barra-${key}" style="
+                                    height: 100%;
+                                    background: ${derivado.cor};
+                                    border-radius: 4px;
+                                    width: ${porcentagem}%;
+                                    transition: width 0.5s ease;
+                                "></div>
                             </div>
                         </div>
                         
-                        <div class="flex gap-2">
-                            <input type="range" min="0" max="${derivado.max}" value="${derivado.valor}" 
+                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;">
+                            <input type="range" 
+                                min="0" 
+                                max="${derivado.max}" 
+                                value="${derivado.valor}" 
                                 oninput="ajustarDerivado('${key}', this.value)"
-                                class="flex-1" style="color: ${derivado.cor}">
-                            
-                            <button onclick="calcularDerivado('${key}')" 
-                                    class="px-3 py-2 rounded-lg text-white" 
-                                    style="background: ${derivado.cor}">
-                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                style="
+                                    width: 100%;
+                                    height: 8px;
+                                    background: ${derivado.cor}20;
+                                    border-radius: 4px;
+                            ">
+                            <button onclick="event.stopPropagation(); calcularDerivado('${key}');" style="
+                                padding: 0.5rem;
+                                background: ${derivado.cor};
+                                color: white;
+                                border: none;
+                                border-radius: 0.5rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                transition: all 0.2s;
+                            " onmouseover="this.style.opacity='0.9';" 
+                               onmouseout="this.style.opacity='1';">
+                                <i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i>
                             </button>
-                        </div>
-                        
-                        <div class="mt-3 text-xs text-gray-400" id="desc-${key}">
-                            ${obterDescricaoDerivado(key)}
                         </div>
                     </div>
                 `;
@@ -2430,19 +2884,15 @@
             
             sistemaDerivados.derivados[key].ativo = !sistemaDerivados.derivados[key].ativo;
             
+            // Atualizar display
             const card = document.querySelector(`[onclick="toggleDerivado('${key}')"]`);
             if (card) {
                 if (sistemaDerivados.derivados[key].ativo) {
-                    card.classList.remove('border-opacity-30', 'opacity-70');
-                    card.classList.add('border-opacity-100');
+                    card.style.borderOpacity = '1';
+                    card.style.opacity = '1';
                 } else {
-                    card.classList.remove('border-opacity-100');
-                    card.classList.add('border-opacity-30', 'opacity-70');
-                }
-                
-                const statusText = card.querySelector('p.text-xs');
-                if (statusText) {
-                    statusText.textContent = sistemaDerivados.derivados[key].ativo ? 'Ativo' : 'Inativo';
+                    card.style.borderOpacity = '0.3';
+                    card.style.opacity = '0.7';
                 }
             }
             
@@ -2506,8 +2956,11 @@
         function calcularDerivado(key) {
             if (!sistemaDerivados.derivados[key]) return;
             
-            const { forca, destreza, constituicao, inteligencia, sabedoria, carisma } = sistemaDerivados.atributos;
-            const nivel = nivelAtual;
+            // Obter atributos atualizados do sistema principal
+            const data = StatusSystemAvancado.load();
+            const { forca, destreza, constituicao, inteligencia, sabedoria, carisma } = data.atributos;
+            const nivel = data.nivel;
+            
             let valor = 0;
             let descricao = '';
             
@@ -2555,26 +3008,28 @@
                     break;
             }
             
+            // Aplicar limite máximo
             valor = Math.min(valor, sistemaDerivados.derivados[key].max);
             
+            // Aplicar bônus da sorte
             if (sorteAtual !== null) {
                 const bonusSorte = Math.floor(valor * (sorteAtual / 500));
                 valor += bonusSorte;
                 descricao += ` + Sorte(${sorteAtual}%): +${bonusSorte}`;
             }
             
+            // Atualizar valor
             sistemaDerivados.derivados[key].valor = valor;
             
+            // Atualizar display
             const valorEl = document.getElementById(`valor-${key}`);
             const barraEl = document.getElementById(`barra-${key}`);
-            const descEl = document.getElementById(`desc-${key}`);
             
             if (valorEl) valorEl.textContent = valor;
             if (barraEl) {
                 const porcentagem = (valor / sistemaDerivados.derivados[key].max) * 100;
                 barraEl.style.width = `${porcentagem}%`;
             }
-            if (descEl) descEl.textContent = descricao;
             
             salvarDerivadosNoLocalStorage();
             mostrarFeedback(`${key.replace(/([A-Z])/g, ' $1')} calculado: ${valor}`, 'success');
@@ -2590,13 +3045,13 @@
 
         function obterDescricaoDerivado(key) {
             const descricoes = {
-                blindagem: 'Defesa contra danos físicos (CON×0.7 + STR×0.3 + nível)',
-                velocidade: 'Velocidade de movimento e ataque (DEX×0.8 + CON×0.2 + nível)',
-                iniciativa: 'Quem age primeiro no combate (DEX×0.6 + INT×0.4 + nível)',
-                percepcao: 'Detectar perigos e detalhes (WIS×0.7 + INT×0.3 + nível)',
-                visaoNoturna: 'Ver no escuro (WIS + INT + nível)',
-                esquiva: 'Evitar ataques (DEX×0.9 + nível)',
-                resistencia: 'Resistir a efeitos e condições (CON×0.8 + nível)'
+                blindagem: 'Defesa contra danos físicos',
+                velocidade: 'Velocidade de movimento e ataque',
+                iniciativa: 'Quem age primeiro no combate',
+                percepcao: 'Detectar perigos e detalhes',
+                visaoNoturna: 'Ver no escuro',
+                esquiva: 'Evitar ataques',
+                resistencia: 'Resistir a efeitos e condições'
             };
             
             return descricoes[key] || 'Derivado calculado a partir de atributos e nível';
@@ -2648,10 +3103,6 @@
             const dadosParaSalvar = {
                 derivados: sistemaDerivados.derivados,
                 recursos: sistemaDerivados.recursos,
-                atributos: sistemaDerivados.atributos,
-                nivel: nivelAtual,
-                xp: xpAtual,
-                xpProximo: xpProximoNivel,
                 timestamp: new Date().toISOString()
             };
             
@@ -2687,14 +3138,6 @@
                     });
                 }
                 
-                if (dados.atributos) {
-                    sistemaDerivados.atributos = { ...dados.atributos };
-                }
-                
-                if (dados.nivel) nivelAtual = dados.nivel;
-                if (dados.xp) xpAtual = dados.xp;
-                if (dados.xpProximo) xpProximoNivel = dados.xpProximo;
-                
                 console.log('Derivados carregados do localStorage');
                 
             } catch (error) {
@@ -2707,22 +3150,22 @@
             if (!container) {
                 container = document.createElement('div');
                 container.id = 'feedback-container';
-                container.className = 'fixed top-4 right-4 z-50 space-y-2';
+                container.className = 'feedback-container';
                 document.body.appendChild(container);
             }
             
             const feedback = document.createElement('div');
             
             const classes = {
-                success: 'bg-green-900/80 border-green-700 text-green-300',
-                warning: 'bg-yellow-900/80 border-yellow-700 text-yellow-300',
-                error: 'bg-red-900/80 border-red-700 text-red-300',
-                info: 'bg-blue-900/80 border-blue-700 text-blue-300'
+                success: 'feedback-success',
+                warning: 'feedback-warning',
+                error: 'feedback-error',
+                info: 'feedback-info'
             };
             
-            feedback.className = `px-4 py-3 rounded-lg border shadow-lg animate-slide-in-right ${classes[tipo] || classes.info}`;
+            feedback.className = `feedback-item ${classes[tipo] || classes.info}`;
             feedback.innerHTML = `
-                <div class="flex items-center gap-2">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
                     <span>${mensagem}</span>
                 </div>
             `;
@@ -2730,63 +3173,51 @@
             container.appendChild(feedback);
             
             setTimeout(() => {
-                feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                feedback.style.opacity = '0';
+                feedback.style.transition = 'opacity 0.5s';
                 setTimeout(() => feedback.remove(), 500);
             }, 3000);
         }
 
-        function configurarEventosRecursos() {
-            ['vida', 'mana', 'estamina'].forEach(tipo => {
-                const input = document.getElementById(`input-${tipo}`);
-                if (input) {
-                    input.addEventListener('input', function() {
-                        const valor = parseInt(this.value);
-                        if (!isNaN(valor)) {
-                            const barra = document.getElementById(`barra-${tipo}`);
-                            const porcentagem = (valor / sistemaDerivados.recursos[tipo].max) * 100;
-                            if (barra) {
-                                barra.style.width = `${Math.min(100, Math.max(0, porcentagem))}%`;
-                            }
-                        }
-                    });
-                }
-            });
+        function resetarRecursos() {
+            if (confirm('Restaurar todos os recursos vitais para o máximo?')) {
+                Object.keys(sistemaDerivados.recursos).forEach(key => {
+                    sistemaDerivados.recursos[key].atual = sistemaDerivados.recursos[key].max;
+                });
+                
+                renderRecursos();
+                salvarDerivadosNoLocalStorage();
+                mostrarFeedback('Recursos vitais restaurados!', 'success');
+            }
         }
 
-        function atualizarAtributos(novosAtributos) {
-            sistemaDerivados.atributos = { ...novosAtributos };
+        function resetarApenasDerivados() {
+            if (!confirm('Resetar todos os derivados avançados para 0?')) {
+                return;
+            }
             
             Object.keys(sistemaDerivados.derivados).forEach(key => {
-                if (sistemaDerivados.derivados[key].ativo) {
-                    calcularDerivado(key);
-                }
+                sistemaDerivados.derivados[key].valor = 0;
             });
             
+            renderDerivados();
             salvarDerivadosNoLocalStorage();
-            mostrarFeedback('Atributos atualizados! Derivados recalculados.', 'success');
+            mostrarFeedback('Derivados resetados!', 'info');
         }
 
-        function atualizarNivel(novoNivel, novoXP) {
-            nivelAtual = novoNivel;
-            xpAtual = novoXP;
-            
-            xpProximoNivel = Math.floor(1000 * Math.pow(1.5, nivelAtual - 1));
+        function resetarDerivadosAvancados() {
+            if (!confirm('Resetar TODOS os derivados avançados?\n\nIsso incluirá blindagem, velocidade, etc.')) {
+                return;
+            }
             
             Object.keys(sistemaDerivados.derivados).forEach(key => {
-                if (sistemaDerivados.derivados[key].ativo) {
-                    calcularDerivado(key);
-                }
+                sistemaDerivados.derivados[key].valor = 0;
+                sistemaDerivados.derivados[key].ativo = false;
             });
             
+            renderDerivados();
             salvarDerivadosNoLocalStorage();
-            mostrarFeedback(`Nível ${nivelAtual} atualizado!`, 'success');
-        }
-
-        function inicializarSistemaSorte() {
-            carregarSorteDoLocalStorage();
-            inicializarSistemaDerivados();
-            configurarEventosSorte();
-            console.log('Sistema de Sorte inicializado');
+            mostrarFeedback('Derivados avançados resetados!', 'success');
         }
 
         // ====================================================================
@@ -2799,82 +3230,13 @@
             renderAtributos(statusData);
             updateUI(statusData);
             renderHistorico(statusData.historico);
-        }
-
-        // ============================================================
-        // FUNÇÃO PARA INICIALIZAR TODOS OS SISTEMAS
-        // ============================================================
-        function inicializarTodosSistemas() {
-            // Inicializar sistema principal
-            StatusSystemAvancado.init();
             
-            // Carregar dados iniciais do sistema principal
-            loadStatusData();
+            // Atualizar recursos e derivados com dados do sistema principal
+            sistemaDerivados.atributos = { ...statusData.atributos };
             
-            // Configurar eventos do sistema principal
-            setupEventListeners();
-            
-            // Inicializar sistema de sorte/derivados
-            if (typeof inicializarSistemaSorte !== 'undefined') {
-                inicializarSistemaSorte();
-                
-                // Integrar os dois sistemas
-                const data = StatusSystemAvancado.load();
-                
-                // Atualizar atributos no sistema de derivados
-                if (window.atualizarAtributos) {
-                    window.atualizarAtributos(data.atributos);
-                }
-                
-                // Atualizar nível no sistema de derivados
-                if (window.atualizarNivel) {
-                    window.atualizarNivel(data.nivel, data.experiencia);
-                }
-            } else {
-                console.warn('Sistema de sorte não disponível');
-            }
-            
-            console.log('Todos os sistemas inicializados');
-        }
-
-        // ============================================================
-        // REMOVER CLASSES TAILWIND E SUBSTITUIR POR ESTILOS INLINE
-        // ============================================================
-        function corrigirEstilosTailwind() {
-            const elementos = document.querySelectorAll('[class*="bg-\\["], [class*="border-\\["], [class*="text-\\["], [class*="grid-cols-"]');
-            
-            elementos.forEach(elemento => {
-                const classes = elemento.className.split(' ');
-                const novosEstilos = {};
-                
-                classes.forEach(classe => {
-                    if (classe.startsWith('bg-[')) {
-                        const cor = classe.match(/bg-\[(.*?)\]/)[1];
-                        novosEstilos.background = cor;
-                    } else if (classe.startsWith('border-[')) {
-                        const cor = classe.match(/border-\[(.*?)\]/)[1];
-                        novosEstilos.borderColor = cor;
-                    } else if (classe.startsWith('text-[')) {
-                        const cor = classe.match(/text-\[(.*?)\]/)[1];
-                        novosEstilos.color = cor;
-                    } else if (classe.startsWith('grid-cols-')) {
-                        const cols = classe.match(/grid-cols-(\d+)/)[1];
-                        elemento.parentElement.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
-                    } else if (classe.startsWith('p-')) {
-                        const padding = classe.match(/p-(\d+)/)[1];
-                        novosEstilos.padding = `${padding * 0.25}rem`;
-                    } else if (classe.startsWith('m-')) {
-                        const margin = classe.match(/m-(\d+)/)[1];
-                        novosEstilos.margin = `${margin * 0.25}rem`;
-                    }
-                });
-                
-                Object.keys(novosEstilos).forEach(estilo => {
-                    elemento.style[estilo] = novosEstilos[estilo];
-                });
-                
-                elemento.className = elemento.className.replace(/bg-\[.*?\]|border-\[.*?\]|text-\[.*?\]|grid-cols-\d+|p-\d+|m-\d+/g, '').trim();
-            });
+            // Renderizar recursos e derivados
+            renderRecursos();
+            renderDerivados();
         }
 
         // RENDERIZAR ATRIBUTOS
@@ -3289,16 +3651,60 @@
             modal.classList.remove('active');
         }
 
+        // FUNÇÕES DE EXPORT/IMPORT
+        function exportarParaTxt() {
+            const txtContent = StatusSystemAvancado.exportToTxt();
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `status_avancado_${new Date().getTime()}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            StatusSystemAvancado.showNotification('Dados exportados para TXT com sucesso!', 'success');
+        }
+
+        function importarDeTxt() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.txt';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    const sucesso = StatusSystemAvancado.importFromTxt(content);
+                    if (sucesso) {
+                        loadStatusData();
+                        mostrarFeedback('Dados importados com sucesso!', 'success');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            
+            input.click();
+        }
+
         // CONFIGURAR EVENTOS
         function setupEventListeners() {
+            // Configurações
             document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
             document.getElementById('btn-fechar-modal').addEventListener('click', () => fecharModal('modal-config'));
             
+            // Modo Mestre
             document.getElementById('btn-chefe').addEventListener('click', function() {
                 StatusSystemAvancado.toggleModoMestre();
                 loadStatusData();
             });
             
+            // XP
             document.getElementById('btn-add-xp').addEventListener('click', () => abrirModal('modal-xp'));
             document.getElementById('btn-confirmar-xp').addEventListener('click', function() {
                 const quantidade = document.getElementById('input-xp-quantidade').value;
@@ -3309,6 +3715,7 @@
                 }
             });
             
+            // Pontos
             document.getElementById('btn-adicionar-pontos').addEventListener('click', () => abrirModal('modal-pontos'));
             document.getElementById('btn-confirmar-pontos').addEventListener('click', function() {
                 const quantidade = document.getElementById('input-pontos-quantidade').value;
@@ -3319,6 +3726,7 @@
                 }
             });
             
+            // Distribuição Aleatória
             document.getElementById('btn-distribuir-aleatorio').addEventListener('click', function() {
                 const data = StatusSystemAvancado.load();
                 const totalAtual = Object.values(data.atributos).reduce((a, b) => a + b, 0);
@@ -3340,6 +3748,7 @@
                 }
             });
             
+            // Subir nível
             document.getElementById('btn-subir-nivel').addEventListener('click', function() {
                 const resultado = StatusSystemAvancado.subirNivel();
                 if (resultado) {
@@ -3347,6 +3756,7 @@
                 }
             });
             
+            // Resetar tudo
             document.getElementById('btn-reset-tudo').addEventListener('click', function() {
                 const resultado = StatusSystemAvancado.reset();
                 if (resultado) {
@@ -3354,6 +3764,7 @@
                 }
             });
             
+            // Configurações avançadas
             document.getElementById('btn-aplicar-minimo').addEventListener('click', function() {
                 const valor = document.getElementById('input-minimo-aleatorio').value;
                 StatusSystemAvancado.updateConfig({ minimoParaAleatorio: parseInt(valor) });
@@ -3372,6 +3783,7 @@
                 loadStatusData();
             });
             
+            // Configurações do modal
             document.getElementById('slider-limite-atributo').addEventListener('input', function() {
                 document.getElementById('valor-limite-atributo').textContent = this.value;
             });
@@ -3405,6 +3817,7 @@
                 }
             });
             
+            // Histórico
             document.getElementById('btn-limpar-historico').addEventListener('click', function() {
                 if (confirm('Limpar todo o histórico de ações?')) {
                     const data = StatusSystemAvancado.load();
@@ -3415,6 +3828,7 @@
                 }
             });
             
+            // Exportar dados
             document.getElementById('btn-exportar-dados').addEventListener('click', function() {
                 const data = StatusSystemAvancado.exportData();
                 const blob = new Blob([data], { type: 'application/json' });
@@ -3428,9 +3842,14 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                StatusSystemAvancado.showNotification('Dados exportados com sucesso!', 'success');
+                StatusSystemAvancado.showNotification('Dados exportados para JSON com sucesso!', 'success');
             });
             
+            // Exportar/Importar TXT
+            document.getElementById('btn-exportar-txt').addEventListener('click', exportarParaTxt);
+            document.getElementById('btn-importar-txt').addEventListener('click', importarDeTxt);
+            
+            // Atualização de outras abas
             window.addEventListener('statusAvancadoUpdated', function() {
                 loadStatusData();
                 StatusSystemAvancado.showNotification('Dados atualizados de outra aba', 'info');
@@ -3445,9 +3864,10 @@
         window.adicionarPontoAvancado = adicionarPontoAvancado;
         window.removerPontoAvancado = removerPontoAvancado;
         window.atualizarSliderAvancado = atualizarSliderAvancado;
-        window.salvarSorteNoLocalStorage = salvarSorteNoLocalStorage;
+        window.exportarParaTxt = exportarParaTxt;
+        window.importarDeTxt = importarDeTxt;
 
-        // EXPOR FUNÇÕES DO SISTEMA DE SORTE/DERIVADOS GLOBALMENTE
+        // SISTEMA DE SORTE/DERIVADOS
         window.rolarSorte = rolarSorte;
         window.fixarSorte = fixarSorte;
         window.calcularDerivado = calcularDerivado;
@@ -3455,13 +3875,14 @@
         window.ajustarDerivado = ajustarDerivado;
         window.ajustarRecurso = ajustarRecurso;
         window.toggleDerivado = toggleDerivado;
-        window.atualizarAtributos = atualizarAtributos;
-        window.atualizarNivel = atualizarNivel;
-        window.inicializarSistemaSorte = inicializarSistemaSorte;
-        // Adicione ao final do script, junto com as outras exportações
-        window.resetarDerivadosAvancados = resetarDerivadosAvancados;
         window.resetarRecursos = resetarRecursos;
         window.resetarApenasDerivados = resetarApenasDerivados;
+        window.resetarDerivadosAvancados = resetarDerivadosAvancados;
+        window.sistemaDerivados = sistemaDerivados;
+        window.sorteAtual = sorteAtual;
+        window.dadosSorte = dadosSorte;
+        window.sorteFixada = sorteFixada;
+
         // INICIALIZAÇÃO PRINCIPAL
         document.addEventListener('DOMContentLoaded', function() {
             try {
@@ -3472,28 +3893,27 @@
                     lucide.createIcons();
                 }
                 
-                // Corrigir estilos Tailwind primeiro
-                setTimeout(corrigirEstilosTailwind, 100);
+                // Inicializar sistema principal
+                StatusSystemAvancado.init();
                 
-                // Inicializar todos os sistemas
-                inicializarTodosSistemas();
+                // Carregar dados iniciais
+                loadStatusData();
                 
-                console.log('Todos os sistemas carregados com sucesso');
+                // Carregar dados do sistema de sorte/derivados
+                carregarSorteDoLocalStorage();
+                carregarDerivadosDoLocalStorage();
+                
+                // Configurar eventos
+                setupEventListeners();
+                configurarEventosSorte();
+                
+                console.log('Todos os sistemas inicializados com sucesso');
+                
             } catch (error) {
                 console.error('Erro na inicialização:', error);
                 StatusSystemAvancado.showNotification('Erro ao inicializar sistemas!', 'error');
             }
         });
-
-        // Verificação de segurança para o sistema de sorte
-        setTimeout(function() {
-            if (typeof inicializarSistemaSorte === 'undefined') {
-                console.warn('Sistema de sorte não inicializado automaticamente');
-            }
-        }, 2000);
-
-        // Chame esta função após inicializarTodosSistemas
-        setTimeout(verificarSistemaSorte, 1000);
     </script>
 </body>
 </html>
