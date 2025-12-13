@@ -397,7 +397,7 @@
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
                         Nova Classe
                     </button>
-                    <button onclick="salvarClasse()" id="btn-confirmar" 
+                    <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar" 
                             class="px-4 py-2 bg-theme-blue text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors opacity-0">
                         Confirmar Classe
                     </button>
@@ -561,7 +561,7 @@
                 <i data-lucide="x" class="w-4 h-4 inline mr-2"></i>
                 Cancelar
             </button>
-            <button onclick="salvarClasse()" id="btn-confirmar-final" 
+            <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar-final" 
                     class="px-6 py-3 bg-gradient-to-r from-theme-blue to-blue-700 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity opacity-50 cursor-not-allowed">
                 <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
                 Salvar na Ficha
@@ -571,7 +571,7 @@
 
     <script>
         // ====================================================================
-        // SISTEMA COMPLETO DE CLASSES - INTEGRADO COM GRIMORIO-CORE.JS
+        // SISTEMA COMPLETO DE CLASSES - CORRIGIDO PARA GRIMORIO-CORE.JS
         // ====================================================================
         
         // Inicializar ícones
@@ -587,18 +587,22 @@
         // Inicializar sistema
         function inicializarSistema() {
             // Verificar se grimorio-core.js está disponível
-            if (typeof grimorioDB === 'undefined') {
+            if (typeof Grimorio === 'undefined') {
                 console.error('grimorio-core.js não carregado!');
                 mostrarErro('Sistema de armazenamento não encontrado');
                 return;
             }
+            
+            // Inicializar o Grimorio
+            Grimorio.init();
             
             carregarClassesPersonalizadas();
             verificarClasseAtual();
         }
         
         function carregarClassesPersonalizadas() {
-            const classes = grimorioDB.obterClassesPersonalizadas();
+            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
+            const classes = Grimorio.getClasses(); // Método correto do seu grimorio-core.js
             const container = document.getElementById('container-classes-personalizadas');
             const contador = document.getElementById('contador-classes');
             
@@ -673,16 +677,17 @@
         }
         
         function verificarClasseAtual() {
-            const personagem = grimorioDB.obterPersonagem();
+            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
+            const personagem = Grimorio.getCharacter();
             if (personagem && personagem.classe) {
-                // Verificar se é classe padrão ou personalizada
-                if (personagem.classePersonalizada) {
+                // Verificar se é classe personalizada
+                const classes = Grimorio.getClasses();
+                const classeEncontrada = classes.find(c => c.nome === personagem.classe);
+                
+                if (classeEncontrada) {
                     // É classe personalizada
-                    const classes = grimorioDB.obterClassesPersonalizadas();
                     const classeIndex = classes.findIndex(c => c.nome === personagem.classe);
-                    if (classeIndex !== -1) {
-                        selecionarClassePersonalizada(classeIndex);
-                    }
+                    selecionarClassePersonalizada(classeIndex);
                 } else {
                     // É classe padrão
                     selecionarClasse(personagem.classe, 'padrao', true);
@@ -764,24 +769,21 @@
                 descricao: `Classe personalizada especializada em ${combate}`
             };
             
-            // Salvar usando grimorio-core.js
-            const sucesso = grimorioDB.salvarClassePersonalizada(novaClasse);
+            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
+            // Salvar classe
+            Grimorio.saveClass(novaClasse);
             
-            if (sucesso) {
-                mostrarFeedbackSucesso(`Classe "${nome}" criada com sucesso!`);
-                fecharModal('modal-nova-classe');
-                carregarClassesPersonalizadas();
-                
-                // Selecionar automaticamente a nova classe
-                const classes = grimorioDB.obterClassesPersonalizadas();
-                const ultimaClasseIndex = classes.length - 1;
-                selecionarClassePersonalizada(ultimaClasseIndex);
-                
-                // Resetar formulário
-                document.getElementById('form-nova-classe').reset();
-            } else {
-                mostrarErro('Erro ao salvar classe');
-            }
+            mostrarFeedbackSucesso(`Classe "${nome}" criada com sucesso!`);
+            fecharModal('modal-nova-classe');
+            carregarClassesPersonalizadas();
+            
+            // Selecionar automaticamente a nova classe
+            const classes = Grimorio.getClasses();
+            const ultimaClasseIndex = classes.length - 1;
+            selecionarClassePersonalizada(ultimaClasseIndex);
+            
+            // Resetar formulário
+            document.getElementById('form-nova-classe').reset();
         }
         
         function getIconForClass(tipoCombate) {
@@ -811,7 +813,7 @@
         
         // Selecionar classe personalizada
         function selecionarClassePersonalizada(index) {
-            const classes = grimorioDB.obterClassesPersonalizadas();
+            const classes = Grimorio.getClasses();
             if (index >= 0 && index < classes.length) {
                 classeSelecionada = classes[index].nome;
                 tipoClasseSelecionada = 'personalizada';
@@ -946,7 +948,6 @@
                             <h5 class="font-semibold text-white mb-2">Status da Classe</h5>
                             <p class="text-sm text-gray-400 mb-3">
                                 Esta classe personalizada será salva na sua ficha com todos os detalhes.
-                                Os atributos serão ajustados automaticamente com base nas especificações.
                             </p>
                             
                             <div class="text-xs text-gray-500">
@@ -955,14 +956,6 @@
                                     Criada em: ${new Date(classe.dataCriacao).toLocaleDateString()}
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="mt-6">
-                            <h5 class="font-semibold text-white mb-2">Próximos Passos</h5>
-                            <p class="text-sm text-gray-400">
-                                Após salvar, vá para a página de <a href="status.html" class="text-theme-blue hover:underline">Status</a> 
-                                para distribuir pontos de atributos baseados nessa classe.
-                            </p>
                         </div>
                     </div>
                 </div>
@@ -1092,28 +1085,30 @@
             document.getElementById('btn-confirmar-final').classList.add('cursor-pointer');
         }
         
-        // Salvar classe na ficha
-        function salvarClasse() {
+        // Salvar classe na ficha - CORRIGIDO PARA USAR O GRIMORIO-CORE.JS
+        function salvarClasseNoPersonagem() {
             if (!classeSelecionada) {
                 mostrarErro('Por favor, selecione uma classe antes de confirmar.');
                 return;
             }
             
-            // Usar grimorio-core.js para salvar
-            const personagem = grimorioDB.obterPersonagem();
+            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
+            const personagem = Grimorio.getCharacter();
             
             if (!personagem) {
-                mostrarErro('Personagem não encontrado. Crie um personagem primeiro.');
+                mostrarErro('Erro ao carregar personagem. Tente recarregar a página.');
                 return;
             }
             
             // Atualizar informações da classe no personagem
-            personagem.classe = classeSelecionada;
-            personagem.classePersonalizada = tipoClasseSelecionada === 'personalizada';
+            const personagemAtualizado = {
+                ...personagem,
+                classe: classeSelecionada
+            };
             
+            // Se for classe personalizada, adicionar detalhes
             if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                // Salvar detalhes da classe personalizada
-                personagem.detalhesClasse = {
+                personagemAtualizado.detalhesClasse = {
                     tipoCombate: dadosClassePersonalizada.tipoCombate,
                     arma: dadosClassePersonalizada.arma,
                     pacto: dadosClassePersonalizada.pacto,
@@ -1122,103 +1117,17 @@
                     habilidades: dadosClassePersonalizada.habilidades,
                     funcoes: dadosClassePersonalizada.funcoes
                 };
-                
-                // Ajustar atributos baseados na classe personalizada
-                ajustarAtributosPersonalizados(dadosClassePersonalizada);
-            } else {
-                // Ajustar atributos para classe padrão
-                ajustarAtributosPadrao(classeSelecionada);
             }
             
             // Salvar personagem atualizado
-            const sucesso = grimorioDB.salvarPersonagem(personagem);
+            Grimorio.saveCharacter(personagemAtualizado);
             
-            if (sucesso) {
-                mostrarFeedbackSucesso(`Classe "${classeSelecionada}" salva na ficha!`);
-                
-                // Redirecionar após breve delay
-                setTimeout(() => {
-                    window.location.href = 'index.html?classe=' + encodeURIComponent(classeSelecionada);
-                }, 1500);
-            } else {
-                mostrarErro('Erro ao salvar classe no personagem');
-            }
-        }
-        
-        function ajustarAtributosPadrao(nomeClasse) {
-            const bonusAtributos = {
-                'Guerreiro': { forca: 4, constituicao: 4, destreza: 2 },
-                'Mago': { inteligencia: 5, sabedoria: 4, constituicao: 2 },
-                'Arqueiro': { destreza: 5, percepcao: 4, forca: 2 },
-                'Clérigo': { sabedoria: 5, carisma: 4, forca: 2 },
-                'Ladino': { destreza: 4, inteligencia: 3, constituicao: 2 },
-                'Bárbaro': { forca: 5, constituicao: 4, destreza: 2 }
-            };
+            mostrarFeedbackSucesso(`Classe "${classeSelecionada}" salva na ficha!`);
             
-            const bonus = bonusAtributos[nomeClasse] || {};
-            const personagem = grimorioDB.obterPersonagem();
-            
-            // Aplicar bônus aos atributos
-            Object.keys(bonus).forEach(atributo => {
-                if (personagem.atributos && personagem.atributos[atributo] !== undefined) {
-                    personagem.atributos[atributo] = Math.max(1, (personagem.atributos[atributo] || 0) + bonus[atributo]);
-                }
-            });
-        }
-        
-        function ajustarAtributosPersonalizados(classe) {
-            const personagem = grimorioDB.obterPersonagem();
-            
-            if (!personagem.atributos) {
-                personagem.atributos = {
-                    forca: 1,
-                    destreza: 1,
-                    constituicao: 1,
-                    inteligencia: 1,
-                    sabedoria: 1,
-                    carisma: 1
-                };
-            }
-            
-            // Baseado no tipo de combate
-            const bonusPorCombate = {
-                'corpo-a-corpo': { forca: 3, constituicao: 3 },
-                'distancia': { destreza: 4, percepcao: 3 },
-                'magico': { inteligencia: 4, sabedoria: 3 },
-                'hibrido': { forca: 2, inteligencia: 2, destreza: 2 },
-                'suporte': { sabedoria: 4, carisma: 3 },
-                'furtivo': { destreza: 4, inteligencia: 2 }
-            };
-            
-            const bonus = bonusPorCombate[classe.tipoCombate] || {};
-            
-            // Aplicar bônus
-            Object.keys(bonus).forEach(atributo => {
-                if (personagem.atributos[atributo] !== undefined) {
-                    personagem.atributos[atributo] = Math.max(1, (personagem.atributos[atributo] || 0) + bonus[atributo]);
-                }
-            });
-            
-            // Bônus adicional baseado no elemento
-            if (classe.elemento) {
-                const bonusElemento = {
-                    'fogo': { forca: 1, carisma: 1 },
-                    'agua': { sabedoria: 2, constituicao: 1 },
-                    'terra': { constituicao: 2, forca: 1 },
-                    'ar': { destreza: 2, inteligencia: 1 },
-                    'luz': { sabedoria: 1, carisma: 2 },
-                    'trevas': { inteligencia: 2, destreza: 1 }
-                };
-                
-                const bonusEl = bonusElemento[classe.elemento];
-                if (bonusEl) {
-                    Object.keys(bonusEl).forEach(atributo => {
-                        if (personagem.atributos[atributo] !== undefined) {
-                            personagem.atributos[atributo] = Math.max(1, (personagem.atributos[atributo] || 0) + bonusEl[atributo]);
-                        }
-                    });
-                }
-            }
+            // Redirecionar após breve delay
+            setTimeout(() => {
+                window.location.href = 'index.html?classe=' + encodeURIComponent(classeSelecionada);
+            }, 1500);
         }
         
         // Feedback visual
