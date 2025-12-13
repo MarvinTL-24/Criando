@@ -11,11 +11,85 @@
     
     <!-- USE ESTA ORDEM: -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="js/grimorio-core.js"></script> <!-- 1. Primeiro o sistema -->
+    <!-- Se quiser usar módulos ES6 -->
+    <script type="module" src="index.js"></script>
+    <script type="module" src="js/grimorio-core.js"></script>
     
     <!-- Substitua o Tailwind CDN por uma versão local -->
     <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/lib/index.min.js"></script>
     <!-- OU melhor: instale Tailwind localmente -->
+     <script>
+        // Configuração do Tailwind (mantenha como estava)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+     <style>
+        /* ESTILOS CSS QUE VOCÊ JÁ TINHA (mantenha todos) */
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Scrollbar Customizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
+
+        /* Efeitos de Glow */
+        .text-shadow-glow { text-shadow: 0 0 10px rgba(74, 158, 255, 0.5); }
+        .hover-glow-blue:hover { box-shadow: 0 0 20px rgba(74, 158, 255, 0.15); border-color: rgba(74, 158, 255, 0.5); }
+
+        /* Animações (Simulando Framer Motion) */
+        .anim-entry {
+            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .anim-delay-1 { animation-delay: 0.2s; }
+        .anim-delay-2 { animation-delay: 0.4s; }
+        .anim-delay-3 { animation-delay: 0.6s; }
+
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Classes para Dropdown */
+        .dropdown-content {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .dropdown-content.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+
+        .chevron { transition: transform 0.3s ease; }
+        .chevron.rotate { transform: rotate(180deg); }
+    </style>
 </head>
 <body class="min-h-screen font-sans flex flex-col">
 
