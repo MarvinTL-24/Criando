@@ -981,6 +981,93 @@
         loadActiveProfileDisplay();
         loadMascoteDisplay(); // Adicionar esta linha
     });
+    // shared.js - Coloque em todas as páginas
+    class GrimorioSaveSystem {
+        static saveCharacter(data) {
+            localStorage.setItem('grimorio_character_data', JSON.stringify(data));
+            this.notifyUpdate('character');
+        }
+        
+        static saveMascot(data) {
+            localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
+            this.notifyUpdate('mascot');
+        }
+        
+        static saveItems(data) {
+            localStorage.setItem('grimorio_items_data', JSON.stringify(data));
+            this.notifyUpdate('items');
+        }
+        
+        static loadCharacter() {
+            const data = localStorage.getItem('grimorio_character_data');
+            return data ? JSON.parse(data) : null;
+        }
+        
+        static loadMascot() {
+            const data = localStorage.getItem('grimorio_mascot_data');
+            return data ? JSON.parse(data) : null;
+        }
+        
+        static loadItems() {
+            const data = localStorage.getItem('grimorio_items_data');
+            return data ? JSON.parse(data) : [];
+        }
+        
+        static notifyUpdate(type) {
+            // Dispara evento customizado
+            const event = new CustomEvent('grimorio-update', {
+                detail: { type: type, timestamp: Date.now() }
+            });
+            window.dispatchEvent(event);
+        }
+        
+        static exportAll() {
+            const allData = {
+                character: this.loadCharacter(),
+                mascot: this.loadMascot(),
+                items: this.loadItems(),
+                version: '2.0',
+                exportDate: new Date().toISOString()
+            };
+            
+            return JSON.stringify(allData, null, 2);
+        }
+        
+        static importAll(jsonString) {
+            try {
+                const data = JSON.parse(jsonString);
+                
+                if (data.character) {
+                    this.saveCharacter(data.character);
+                }
+                if (data.mascot) {
+                    this.saveMascot(data.mascot);
+                }
+                if (data.items) {
+                    this.saveItems(data.items);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Erro ao importar:', error);
+                return false;
+            }
+        }
+    }
+
+    // Listener para atualizações em tempo real
+    window.addEventListener('grimorio-update', function(event) {
+        console.log('Dados atualizados:', event.detail.type);
+        // Atualiza a página atual com os novos dados
+        refreshCurrentPage();
+    });
+
+    // Função para detectar mudanças no localStorage de outras abas
+    window.addEventListener('storage', function(event) {
+        if (event.key.startsWith('grimorio_')) {
+            location.reload(); // Recarrega para mostrar dados atualizados
+        }
+    });
     </script>
 </body>
 </html>
