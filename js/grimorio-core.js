@@ -49,10 +49,74 @@ class GrimorioSystem {
                 },
                 
                 // Outras seções (inicialmente vazias)
-                inventario: [],
-                habilidades: [],
-                proficiencias: [],
-                equipamentos: {
+            inventario: [],
+            habilidades: [],
+            proficiencias: [],
+
+            // Sistema de Armas e Proficiências
+            armasProficiencia: {
+                // Armas Cortantes (8 tipos)
+                cortantes: {
+                    espadaCurta: { nivel: 0, experiencia: 0 },
+                    espadaLonga: { nivel: 0, experiencia: 0 },
+                    katanas: { nivel: 0, experiencia: 0 },
+                    machados: { nivel: 0, experiencia: 0 },
+                    foices: { nivel: 0, experiencia: 0 },
+                    lâminasDuplas: { nivel: 0, experiencia: 0 },
+                    sabre: { nivel: 0, experiencia: 0 },
+                    cutelo: { nivel: 0, experiencia: 0 }
+                },
+                
+                // Armas Perfurantes (8 tipos)
+                perfurantes: {
+                    adaga: { nivel: 0, experiencia: 0 },
+                    lança: { nivel: 0, experiencia: 0 },
+                    rapiera: { nivel: 0, experiencia: 0 },
+                    estilete: { nivel: 0, experiencia: 0 },
+                    picareta: { nivel: 0, experiencia: 0 },
+                    tridente: { nivel: 0, experiencia: 0 },
+                    chuço: { nivel: 0, experiencia: 0 },
+                    arpão: { nivel: 0, experiencia: 0 }
+                },
+                
+                // Armas Concussão (8 tipos)
+                concussao: {
+                    clava: { nivel: 0, experiencia: 0 },
+                    martelo: { nivel: 0, experiencia: 0 },
+                    maça: { nivel: 0, experiencia: 0 },
+                    mangual: { nivel: 0, experiencia: 0 },
+                    porrete: { nivel: 0, experiencia: 0 },
+                    bastao: { nivel: 0, experiencia: 0 },
+                    corrente: { nivel: 0, experiencia: 0 },
+                    chicote: { nivel: 0, experiencia: 0 }
+                },
+                
+                // Armas Distância/Magia (8 tipos)
+                distancia: {
+                    arco: { nivel: 0, experiencia: 0 },
+                    besta: { nivel: 0, experiencia: 0 },
+                    funda: { nivel: 0, experiencia: 0 },
+                    bumerangue: { nivel: 0, experiencia: 0 },
+                    shuriken: { nivel: 0, experiencia: 0 },
+                    cajado: { nivel: 0, experiencia: 0 },
+                    grimorio: { nivel: 0, experiencia: 0 },
+                    orbe: { nivel: 0, experiencia: 0 }
+                }
+            },
+
+            // Estilos de Luta
+            estilosLuta: {
+                umaMao: { nivel: 0 },
+                duasMaos: { nivel: 0 },
+                armaEscudo: { nivel: 0 },
+                duasArmas: { nivel: 0 },
+            armaDistancia: { nivel: 0 },
+            magiaPura: { nivel: 0 },
+            corpoCorpo: { nivel: 0 },
+            armasExoticas: { nivel: 0 }
+                        },
+            
+            equipamentos: {
                     armaPrincipal: 'Nenhuma',
                     armadura: 'Nenhuma',
                     amuleto: 'Nenhum'
@@ -328,24 +392,57 @@ class GrimorioSystem {
             }, 500);
         }, duracao);
         
-        return notificacao;
+    return notificacao;
+}
+
+// ============================================================
+// 7. COMPATIBILIDADE COM SISTEMA ANTIGO (personagemSalvo)
+// ============================================================
+
+static migrarDadosAntigos() {
+        // Verifica se existe dados no formato antigo
+        const dadosAntigos = localStorage.getItem('personagemSalvo');
+        if (dadosAntigos) {
+            try {
+                const antigo = JSON.parse(dadosAntigos);
+                const novo = this.carregarPersonagem();
+                
+                // Migra dados básicos
+                if (antigo['inp-nome']) novo.nome = antigo['inp-nome'];
+                if (antigo['inp-titulo']) novo.titulo = antigo['inp-titulo'];
+                if (antigo['inp-raca']) novo.raca = antigo['inp-raca'];
+                if (antigo['inp-classe']) novo.classe = antigo['inp-classe'];
+                if (antigo['inp-idade']) novo.idade = antigo['inp-idade'];
+                
+                // Migra atributos se existirem
+                if (antigo.atributos) {
+                    novo.atributos = { ...novo.atributos, ...antigo.atributos };
+                }
+                
+                // Migra avatar
+                if (antigo.avatar) novo.avatar = antigo.avatar;
+                
+                // Salva no novo formato
+                this.salvarPersonagem(novo);
+                
+                // Remove dados antigos
+                localStorage.removeItem('personagemSalvo');
+                
+                console.log('[Grimorio] Dados antigos migrados com sucesso!');
+                return true;
+                
+            } catch (error) {
+                console.error('[Grimorio] Erro na migração:', error);
+                return false;
+            }
+        }
+        return false;
     }
 }
 
 // ============================================================
-// INICIALIZAÇÃO AUTOMÁTICA DO SISTEMA
-// ============================================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Garante que sempre exista um personagem
-    GrimorioSystem.inicializarPersonagemPadrao();
-    
-    console.log('[Grimorio] Sistema inicializado');
-    
-    // Expor para debug no console
-    window.Grimorio = GrimorioSystem;
-});
-
 // CSS para animações (adiciona dinamicamente)
+// ============================================================
 const style = document.createElement('style');
 style.textContent = `
     @keyframes slide-in-right {
@@ -357,3 +454,20 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// ============================================================
+// INICIALIZAÇÃO AUTOMÁTICA DO SISTEMA
+// ============================================================
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Tenta migrar dados antigos
+    GrimorioSystem.migrarDadosAntigos();
+    
+    // 2. Garante que sempre exista um personagem
+    GrimorioSystem.inicializarPersonagemPadrao();
+    
+    console.log('[Grimorio] Sistema inicializado');
+    
+    // 3. Expor para debug no console
+    window.Grimorio = GrimorioSystem;
+});
+
