@@ -233,6 +233,9 @@
             transform: translateX(100%);
             transition: all 0.5s ease-out;
         }
+        .hidden {
+            display: none !important;
+        }
     </style>
     
     <!-- FONTES -->
@@ -1907,12 +1910,81 @@
             console.log('Sistema Avançado de Status carregado');
         });
         
-        // CARREGAR DADOS DO SISTEMA
-        function loadStatusData() {
-            statusData = StatusSystemAvancado.load();
-            renderAtributos(statusData);
-            updateUI(statusData);
-            renderHistorico(statusData.historico);
+        // ============================================================
+        // FUNÇÃO PARA INICIALIZAR TODOS OS SISTEMAS
+        // ============================================================
+        function inicializarTodosSistemas() {
+            // Inicializar sistema principal
+            StatusSystemAvancado.init();
+            
+            // Carregar dados iniciais do sistema principal
+            loadStatusData();
+            
+            // Configurar eventos do sistema principal
+            setupEventListeners();
+            
+            // Inicializar sistema de sorte/derivados
+            inicializarSistemaSorte();
+            
+            // Integrar os dois sistemas
+            const data = StatusSystemAvancado.load();
+            
+            // Atualizar atributos no sistema de derivados
+            if (window.atualizarAtributos) {
+                window.atualizarAtributos(data.atributos);
+            }
+            
+            // Atualizar nível no sistema de derivados
+            if (window.atualizarNivel) {
+                window.atualizarNivel(data.nivel, data.experiencia);
+            }
+            
+            console.log('Todos os sistemas inicializados');
+        }
+
+        // ============================================================
+        // REMOVER CLASSES TAILWIND E SUBSTITUIR POR ESTILOS INLINE
+        // ============================================================
+        function corrigirEstilosTailwind() {
+            // Elementos com classes Tailwind que precisam ser corrigidos
+            const elementos = document.querySelectorAll('[class*="bg-\\["], [class*="border-\\["], [class*="text-\\["], [class*="grid-cols-"]');
+            
+            elementos.forEach(elemento => {
+                const classes = elemento.className.split(' ');
+                const novosEstilos = {};
+                
+                classes.forEach(classe => {
+                    // Converter classes Tailwind para estilos inline
+                    if (classe.startsWith('bg-[')) {
+                        const cor = classe.match(/bg-\[(.*?)\]/)[1];
+                        novosEstilos.background = cor;
+                    } else if (classe.startsWith('border-[')) {
+                        const cor = classe.match(/border-\[(.*?)\]/)[1];
+                        novosEstilos.borderColor = cor;
+                    } else if (classe.startsWith('text-[')) {
+                        const cor = classe.match(/text-\[(.*?)\]/)[1];
+                        novosEstilos.color = cor;
+                    } else if (classe.startsWith('grid-cols-')) {
+                        const cols = classe.match(/grid-cols-(\d+)/)[1];
+                        elemento.parentElement.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+                    } else if (classe.startsWith('p-')) {
+                        const padding = classe.match(/p-(\d+)/)[1];
+                        novosEstilos.padding = `${padding * 0.25}rem`;
+                    } else if (classe.startsWith('m-')) {
+                        const margin = classe.match(/m-(\d+)/)[1];
+                        novosEstilos.margin = `${margin * 0.25}rem`;
+                    }
+                    // Adicione mais conversões conforme necessário
+                });
+                
+                // Aplicar estilos inline
+                Object.keys(novosEstilos).forEach(estilo => {
+                    elemento.style[estilo] = novosEstilos[estilo];
+                });
+                
+                // Limpar classes Tailwind
+                elemento.className = elemento.className.replace(/bg-\[.*?\]|border-\[.*?\]|text-\[.*?\]|grid-cols-\d+|p-\d+|m-\d+/g, '').trim();
+            });
         }
         
         // RENDERIZAR ATRIBUTOS
