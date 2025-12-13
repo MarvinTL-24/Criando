@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    
+    <script src="grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -740,16 +740,23 @@
         }
 
         function getCompleteData() {
-            const characterData = getCurrentCharacterData();
-            const mascotData = getMascotData();
-            const itemsData = getItemsData();
-            
             return {
-                character: characterData,
-                mascot: mascotData,
-                items: itemsData,
-                timestamp: new Date().toISOString(),
-                version: '1.0'
+                character: {
+                    // Busca dados de TODAS as páginas
+                    nome: localStorage.getItem('grimorio_nome_personagem'),
+                    classe: localStorage.getItem('grimorio_classe_personagem'),
+                    raca: localStorage.getItem('grimorio_raca_personagem'),
+                    stats: JSON.parse(localStorage.getItem('rpg_stats') || '{}'),
+                    inventario: JSON.parse(localStorage.getItem('rpg_inventario') || '[]'),
+                    // ... adicione todos os dados necessários
+                },
+                mascot: JSON.parse(localStorage.getItem('rpg_mascote_completo') || 'null'),
+                sistema_classes: JSON.parse(localStorage.getItem('grimorio_custom_classes') || '[]'),
+                configuracoes: {
+                    tema: localStorage.getItem('grimorio_tema'),
+                    // ... outras configurações
+                },
+                timestamp: new Date().toISOString()
             };
         }
 
