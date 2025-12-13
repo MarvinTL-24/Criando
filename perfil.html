@@ -124,6 +124,20 @@
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
+
+        /* Feedback */
+        .feedback-profile {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-20">
@@ -549,30 +563,30 @@
             </div>
         </section>
 
-    </div>
-    <!-- No perfil.html, adicione esta seção após Estatísticas Avançadas -->
-    <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg anim-entry delay-4">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#f4d29a]">
-                <i data-lucide="dog" class="w-4 h-4"></i> Mascote Companheiro
-            </h3>
-            <button onclick="window.location.href='mascote.html'" 
-                    class="flex items-center gap-2 px-3 py-2 text-sm bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded transition-colors">
-                <i data-lucide="edit-3" class="w-3 h-3"></i>
-                Editar
-            </button>
-        </div>
-        
-        <div id="mascote-summary">
-            <!-- Conteúdo será carregado dinamicamente -->
-            <div class="text-center py-8 text-[#8b7355]">
-                <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                <p>Nenhum mascote vinculado</p>
-                <p class="text-sm mt-2">Crie um mascote para acompanhar seu personagem</p>
+        <!-- Seção 7: Mascote Companheiro -->
+        <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg anim-entry delay-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#f4d29a]">
+                    <i data-lucide="dog" class="w-4 h-4"></i> Mascote Companheiro
+                </h3>
+                <button onclick="window.location.href='mascote.html'" 
+                        class="flex items-center gap-2 px-3 py-2 text-sm bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded transition-colors">
+                    <i data-lucide="edit-3" class="w-3 h-3"></i>
+                    Editar
+                </button>
+            </div>
+            
+            <div id="mascote-summary">
+                <!-- Conteúdo será carregado dinamicamente -->
+                <div class="text-center py-8 text-[#8b7355]">
+                    <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p>Nenhum mascote vinculado</p>
+                    <p class="text-sm mt-2">Crie um mascote para acompanhar seu personagem</p>
+                </div>
             </div>
         </div>
-    </div>
 
+    </div>
     <!-- Rodapé com Botões de Ação -->
     <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
         <button onclick="goToFicha()" 
@@ -626,17 +640,54 @@
         // VARIÁVEIS E CONSTANTES
         // ====================================================================
         let activeProfileData = null;
-        let profileStats = null;
         
         // ====================================================================
         // FUNÇÕES UTILITÁRIAS
         // ====================================================================
         function el(id) { return document.getElementById(id); }
+        
         function showWarning(message) {
             el('warning-message').textContent = message;
             el('warning-modal').classList.remove('hidden');
         }
-        function hideWarning() { el('warning-modal').classList.add('hidden'); }
+        
+        function hideWarning() { 
+            el('warning-modal').classList.add('hidden'); 
+        }
+        
+        function mostrarFeedback(mensagem, tipo = 'info') {
+            // Remover feedbacks antigos
+            const existing = document.querySelectorAll('.feedback-profile');
+            existing.forEach(el => el.remove());
+            
+            const feedback = document.createElement('div');
+            feedback.className = `feedback-profile px-4 py-3 rounded-lg border shadow-lg ${
+                tipo === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
+                tipo === 'warning' ? 'bg-yellow-900/30 border-yellow-700 text-yellow-300' :
+                tipo === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
+                'bg-blue-900/30 border-blue-700 text-blue-300'
+            }`;
+            
+            feedback.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i data-lucide="${
+                        tipo === 'success' ? 'check-circle' :
+                        tipo === 'warning' ? 'alert-triangle' :
+                        tipo === 'error' ? 'x-circle' : 'info'
+                    }" class="w-4 h-4"></i>
+                    <span class="font-medium">${mensagem}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(feedback);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                feedback.style.opacity = '0';
+                feedback.style.transform = 'translateX(20px)';
+                setTimeout(() => feedback.remove(), 500);
+            }, 3000);
+        }
         
         // ====================================================================
         // NAVEGAÇÃO
@@ -649,169 +700,6 @@
             window.location.href = 'index.html';
         }
         
-        // ====================================================================
-        // CARREGAR PERFIL ATIVO
-        // ====================================================================
-        function loadActiveProfile() {
-            try {
-                // Tentar carregar do sistema de perfis
-                const perfis = localStorage.getItem('rpg_sistema_perfis');
-                const perfilAtivoId = localStorage.getItem('perfil_ativo');
-                
-                if (!perfis || !perfilAtivoId) {
-                    showWarning("Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.");
-                    return false;
-                }
-                
-                const perfisObj = JSON.parse(perfis);
-                activeProfileData = perfisObj[perfilAtivoId];
-                
-                if (!activeProfileData) {
-                    showWarning("Perfil ativo inválido. Crie uma nova ficha.");
-                    return false;
-                }
-                
-                // Atualizar interface
-                updateProfileDisplay();
-                setupNavButtons();
-                return true;
-                
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
-                showWarning("Erro ao carregar o perfil. Tente novamente.");
-                return false;
-            }
-        }
-        
-        // ====================================================================
-        // ATUALIZAR DISPLAY DO PERFIL
-        // ====================================================================
-        function updateProfileDisplay() {
-            if (!activeProfileData) return;
-            
-            // 1. Informações básicas
-            const nome = activeProfileData.nome || 'Personagem Sem Nome';
-            el('profile-title').textContent = nome;
-            el('active-profile-name').textContent = nome;
-            el('display-nome').textContent = nome;
-            
-            // 2. Raça e Classe
-            if (activeProfileData.dados?.basico) {
-                const basico = activeProfileData.dados.basico;
-                el('display-raca').textContent = basico.raca || 'Não definido';
-                el('display-classe').textContent = basico.classe || 'Não definido';
-                el('display-origem').textContent = basico.origem || 'Não definido';
-                el('display-idade').textContent = basico.idade || 'Não definido';
-            }
-            
-            // 3. Progressão
-            if (activeProfileData.dados?.progressao) {
-                const progressao = activeProfileData.dados.progressao;
-                const nivel = parseInt(progressao.nivel) || 1;
-                const xpAtual = parseInt(progressao.xp_atual) || 0;
-                const xpProximo = 1000; // Valor fixo por enquanto
-                
-                el('display-nivel').textContent = nivel;
-                el('display-xp').textContent = `${xpAtual}/${xpProximo}`;
-                
-                const xpPercent = Math.min(100, (xpAtual / xpProximo) * 100);
-                el('display-xp-bar').style.width = `${xpPercent}%`;
-                
-                const xpRestante = xpProximo - xpAtual;
-                el('display-proximo-nivel').textContent = `${xpRestante} XP restante`;
-            }
-            
-            // 4. Atributos
-            if (activeProfileData.dados?.atributos) {
-                const attrs = activeProfileData.dados.atributos;
-                
-                // Valores diretos
-                el('display-forca').textContent = attrs.forca || 0;
-                el('display-destreza').textContent = attrs.destreza || 0;
-                el('display-constituicao').textContent = attrs.constituicao || 0;
-                el('display-inteligencia').textContent = attrs.inteligencia || 0;
-                el('display-sabedoria').textContent = attrs.sabedoria || 0;
-                el('display-carisma').textContent = attrs.carisma || 0;
-                
-                // Calcular total
-                const total = Object.values(attrs).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                el('total-atributos').textContent = total;
-            }
-            
-            // 5. Recursos
-            if (activeProfileData.dados?.recursos) {
-                const recursos = activeProfileData.dados.recursos;
-                
-                // Vida
-                const vidaAtual = parseInt(recursos.vida_atual) || 0;
-                const vidaMax = parseInt(recursos.vida_max) || 0;
-                el('display-vida').textContent = `${vidaAtual}/${vidaMax}`;
-                el('display-vida-bar').style.width = vidaMax > 0 ? `${(vidaAtual / vidaMax) * 100}%` : '0%';
-                el('display-vida-base').textContent = recursos.vida_base || 0;
-                
-                // Mana
-                const manaAtual = parseInt(recursos.mana_atual) || 0;
-                const manaMax = parseInt(recursos.mana_max) || 0;
-                el('display-mana').textContent = `${manaAtual}/${manaMax}`;
-                el('display-mana-bar').style.width = manaMax > 0 ? `${(manaAtual / manaMax) * 100}%` : '0%';
-                el('display-mana-base').textContent = recursos.mana_base || 0;
-                
-                // Estamina
-                const estaminaAtual = parseInt(recursos.estamina_atual) || 0;
-                const estaminaMax = parseInt(recursos.estamina_max) || 0;
-                el('display-estamina').textContent = `${estaminaAtual}/${estaminaMax}`;
-                el('display-estamina-bar').style.width = estaminaMax > 0 ? `${(estaminaAtual / estaminaMax) * 100}%` : '0%';
-                el('display-estamina-base').textContent = recursos.estamina_base || 0;
-            }
-            
-            // 6. Destino/Sorte
-            if (activeProfileData.dados?.destino) {
-                const destino = activeProfileData.dados.destino;
-                const sorte = parseInt(destino.valor) || 0;
-                
-                el('display-sorte').textContent = sorte > 0 ? `${sorte}%` : '--';
-                el('display-sorte-bar').style.width = `${sorte}%`;
-                el('destiny-status').textContent = destino.fixada ? 'Fixado' : 'Variável';
-                
-                // Dados
-                el('display-dado1').textContent = destino.dados?.[0] || 0;
-                el('display-dado2').textContent = destino.dados?.[1] || 0;
-                el('display-dado3').textContent = destino.dados?.[2] || 0;
-                
-                // Fórmula
-                if (destino.dados && destino.dados.length >= 3) {
-                    const calc = `((${destino.dados[0]} + ${destino.dados[2]}) × 2 - ${destino.dados[1]}) ÷ 2 = ${sorte}`;
-                    el('destiny-formula-display').textContent = calc;
-                }
-                
-                // Interpretação
-                updateDestinyInterpretation(sorte);
-            }
-            
-            // 7. Equipamentos (da ficha)
-            if (activeProfileData.dados?.ficha) {
-                const ficha = activeProfileData.dados.ficha;
-                
-                // Arma principal
-                if (ficha.armas && ficha.armas.length > 0) {
-                    el('display-arma-principal').textContent = ficha.armas[0].nome || 'Arma';
-                }
-                
-                // Armadura
-                if (ficha.equipamentos) {
-                    const armadura = ficha.equipamentos.find(e => e.tipo === 'armadura');
-                    if (armadura) {
-                        el('display-armadura').textContent = armadura.nome || 'Armadura';
-                    }
-                }
-            }
-            
-            // 8. Estatísticas derivadas
-            calculateDerivedStats();
-            
-            // Mostrar indicador ativo
-            el('profile-active-indicator').classList.remove('hidden');
-        }
         // ====================================================================
         // FUNÇÃO DE DEBUG PARA VER ESTRUTURA DOS DADOS
         // ====================================================================
@@ -849,7 +737,264 @@
                     }
                 }
             }
+            
+            return true;
         }
+        
+        // ====================================================================
+        // CARREGAR PERFIL ATIVO
+        // ====================================================================
+        function loadActiveProfile() {
+            try {
+                debugDataStructure();
+                
+                // 1. Tentar carregar do sistema de perfis
+                let perfis = localStorage.getItem('rpg_sistema_perfis');
+                let perfilAtivoId = localStorage.getItem('perfil_ativo');
+                
+                // 2. Se não encontrar, buscar dados da ficha antiga
+                if (!perfis || !perfilAtivoId) {
+                    console.log("Tentando métodos alternativos...");
+                    
+                    // Verificar se há ficha salva diretamente
+                    const fichaSalva = localStorage.getItem('ficha_rpg_data');
+                    if (fichaSalva) {
+                        console.log("Encontrada ficha direta");
+                        activeProfileData = JSON.parse(fichaSalva);
+                        updateProfileDisplay();
+                        mostrarFeedback("Dados carregados da ficha", "success");
+                        return true;
+                    }
+                    
+                    // Procurar por qualquer dado de personagem
+                    for (let i = 0; i < localStorage.length; i++) {
+                        const key = localStorage.key(i);
+                        if (key.includes('personagem') || key.includes('ficha')) {
+                            try {
+                                const data = JSON.parse(localStorage.getItem(key));
+                                if (data && (data.nome || data.atributos)) {
+                                    console.log(`Carregando dados de: ${key}`, data);
+                                    activeProfileData = data;
+                                    updateProfileDisplay();
+                                    mostrarFeedback("Dados carregados", "success");
+                                    return true;
+                                }
+                            } catch (e) {
+                                // Ignorar erros de parse
+                            }
+                        }
+                    }
+                    
+                    showWarning("Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.");
+                    return false;
+                }
+                
+                const perfisObj = JSON.parse(perfis);
+                activeProfileData = perfisObj[perfilAtivoId];
+                
+                if (!activeProfileData) {
+                    showWarning("Perfil ativo inválido. Crie uma nova ficha.");
+                    return false;
+                }
+                
+                // Verificar estrutura e corrigir se necessário
+                if (!activeProfileData.dados && (activeProfileData.atributos || activeProfileData.raca)) {
+                    console.log("Corrigindo estrutura de dados...");
+                    // Mover tudo para dentro de 'dados'
+                    activeProfileData = {
+                        nome: activeProfileData.nome || "Personagem",
+                        dados: { ...activeProfileData }
+                    };
+                    
+                    // Salvar corrigido
+                    perfisObj[perfilAtivoId] = activeProfileData;
+                    localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
+                }
+                
+                // Atualizar interface
+                updateProfileDisplay();
+                setupNavButtons();
+                
+                mostrarFeedback("Perfil carregado com sucesso!", "success");
+                return true;
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                showWarning(`Erro ao carregar o perfil: ${error.message}`);
+                return false;
+            }
+        }
+        
+        // ====================================================================
+        // ATUALIZAR DISPLAY DO PERFIL
+        // ====================================================================
+        function updateProfileDisplay() {
+            if (!activeProfileData) {
+                console.log("Nenhum dado para exibir");
+                return;
+            }
+            
+            console.log("Atualizando display com:", activeProfileData);
+            
+            try {
+                // 1. Nome do personagem
+                const nome = activeProfileData.nome || 
+                            activeProfileData.dados?.basico?.nome ||
+                            activeProfileData.dados?.nome ||
+                            'Personagem Sem Nome';
+                
+                el('profile-title').textContent = nome;
+                el('active-profile-name').textContent = nome;
+                el('display-nome').textContent = nome;
+                
+                // 2. Informações básicas
+                let basico = activeProfileData.dados?.basico || activeProfileData.dados || activeProfileData;
+                
+                el('display-raca').textContent = basico.raca || 
+                                                basico.racas || 
+                                                'Não definido';
+                
+                el('display-classe').textContent = basico.classe || 
+                                                  basico.classes || 
+                                                  'Não definido';
+                
+                el('display-origem').textContent = basico.origem || 
+                                                  basico.origens || 
+                                                  'Não definido';
+                
+                el('display-idade').textContent = basico.idade || 
+                                                 basico.idades || 
+                                                 'Não definido';
+                
+                // 3. Atributos
+                let atributos = activeProfileData.dados?.atributos || activeProfileData;
+                
+                const attrs = {
+                    forca: atributos.forca || atributos.FOR || atributos.str || 0,
+                    destreza: atributos.destreza || atributos.DES || atributos.dex || 0,
+                    constituicao: atributos.constituicao || atributos.CON || atributos.con || 0,
+                    inteligencia: atributos.inteligencia || atributos.INT || atributos.int || 0,
+                    sabedoria: atributos.sabedoria || atributos.SAB || atributos.wis || 0,
+                    carisma: atributos.carisma || atributos.CAR || atributos.cha || 0
+                };
+                
+                // Exibir atributos
+                el('display-forca').textContent = attrs.forca;
+                el('display-destreza').textContent = attrs.destreza;
+                el('display-constituicao').textContent = attrs.constituicao;
+                el('display-inteligencia').textContent = attrs.inteligencia;
+                el('display-sabedoria').textContent = attrs.sabedoria;
+                el('display-carisma').textContent = attrs.carisma;
+                
+                // Calcular total
+                const total = Object.values(attrs).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+                el('total-atributos').textContent = total;
+                
+                // 4. Progressão
+                let progressao = activeProfileData.dados?.progressao || activeProfileData;
+                const nivel = parseInt(progressao.nivel || 1);
+                const xpAtual = parseInt(progressao.xp_atual || progressao.xp || progressao.experiencia || 0);
+                const xpProximo = 1000; // Valor padrão
+                
+                el('display-nivel').textContent = nivel;
+                el('display-xp').textContent = `${xpAtual}/${xpProximo}`;
+                
+                const xpPercent = Math.min(100, (xpAtual / xpProximo) * 100);
+                el('display-xp-bar').style.width = `${xpPercent}%`;
+                
+                const xpRestante = xpProximo - xpAtual;
+                el('display-proximo-nivel').textContent = `${xpRestante} XP restante`;
+                
+                // 5. Recursos
+                let recursos = activeProfileData.dados?.recursos || activeProfileData;
+                
+                // Valores padrão baseados em constituição
+                const constituicaoVal = parseInt(attrs.constituicao) || 10;
+                const vidaMax = parseInt(recursos.vida_max || recursos.vida || (constituicaoVal * 5));
+                const vidaAtual = parseInt(recursos.vida_atual || recursos.vida_atual || vidaMax);
+                const manaMax = parseInt(recursos.mana_max || recursos.mana || 10);
+                const manaAtual = parseInt(recursos.mana_atual || recursos.mana_atual || manaMax);
+                const estaminaMax = parseInt(recursos.estamina_max || recursos.estamina || 20);
+                const estaminaAtual = parseInt(recursos.estamina_atual || recursos.estamina_atual || estaminaMax);
+                
+                // Vida
+                el('display-vida').textContent = `${vidaAtual}/${vidaMax}`;
+                el('display-vida-bar').style.width = vidaMax > 0 ? `${(vidaAtual / vidaMax) * 100}%` : '0%';
+                el('display-vida-base').textContent = recursos.vida_base || vidaMax;
+                
+                // Mana
+                el('display-mana').textContent = `${manaAtual}/${manaMax}`;
+                el('display-mana-bar').style.width = manaMax > 0 ? `${(manaAtual / manaMax) * 100}%` : '0%';
+                el('display-mana-base').textContent = recursos.mana_base || manaMax;
+                
+                // Estamina
+                el('display-estamina').textContent = `${estaminaAtual}/${estaminaMax}`;
+                el('display-estamina-bar').style.width = estaminaMax > 0 ? `${(estaminaAtual / estaminaMax) * 100}%` : '0%';
+                el('display-estamina-base').textContent = recursos.estamina_base || estaminaMax;
+                
+                // 6. Destino/Sorte
+                let destino = activeProfileData.dados?.destino || activeProfileData;
+                
+                // Gerar dados aleatórios se não existirem
+                const dado1 = destino.dados?.[0] || Math.floor(Math.random() * 20) + 1;
+                const dado2 = destino.dados?.[1] || Math.floor(Math.random() * 20) + 1;
+                const dado3 = destino.dados?.[2] || Math.floor(Math.random() * 20) + 1;
+                
+                // Calcular sorte
+                const sorteCalculada = Math.floor(((dado1 + dado3) * 2 - dado2) / 2);
+                const sorteFinal = Math.max(0, Math.min(100, destino.valor || sorteCalculada));
+                
+                // Exibir dados
+                el('display-dado1').textContent = dado1;
+                el('display-dado2').textContent = dado2;
+                el('display-dado3').textContent = dado3;
+                
+                // Exibir sorte
+                el('display-sorte').textContent = sorteFinal + '%';
+                el('display-sorte-bar').style.width = `${sorteFinal}%`;
+                el('destiny-status').textContent = destino.fixada ? 'Fixado' : 'Variável';
+                
+                // Fórmula
+                const calc = `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${sorteFinal}`;
+                el('destiny-formula-display').textContent = calc;
+                
+                // Interpretação
+                updateDestinyInterpretation(sorteFinal);
+                
+                // 7. Equipamentos
+                let ficha = activeProfileData.dados?.ficha || activeProfileData;
+                
+                if (ficha.armas && Array.isArray(ficha.armas) && ficha.armas.length > 0) {
+                    el('display-arma-principal').textContent = ficha.armas[0].nome || 'Arma';
+                }
+                
+                if (ficha.equipamentos && Array.isArray(ficha.equipamentos)) {
+                    const armadura = ficha.equipamentos.find(e => 
+                        e.tipo && (e.tipo.toLowerCase().includes('armadura') || 
+                                  e.tipo.toLowerCase().includes('armor'))
+                    );
+                    if (armadura) {
+                        el('display-armadura').textContent = armadura.nome || 'Armadura';
+                    }
+                }
+                
+                // 8. Estatísticas derivadas
+                calculateDerivedStats(attrs);
+                
+                // 9. Mascote
+                loadMascoteSummary();
+                
+                // 10. Mostrar indicador ativo
+                el('profile-active-indicator').classList.remove('hidden');
+                
+                console.log("Display atualizado com sucesso!");
+                
+            } catch (error) {
+                console.error("Erro ao atualizar display:", error);
+                mostrarFeedback("Erro ao exibir dados do perfil", "error");
+            }
+        }
+        
         // ====================================================================
         // INTERPRETAÇÃO DO DESTINO
         // ====================================================================
@@ -858,7 +1003,7 @@
             if (!elInterpretation) return;
             
             let interpretation = '';
-            let colorClass = 'text-destiny-light';
+            let colorClass = 'text-yellow-300';
             
             if (sorte >= 90) {
                 interpretation = '✨ DESTINO GLORIOSO! Os deuses sorriem para você. Seu caminho é iluminado pela sorte e oportunidades abundam.';
@@ -880,6 +1025,7 @@
                 colorClass = 'text-red-300';
             } else {
                 interpretation = '🎭 Seu destino ainda não foi revelado. Role os dados para descobrir seu caminho.';
+                colorClass = 'text-gray-400';
             }
             
             elInterpretation.innerHTML = `<span class="${colorClass}">${interpretation}</span>`;
@@ -888,33 +1034,145 @@
         // ====================================================================
         // CÁLCULO DE ESTATÍSTICAS DERIVADAS
         // ====================================================================
-        function calculateDerivedStats() {
-            if (!activeProfileData?.dados?.atributos) return;
+        function calculateDerivedStats(attrs = null) {
+            if (!attrs) {
+                // Extrair dos elementos visuais
+                attrs = {
+                    forca: parseInt(el('display-forca').textContent) || 0,
+                    destreza: parseInt(el('display-destreza').textContent) || 0,
+                    constituicao: parseInt(el('display-constituicao').textContent) || 0,
+                    inteligencia: parseInt(el('display-inteligencia').textContent) || 0,
+                    sabedoria: parseInt(el('display-sabedoria').textContent) || 0
+                };
+            }
             
-            const attrs = activeProfileData.dados.atributos;
-            
-            // Fórmulas simples (pode ser ajustado)
             const forca = parseInt(attrs.forca) || 0;
             const destreza = parseInt(attrs.destreza) || 0;
             const constituicao = parseInt(attrs.constituicao) || 0;
             const inteligencia = parseInt(attrs.inteligencia) || 0;
             const sabedoria = parseInt(attrs.sabedoria) || 0;
             
-            // Blindagem = Constituição * 2 + Força
+            // Fórmulas ajustáveis
             const blindagem = constituicao * 2 + forca;
-            el('display-blindagem').textContent = blindagem;
-            
-            // Velocidade = Destreza * 3
             const velocidade = destreza * 3;
-            el('display-velocidade').textContent = velocidade;
-            
-            // Iniciativa = Destreza + Inteligência
             const iniciativa = destreza + inteligencia;
-            el('display-iniciativa').textContent = iniciativa;
-            
-            // Percepção = Sabedoria * 2
             const percepcao = sabedoria * 2;
+            
+            el('display-blindagem').textContent = blindagem;
+            el('display-velocidade').textContent = velocidade;
+            el('display-iniciativa').textContent = iniciativa;
             el('display-percepcao').textContent = percepcao;
+        }
+        
+        // ====================================================================
+        // CARREGAR RESUMO DO MASCOTE
+        // ====================================================================
+        function loadMascoteSummary() {
+            const container = el('mascote-summary');
+            if (!container) return;
+            
+            try {
+                // Tentar carregar do perfil ativo
+                if (!activeProfileData) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-[#8b7355]">
+                            <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                            <p>Nenhum mascote vinculado</p>
+                            <button onclick="window.location.href='mascote.html'" 
+                                    class="mt-3 px-4 py-2 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
+                                Criar Mascote
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Buscar mascote
+                const mascote = activeProfileData.dados?.mascote || 
+                               activeProfileData.mascote;
+                
+                if (!mascote || !mascote.nome) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 text-[#8b7355]">
+                            <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                            <p>Nenhum mascote vinculado</p>
+                            <button onclick="window.location.href='mascote.html'" 
+                                    class="mt-3 px-4 py-2 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
+                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
+                                Criar Mascote
+                            </button>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Mostrar resumo do mascote
+                container.innerHTML = `
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-16 h-16 rounded-full flex items-center justify-center border-2" 
+                            style="border-color: ${mascote.tipoCor || '#ec4899'}; background: ${mascote.tipoCor || '#ec4899'}20">
+                            <i data-lucide="${mascote.tipoIcone || 'dog'}" 
+                            style="color: ${mascote.tipoCor || '#ec4899'}" 
+                            class="w-8 h-8"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-cinzel font-bold text-xl text-[#f4d29a]">${mascote.nome}</h4>
+                            <p class="text-[#8b7355]">
+                                ${mascote.tipoNome || 'Tipo'} • Nível ${mascote.nivel || 1}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.lealdade || 80}%</div>
+                            <div class="text-xs text-[#8b7355]">Lealdade</div>
+                        </div>
+                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.vidaAtual || 0}/${mascote.vidaMax || 50}</div>
+                            <div class="text-xs text-[#8b7355]">Vida</div>
+                        </div>
+                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.habilidades?.length || 0}</div>
+                            <div class="text-xs text-[#8b7355]">Habilidades</div>
+                        </div>
+                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
+                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.forca || 0}</div>
+                            <div class="text-xs text-[#8b7355]">Força</div>
+                        </div>
+                    </div>
+                    
+                    ${mascote.passiva ? `
+                    <div class="mt-4 p-3 bg-[#1a1510] rounded border border-[#8b7355]/30">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i data-lucide="zap" class="w-3 h-3 text-[#d4a76a]"></i>
+                            <span class="text-sm font-semibold text-[#d4a76a]">Passiva Especial</span>
+                        </div>
+                        <p class="text-sm text-[#f4d29a]">${mascote.passiva.substring(0, 100)}${mascote.passiva.length > 100 ? '...' : ''}</p>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="mt-4">
+                        <button onclick="window.location.href='mascote.html'" 
+                                class="w-full px-4 py-2 bg-gradient-to-r from-[#8b7355]/30 to-[#d4a76a]/30 text-[#f4d29a] rounded border border-[#8b7355] hover:border-[#d4a76a] transition-colors text-sm">
+                            <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>
+                            Ver Detalhes do Mascote
+                        </button>
+                    </div>
+                `;
+                
+                lucide.createIcons();
+                
+            } catch (error) {
+                console.error('Erro ao carregar mascote no perfil:', error);
+                container.innerHTML = `
+                    <div class="text-center py-8 text-[#8b7355]">
+                        <i data-lucide="alert-triangle" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                        <p>Erro ao carregar mascote</p>
+                    </div>
+                `;
+            }
         }
         
         // ====================================================================
@@ -948,95 +1206,10 @@
         // ====================================================================
         // FUNÇÕES DE AÇÃO
         // ====================================================================
-        // ====================================================================
-        // CARREGAR PERFIL ATIVO (VERSÃO CORRIGIDA)
-        // ====================================================================
-        function loadActiveProfile() {
-            try {
-                debugDataStructure(); // Para ver o que está errado
-                
-                // Método 1: Tentar carregar do sistema de perfis
-                let perfis = localStorage.getItem('rpg_sistema_perfis');
-                let perfilAtivoId = localStorage.getItem('perfil_ativo');
-                
-                // Método 2: Se não encontrar, tentar carregar da ficha antiga
-                if (!perfis || !perfilAtivoId) {
-                    console.log("Tentando método alternativo...");
-                    
-                    // Tentar carregar ficha direta
-                    const fichaData = localStorage.getItem('ficha_rpg_data');
-                    if (fichaData) {
-                        console.log("Encontrada ficha direta");
-                        activeProfileData = {
-                            nome: localStorage.getItem('nome_personagem') || 'Personagem',
-                            dados: JSON.parse(fichaData)
-                        };
-                        updateProfileDisplay();
-                        mostrarFeedback("Dados carregados da ficha", "success");
-                        return true;
-                    }
-                    
-                    // Tentar encontrar qualquer perfil
-                    const allKeys = Object.keys(localStorage);
-                    const profileKeys = allKeys.filter(key => key.startsWith('perfil_') || key.includes('ficha'));
-                    
-                    if (profileKeys.length > 0) {
-                        const firstKey = profileKeys[0];
-                        const profileData = JSON.parse(localStorage.getItem(firstKey));
-                        console.log(`Carregando do primeiro perfil encontrado: ${firstKey}`, profileData);
-                        
-                        activeProfileData = profileData;
-                        updateProfileDisplay();
-                        mostrarFeedback(`Carregado: ${firstKey}`, "success");
-                        return true;
-                    }
-                    
-                    showWarning("Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.");
-                    return false;
-                }
-                
-                const perfisObj = JSON.parse(perfis);
-                activeProfileData = perfisObj[perfilAtivoId];
-                
-                if (!activeProfileData) {
-                    showWarning("Perfil ativo inválido. Crie uma nova ficha.");
-                    return false;
-                }
-                
-                // Verificar estrutura e corrigir se necessário
-                if (!activeProfileData.dados) {
-                    console.log("Estrutura de dados incompleta, tentando corrigir...");
-                    
-                    // Se não tem 'dados', talvez os dados estejam na raiz
-                    if (activeProfileData.atributos || activeProfileData.raca) {
-                        // Mover tudo para dentro de 'dados'
-                        activeProfileData.dados = { ...activeProfileData };
-                        
-                        // Limpar campos duplicados
-                        Object.keys(activeProfileData.dados).forEach(key => {
-                            if (key !== 'dados' && key !== 'nome' && key !== 'id') {
-                                delete activeProfileData[key];
-                            }
-                        });
-                        
-                        // Salvar corrigido
-                        perfisObj[perfilAtivoId] = activeProfileData;
-                        localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
-                        console.log("Estrutura corrigida automaticamente");
-                    }
-                }
-                
-                // Atualizar interface
-                updateProfileDisplay();
-                setupNavButtons();
-                
-                mostrarFeedback("Perfil carregado com sucesso!", "success");
-                return true;
-                
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
-                showWarning(`Erro ao carregar o perfil: ${error.message}`);
-                return false;
+        function refreshProfile() {
+            const success = loadActiveProfile();
+            if (success) {
+                mostrarFeedback("Perfil atualizado com sucesso!", "success");
             }
         }
         
@@ -1046,175 +1219,125 @@
                 return;
             }
             
-            const dataStr = JSON.stringify(activeProfileData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-            
-            const exportFileDefaultName = `perfil_${activeProfileData.nome || 'personagem'}.json`;
-            
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-            
-            mostrarFeedback("Perfil exportado como JSON!", "success");
+            try {
+                const dataStr = JSON.stringify(activeProfileData, null, 2);
+                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+                
+                const exportFileDefaultName = `perfil_${activeProfileData.nome || 'personagem'}_${Date.now()}.json`;
+                
+                const linkElement = document.createElement('a');
+                linkElement.setAttribute('href', dataUri);
+                linkElement.setAttribute('download', exportFileDefaultName);
+                linkElement.click();
+                
+                mostrarFeedback("Perfil exportado como JSON!", "success");
+                
+            } catch (error) {
+                console.error('Erro ao exportar perfil:', error);
+                mostrarFeedback("Erro ao exportar perfil", "error");
+            }
         }
         
         // ====================================================================
-        // FUNÇÃO DE FEEDBACK
+        // FUNÇÃO PARA CRIAR PERFIL DE TESTE (UTILITÁRIO)
         // ====================================================================
-        function mostrarFeedback(mensagem, tipo = 'info') {
-            console.log(`[${tipo.toUpperCase()}] ${mensagem}`);
+        function criarPerfilTeste() {
+            const perfilTeste = {
+                nome: "Aragorn, o Herdeiro",
+                dados: {
+                    basico: {
+                        raca: "Humano",
+                        classe: "Ranger",
+                        origem: "Rei no Exílio",
+                        idade: "87"
+                    },
+                    atributos: {
+                        forca: 18,
+                        destreza: 16,
+                        constituicao: 17,
+                        inteligencia: 14,
+                        sabedoria: 15,
+                        carisma: 13
+                    },
+                    recursos: {
+                        vida_max: 85,
+                        vida_atual: 85,
+                        vida_base: 85,
+                        mana_max: 20,
+                        mana_atual: 20,
+                        mana_base: 20,
+                        estamina_max: 45,
+                        estamina_atual: 45,
+                        estamina_base: 45
+                    },
+                    progressao: {
+                        nivel: 5,
+                        xp_atual: 3200
+                    },
+                    destino: {
+                        valor: 72,
+                        dados: [15, 8, 18],
+                        fixada: false
+                    },
+                    ficha: {
+                        armas: [
+                            { nome: "Andúril, a Chama do Oeste", tipo: "Espada Longa" }
+                        ],
+                        equipamentos: [
+                            { nome: "Cota de Malha Mithril", tipo: "Armadura" },
+                            { nome: "Anel de Barahir", tipo: "Amuleto" }
+                        ]
+                    },
+                    mascote: {
+                        nome: "Brego",
+                        tipoNome: "Cavalo Nobre",
+                        tipoIcone: "horse",
+                        tipoCor: "#d4a76a",
+                        nivel: 3,
+                        lealdade: 95,
+                        vidaMax: 120,
+                        vidaAtual: 120,
+                        forca: 16,
+                        passiva: "Velocidade do Vento: +10% de velocidade de movimento para o cavaleiro"
+                    }
+                }
+            };
             
-            // Remover feedbacks antigos
-            const existing = document.querySelectorAll('.feedback-profile');
-            existing.forEach(el => el.remove());
+            // Salvar no localStorage
+            const perfis = { 'teste123': perfilTeste };
+            localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfis));
+            localStorage.setItem('perfil_ativo', 'teste123');
             
-            const feedback = document.createElement('div');
-            feedback.className = `feedback-profile fixed top-4 right-4 z-50 px-4 py-3 rounded-lg border shadow-lg transition-all duration-500 animate-in slide-in-from-right-10 ${
-                tipo === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
-                tipo === 'warning' ? 'bg-yellow-900/30 border-yellow-700 text-yellow-300' :
-                tipo === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
-                'bg-blue-900/30 border-blue-700 text-blue-300'
-            }`;
+            console.log("Perfil de teste criado!");
+            mostrarFeedback("Perfil de teste criado com sucesso!", "success");
             
-            feedback.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <i data-lucide="${
-                        tipo === 'success' ? 'check-circle' :
-                        tipo === 'warning' ? 'alert-triangle' :
-                        tipo === 'error' ? 'x-circle' : 'info'
-                    }" class="w-4 h-4"></i>
-                    <span class="font-medium">${mensagem}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(feedback);
-            lucide.createIcons();
-            
+            // Recarregar
             setTimeout(() => {
-                feedback.style.opacity = '0';
-                feedback.style.transform = 'translateX(20px)';
-                setTimeout(() => feedback.remove(), 500);
-            }, 3000);
+                loadActiveProfile();
+            }, 500);
         }
         
         // ====================================================================
         // INICIALIZAÇÃO
         // ====================================================================
         window.addEventListener('load', function() {
-            // Tentar carregar o perfil
-            const success = loadActiveProfile();
-            
-            if (!success) {
-                // Desabilitar algumas funcionalidades se não há perfil
-                const actionButtons = document.querySelectorAll('button[onclick^="export"]');
-                actionButtons.forEach(btn => btn.disabled = true);
-            }
-            
             // Criar ícones
             lucide.createIcons();
+            
+            // Carregar perfil
+            setTimeout(() => {
+                const success = loadActiveProfile();
+                
+                if (!success) {
+                    // Desabilitar botões de ação se não há perfil
+                    const actionButtons = document.querySelectorAll('button[onclick^="export"], button[onclick^="refresh"]');
+                    actionButtons.forEach(btn => btn.disabled = true);
+                }
+            }, 100);
         });
-    // No perfil.html, função para carregar mascote
-    function loadMascoteSummary() {
-        const container = document.getElementById('mascote-summary');
         
-        try {
-            // Tentar carregar do perfil ativo
-            if (!activeProfileData) return;
-            
-            const mascote = activeProfileData.dados?.mascote;
-            
-            if (!mascote) {
-                // Mostrar botão para criar
-                container.innerHTML = `
-                    <div class="text-center py-8 text-[#8b7355]">
-                        <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                        <p>Nenhum mascote vinculado</p>
-                        <button onclick="window.location.href='mascote.html'" 
-                                class="mt-3 px-4 py-2 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-                            <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
-                            Criar Mascote
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Mostrar resumo do mascote
-            container.innerHTML = `
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-16 h-16 rounded-full flex items-center justify-center border-2" 
-                        style="border-color: ${mascote.tipoCor || '#ec4899'}; background: ${mascote.tipoCor || '#ec4899'}20">
-                        <i data-lucide="${mascote.tipoIcone || 'dog'}" 
-                        style="color: ${mascote.tipoCor || '#ec4899'}" 
-                        class="w-8 h-8"></i>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-cinzel font-bold text-xl text-[#f4d29a]">${mascote.nome || 'Mascote'}</h4>
-                        <p class="text-[#8b7355]">
-                            ${mascote.tipoNome || 'Tipo'} • Nível ${mascote.nivel || 1}
-                        </p>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.lealdade || 80}%</div>
-                        <div class="text-xs text-[#8b7355]">Lealdade</div>
-                    </div>
-                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.vidaAtual || 0}/${mascote.vidaMax || 50}</div>
-                        <div class="text-xs text-[#8b7355]">Vida</div>
-                    </div>
-                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.habilidades?.length || 0}</div>
-                        <div class="text-xs text-[#8b7355]">Habilidades</div>
-                    </div>
-                    <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                        <div class="text-lg font-bold text-[#f4d29a]">${mascote.forca || 0}</div>
-                        <div class="text-xs text-[#8b7355]">Força</div>
-                    </div>
-                </div>
-                
-                ${mascote.passiva ? `
-                <div class="mt-4 p-3 bg-[#1a1510] rounded border border-[#8b7355]/30">
-                    <div class="flex items-center gap-2 mb-1">
-                        <i data-lucide="zap" class="w-3 h-3 text-[#d4a76a]"></i>
-                        <span class="text-sm font-semibold text-[#d4a76a]">Passiva Especial</span>
-                    </div>
-                    <p class="text-sm text-[#f4d29a]">${mascote.passiva.substring(0, 100)}${mascote.passiva.length > 100 ? '...' : ''}</p>
-                </div>
-                ` : ''}
-                
-                <div class="mt-4 flex gap-2">
-                    <button onclick="window.location.href='mascote.html'" 
-                            class="flex-1 px-4 py-2 bg-gradient-to-r from-[#8b7355]/30 to-[#d4a76a]/30 text-[#f4d29a] rounded border border-[#8b7355] hover:border-[#d4a76a] transition-colors text-sm">
-                        <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>
-                        Ver Completo
-                    </button>
-                </div>
-            `;
-            
-            lucide.createIcons();
-            
-        } catch (error) {
-            console.error('Erro ao carregar mascote no perfil:', error);
-            container.innerHTML = `
-                <div class="text-center py-8 text-[#8b7355]">
-                    <i data-lucide="alert-triangle" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                    <p>Erro ao carregar mascote</p>
-                </div>
-            `;
-        }
-    }
-
-    // Chame esta função em updateProfileDisplay()
-    function updateProfileDisplay() {
-        // ... código existente ...
-        
-        // Adicionar esta linha no final
-        loadMascoteSummary();
-    }
+        // Expor função de teste para o console
+        window.criarPerfilTeste = criarPerfilTeste;
         
     </script>
 </body>
