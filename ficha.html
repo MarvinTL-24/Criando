@@ -512,20 +512,19 @@
                         
                         <div class="form-group">
                             <label class="form-label">Classe</label>
-                            <select id="classe" class="form-input">
-                                <option value="">Selecione...</option>
-                                <option value="Guerreiro">Guerreiro</option>
-                                <option value="Mago">Mago</option>
-                                <option value="Ladino">Ladino</option>
-                                <option value="Clérigo">Clérigo</option>
-                                <option value="Bárbaro">Bárbaro</option>
-                                <option value="Bardo">Bardo</option>
-                                <option value="Druida">Druida</option>
-                                <option value="Paladino">Paladino</option>
-                                <option value="Patrulheiro">Patrulheiro</option>
-                                <option value="Feiticeiro">Feiticeiro</option>
-                                <option value="Bruxo">Bruxo</option>
-                            </select>
+                            <div class="flex gap-2">
+                                <select id="classe" class="form-input flex-1">
+                                    <option value="">Selecione...</option>
+                                    <!-- Classes serão carregadas dinamicamente -->
+                                </select>
+                                <button type="button" onclick="openClassManager()" 
+                                        class="px-3 py-2 bg-theme-purple/20 border border-theme-purple/30 rounded text-theme-purple hover:bg-theme-purple/30 transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            <div id="class-preview" class="mt-2 hidden">
+                                <!-- Pré-visualização da classe será exibida aqui -->
+                            </div>
                         </div>
                         
                         <div class="form-group">
@@ -653,497 +652,336 @@
         <div id="saveStatusMessage" class="save-status"></div>
     </div>
 
+    // ====================================================================
     <script>
-        // ============================================
-        // SISTEMA DE FICHA DO PERSONAGEM
-        // ============================================
-        
-        class CharacterSheet {
-            constructor() {
-                this.currentCharacter = null;
-                this.avatarData = null;
-                this.autoSaveInterval = null;
+    // SISTEMA DE INTEGRAÇÃO DE CLASSES NA FICHA
+    // ====================================================================
+
+    class ClassIntegrationSystem {
+        // Carregar classes do sistema de classes
+        static loadAvailableClasses() {
+            try {
+                // Carregar classes padrão
+                const defaultClasses = [
+                    { id: 'guerreiro', name: 'Guerreiro', color: '#dc2626', icon: 'sword' },
+                    { id: 'mago', name: 'Mago', color: '#4a9eff', icon: 'sparkles' },
+                    { id: 'ladino', name: 'Ladino', color: '#22c55e', icon: 'target' },
+                    { id: 'clerigo', name: 'Clérigo', color: '#f59e0b', icon: 'shield' },
+                    { id: 'barbaro', name: 'Bárbaro', color: '#ea580c', icon: 'axe' },
+                    { id: 'bardo', name: 'Bardo', color: '#ec4899', icon: 'music' },
+                    { id: 'druida', name: 'Druida', color: '#16a34a', icon: 'leaf' },
+                    { id: 'paladino', name: 'Paladino', color: '#eab308', icon: 'shield-check' },
+                    { id: 'patrulheiro', name: 'Patrulheiro', color: '#65a30d', icon: 'crosshair' },
+                    { id: 'feiticeiro', name: 'Feiticeiro', color: '#7c3aed', icon: 'zap' },
+                    { id: 'bruxo', name: 'Bruxo', color: '#db2777', icon: 'skull' }
+                ];
+                
+                // Carregar classes personalizadas do localStorage
+                const savedClasses = localStorage.getItem('grimorio_custom_classes');
+                const customClasses = savedClasses ? JSON.parse(savedClasses) : [];
+                
+                return [...defaultClasses, ...customClasses];
+            } catch (error) {
+                console.error('Erro ao carregar classes:', error);
+                return [];
             }
             
-            // Inicializar
-            init() {
-                console.log('📄 Sistema de Ficha inicializado');
-                this.loadSavedCount();
-                this.setupAutoSave();
-                this.loadLastCharacter();
-            }
-            
-            // Salvar personagem
-            saveCharacter() {
-                try {
-                    // Coletar dados do formulário
-                    const characterData = this.collectFormData();
-                    
-                    // Validar dados obrigatórios
-                    if (!characterData.nome || characterData.nome.trim() === '') {
-                        this.showStatus('⚠️ Nome do personagem é obrigatório!', 'warning');
-                        document.getElementById('nome').focus();
-                        return false;
-                    }
-                    
-                    // Adicionar metadados
-                    characterData.id = `character_${Date.now()}`;
-                    characterData.createdAt = new Date().toISOString();
-                    characterData.updatedAt = new Date().toISOString();
-                    characterData.avatar = this.avatarData;
-                    
-                    // Salvar no localStorage
-                    this.saveToLocalStorage(characterData);
-                    
-                    // Salvar no sistema principal de save
-                    this.saveToSystem(characterData);
-                    
-                    // Atualizar interface
-                    this.updateSaveInfo();
-                    
-                    // Mostrar status
-                    this.showStatus('✅ Personagem salvo com sucesso!', 'success');
-                    
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Erro ao salvar personagem:', error);
-                    this.showStatus('❌ Erro ao salvar personagem', 'error');
-                    return false;
-                }
-            }
-            
-            // Coletar dados do formulário
-            collectFormData() {
-                return {
-                    // Informações básicas
-                    nome: document.getElementById('nome').value,
-                    titulo: document.getElementById('titulo').value,
-                    nivel: parseInt(document.getElementById('nivel').value) || 1,
-                    idade: document.getElementById('idade').value,
-                    raca: document.getElementById('raca').value,
-                    classe: document.getElementById('classe').value,
-                    origem: document.getElementById('origem').value,
-                    alinhamento: document.getElementById('alinhamento').value,
-                    
-                    // Aparência física
-                    altura: document.getElementById('altura').value,
-                    peso: document.getElementById('peso').value,
-                    olhos: document.getElementById('olhos').value,
-                    cabelo: document.getElementById('cabelo').value,
-                    pele: document.getElementById('pele').value,
-                    marcas: document.getElementById('marcas').value,
-                    descricaoAparencia: document.getElementById('descricaoAparencia').value,
-                    
-                    // História e personalidade
-                    historia: document.getElementById('historia').value,
-                    personalidade: document.getElementById('personalidade').value,
-                    ideais: document.getElementById('ideais').value,
-                    defeitos: document.getElementById('defeitos').value
-                };
-            }
-            
-            // Salvar no localStorage
-            saveToLocalStorage(characterData) {
-                // Salvar dados básicos
-                localStorage.setItem('grimorio_character_data', JSON.stringify(characterData));
+            function saveClassAndNotify() {
+                saveClass(); // Sua função existente
                 
-                // Salvar em lista de personagens
-                let characters = localStorage.getItem('grimorio_characters_list');
-                characters = characters ? JSON.parse(characters) : [];
+                // Notificar outras páginas sobre a atualização
+                localStorage.setItem('grimorio_classes_updated', Date.now().toString());
                 
-                // Verificar se já existe (atualizar)
-                const existingIndex = characters.findIndex(c => c.id === characterData.id);
-                if (existingIndex >= 0) {
-                    characters[existingIndex] = characterData;
-                } else {
-                    characters.push(characterData);
-                }
-                
-                localStorage.setItem('grimorio_characters_list', JSON.stringify(characters));
-                
-                // Salvar avatar separadamente
-                if (this.avatarData) {
-                    localStorage.setItem('grimorio_character_avatar', this.avatarData);
-                }
-                
-                // Marcar como personagem ativo
-                localStorage.setItem('grimorio_active_character', JSON.stringify(characterData));
-            }
-            
-            // Salvar no sistema principal
-            saveToSystem(characterData) {
-                if (window.SaveSystem) {
-                    window.SaveSystem.createSave(
-                        characterData.nome,
-                        {
-                            character: characterData,
-                            saveDate: new Date().toISOString(),
-                            type: 'character_export'
-                        },
-                        'character'
-                    );
-                }
-            }
-            
-            // Carregar personagem
-            loadCharacter() {
-                try {
-                    // Verificar se há dados salvos
-                    const savedData = localStorage.getItem('grimorio_character_data');
-                    if (!savedData) {
-                        this.showStatus('ℹ️ Nenhum personagem salvo encontrado', 'info');
-                        return false;
-                    }
-                    
-                    const characterData = JSON.parse(savedData);
-                    this.currentCharacter = characterData;
-                    
-                    // Preencher formulário
-                    this.fillForm(characterData);
-                    
-                    // Carregar avatar
-                    const savedAvatar = localStorage.getItem('grimorio_character_avatar');
-                    if (savedAvatar) {
-                        this.avatarData = savedAvatar;
-                        this.updateAvatarPreview(savedAvatar);
-                    }
-                    
-                    this.showStatus('✅ Personagem carregado com sucesso!', 'success');
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Erro ao carregar personagem:', error);
-                    this.showStatus('❌ Erro ao carregar personagem', 'error');
-                    return false;
-                }
-            }
-            
-            // Carregar último personagem
-            loadLastCharacter() {
-                try {
-                    const lastCharacter = localStorage.getItem('grimorio_active_character');
-                    if (lastCharacter) {
-                        const characterData = JSON.parse(lastCharacter);
-                        this.currentCharacter = characterData;
-                        this.fillForm(characterData);
-                        
-                        // Carregar avatar
-                        const savedAvatar = localStorage.getItem('grimorio_character_avatar');
-                        if (savedAvatar) {
-                            this.avatarData = savedAvatar;
-                            this.updateAvatarPreview(savedAvatar);
-                        }
-                        
-                        console.log('Último personagem carregado:', characterData.nome);
-                    }
-                } catch (error) {
-                    console.error('Erro ao carregar último personagem:', error);
-                }
-            }
-            
-            // Preencher formulário com dados
-            fillForm(data) {
-                // Informações básicas
-                document.getElementById('nome').value = data.nome || '';
-                document.getElementById('titulo').value = data.titulo || '';
-                document.getElementById('nivel').value = data.nivel || 1;
-                document.getElementById('idade').value = data.idade || '';
-                document.getElementById('raca').value = data.raca || '';
-                document.getElementById('classe').value = data.classe || '';
-                document.getElementById('origem').value = data.origem || '';
-                document.getElementById('alinhamento').value = data.alinhamento || '';
-                
-                // Aparência física
-                document.getElementById('altura').value = data.altura || '';
-                document.getElementById('peso').value = data.peso || '';
-                document.getElementById('olhos').value = data.olhos || '';
-                document.getElementById('cabelo').value = data.cabelo || '';
-                document.getElementById('pele').value = data.pele || '';
-                document.getElementById('marcas').value = data.marcas || '';
-                document.getElementById('descricaoAparencia').value = data.descricaoAparencia || '';
-                
-                // História e personalidade
-                document.getElementById('historia').value = data.historia || '';
-                document.getElementById('personalidade').value = data.personalidade || '';
-                document.getElementById('ideais').value = data.ideais || '';
-                document.getElementById('defeitos').value = data.defeitos || '';
-            }
-            
-            // Limpar formulário
-            clearForm() {
-                if (!confirm('Tem certeza que deseja limpar todos os dados? Esta ação não pode ser desfeita.')) {
-                    return;
-                }
-                
-                // Limpar inputs
-                document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
-                    if (input.type === 'number') {
-                        input.value = input.id === 'nivel' ? '1' : '';
-                    } else {
-                        input.value = '';
-                    }
-                });
-                
-                // Limpar avatar
-                this.removeAvatar();
-                
-                // Limpar dados atuais
-                this.currentCharacter = null;
-                this.avatarData = null;
-                
-                // Limpar localStorage
-                localStorage.removeItem('grimorio_character_data');
-                localStorage.removeItem('grimorio_active_character');
-                
-                this.showStatus('🧹 Formulário limpo com sucesso!', 'success');
-            }
-            
-            // Exportar como JSON
-            exportCharacter() {
-                const characterData = this.collectFormData();
-                
-                if (!characterData.nome || characterData.nome.trim() === '') {
-                    this.showStatus('⚠️ Nome do personagem é obrigatório para exportar!', 'warning');
-                    return;
-                }
-                
-                const exportData = {
-                    ...characterData,
-                    avatar: this.avatarData,
-                    exportDate: new Date().toISOString(),
-                    version: '1.0',
-                    type: 'character_export'
-                };
-                
-                const dataStr = JSON.stringify(exportData, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-                
-                const fileName = `personagem_${characterData.nome.toLowerCase().replace(/\s+/g, '_')}.json`;
-                
-                const link = document.createElement('a');
-                link.setAttribute('href', dataUri);
-                link.setAttribute('download', fileName);
-                link.click();
-                
-                this.showStatus('📄 Personagem exportado como JSON!', 'success');
-            }
-            
-            // Gerenciar Avatar
-            handleAvatarUpload(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                // Validar tipo
-                if (!file.type.match('image.*')) {
-                    this.showStatus('❌ Por favor, selecione uma imagem válida', 'error');
-                    return;
-                }
-                
-                // Validar tamanho
-                if (file.size > 5 * 1024 * 1024) {
-                    this.showStatus('⚠️ Imagem muito grande (máx. 5MB)', 'warning');
-                    return;
-                }
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    this.compressImage(e.target.result, (compressedImage) => {
-                        this.avatarData = compressedImage;
-                        this.updateAvatarPreview(compressedImage);
-                        this.showStatus('📷 Avatar carregado com sucesso!', 'success');
-                    });
-                };
-                reader.readAsDataURL(file);
-            }
-            
-            // Comprimir imagem
-            compressImage(base64, callback) {
-                const img = new Image();
-                img.src = base64;
-                
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    let width = img.width;
-                    let height = img.height;
-                    
-                    // Redimensionar mantendo proporção
-                    const maxSize = 400;
-                    if (width > height) {
-                        if (width > maxSize) {
-                            height = Math.round((height * maxSize) / width);
-                            width = maxSize;
-                        }
-                    } else {
-                        if (height > maxSize) {
-                            width = Math.round((width * maxSize) / height);
-                            height = maxSize;
-                        }
-                    }
-                    
-                    canvas.width = width;
-                    canvas.height = height;
-                    
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, width, height);
-                    
-                    // Converter para JPEG com 85% de qualidade
-                    const compressedImage = canvas.toDataURL('image/jpeg', 0.85);
-                    callback(compressedImage);
-                };
-            }
-            
-            // Atualizar preview do avatar
-            updateAvatarPreview(imageData) {
-                const preview = document.getElementById('avatarPreview');
-                const placeholder = document.getElementById('avatarPlaceholder');
-                
-                if (imageData) {
-                    preview.src = imageData;
-                    preview.style.display = 'block';
-                    placeholder.style.display = 'none';
-                } else {
-                    preview.style.display = 'none';
-                    placeholder.style.display = 'flex';
-                }
-            }
-            
-            // Remover avatar
-            removeAvatar() {
-                this.avatarData = null;
-                this.updateAvatarPreview(null);
-                localStorage.removeItem('grimorio_character_avatar');
-                this.showStatus('🗑️ Avatar removido', 'info');
-            }
-            
-            // Atualizar informações de save
-            updateSaveInfo() {
-                const lastSave = document.getElementById('lastSave');
-                const now = new Date();
-                lastSave.textContent = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-                
-                this.loadSavedCount();
-            }
-            
-            // Contar personagens salvos
-            loadSavedCount() {
-                const countElement = document.getElementById('savedCount');
-                const characters = localStorage.getItem('grimorio_characters_list');
-                
-                if (characters) {
-                    const list = JSON.parse(characters);
-                    countElement.textContent = list.length;
-                } else {
-                    countElement.textContent = '0';
-                }
-            }
-            
-            // Configurar auto-save
-            setupAutoSave() {
-                const inputs = document.querySelectorAll('.form-input, .form-textarea');
-                let timeout;
-                
-                inputs.forEach(input => {
-                    input.addEventListener('input', () => {
-                        clearTimeout(timeout);
-                        timeout = setTimeout(() => {
-                            if (document.getElementById('nome').value.trim() !== '') {
-                                this.saveCharacter();
-                                this.showStatus('💾 Salvando automaticamente...', 'info');
-                            }
-                        }, 3000); // 3 segundos após parar de digitar
-                    });
-                });
-            }
-            
-            // Mostrar status
-            showStatus(message, type = 'info') {
-                const statusElement = document.getElementById('saveStatusMessage');
-                const statusText = document.getElementById('saveStatus');
-                
-                // Atualizar status na sidebar
-                if (statusText) {
-                    statusText.textContent = type === 'success' ? 'Salvo' : 
-                                            type === 'error' ? 'Erro' : 
-                                            type === 'warning' ? 'Atenção' : 'Pronto';
-                    
-                    statusText.className = type === 'success' ? 'text-green-500' : 
-                                         type === 'error' ? 'text-red-500' : 
-                                         type === 'warning' ? 'text-orange-500' : 'text-gray-400';
-                }
-                
-                // Mostrar notificação
-                statusElement.textContent = message;
-                statusElement.className = `save-status ${type}`;
-                statusElement.classList.add('show');
-                
-                // Esconder após 3 segundos
-                setTimeout(() => {
-                    statusElement.classList.remove('show');
-                }, 3000);
-            }
-            
-            // Criar personagem exemplo
-            createExampleCharacter() {
-                const exampleData = {
-                    nome: "Aragorn, o Herdeiro",
-                    titulo: "Rei no Exílio",
-                    nivel: 5,
-                    idade: "87 anos",
-                    raca: "Humano",
-                    classe: "Patrulheiro",
-                    origem: "Reino de Gondor",
-                    alinhamento: "Leal e Bom",
-                    altura: "1.85m",
-                    peso: "85kg",
-                    olhos: "Cinzentos",
-                    cabelo: "Castanho Escuro",
-                    pele: "Morena",
-                    marcas: "Cicatriz no queixo",
-                    descricaoAparencia: "Homem alto e magro, com olhos penetrantes e postura nobre. Veste roupas simples mas de boa qualidade.",
-                    historia: "Herdeiro do trono de Gondor, viveu por anos como caçador sob o nome de Passolargo.",
-                    personalidade: "Reservado, sábio e protetor. Valoriza a honra e o dever acima de tudo.",
-                    ideais: "Proteger os inocentes e restaurar a linhagem real de Gondor.",
-                    defeitos: "Tem dificuldade em aceitar seu destino real e costuma se isolar emocionalmente."
-                };
-                
-                this.fillForm(exampleData);
-                this.showStatus('📝 Personagem exemplo criado!', 'success');
+                // Disparar evento para sincronização
+                window.dispatchEvent(new CustomEvent('grimorio-classes-updated'));
             }
         }
         
-        // ============================================
-        // INICIALIZAÇÃO
-        // ============================================
-        
-        let characterSheet = null;
-        
-        function initCharacterSheet() {
-            characterSheet = new CharacterSheet();
-            characterSheet.init();
+        // Atualizar dropdown de classes
+        static updateClassDropdown() {
+            const select = document.getElementById('classe');
+            if (!select) return;
             
-            // Expor funções globais
-            window.saveCharacter = () => characterSheet.saveCharacter();
-            window.loadCharacter = () => characterSheet.loadCharacter();
-            window.clearForm = () => characterSheet.clearForm();
-            window.exportCharacter = () => characterSheet.exportCharacter();
-            window.handleAvatarUpload = (event) => characterSheet.handleAvatarUpload(event);
-            window.removeAvatar = () => characterSheet.removeAvatar();
+            // Salvar valor atual
+            const currentValue = select.value;
             
-            // Criar personagem exemplo se não houver dados
+            // Limpar opções
+            select.innerHTML = '<option value="">Selecione...</option>';
+            
+            // Carregar classes
+            const classes = this.loadAvailableClasses();
+            
+            // Ordenar por nome
+            classes.sort((a, b) => a.name.localeCompare(b.name));
+            
+            // Adicionar opções
+            classes.forEach(cls => {
+                const option = document.createElement('option');
+                option.value = cls.id;
+                option.textContent = cls.name;
+                option.dataset.color = cls.color;
+                option.dataset.icon = cls.icon;
+                option.dataset.description = cls.description || '';
+                option.dataset.attributes = JSON.stringify(cls.attributes || {});
+                option.dataset.skills = JSON.stringify(cls.skills || []);
+                
+                select.appendChild(option);
+            });
+            
+            // Restaurar valor se existir
+            if (currentValue) {
+                select.value = currentValue;
+            }
+            
+            // Atualizar pré-visualização
+            this.updateClassPreview();
+        }
+        
+        // Atualizar pré-visualização da classe selecionada
+        static updateClassPreview() {
+            const select = document.getElementById('classe');
+            const preview = document.getElementById('class-preview');
+            if (!select || !preview) return;
+            
+            const selectedOption = select.options[select.selectedIndex];
+            
+            if (!selectedOption.value) {
+                preview.classList.add('hidden');
+                return;
+            }
+            
+            const color = selectedOption.dataset.color || '#8b5cf6';
+            const icon = selectedOption.dataset.icon || 'sword';
+            const description = selectedOption.dataset.description || '';
+            const attributes = JSON.parse(selectedOption.dataset.attributes || '{}');
+            const skills = JSON.parse(selectedOption.dataset.skills || '[]');
+            
+            preview.innerHTML = `
+                <div class="p-3 rounded-lg border" style="border-color: ${color}20; background: ${color}10">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: ${color}20; color: ${color}">
+                            <i data-lucide="${icon}" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h4 class="font-semibold" style="color: ${color}">${selectedOption.textContent}</h4>
+                                <span class="text-xs px-2 py-0.5 rounded" style="background: ${color}20; color: ${color}">
+                                    ${Object.keys(attributes).length} atributos
+                                </span>
+                            </div>
+                            ${description ? `<p class="text-sm text-gray-400 mb-2">${description}</p>` : ''}
+                            
+                            ${Object.keys(attributes).length > 0 ? `
+                                <div class="mt-2">
+                                    <div class="text-xs text-gray-500 mb-1">Modificadores:</div>
+                                    <div class="flex flex-wrap gap-1">
+                                        ${Object.entries(attributes).map(([key, value]) => `
+                                            <span class="text-xs px-2 py-0.5 rounded bg-black/30">
+                                                ${key.toUpperCase()}: ${value > 0 ? '+' : ''}${value}
+                                            </span>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    ${skills.length > 0 ? `
+                        <div class="mt-3 pt-3 border-t border-gray-700">
+                            <div class="text-xs text-gray-500 mb-1">Habilidades:</div>
+                            <div class="text-sm text-gray-300">
+                                ${skills.slice(0, 3).join(', ')}${skills.length > 3 ? '...' : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            preview.classList.remove('hidden');
+            lucide.createIcons();
+        }
+        
+        // Aplicar modificadores da classe aos atributos
+        static applyClassModifiers(characterData) {
+            const select = document.getElementById('classe');
+            if (!select || !select.value || !characterData) return characterData;
+            
+            const selectedOption = select.options[select.selectedIndex];
+            const attributes = JSON.parse(selectedOption.dataset.attributes || '{}');
+            const skills = JSON.parse(selectedOption.dataset.skills || '[]');
+            
+            // Salvar dados da classe no personagem
+            characterData.class = {
+                id: selectedOption.value,
+                name: selectedOption.textContent,
+                color: selectedOption.dataset.color,
+                icon: selectedOption.dataset.icon,
+                description: selectedOption.dataset.description,
+                selectedAt: new Date().toISOString()
+            };
+            
+            // Aplicar modificadores de atributos
+            characterData.classAttributes = attributes;
+            
+            // Salvar atributos base se for a primeira vez
+            if (!characterData.baseAttributes) {
+                characterData.baseAttributes = { ...characterData.attributes };
+            }
+            
+            // Calcular atributos finais (base + classe)
+            Object.keys(attributes).forEach(attr => {
+                if (characterData.attributes[attr] !== undefined) {
+                    characterData.attributes[attr] = (characterData.baseAttributes[attr] || 0) + attributes[attr];
+                }
+            });
+            
+            // Adicionar habilidades da classe
+            characterData.classSkills = skills;
+            characterData.skills = [...new Set([...(characterData.skills || []), ...skills])];
+            
+            return characterData;
+        }
+        
+        // Carregar classe salva no personagem
+        static loadSavedClass(characterData) {
+            if (!characterData?.class) return;
+            
+            const select = document.getElementById('classe');
+            if (!select) return;
+            
+            // Procurar a classe nas opções
+            for (let i = 0; i < select.options.length; i++) {
+                if (select.options[i].value === characterData.class.id) {
+                    select.selectedIndex = i;
+                    this.updateClassPreview();
+                    break;
+                }
+            }
+        }
+        
+        // Abrir gerenciador de classes em nova aba
+        static openClassManager() {
+            window.open('classes.html', '_blank', 'width=1200,height=800');
+        }
+        
+        // Verificar se há classes personalizadas novas
+        static checkForNewClasses() {
+            // Verificar mudanças no localStorage periodicamente
+            const checkClasses = () => {
+                const lastCheck = localStorage.getItem('grimorio_classes_last_update');
+                const currentUpdate = localStorage.getItem('grimorio_classes_updated');
+                
+                if (currentUpdate && currentUpdate !== lastCheck) {
+                    this.updateClassDropdown();
+                    localStorage.setItem('grimorio_classes_last_update', currentUpdate);
+                    this.showNotification('Classes atualizadas!');
+                }
+            };
+            
+            // Verificar a cada 5 segundos
+            setInterval(checkClasses, 5000);
+            
+            // Verificar ao receber foco na janela
+            window.addEventListener('focus', checkClasses);
+        }
+        
+        // Mostrar notificação
+        static showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 p-3 bg-theme-panel border border-theme-border rounded-lg shadow-lg z-50 anim-entry';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i data-lucide="check-circle" class="w-4 h-4 text-green-400"></i>
+                    <span class="text-sm text-white">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            lucide.createIcons();
+            
             setTimeout(() => {
-                const hasData = localStorage.getItem('grimorio_character_data');
-                if (!hasData) {
-                    characterSheet.createExampleCharacter();
+                if (notification.parentElement) {
+                    notification.remove();
                 }
-            }, 1000);
+            }, 3000);
+        }
+    }
+
+    // ====================================================================
+    // INTEGRAÇÃO COM O SISTEMA DE SAVE EXISTENTE
+    // ====================================================================
+
+    // Modificar a função saveCharacter para incluir a classe
+    function saveCharacterWithClass() {
+        const characterData = getCharacterData(); // Sua função existente
+        
+        // Aplicar modificadores da classe
+        const characterWithClass = ClassIntegrationSystem.applyClassModifiers(characterData);
+        
+        // Salvar usando seu sistema existente
+        GrimorioSaveSystem.saveCharacter(characterWithClass);
+        
+        // Marcar que houve atualização
+        localStorage.setItem('grimorio_classes_updated', Date.now().toString());
+        
+        return characterWithClass;
+    }
+
+    // Modificar a função loadCharacter para carregar a classe
+    function loadCharacterWithClass() {
+        const characterData = GrimorioSaveSystem.loadCharacter();
+        
+        if (characterData) {
+            // Carregar classe salva
+            ClassIntegrationSystem.loadSavedClass(characterData);
+            
+            // Se houver atributos de classe, restaurar atributos base
+            if (characterData.classAttributes && characterData.baseAttributes) {
+                characterData.attributes = { ...characterData.baseAttributes };
+            }
         }
         
-        // Inicializar quando a página carregar
-        window.addEventListener('load', initCharacterSheet);
+        return characterData;
+    }
+
+    // ====================================================================
+    // INICIALIZAÇÃO
+    // ====================================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Inicializar sistema de classes
+        ClassIntegrationSystem.updateClassDropdown();
+        ClassIntegrationSystem.checkForNewClasses();
         
-        // Expor para o console para debug
-        window.CharacterSheet = characterSheet;
+        // Atualizar pré-visualização quando a classe mudar
+        const classSelect = document.getElementById('classe');
+        if (classSelect) {
+            classSelect.addEventListener('change', () => {
+                ClassIntegrationSystem.updateClassPreview();
+                
+                // Atualizar atributos automaticamente
+                const characterData = GrimorioSaveSystem.loadCharacter();
+                if (characterData) {
+                    ClassIntegrationSystem.applyClassModifiers(characterData);
+                    updateAttributeDisplays(); // Sua função para atualizar exibição
+                }
+            });
+        }
+        
+        // Carregar personagem existente
+        loadCharacterWithClass();
+        
+        // Sincronizar com o sistema de classes
+        window.addEventListener('storage', function(event) {
+            if (event.key === 'grimorio_custom_classes' || 
+                event.key === 'grimorio_character_data') {
+                ClassIntegrationSystem.updateClassDropdown();
+                
+                const characterData = GrimorioSaveSystem.loadCharacter();
+                ClassIntegrationSystem.loadSavedClass(characterData);
+            }
+        });
+    });
     </script>
 </body>
 </html>
