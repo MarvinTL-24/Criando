@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Sistema de Classes Integrado</title>
+    <title>Grimório Digital - Sistema de Classes</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <script src="grimorio-sync.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -98,28 +99,11 @@
             cursor: pointer; border: 2px solid #0a0a0c;
         }
         
-        /* Botões de ação */
-        .action-btn {
-            position: relative;
-            overflow: hidden;
-        }
-        .action-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 5px; height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
-        }
-        .action-btn:focus:not(:active)::after {
-            animation: ripple 1s ease-out;
-        }
-        @keyframes ripple {
-            0% { transform: scale(0, 0); opacity: 0.5; }
-            100% { transform: scale(20, 20); opacity: 0; }
+        /* Remover animações complexas para performance */
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
         }
     </style>
 </head>
@@ -127,42 +111,27 @@
 
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
         <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors action-btn">
+            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
                 <i data-lucide="arrow-left" class="w-5 h-5"></i>
             </a>
             <div class="h-6 w-[1px] bg-theme-border"></div>
             <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
             <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="text-sm text-theme-muted">Sistema de Classes Integrado</span>
-            <div class="ml-auto flex items-center gap-2">
-                <button onclick="loadCharacterClasses()" class="px-3 py-1.5 text-xs bg-theme-blue/20 border border-theme-blue/30 rounded hover:bg-theme-blue/30 text-white action-btn">
-                    <i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Sincronizar
-                </button>
-            </div>
+            <span class="text-sm text-theme-muted">Sistema de Classes</span>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
     </nav>
 
     <div class="max-w-7xl mx-auto px-4 space-y-6">
 
-        <!-- Cabeçalho com Status -->
-        <header class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 anim-entry">
-            <div class="flex items-center gap-4">
-                <div class="p-3 rounded-lg bg-gradient-to-br from-theme-purple/20 to-pink-600/20 border border-theme-purple/30">
-                    <i data-lucide="swords" class="w-8 h-8 text-theme-purple"></i>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Classes</h1>
-                    <p class="text-gray-400">Crie classes e sincronize com seu personagem</p>
-                </div>
+        <!-- Cabeçalho -->
+        <header class="flex items-center gap-4 mb-8 anim-entry">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-theme-purple/20 to-pink-600/20 border border-theme-purple/30">
+                <i data-lucide="swords" class="w-8 h-8 text-theme-purple"></i>
             </div>
-            
-            <!-- Status de Integração -->
-            <div id="integration-status" class="bg-theme-panel border border-theme-border p-3 rounded-lg">
-                <div class="flex items-center gap-2 text-sm">
-                    <i data-lucide="user" class="w-4 h-4 text-theme-blue"></i>
-                    <span id="character-name-status" class="text-gray-400">Nenhum personagem carregado</span>
-                </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Classes</h1>
+                <p class="text-gray-400">Crie, edite e personalize classes totalmente customizáveis</p>
             </div>
         </header>
 
@@ -173,13 +142,13 @@
                     <i data-lucide="library" class="w-4 h-4"></i> Biblioteca de Classes
                 </h3>
                 <div class="flex items-center gap-2">
-                    <button onclick="exportClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm action-btn">
+                    <button onclick="exportClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
                         <i data-lucide="download" class="w-3 h-3 inline mr-1"></i> Exportar
                     </button>
-                    <button onclick="importClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm action-btn">
+                    <button onclick="importClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
                         <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Importar
                     </button>
-                    <button onclick="openClassEditor()" class="px-4 py-2 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity text-sm action-btn">
+                    <button onclick="openClassEditor()" class="px-4 py-2 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity text-sm">
                         <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Nova Classe
                     </button>
                 </div>
@@ -188,16 +157,16 @@
             <!-- Filtros -->
             <div class="mb-6">
                 <div class="flex flex-wrap gap-2">
-                    <button onclick="filterClasses('all')" id="filter-all" class="px-3 py-1 bg-theme-purple text-white rounded-lg text-sm font-medium action-btn">
+                    <button onclick="filterClasses('all')" id="filter-all" class="px-3 py-1 bg-theme-purple text-white rounded-lg text-sm font-medium">
                         Todas
                     </button>
-                    <button onclick="filterClasses('default')" id="filter-default" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm action-btn">
+                    <button onclick="filterClasses('default')" id="filter-default" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
                         <i data-lucide="shield" class="w-3 h-3 inline mr-1"></i> Padrão
                     </button>
-                    <button onclick="filterClasses('custom')" id="filter-custom" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm action-btn">
+                    <button onclick="filterClasses('custom')" id="filter-custom" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
                         <i data-lucide="sparkles" class="w-3 h-3 inline mr-1"></i> Personalizadas
                     </button>
-                    <button onclick="filterClasses('favorite')" id="filter-favorite" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm action-btn">
+                    <button onclick="filterClasses('favorite')" id="filter-favorite" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
                         <i data-lucide="star" class="w-3 h-3 inline mr-1"></i> Favoritas
                     </button>
                     <div class="flex-1"></div>
@@ -216,22 +185,6 @@
                     <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
                     Clique em uma classe para editar ou usar no personagem
                 </p>
-            </div>
-        </section>
-
-        <!-- Seção: Classe Atual do Personagem -->
-        <section id="current-class-section" class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry hidden" style="animation-delay: 0.15s; border-left: 4px solid #22c55e;">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green">
-                    <i data-lucide="user-check" class="w-4 h-4"></i> Classe Atual do Personagem
-                </h3>
-                <button onclick="clearCharacterClass()" class="px-3 py-1.5 text-xs bg-red-900/20 border border-red-800/30 rounded hover:bg-red-900/30 text-red-300 action-btn">
-                    <i data-lucide="x-circle" class="w-3 h-3 inline mr-1"></i> Remover Classe
-                </button>
-            </div>
-            
-            <div id="current-class-display" class="bg-theme-bg border border-theme-border rounded-lg p-4">
-                <!-- Classe atual será exibida aqui -->
             </div>
         </section>
 
@@ -264,62 +217,53 @@
             </div>
         </section>
 
-        <!-- Seção 3: Aplicar ao Personagem -->
+        <!-- Seção 3: Configurações do Sistema -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-6">
-                <i data-lucide="zap" class="w-4 h-4"></i> Aplicar ao Personagem
+                <i data-lucide="settings" class="w-4 h-4"></i> Configurações do Sistema
             </h3>
             
             <div class="space-y-4">
-                <div class="p-4 bg-theme-bg rounded-lg border border-theme-border">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i data-lucide="user-plus" class="w-5 h-5 text-theme-yellow"></i>
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="shield-off" class="w-5 h-5 text-theme-yellow"></i>
                         <div>
-                            <h4 class="font-medium text-white">Usar Classe no Personagem</h4>
-                            <p class="text-sm text-theme-muted">Selecione uma classe para aplicar ao personagem atual</p>
+                            <h4 class="font-medium text-white">Desativar Classes Padrão</h4>
+                            <p class="text-sm text-theme-muted">Mostrar apenas classes personalizadas</p>
                         </div>
                     </div>
-                    
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <select id="apply-class-select" 
-                                class="flex-1 bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white outline-none focus:border-theme-yellow cursor-pointer">
-                            <option value="">Selecione uma classe...</option>
-                            <!-- Opções serão preenchidas via JS -->
-                        </select>
-                        
-                        <button onclick="applyToCharacter()" 
-                                class="px-6 py-3 bg-gradient-to-r from-theme-yellow to-orange-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity action-btn whitespace-nowrap">
-                            <i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>
-                            Aplicar Classe
-                        </button>
-                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="disable-default-classes" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-theme-yellow"></div>
+                    </label>
                 </div>
                 
-                <div class="p-4 bg-theme-bg rounded-lg border border-theme-border">
-                    <div class="flex items-center gap-3 mb-3">
-                        <i data-lucide="settings" class="w-5 h-5 text-theme-blue"></i>
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="copy" class="w-5 h-5 text-theme-blue"></i>
                         <div>
-                            <h4 class="font-medium text-white">Configurações de Aplicação</h4>
-                            <p class="text-sm text-theme-muted">Como a classe deve afetar o personagem</p>
+                            <h4 class="font-medium text-white">Duplicar ao Editar</h4>
+                            <p class="text-sm text-theme-muted">Criar cópia ao editar classes padrão</p>
                         </div>
                     </div>
-                    
-                    <div class="space-y-3">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="apply-attributes" class="rounded border-theme-border bg-theme-bg text-theme-blue focus:ring-theme-blue" checked>
-                            <span class="text-white">Aplicar modificadores de atributos</span>
-                        </label>
-                        
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="apply-skills" class="rounded border-theme-border bg-theme-bg text-theme-blue focus:ring-theme-blue" checked>
-                            <span class="text-white">Adicionar habilidades da classe</span>
-                        </label>
-                        
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" id="replace-existing" class="rounded border-theme-border bg-theme-bg text-theme-blue focus:ring-theme-blue">
-                            <span class="text-white">Substituir classe atual (se houver)</span>
-                        </label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="duplicate-on-edit" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-theme-blue"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-theme-red"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Resetar Sistema</h4>
+                            <p class="text-sm text-theme-muted">Restaurar classes padrão e limpar personalizadas</p>
+                        </div>
                     </div>
+                    <button onclick="resetClassSystem()" 
+                            class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg border border-red-800 transition-colors text-sm">
+                        Resetar Tudo
+                    </button>
                 </div>
             </div>
         </section>
@@ -347,9 +291,9 @@
             <div class="flex items-center justify-between mb-6">
                 <h3 class="font-cinzel text-xl font-bold" id="modal-title" style="color: var(--class-color, #8b5cf6)">
                     <i data-lucide="plus-circle" class="w-5 h-5 inline mr-2"></i>
-                    <span id="modal-title-text">Criar Nova Classe</span>
+                    Criar Nova Classe
                 </h3>
-                <button onclick="closeClassEditor()" class="text-theme-muted hover:text-white action-btn">
+                <button onclick="closeClassEditor()" class="text-theme-muted hover:text-white">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
@@ -424,7 +368,7 @@
                     <div id="skills-container">
                         <!-- Habilidades via JS -->
                     </div>
-                    <button onclick="addSkill()" class="mt-2 w-full py-2 border border-dashed border-theme-border rounded-lg text-theme-muted hover:text-white hover:border-current transition-colors action-btn">
+                    <button onclick="addSkill()" class="mt-2 w-full py-2 border border-dashed border-theme-border rounded-lg text-theme-muted hover:text-white hover:border-current transition-colors">
                         <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
                         Adicionar Habilidade
                     </button>
@@ -433,11 +377,11 @@
                 <!-- Ações -->
                 <div class="flex gap-3 pt-4 border-t border-theme-border">
                     <button onclick="closeClassEditor()" 
-                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors action-btn">
+                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
                         Cancelar
                     </button>
                     <button onclick="saveClass()" id="save-class-btn"
-                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity action-btn">
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
                         Salvar Classe
                     </button>
                 </div>
@@ -447,13 +391,13 @@
 
     <div class="max-w-7xl mx-auto px-4 mt-8 pb-12">
         <div class="text-center text-sm text-theme-muted">
-            <p><i data-lucide="code" class="w-3 h-3 inline mr-1"></i> Sistema de Classes Integrado com Save System v2.0</p>
+            <p><i data-lucide="code" class="w-3 h-3 inline mr-1"></i> Sistema de Classes Totalmente Customizável</p>
         </div>
     </div>
 
     <script>
         // ====================================================================
-        // SISTEMA DE INTEGRAÇÃO COM SAVE
+        // SISTEMA OTIMIZADO - SEM TRAVAMENTOS
         // ====================================================================
         
         lucide.createIcons();
@@ -463,13 +407,13 @@
             {
                 id: 'guerreiro',
                 name: 'Guerreiro',
-                description: 'Mestre das armas e da armadura pesada. Especialista em combate corpo a corpo e defesa.',
+                description: 'Mestre das armas e da armadura pesada.',
                 color: '#dc2626',
                 icon: 'sword',
                 difficulty: 'medium',
                 attributes: { for: 4, dex: 2, con: 4, int: 1, wis: 2, cha: 1 },
-                skills: ['Provocar', 'Postura de Combate', 'Golpe Poderoso', 'Proteção', 'Resistência Física'],
-                tags: ['combate', 'tanque', 'físico'],
+                skills: ['Provocar', 'Postura de Combate', 'Golpe Poderoso'],
+                tags: ['combate', 'tanque'],
                 isDefault: true,
                 isFavorite: false,
                 usageCount: 0
@@ -477,221 +421,31 @@
             {
                 id: 'mago',
                 name: 'Mago',
-                description: 'Estudioso das artes arcanas. Manipula as forças fundamentais da realidade através de feitiços.',
+                description: 'Estudioso das artes arcanas.',
                 color: '#4a9eff',
                 icon: 'sparkles',
                 difficulty: 'hard',
                 attributes: { for: 1, dex: 2, con: 2, int: 6, wis: 4, cha: 3 },
-                skills: ['Conjurar Magia', 'Foco Arcano', 'Escudo Mágico', 'Identificar Magia', 'Telecinese'],
-                tags: ['magia', 'suporte', 'controle'],
-                isDefault: true,
-                isFavorite: false,
-                usageCount: 0
-            },
-            {
-                id: 'ladino',
-                name: 'Ladino',
-                description: 'Especialista em furtividade, armadilhas e ataques precisos. Mestre das sombras.',
-                color: '#22c55e',
-                icon: 'target',
-                difficulty: 'medium',
-                attributes: { for: 2, dex: 5, con: 2, int: 3, wis: 3, cha: 2 },
-                skills: ['Furtividade', 'Ataque Furtivo', 'Armadilhas', 'Pequenos Objetos', 'Detectar Armadilhas'],
-                tags: ['furtivo', 'precisão', 'agilidade'],
-                isDefault: true,
-                isFavorite: false,
-                usageCount: 0
-            },
-            {
-                id: 'clerigo',
-                name: 'Clérigo',
-                description: 'Servo divino que canaliza o poder de sua divindade para curar aliados e ferir inimigos.',
-                color: '#f59e0b',
-                icon: 'shield',
-                difficulty: 'medium',
-                attributes: { for: 2, dex: 1, con: 3, int: 3, wis: 5, cha: 3 },
-                skills: ['Cura Divina', 'Turnar Mortos-Vivos', 'Proteção Divina', 'Oração', 'Benção'],
-                tags: ['suporte', 'cura', 'divino'],
+                skills: ['Conjurar Magia', 'Foco Arcano'],
+                tags: ['magia', 'suporte'],
                 isDefault: true,
                 isFavorite: false,
                 usageCount: 0
             }
         ];
 
-        // Paleta de cores
+        // Paleta simplificada
         const COLOR_PALETTE = ['#dc2626', '#ea580c', '#d97706', '#16a34a', '#0284c7', '#4f46e5', '#7c3aed', '#db2777'];
-        const ICON_PALETTE = ['sword', 'shield', 'sparkles', 'target', 'brain', 'heart', 'skull', 'star', 'zap', 'shield-check', 'ghost', 'gem'];
+        const ICON_PALETTE = ['sword', 'shield', 'sparkles', 'target', 'brain', 'heart', 'skull', 'star'];
 
         // Sistema principal
         let classes = [];
         let editingClass = null;
         let currentFilter = 'all';
-        let currentCharacter = null;
+        let searchTimeout;
 
         // ====================================================================
-        // SISTEMA DE SAVE INTEGRADO
-        // ====================================================================
-        
-        class GrimorioSaveSystem {
-            static saveCharacter(data) {
-                try {
-                    // Salva dados completos do personagem
-                    const saveData = {
-                        ...data,
-                        lastUpdate: new Date().toISOString(),
-                        version: '2.0'
-                    };
-                    
-                    localStorage.setItem('grimorio_character_data', JSON.stringify(saveData));
-                    this.notifyUpdate('character');
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao salvar personagem:', error);
-                    return false;
-                }
-            }
-            
-            static loadCharacter() {
-                try {
-                    const data = localStorage.getItem('grimorio_character_data');
-                    return data ? JSON.parse(data) : null;
-                } catch (error) {
-                    console.error('Erro ao carregar personagem:', error);
-                    return null;
-                }
-            }
-            
-            static updateCharacterClass(classData) {
-                try {
-                    const character = this.loadCharacter();
-                    if (!character) {
-                        // Criar novo personagem se não existir
-                        character = {
-                            name: 'Novo Personagem',
-                            level: 1,
-                            experience: 0,
-                            attributes: {
-                                for: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0
-                            },
-                            skills: [],
-                            inventory: [],
-                            createdAt: new Date().toISOString()
-                        };
-                    }
-                    
-                    // Adicionar/atualizar dados da classe
-                    character.class = {
-                        id: classData.id,
-                        name: classData.name,
-                        color: classData.color,
-                        icon: classData.icon,
-                        appliedAt: new Date().toISOString()
-                    };
-                    
-                    // Aplicar modificadores de atributos se necessário
-                    if (document.getElementById('apply-attributes')?.checked) {
-                        character.classAttributes = classData.attributes;
-                        character.baseAttributes = character.baseAttributes || { ...character.attributes };
-                        
-                        // Calcular atributos finais (base + classe)
-                        Object.keys(classData.attributes).forEach(attr => {
-                            character.attributes[attr] = (character.baseAttributes[attr] || 0) + classData.attributes[attr];
-                        });
-                    }
-                    
-                    // Adicionar habilidades da classe
-                    if (document.getElementById('apply-skills')?.checked) {
-                        character.classSkills = classData.skills || [];
-                        // Mesclar habilidades únicas
-                        const existingSkills = new Set(character.skills || []);
-                        classData.skills.forEach(skill => existingSkills.add(skill));
-                        character.skills = Array.from(existingSkills);
-                    }
-                    
-                    return this.saveCharacter(character);
-                } catch (error) {
-                    console.error('Erro ao atualizar classe do personagem:', error);
-                    return false;
-                }
-            }
-            
-            static clearCharacterClass() {
-                try {
-                    const character = this.loadCharacter();
-                    if (!character || !character.class) return false;
-                    
-                    // Remover dados da classe
-                    delete character.class;
-                    delete character.classAttributes;
-                    delete character.classSkills;
-                    
-                    // Restaurar atributos base se existirem
-                    if (character.baseAttributes) {
-                        character.attributes = { ...character.baseAttributes };
-                        delete character.baseAttributes;
-                    }
-                    
-                    return this.saveCharacter(character);
-                } catch (error) {
-                    console.error('Erro ao limpar classe:', error);
-                    return false;
-                }
-            }
-            
-            static getCharacterClass() {
-                const character = this.loadCharacter();
-                return character?.class || null;
-            }
-            
-            static notifyUpdate(type) {
-                const event = new CustomEvent('grimorio-update', {
-                    detail: { type: type, timestamp: Date.now() }
-                });
-                window.dispatchEvent(event);
-            }
-            
-            static exportAll() {
-                try {
-                    const allData = {
-                        character: this.loadCharacter(),
-                        classes: classes.filter(c => !c.isDefault),
-                        version: '2.0',
-                        exportDate: new Date().toISOString()
-                    };
-                    
-                    return JSON.stringify(allData, null, 2);
-                } catch (error) {
-                    console.error('Erro ao exportar:', error);
-                    return null;
-                }
-            }
-            
-            static importAll(jsonString) {
-                try {
-                    const data = JSON.parse(jsonString);
-                    
-                    if (data.character) {
-                        this.saveCharacter(data.character);
-                    }
-                    if (data.classes && Array.isArray(data.classes)) {
-                        data.classes.forEach(cls => {
-                            cls.id = 'imported_' + Date.now() + '_' + cls.id;
-                            cls.isDefault = false;
-                            classes.unshift(cls);
-                        });
-                        saveClasses();
-                    }
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao importar:', error);
-                    return false;
-                }
-            }
-        }
-
-        // ====================================================================
-        // FUNÇÕES UTILITÁRIAS
+        // FUNÇÕES UTILITÁRIAS OTIMIZADAS
         // ====================================================================
         
         function debounce(func, wait) {
@@ -706,6 +460,19 @@
             };
         }
 
+        function throttle(func, limit) {
+            let inThrottle;
+            return function() {
+                const args = arguments;
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    inThrottle = true;
+                    setTimeout(() => inThrottle = false, limit);
+                }
+            };
+        }
+
         // ====================================================================
         // INICIALIZAÇÃO
         // ====================================================================
@@ -715,8 +482,6 @@
             setupEventListeners();
             renderClasses();
             updateStatistics();
-            loadCharacterClasses();
-            updateIntegrationStatus();
         }
 
         function loadClasses() {
@@ -731,192 +496,7 @@
         }
 
         // ====================================================================
-        // INTEGRAÇÃO COM PERSONAGEM
-        // ====================================================================
-        
-        function loadCharacterClasses() {
-            currentCharacter = GrimorioSaveSystem.loadCharacter();
-            const currentClass = GrimorioSaveSystem.getCharacterClass();
-            
-            updateIntegrationStatus();
-            
-            if (currentClass) {
-                showCurrentClass(currentClass);
-                // Incrementar contador de uso da classe
-                const classIndex = classes.findIndex(c => c.id === currentClass.id);
-                if (classIndex !== -1) {
-                    classes[classIndex].usageCount = (classes[classIndex].usageCount || 0) + 1;
-                    saveClasses();
-                }
-            }
-            
-            updateApplyClassSelect();
-        }
-
-        function updateIntegrationStatus() {
-            const statusElement = document.getElementById('integration-status');
-            const nameElement = document.getElementById('character-name-status');
-            
-            if (!currentCharacter || !currentCharacter.name) {
-                nameElement.textContent = 'Nenhum personagem carregado';
-                nameElement.style.color = '#606060';
-                return;
-            }
-            
-            const currentClass = GrimorioSaveSystem.getCharacterClass();
-            
-            if (currentClass) {
-                nameElement.innerHTML = `
-                    <span>${currentCharacter.name}</span>
-                    <span class="ml-2 px-2 py-0.5 rounded text-xs" style="background: ${currentClass.color}20; color: ${currentClass.color}">
-                        ${currentClass.name}
-                    </span>
-                `;
-            } else {
-                nameElement.innerHTML = `
-                    <span>${currentCharacter.name}</span>
-                    <span class="ml-2 text-gray-500">(Sem classe)</span>
-                `;
-            }
-        }
-
-        function showCurrentClass(classData) {
-            const section = document.getElementById('current-class-section');
-            const display = document.getElementById('current-class-display');
-            
-            section.classList.remove('hidden');
-            
-            const cls = classes.find(c => c.id === classData.id) || classData;
-            
-            display.innerHTML = `
-                <div class="flex flex-col md:flex-row items-start md:items-center gap-4">
-                    <div class="w-16 h-16 rounded-xl flex items-center justify-center" style="background: ${cls.color}20; color: ${cls.color}">
-                        <i data-lucide="${cls.icon}" class="w-8 h-8"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3 mb-2">
-                            <h4 class="text-xl font-bold text-white">${cls.name}</h4>
-                            <span class="px-2 py-1 rounded text-xs ${getDifficultyClass(cls.difficulty)}">
-                                ${getDifficultyText(cls.difficulty)}
-                            </span>
-                        </div>
-                        <p class="text-gray-400 mb-3">${cls.description}</p>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <div class="bg-black/30 rounded p-2">
-                                <div class="text-xs text-gray-500">Atributos</div>
-                                <div class="flex gap-2 mt-1">
-                                    ${Object.entries(cls.attributes || {}).map(([key, value]) => `
-                                        <span class="text-xs px-2 py-0.5 rounded bg-black/50">
-                                            ${key.toUpperCase()}: ${value}
-                                        </span>
-                                    `).join('')}
-                                </div>
-                            </div>
-                            
-                            <div class="bg-black/30 rounded p-2">
-                                <div class="text-xs text-gray-500">Habilidades</div>
-                                <div class="text-sm text-white mt-1">${(cls.skills || []).slice(0, 3).join(', ')}...</div>
-                            </div>
-                            
-                            <div class="bg-black/30 rounded p-2">
-                                <div class="text-xs text-gray-500">Aplicada em</div>
-                                <div class="text-sm text-white mt-1">
-                                    ${classData.appliedAt ? new Date(classData.appliedAt).toLocaleDateString('pt-BR') : 'Recente'}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            lucide.createIcons();
-        }
-
-        function clearCharacterClass() {
-            if (confirm('Remover classe do personagem atual?')) {
-                if (GrimorioSaveSystem.clearCharacterClass()) {
-                    loadCharacterClasses();
-                    document.getElementById('current-class-section').classList.add('hidden');
-                    showNotification('Classe removida do personagem!');
-                } else {
-                    showNotification('Erro ao remover classe', true);
-                }
-            }
-        }
-
-        function applyToCharacter() {
-            const select = document.getElementById('apply-class-select');
-            const classId = select.value;
-            
-            if (!classId) {
-                showNotification('Selecione uma classe primeiro', true);
-                return;
-            }
-            
-            const cls = classes.find(c => c.id === classId);
-            if (!cls) {
-                showNotification('Classe não encontrada', true);
-                return;
-            }
-            
-            const replaceExisting = document.getElementById('replace-existing')?.checked || false;
-            const currentClass = GrimorioSaveSystem.getCharacterClass();
-            
-            if (currentClass && !replaceExisting) {
-                if (!confirm(`O personagem já tem a classe "${currentClass.name}". Substituir?`)) {
-                    return;
-                }
-            }
-            
-            if (GrimorioSaveSystem.updateCharacterClass(cls)) {
-                // Incrementar contador de uso
-                cls.usageCount = (cls.usageCount || 0) + 1;
-                saveClasses();
-                
-                loadCharacterClasses();
-                renderClasses();
-                updateStatistics();
-                
-                showNotification(`Classe "${cls.name}" aplicada ao personagem!`);
-            } else {
-                showNotification('Erro ao aplicar classe', true);
-            }
-        }
-
-        function updateApplyClassSelect() {
-            const select = document.getElementById('apply-class-select');
-            if (!select) return;
-            
-            // Salvar valor atual
-            const currentValue = select.value;
-            
-            // Limpar opções
-            select.innerHTML = '<option value="">Selecione uma classe...</option>';
-            
-            // Adicionar classes
-            classes.forEach(cls => {
-                const option = document.createElement('option');
-                option.value = cls.id;
-                option.textContent = cls.name;
-                option.style.color = cls.color;
-                
-                const currentClass = GrimorioSaveSystem.getCharacterClass();
-                if (currentClass && currentClass.id === cls.id) {
-                    option.textContent += ' (Atual)';
-                }
-                
-                select.appendChild(option);
-            });
-            
-            // Restaurar valor se ainda existir
-            if (currentValue && Array.from(select.options).some(opt => opt.value === currentValue)) {
-                select.value = currentValue;
-            }
-        }
-
-        // ====================================================================
-        // RENDERIZAÇÃO DE CLASSES
+        // RENDERIZAÇÃO OTIMIZADA
         // ====================================================================
         
         function renderClasses() {
@@ -939,8 +519,7 @@
             if (searchTerm) {
                 filtered = filtered.filter(c => 
                     c.name.toLowerCase().includes(searchTerm) ||
-                    c.description.toLowerCase().includes(searchTerm) ||
-                    (c.tags && c.tags.some(tag => tag.toLowerCase().includes(searchTerm)))
+                    c.description.toLowerCase().includes(searchTerm)
                 );
             }
             
@@ -959,17 +538,14 @@
             container.appendChild(fragment);
             
             updateStatistics();
-            updateApplyClassSelect();
         }
 
         function createClassCard(cls) {
             const div = document.createElement('div');
-            div.className = 'class-card bg-theme-bg border border-theme-border p-4 rounded-lg cursor-pointer hover:border-current';
+            div.className = 'class-card bg-theme-bg border border-theme-border p-4 rounded-lg cursor-pointer';
             div.style.borderColor = cls.color;
             
             const attrSum = Object.values(cls.attributes).reduce((a, b) => a + b, 0);
-            const currentClass = GrimorioSaveSystem.getCharacterClass();
-            const isCurrentClass = currentClass && currentClass.id === cls.id;
             
             div.innerHTML = `
                 <div class="flex items-start justify-between mb-3">
@@ -978,94 +554,49 @@
                             <i data-lucide="${cls.icon}" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-white flex items-center gap-2">
-                                ${cls.name}
-                                ${isCurrentClass ? '<span class="text-xs px-1.5 py-0.5 rounded bg-current/20 text-current">Atual</span>' : ''}
-                            </h4>
+                            <h4 class="font-semibold text-white">${cls.name}</h4>
                             <div class="flex items-center gap-2 mt-1">
                                 <span class="px-2 py-1 rounded text-xs ${getDifficultyClass(cls.difficulty)}">
                                     ${getDifficultyText(cls.difficulty)}
                                 </span>
-                                ${cls.isDefault ? '<span class="text-xs text-gray-500">Padrão</span>' : ''}
                             </div>
                         </div>
                     </div>
                     <div class="flex gap-1">
-                        <button class="p-1 ${cls.isFavorite ? 'text-amber-400' : 'text-theme-muted'} hover:text-amber-300 action-btn">
+                        <button class="p-1 ${cls.isFavorite ? 'text-amber-400' : 'text-theme-muted'}">
                             <i data-lucide="star" class="w-4 h-4 ${cls.isFavorite ? 'fill-current' : ''}"></i>
                         </button>
                     </div>
                 </div>
                 
-                <p class="text-sm text-gray-400 mb-3">${cls.description.substring(0, 80)}...</p>
+                <p class="text-sm text-theme-muted mb-3">${cls.description.substring(0, 80)}...</p>
                 
                 <div class="mb-3">
                     <div class="flex justify-between text-xs text-white mb-1">
                         <span>Atributos</span>
                         <span>${attrSum} pontos</span>
                     </div>
-                    <div class="flex flex-wrap gap-1">
-                        ${Object.entries(cls.attributes).map(([key, value]) => `
-                            <span class="text-xs px-1.5 py-0.5 rounded bg-black/50">
-                                ${key.toUpperCase()}: ${value}
-                            </span>
-                        `).join('')}
-                    </div>
                 </div>
                 
                 <div class="mt-3 pt-3 border-t border-theme-border flex items-center justify-between text-xs">
-                    <div class="text-gray-500">
-                        <span>${cls.usageCount || 0} uso${(cls.usageCount || 0) !== 1 ? 's' : ''}</span>
-                        ${cls.skills && cls.skills.length > 0 ? 
-                          `<span class="ml-2">${cls.skills.length} habilidade${cls.skills.length !== 1 ? 's' : ''}</span>` : ''}
-                    </div>
-                    <div class="flex gap-1">
-                        <button onclick="event.stopPropagation(); applyClassToCharacter('${cls.id}')" 
-                                class="px-2 py-1 rounded bg-current/20 border border-current/30 text-current hover:bg-current/30 text-xs action-btn">
-                            Usar
-                        </button>
-                        <button onclick="event.stopPropagation(); openClassEditor('${cls.id}')"
-                                class="px-2 py-1 rounded bg-theme-bg border border-theme-border text-white hover:bg-white/5 text-xs action-btn">
-                            Editar
-                        </button>
-                    </div>
+                    <span class="text-theme-muted">${cls.usageCount} uso${cls.usageCount !== 1 ? 's' : ''}</span>
+                    <button class="px-2 py-1 rounded bg-theme-bg border border-theme-border text-white hover:bg-white/5">
+                        Editar
+                    </button>
                 </div>
             `;
             
             // Adicionar eventos
-            div.onclick = () => showClassPreview(cls.id);
-            
-            const starBtn = div.querySelector('button.text-theme-muted, button.text-amber-400');
-            if (starBtn) {
-                starBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    toggleFavorite(cls.id);
-                };
-            }
+            div.onclick = () => openClassEditor(cls.id);
+            const starBtn = div.querySelector('button');
+            starBtn.onclick = (e) => {
+                e.stopPropagation();
+                toggleFavorite(cls.id);
+            };
             
             return div;
         }
 
-        function applyClassToCharacter(classId) {
-            const cls = classes.find(c => c.id === classId);
-            if (!cls) return;
-            
-            if (GrimorioSaveSystem.updateCharacterClass(cls)) {
-                cls.usageCount = (cls.usageCount || 0) + 1;
-                saveClasses();
-                
-                loadCharacterClasses();
-                renderClasses();
-                updateStatistics();
-                
-                showNotification(`Classe "${cls.name}" aplicada!`);
-            }
-        }
-
-        // ====================================================================
-        // FUNÇÕES AUXILIARES
-        // ====================================================================
-        
         function getDifficultyText(difficulty) {
             const texts = { 'easy': 'Fácil', 'medium': 'Médio', 'hard': 'Difícil', 'expert': 'Especialista' };
             return texts[difficulty] || difficulty;
@@ -1081,30 +612,8 @@
             return classes[difficulty] || classes.medium;
         }
 
-        function filterClasses(filter) {
-            currentFilter = filter;
-            ['all', 'default', 'custom', 'favorite'].forEach(f => {
-                const btn = document.getElementById(`filter-${f}`);
-                if (btn) {
-                    btn.classList.toggle('bg-theme-purple', f === filter);
-                    btn.classList.toggle('bg-theme-bg', f !== filter);
-                }
-            });
-            renderClasses();
-        }
-
-        function toggleFavorite(classId) {
-            const index = classes.findIndex(c => c.id === classId);
-            if (index !== -1) {
-                classes[index].isFavorite = !classes[index].isFavorite;
-                saveClasses();
-                renderClasses();
-                updateStatistics();
-            }
-        }
-
         // ====================================================================
-        // EDITOR DE CLASSES (mantido do código anterior)
+        // GERENCIAMENTO DE CLASSES
         // ====================================================================
         
         function openClassEditor(classId = null) {
@@ -1112,7 +621,6 @@
                 const cls = classes.find(c => c.id === classId);
                 if (!cls) return;
                 editingClass = { ...cls };
-                document.getElementById('modal-title-text').textContent = `Editar ${cls.name}`;
             } else {
                 editingClass = {
                     id: 'custom_' + Date.now(),
@@ -1128,18 +636,19 @@
                     isFavorite: false,
                     usageCount: 0
                 };
-                document.getElementById('modal-title-text').textContent = 'Criar Nova Classe';
             }
             
+            // Preencher formulário simplificado
             document.getElementById('class-name').value = editingClass.name;
             document.getElementById('class-description').value = editingClass.description;
             document.getElementById('class-difficulty').value = editingClass.difficulty;
             
+            // Inicializar paletas
             initColorPalette();
             initIconPalette();
             initAttributes();
-            updateSkillsForm();
             
+            // Abrir modal
             document.getElementById('class-editor-modal').classList.remove('hidden');
             updateTotalPoints();
         }
@@ -1154,7 +663,7 @@
             if (!container) return;
             
             container.innerHTML = COLOR_PALETTE.map(color => `
-                <div class="color-option ${editingClass.color === color ? 'ring-2 ring-white' : ''}" 
+                <div class="color-option ${editingClass.color === color ? 'border-2 border-white' : ''}" 
                      style="background-color: ${color}"
                      onclick="selectColor('${color}')"></div>
             `).join('');
@@ -1244,7 +753,7 @@
                            oninput="editingClass.skills[${index}] = this.value"
                            class="flex-1 bg-theme-bg border border-theme-border rounded-lg px-3 py-2 text-white outline-none focus:border-current text-sm">
                     <button onclick="editingClass.skills.splice(${index}, 1); updateSkillsForm()" 
-                            class="px-3 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 text-sm action-btn">
+                            class="px-3 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 text-sm">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                     </button>
                 </div>
@@ -1255,7 +764,7 @@
 
         function saveClass() {
             if (!editingClass.name.trim()) {
-                showNotification('Por favor, insira um nome para a classe.', true);
+                alert('Por favor, insira um nome para a classe.');
                 return;
             }
             
@@ -1273,84 +782,36 @@
         }
 
         // ====================================================================
-        // FUNÇÕES DE VISUALIZAÇÃO E ESTATÍSTICAS
+        // FUNÇÕES DE INTERFACE
         // ====================================================================
         
-        function showClassPreview(classId) {
-            const cls = classes.find(c => c.id === classId);
-            if (!cls) return;
-            
-            const container = document.getElementById('preview-container');
-            const attrSum = Object.values(cls.attributes).reduce((a, b) => a + b, 0);
-            
-            container.innerHTML = `
-                <div class="flex flex-col md:flex-row gap-6">
-                    <div class="md:w-1/3">
-                        <div class="w-full aspect-square rounded-xl flex items-center justify-center mb-4" style="background: ${cls.color}20; color: ${cls.color}">
-                            <i data-lucide="${cls.icon}" class="w-20 h-20"></i>
-                        </div>
-                        
-                        <div class="space-y-3">
-                            <div>
-                                <div class="text-sm text-gray-500">Dificuldade</div>
-                                <span class="px-3 py-1 rounded text-sm ${getDifficultyClass(cls.difficulty)}">
-                                    ${getDifficultyText(cls.difficulty)}
-                                </span>
-                            </div>
-                            
-                            <div>
-                                <div class="text-sm text-gray-500">Total de Pontos</div>
-                                <div class="text-xl font-bold text-white">${attrSum}</div>
-                            </div>
-                            
-                            <div>
-                                <div class="text-sm text-gray-500">Usos</div>
-                                <div class="text-white">${cls.usageCount || 0}</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="md:w-2/3">
-                        <h3 class="text-2xl font-bold text-white mb-2" style="color: ${cls.color}">
-                            ${cls.name}
-                        </h3>
-                        <p class="text-gray-300 mb-6">${cls.description}</p>
-                        
-                        <div class="mb-6">
-                            <h4 class="font-semibold text-white mb-3">Atributos</h4>
-                            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                ${Object.entries(cls.attributes).map(([key, value]) => `
-                                    <div class="bg-black/30 rounded p-3">
-                                        <div class="text-sm text-gray-400">${key.toUpperCase()}</div>
-                                        <div class="text-2xl font-bold text-white">${value}</div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h4 class="font-semibold text-white mb-3">Habilidades</h4>
-                            <div class="space-y-2">
-                                ${(cls.skills || []).map(skill => `
-                                    <div class="flex items-center gap-2 p-2 bg-black/20 rounded">
-                                        <i data-lucide="check" class="w-4 h-4" style="color: ${cls.color}"></i>
-                                        <span class="text-white">${skill}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            lucide.createIcons();
+        function filterClasses(filter) {
+            currentFilter = filter;
+            ['all', 'default', 'custom', 'favorite'].forEach(f => {
+                const btn = document.getElementById(`filter-${f}`);
+                if (btn) {
+                    btn.classList.toggle('bg-theme-purple', f === filter);
+                    btn.classList.toggle('bg-theme-bg', f !== filter);
+                }
+            });
+            renderClasses();
+        }
+
+        function toggleFavorite(classId) {
+            const index = classes.findIndex(c => c.id === classId);
+            if (index !== -1) {
+                classes[index].isFavorite = !classes[index].isFavorite;
+                saveClasses();
+                renderClasses();
+                updateStatistics();
+            }
         }
 
         function updateStatistics() {
             const total = classes.length;
             const custom = classes.filter(c => !c.isDefault).length;
             const favorites = classes.filter(c => c.isFavorite).length;
-            const used = classes.reduce((sum, c) => sum + (c.usageCount || 0), 0);
+            const used = classes.reduce((sum, c) => sum + c.usageCount, 0);
             
             document.getElementById('stats-total').textContent = total;
             document.getElementById('stats-custom').textContent = custom;
@@ -1397,7 +858,7 @@
                             showNotification(`${data.classes.length} classes importadas!`);
                         }
                     } catch (error) {
-                        showNotification('Erro ao importar arquivo', true);
+                        showNotification('Erro ao importar arquivo');
                     }
                 };
                 reader.readAsText(file);
@@ -1406,7 +867,7 @@
         }
 
         function resetClassSystem() {
-            if (confirm('Resetar todas as classes personalizadas? As classes padrão serão mantidas.')) {
+            if (confirm('Resetar todas as classes personalizadas?')) {
                 localStorage.removeItem('grimorio_custom_classes');
                 classes = [...DEFAULT_CLASSES];
                 renderClasses();
@@ -1414,17 +875,13 @@
             }
         }
 
-        function showNotification(message, isError = false) {
+        function showNotification(message) {
+            // Notificação simples
             const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 p-4 bg-theme-panel border border-theme-border rounded-lg shadow-lg z-50 anim-entry';
-            notification.style.animationDelay = '0s';
-            
-            const icon = isError ? 'alert-circle' : 'check-circle';
-            const color = isError ? '#ef4444' : '#22c55e';
-            
+            notification.className = 'fixed top-4 right-4 p-4 bg-theme-panel border border-theme-border rounded-lg shadow-lg z-50';
             notification.innerHTML = `
                 <div class="flex items-center gap-3">
-                    <i data-lucide="${icon}" class="w-5 h-5" style="color: ${color}"></i>
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
                     <span class="text-white">${message}</span>
                 </div>
             `;
@@ -1440,7 +897,7 @@
         }
 
         // ====================================================================
-        // EVENT LISTENERS
+        // EVENT LISTENERS OTIMIZADOS
         // ====================================================================
         
         function setupEventListeners() {
@@ -1464,13 +921,6 @@
             if (disableDefault && savedDisable) {
                 disableDefault.checked = savedDisable === 'true';
             }
-            
-            // Ouvir atualizações do sistema
-            window.addEventListener('grimorio-update', function(event) {
-                if (event.detail.type === 'character') {
-                    loadCharacterClasses();
-                }
-            });
         }
 
         // ====================================================================
@@ -1478,7 +928,7 @@
         // ====================================================================
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Animação inicial
+            // Animação inicial simplificada
             const entries = document.querySelectorAll('.anim-entry');
             entries.forEach((el, i) => {
                 el.style.animationDelay = `${i * 0.1}s`;
@@ -1496,6 +946,93 @@
         // Esconder body até carregar
         document.body.style.visibility = 'hidden';
 
+    // shared.js - Coloque em todas as páginas
+    class GrimorioSaveSystem {
+        static saveCharacter(data) {
+            localStorage.setItem('grimorio_character_data', JSON.stringify(data));
+            this.notifyUpdate('character');
+        }
+        
+        static saveMascot(data) {
+            localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
+            this.notifyUpdate('mascot');
+        }
+        
+        static saveItems(data) {
+            localStorage.setItem('grimorio_items_data', JSON.stringify(data));
+            this.notifyUpdate('items');
+        }
+        
+        static loadCharacter() {
+            const data = localStorage.getItem('grimorio_character_data');
+            return data ? JSON.parse(data) : null;
+        }
+        
+        static loadMascot() {
+            const data = localStorage.getItem('grimorio_mascot_data');
+            return data ? JSON.parse(data) : null;
+        }
+        
+        static loadItems() {
+            const data = localStorage.getItem('grimorio_items_data');
+            return data ? JSON.parse(data) : [];
+        }
+        
+        static notifyUpdate(type) {
+            // Dispara evento customizado
+            const event = new CustomEvent('grimorio-update', {
+                detail: { type: type, timestamp: Date.now() }
+            });
+            window.dispatchEvent(event);
+        }
+        
+        static exportAll() {
+            const allData = {
+                character: this.loadCharacter(),
+                mascot: this.loadMascot(),
+                items: this.loadItems(),
+                version: '2.0',
+                exportDate: new Date().toISOString()
+            };
+            
+            return JSON.stringify(allData, null, 2);
+        }
+        
+        static importAll(jsonString) {
+            try {
+                const data = JSON.parse(jsonString);
+                
+                if (data.character) {
+                    this.saveCharacter(data.character);
+                }
+                if (data.mascot) {
+                    this.saveMascot(data.mascot);
+                }
+                if (data.items) {
+                    this.saveItems(data.items);
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('Erro ao importar:', error);
+                return false;
+            }
+        }
+    }
+
+    // Listener para atualizações em tempo real
+    window.addEventListener('grimorio-update', function(event) {
+        console.log('Dados atualizados:', event.detail.type);
+        // Atualiza a página atual com os novos dados
+        refreshCurrentPage();
+    });
+
+    // Função para detectar mudanças no localStorage de outras abas
+    window.addEventListener('storage', function(event) {
+        if (event.key.startsWith('grimorio_')) {
+            location.reload(); // Recarrega para mostrar dados atualizados
+        }
+    });
     </script>
 </body>
 </html>
