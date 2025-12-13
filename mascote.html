@@ -138,33 +138,43 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .profile-badge {
-            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2));
-            border: 1px solid rgba(236, 72, 153, 0.4);
-            color: #ec4899;
+        .profile-image-container {
+            width: 120px;
+            height: 120px;
+            border: 3px solid #ec4899;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #0f0f12;
         }
-        
-        .no-profile-warning {
-            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(185, 28, 28, 0.1));
-            border: 1px solid rgba(220, 38, 38, 0.3);
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        
-        .active-profile-indicator {
+
+        .image-upload-btn {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #22c55e;
-            box-shadow: 0 0 8px #22c55e;
-            animation: pulse 2s infinite;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+
+        .image-upload-btn:hover {
+            background: rgba(236, 72, 153, 0.8);
+        }
+
+        .import-export-btns {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .feedback-mascote {
@@ -183,155 +193,104 @@
 </head>
 <body class="min-h-screen font-sans pb-12">
 
-    <!-- Modal de Customização de Tipo -->
-    <div id="custom-type-modal" class="modal-backdrop hidden">
+    <!-- Modal de Importar TXT -->
+    <div id="import-modal" class="modal-backdrop hidden">
         <div class="modal-content">
             <div class="p-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-cinzel font-bold text-xl text-white">Criar Tipo Personalizado</h3>
-                    <button onclick="closeCustomTypeModal()" class="text-theme-muted hover:text-white transition-colors">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Nome do Tipo</label>
-                        <input type="text" id="custom-type-name" placeholder="Ex: Dragão, Fênix, etc" 
-                            class="w-full px-4 py-2 bg-theme-bg border border-theme-border rounded text-white placeholder-gray-500 focus:border-theme-pink focus:outline-none">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Cor do Tipo</label>
-                        <div class="flex gap-2 flex-wrap">
-                            <button onclick="setCustomTypeColor('#ec4899')" class="w-8 h-8 rounded-full bg-[#ec4899] border-2 border-transparent hover:border-white"></button>
-                            <button onclick="setCustomTypeColor('#8b5cf6')" class="w-8 h-8 rounded-full bg-[#8b5cf6] border-2 border-transparent hover:border-white"></button>
-                            <button onclick="setCustomTypeColor('#4a9eff')" class="w-8 h-8 rounded-full bg-[#4a9eff] border-2 border-transparent hover:border-white"></button>
-                            <button onclick="setCustomTypeColor('#22c55e')" class="w-8 h-8 rounded-full bg-[#22c55e] border-2 border-transparent hover:border-white"></button>
-                            <button onclick="setCustomTypeColor('#f59e0b')" class="w-8 h-8 rounded-full bg-[#f59e0b] border-2 border-transparent hover:border-white"></button>
-                            <button onclick="setCustomTypeColor('#06b6d4')" class="w-8 h-8 rounded-full bg-[#06b6d4] border-2 border-transparent hover:border-white"></button>
-                        </div>
-                        <input type="color" id="custom-type-color-picker" class="w-full mt-2" value="#ec4899">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Ícone</label>
-                        <select id="custom-type-icon" class="w-full px-4 py-2 bg-theme-bg border border-theme-border rounded text-white focus:border-theme-pink focus:outline-none">
-                            <option value="sparkles">🌟 Mágico</option>
-                            <option value="zap">⚡ Elétrico</option>
-                            <option value="flame">🔥 Fogo</option>
-                            <option value="droplet">💧 Água</option>
-                            <option value="wind">💨 Vento</option>
-                            <option value="moon">🌙 Noturno</option>
-                            <option value="sun">☀️ Solar</option>
-                            <option value="leaf">🍃 Natureza</option>
-                            <option value="gem">💎 Cristal</option>
-                            <option value="shield">🛡️ Protetor</option>
-                        </select>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-2">Descrição (opcional)</label>
-                        <textarea id="custom-type-desc" placeholder="Descreva este tipo de criatura..." rows="3"
-                            class="w-full px-4 py-2 bg-theme-bg border border-theme-border rounded text-white placeholder-gray-500 focus:border-theme-pink focus:outline-none"></textarea>
-                    </div>
-                </div>
-                
-                <div class="flex gap-3 mt-8">
-                    <button onclick="closeCustomTypeModal()" class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
-                        Cancelar
-                    </button>
-                    <button onclick="saveCustomType()" class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-pink to-purple-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                        <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
-                        Criar Tipo
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Gerenciamento de Tipos -->
-    <div id="manage-types-modal" class="modal-backdrop hidden">
-        <div class="modal-content">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-cinzel font-bold text-xl text-white">Tipos Personalizados</h3>
-                    <button onclick="closeManageTypesModal()" class="text-theme-muted hover:text-white transition-colors">
-                        <i data-lucide="x" class="w-5 h-5"></i>
-                    </button>
-                </div>
-                
-                <div id="custom-types-list" class="space-y-3 mb-6 max-h-64 overflow-y-auto pr-2">
-                    <!-- Tipos personalizados serão carregados aqui -->
-                </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="closeManageTypesModal()" class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
-                        Fechar
-                    </button>
-                    <button onclick="openCustomTypeModal()" class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-pink to-purple-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
-                        Novo Tipo
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Edição de Passiva -->
-    <div id="edit-passiva-modal" class="modal-backdrop hidden">
-        <div class="modal-content">
-            <div class="p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h3 class="font-cinzel font-bold text-xl text-white">Editar Passiva Especial</h3>
-                    <button onclick="closeEditPassivaModal()" class="text-theme-muted hover:text-white transition-colors">
+                    <h3 class="font-cinzel font-bold text-xl text-white">Importar Mascote</h3>
+                    <button onclick="closeImportModal()" class="text-theme-muted hover:text-white transition-colors">
                         <i data-lucide="x" class="w-5 h-5"></i>
                     </button>
                 </div>
                 
                 <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-400 mb-2">Passiva do Mascote</label>
-                    <textarea id="passiva-textarea" rows="6"
-                        class="w-full px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 focus:border-theme-pink focus:outline-none"></textarea>
-                    <div class="text-xs text-gray-500 mt-2">Descreva a habilidade passiva especial do seu mascote.</div>
+                    <label class="block text-sm font-medium text-gray-400 mb-2">Cole o conteúdo TXT aqui:</label>
+                    <textarea id="import-textarea" rows="10"
+                        class="w-full px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 focus:border-theme-pink focus:outline-none"
+                        placeholder="Cole o conteúdo do arquivo TXT exportado..."></textarea>
                 </div>
                 
                 <div class="flex gap-3">
-                    <button onclick="closeEditPassivaModal()" class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
+                    <button onclick="closeImportModal()" class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
                         Cancelar
                     </button>
-                    <button onclick="savePassiva()" class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-pink to-purple-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                        <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
-                        Salvar Passiva
+                    <button onclick="processImport()" class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-green-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                        <i data-lucide="upload" class="w-4 h-4 inline mr-2"></i>
+                        Importar
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal de Aviso (Novo) -->
-    <div id="no-profile-modal" class="modal-backdrop hidden">
+    <!-- Modal de Confirmação -->
+    <div id="confirm-modal" class="modal-backdrop hidden">
         <div class="modal-content p-6">
             <div class="flex items-center gap-3 mb-4">
                 <i data-lucide="alert-circle" class="w-10 h-10 text-theme-orange"></i>
-                <h3 class="font-cinzel font-bold text-xl text-white">Perfil Não Encontrado</h3>
+                <h3 class="font-cinzel font-bold text-xl text-white" id="confirm-title">Confirmar Ação</h3>
             </div>
             
-            <p class="text-gray-300 mb-6">
-                Para salvar seu mascote no perfil, você precisa criar um personagem primeiro.
-                O mascote será vinculado ao seu personagem principal.
+            <p class="text-gray-300 mb-6" id="confirm-message">
+                Tem certeza que deseja realizar esta ação?
             </p>
             
             <div class="flex gap-3">
-                <button onclick="hideNoProfileModal()" 
+                <button onclick="closeConfirmModal(false)" 
                     class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
-                    Continuar sem Perfil
+                    Cancelar
                 </button>
-                <button onclick="goToFicha()" 
+                <button onclick="closeConfirmModal(true)" id="confirm-action-btn"
                     class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-orange to-red-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                    <i data-lucide="edit-3" class="w-4 h-4 inline mr-2"></i>
-                    Criar Personagem
+                    <i data-lucide="check" class="w-4 h-4 inline mr-2"></i>
+                    Confirmar
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Imagem -->
+    <div id="image-modal" class="modal-backdrop hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="font-cinzel font-bold text-xl text-white">Imagem do Mascote</h3>
+                    <button onclick="closeImageModal()" class="text-theme-muted hover:text-white transition-colors">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div class="text-center mb-6">
+                    <div class="profile-image-container mx-auto" style="width: 200px; height: 200px;">
+                        <img id="image-preview" src="" alt="Preview" class="profile-image">
+                        <div class="image-upload-btn" onclick="document.getElementById('image-input').click()">
+                            <i data-lucide="camera" class="w-4 h-4 inline mr-1"></i>
+                            Alterar Imagem
+                        </div>
+                    </div>
+                    <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                </div>
+                
+                <div class="text-sm text-gray-400 mb-4">
+                    <p>Dicas:</p>
+                    <ul class="list-disc pl-5 mt-2 space-y-1">
+                        <li>Use imagens com proporção quadrada para melhor resultado</li>
+                        <li>Tamanho ideal: 400x400 pixels</li>
+                        <li>Formatos suportados: JPG, PNG, GIF</li>
+                    </ul>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="removeImage()" class="flex-1 px-4 py-3 border border-red-500/30 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4 inline mr-2"></i>
+                        Remover Imagem
+                    </button>
+                    <button onclick="closeImageModal()" class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-pink to-purple-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
+                        <i data-lucide="check" class="w-4 h-4 inline mr-2"></i>
+                        Salvar
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -352,7 +311,11 @@
                 </div>
                 
                 <div class="flex items-center gap-3" id="nav-buttons">
-                    <!-- Botões dinâmicos de navegação -->
+                    <button onclick="openImageModal()" 
+                        class="flex items-center gap-2 px-3 py-2 text-sm bg-theme-pink/20 hover:bg-theme-pink/30 text-theme-pink border border-theme-pink/30 rounded transition-colors">
+                        <i data-lucide="image" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Imagem</span>
+                    </button>
                 </div>
             </div>
             <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
@@ -360,46 +323,37 @@
 
         <div class="max-w-6xl mx-auto px-4 space-y-6">
 
-            <!-- Cabeçalho com Info do Perfil -->
+            <!-- Cabeçalho com Imagem -->
             <header class="flex items-center justify-between mb-6 anim-entry">
                 <div class="flex items-center gap-4">
-                    <div class="p-3 rounded-lg bg-gradient-to-br from-theme-pink/20 to-purple-600/20 border border-theme-pink/30">
-                        <i data-lucide="dog" class="w-8 h-8 text-theme-pink"></i>
+                    <div class="profile-image-container cursor-pointer" onclick="openImageModal()">
+                        <img id="mascote-image" src="" alt="Mascote" class="profile-image">
+                        <div class="image-upload-btn">
+                            <i data-lucide="camera" class="w-4 h-4 inline mr-1"></i>
+                            Adicionar Imagem
+                        </div>
                     </div>
                     <div>
                         <h1 class="text-3xl font-cinzel font-bold text-white">Mascote</h1>
-                        <p class="text-gray-400">Companheiro do seu personagem</p>
-                    </div>
-                </div>
-                
-                <div class="text-right relative" id="profile-info">
-                    <div class="animate-pulse">
-                        <div class="h-4 bg-theme-border rounded w-32 mb-2"></div>
-                        <div class="h-3 bg-theme-border rounded w-24"></div>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Aviso se não houver perfil -->
-            <div id="no-profile-warning" class="no-profile-warning border border-theme-border p-4 rounded-lg mb-6 hidden anim-entry">
-                <div class="flex items-center gap-3">
-                    <i data-lucide="alert-triangle" class="w-5 h-5 text-theme-red flex-shrink-0"></i>
-                    <div class="flex-1">
-                        <p class="text-sm text-white">
-                            <strong class="text-theme-red">Atenção:</strong> Você não tem um perfil ativo. 
-                            Seu mascote será salvo localmente, mas não estará vinculado a um personagem.
-                        </p>
-                        <div class="flex gap-2 mt-2">
-                            <button onclick="goToFicha()" class="text-xs px-3 py-1 bg-theme-red/20 text-theme-red rounded border border-theme-red/30 hover:bg-theme-red/30 transition-colors">
-                                Criar Personagem
+                        <p class="text-gray-400">Companheiro independente</p>
+                        <div class="import-export-btns">
+                            <button onclick="importFromTXT()" class="text-xs px-3 py-1 bg-blue-900/30 text-blue-400 rounded border border-blue-800 hover:bg-blue-800/40 transition-colors">
+                                <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i>
+                                Importar TXT
                             </button>
-                            <button onclick="hideWarning()" class="text-xs px-3 py-1 bg-theme-border text-theme-muted rounded hover:bg-white/10 transition-colors">
-                                Entendi
+                            <button onclick="downloadTXT()" class="text-xs px-3 py-1 bg-green-900/30 text-green-400 rounded border border-green-800 hover:bg-green-800/40 transition-colors">
+                                <i data-lucide="download" class="w-3 h-3 inline mr-1"></i>
+                                Exportar TXT
                             </button>
                         </div>
                     </div>
                 </div>
-            </div>
+                
+                <div class="text-right">
+                    <div class="text-sm text-theme-muted mb-1">Sistema Independente</div>
+                    <div class="font-cinzel font-bold text-theme-pink">Salvo Localmente</div>
+                </div>
+            </header>
 
             <!-- Seção 1: Identidade do Mascote -->
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1" style="border-left: 4px solid #ec4899;">
@@ -436,22 +390,35 @@
                     
                     <!-- Tipo de Criatura -->
                     <div>
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-400">Tipo de Criatura</label>
-                            <button onclick="openManageTypesModal()" class="text-xs text-theme-pink hover:text-pink-300 transition-colors">
-                                <i data-lucide="settings" class="w-3 h-3 inline mr-1"></i>
-                                Gerenciar tipos
-                            </button>
+                            <div id="tipo-criaturas" class="grid grid-cols-3 gap-3 mt-2">
+                                <div class="type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer opacity-70 hover:opacity-100"
+                                     onclick="selectTipoCriatura('canino')"
+                                     style="background: #0a0a0c; border-color: #f59e0b;">
+                                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: #f59e0b40; color: #f59e0b">
+                                        <i data-lucide="dog" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-xs text-center" style="color: #f59e0b">Canino</span>
+                                </div>
+                                <div class="type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer opacity-70 hover:opacity-100"
+                                     onclick="selectTipoCriatura('felino')"
+                                     style="background: #0a0a0c; border-color: #8b5cf6;">
+                                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: #8b5cf640; color: #8b5cf6">
+                                        <i data-lucide="cat" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-xs text-center" style="color: #8b5cf6">Felino</span>
+                                </div>
+                                <div class="type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer opacity-70 hover:opacity-100"
+                                     onclick="selectTipoCriatura('ave')"
+                                     style="background: #0a0a0c; border-color: #4a9eff;">
+                                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: #4a9eff40; color: #4a9eff">
+                                        <i data-lucide="bird" class="w-5 h-5"></i>
+                                    </div>
+                                    <span class="text-xs text-center" style="color: #4a9eff">Ave</span>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div id="tipo-criaturas" class="grid grid-cols-5 gap-3 mb-6">
-                            <!-- Tipos serão renderizados aqui -->
-                        </div>
-                        
-                        <button onclick="openCustomTypeModal()" class="w-full py-2 border-2 border-dashed border-theme-border rounded-lg text-gray-500 hover:text-white hover:border-theme-pink transition-colors">
-                            <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
-                            Criar Tipo Personalizado
-                        </button>
                     </div>
                 </div>
             </section>
@@ -537,21 +504,6 @@
                             <input type="range" id="input-defesa" min="0" max="100" value="55" 
                                 class="w-full accent-purple-500">
                         </div>
-                        
-                        <!-- Energia -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-medium text-gray-400">Energia</label>
-                                <span class="font-mono text-lg text-white" id="energia-display">75</span>
-                            </div>
-                            <input type="range" id="input-energia" min="0" max="100" value="75" 
-                                class="w-full accent-cyan-500">
-                        </div>
-                        
-                        <!-- Espaço para novo atributo ou informação -->
-                        <div class="col-span-2 p-3 bg-theme-bg/50 rounded border border-theme-border">
-                            <div class="text-xs text-gray-500">Total de atributos: <span id="total-atributos" class="text-white font-mono">325</span></div>
-                        </div>
                     </div>
                 </div>
             </section>
@@ -568,26 +520,8 @@
                     </button>
                 </div>
                 
-                <!-- Passiva Especial -->
-                <div class="mb-8 p-4 bg-theme-bg rounded-lg border border-theme-border">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="star" class="w-4 h-4 text-theme-yellow"></i>
-                            <label class="text-sm font-medium text-gray-400">Passiva Especial</label>
-                        </div>
-                        <button onclick="openEditPassivaModal()" class="text-xs text-theme-yellow hover:text-yellow-300 transition-colors">
-                            <i data-lucide="edit-2" class="w-3 h-3 inline mr-1"></i>
-                            Editar
-                        </button>
-                    </div>
-                    <div id="passiva-display" class="text-sm text-gray-300 italic">
-                        Clique em "Editar" para criar uma passiva especial para seu mascote.
-                    </div>
-                </div>
-                
                 <!-- Lista de Habilidades -->
                 <div id="skills-list" class="space-y-3">
-                    <!-- Habilidades serão adicionadas aqui -->
                     <div class="text-center py-6 text-gray-500">
                         <i data-lucide="zap" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
                         <p>Nenhuma habilidade adicionada</p>
@@ -625,11 +559,11 @@
                 </div>
             </section>
 
-            <!-- Seção 5: História e Notas -->
+            <!-- Seção 5: História -->
             <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4" style="border-left: 4px solid #f59e0b;">
                 <div class="flex items-center justify-between mb-6">
                     <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow">
-                        <i data-lucide="book-open" class="w-4 h-4"></i> História e Notas
+                        <i data-lucide="book-open" class="w-4 h-4"></i> História
                     </h3>
                     <div class="text-xs text-gray-500">
                         <span id="char-count-historia">0</span>/2000 caracteres
@@ -638,7 +572,7 @@
                 
                 <div>
                     <label class="block text-sm font-medium text-gray-400 mb-2">História do Mascote</label>
-                    <textarea id="mascote-historia" placeholder="Como você encontrou seu mascote? Qual é a história dele? Que experiências compartilharam juntos?" maxlength="2000" rows="8"
+                    <textarea id="mascote-historia" placeholder="Como você encontrou seu mascote? Qual é a história dele?" maxlength="2000" rows="8"
                         class="w-full px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 focus:border-theme-yellow focus:outline-none"></textarea>
                 </div>
             </section>
@@ -648,24 +582,12 @@
 
     <!-- Rodapé com Ações -->
     <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry">
-        <button onclick="resetMascote()" 
+        <button onclick="askReset()" 
                 class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
             <i data-lucide="refresh-cw" class="w-4 h-4"></i>
             Resetar
         </button>
         
-        <button onclick="downloadTXT()" 
-                class="flex items-center justify-center gap-2 px-6 py-3 bg-theme-panel border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
-            <i data-lucide="file-text" class="w-4 h-4"></i>
-            Exportar TXT
-        </button>
-
-        <button onclick="saveToProfile()" id="btn-save-profile" 
-                class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-theme-purple to-indigo-600 rounded text-white shadow-lg hover:shadow-purple-500/20 transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="save" class="w-4 h-4"></i>
-            Salvar no Perfil
-        </button>
-
         <button onclick="saveLocal()" id="btn-save-local" 
                 class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-theme-pink to-purple-600 rounded text-white shadow-lg hover:shadow-pink-500/20 transition-all font-cinzel text-sm font-bold">
             <i data-lucide="hard-drive" class="w-4 h-4"></i>
@@ -677,216 +599,37 @@
         lucide.createIcons();
 
         // ====================================================================
-        // DADOS GLOBAIS E CONFIGURAÇÃO
+        // DADOS GLOBAIS
         // ====================================================================
-        const TIPOS_PREDEFINIDOS = [
-            { id: 'canino', nome: 'Canino', icone: 'dog', cor: '#f59e0b', custom: false },
-            { id: 'felino', nome: 'Felino', icone: 'cat', cor: '#8b5cf6', custom: false },
-            { id: 'ave', nome: 'Ave', icone: 'bird', cor: '#4a9eff', custom: false },
-            { id: 'reptil', nome: 'Réptil', icone: 'snake', cor: '#22c55e', custom: false },
-            { id: 'fantastico', nome: 'Fantástico', icone: 'sparkles', cor: '#ec4899', custom: false }
-        ];
-
         let mascoteData = {
             tipoSelecionado: 'canino',
             skills: [],
             lastAutoSave: null,
-            customTypes: [],
-            currentPassiva: 'Clique em "Editar" para criar uma passiva especial para seu mascote.',
-            linkedProfile: null
+            imageData: null
         };
 
-        // ====================================================================
-        // FUNÇÕES DO SISTEMA DE TIPOS
-        // ====================================================================
-        function loadCustomTypes() {
-            const saved = localStorage.getItem('mascote_custom_types');
-            if (saved) {
-                mascoteData.customTypes = JSON.parse(saved);
-            }
-        }
+        // Variável para confirmação
+        let pendingAction = null;
 
-        function saveCustomTypes() {
-            localStorage.setItem('mascote_custom_types', JSON.stringify(mascoteData.customTypes));
-        }
-
-        function renderTipoCriaturas() {
-            const container = document.getElementById('tipo-criaturas');
-            if (!container) return;
-            
-            container.innerHTML = '';
-            
-            // Renderizar tipos predefinidos
-            TIPOS_PREDEFINIDOS.forEach(tipo => {
-                const isSelected = mascoteData.tipoSelecionado === tipo.id;
-                const card = document.createElement('div');
-                card.className = `type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer ${isSelected ? 'selected' : 'opacity-70 hover:opacity-100'}`;
-                card.style.borderColor = isSelected ? tipo.cor : 'transparent';
-                card.style.backgroundColor = isSelected ? `${tipo.cor}20` : '#0a0a0c';
-                card.onclick = () => selectTipoCriatura(tipo.id);
-                
-                card.innerHTML = `
-                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: ${tipo.cor}40; color: ${tipo.cor}">
-                        <i data-lucide="${tipo.icone}" class="w-5 h-5"></i>
-                    </div>
-                    <span class="text-xs text-center" style="color: ${isSelected ? '#fff' : tipo.cor}">${tipo.nome}</span>
-                `;
-                
-                container.appendChild(card);
+        // ====================================================================
+        // FUNÇÕES BÁSICAS
+        // ====================================================================
+        function selectTipoCriatura(tipo) {
+            mascoteData.tipoSelecionado = tipo;
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.classList.remove('selected');
+                card.style.opacity = '0.7';
             });
             
-            // Renderizar tipos personalizados
-            mascoteData.customTypes.forEach(tipo => {
-                const isSelected = mascoteData.tipoSelecionado === tipo.id;
-                const card = document.createElement('div');
-                card.className = `type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer ${isSelected ? 'selected' : 'opacity-70 hover:opacity-100'}`;
-                card.style.borderColor = isSelected ? tipo.cor : 'transparent';
-                card.style.backgroundColor = isSelected ? `${tipo.cor}20` : '#0a0a0c';
-                card.onclick = () => selectTipoCriatura(tipo.id);
-                
-                card.innerHTML = `
-                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: ${tipo.cor}40; color: ${tipo.cor}">
-                        <i data-lucide="${tipo.icone || 'sparkles'}" class="w-5 h-5"></i>
-                    </div>
-                    <span class="text-xs text-center" style="color: ${isSelected ? '#fff' : tipo.cor}">${tipo.nome}</span>
-                `;
-                
-                container.appendChild(card);
-            });
-            
-            lucide.createIcons();
-        }
-
-        function selectTipoCriatura(tipoId) {
-            mascoteData.tipoSelecionado = tipoId;
-            renderTipoCriaturas();
-            
-            // Atualizar passiva display
-            let tipo = TIPOS_PREDEFINIDOS.find(t => t.id === tipoId);
-            if (!tipo) {
-                tipo = mascoteData.customTypes.find(t => t.id === tipoId);
-            }
-            if (tipo) {
-                updatePassivaDisplay(tipo);
+            const selectedCard = document.querySelector(`[onclick="selectTipoCriatura('${tipo}')"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                selectedCard.style.opacity = '1';
             }
             
             autoSave();
         }
 
-        function openCustomTypeModal() {
-            document.getElementById('custom-type-modal').classList.remove('hidden');
-        }
-
-        function closeCustomTypeModal() {
-            document.getElementById('custom-type-modal').classList.add('hidden');
-        }
-
-        function setCustomTypeColor(color) {
-            document.getElementById('custom-type-color-picker').value = color;
-        }
-
-        function saveCustomType() {
-            const name = document.getElementById('custom-type-name').value.trim();
-            const color = document.getElementById('custom-type-color-picker').value;
-            const icon = document.getElementById('custom-type-icon').value;
-            const desc = document.getElementById('custom-type-desc').value.trim();
-            
-            if (!name) {
-                alert('Por favor, digite um nome para o tipo.');
-                return;
-            }
-            
-            const newType = {
-                id: 'custom_' + Date.now(),
-                nome: name,
-                cor: color,
-                icone: icon,
-                descricao: desc,
-                custom: true
-            };
-            
-            mascoteData.customTypes.push(newType);
-            saveCustomTypes();
-            renderTipoCriaturas();
-            closeCustomTypeModal();
-            
-            // Selecionar o novo tipo
-            mascoteData.tipoSelecionado = newType.id;
-            
-            mostrarFeedback('Tipo personalizado criado!', 'success');
-        }
-
-        function openManageTypesModal() {
-            renderCustomTypesList();
-            document.getElementById('manage-types-modal').classList.remove('hidden');
-        }
-
-        function closeManageTypesModal() {
-            document.getElementById('manage-types-modal').classList.add('hidden');
-        }
-
-        function renderCustomTypesList() {
-            const container = document.getElementById('custom-types-list');
-            if (!container) return;
-            
-            if (mascoteData.customTypes.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 text-gray-500">
-                        <i data-lucide="folder-open" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
-                        <p>Nenhum tipo personalizado</p>
-                        <p class="text-xs mt-1">Crie seu primeiro tipo!</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = '';
-            mascoteData.customTypes.forEach((tipo, index) => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between p-3 bg-theme-bg rounded border border-theme-border';
-                
-                div.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background: ${tipo.cor}40; color: ${tipo.cor}">
-                            <i data-lucide="${tipo.icone || 'sparkles'}" class="w-4 h-4"></i>
-                        </div>
-                        <div>
-                            <div class="font-medium text-white">${tipo.nome}</div>
-                            ${tipo.descricao ? `<div class="text-xs text-gray-500">${tipo.descricao.substring(0, 50)}${tipo.descricao.length > 50 ? '...' : ''}</div>` : ''}
-                        </div>
-                    </div>
-                    <button onclick="deleteCustomType(${index})" class="text-red-500 hover:text-red-400 transition-colors">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                `;
-                
-                container.appendChild(div);
-            });
-            
-            lucide.createIcons();
-        }
-
-        function deleteCustomType(index) {
-            if (confirm('Tem certeza que deseja excluir este tipo? Esta ação não pode ser desfeita.')) {
-                const deletedType = mascoteData.customTypes[index];
-                
-                // Se o tipo sendo excluído está selecionado, mudar para o tipo padrão
-                if (mascoteData.tipoSelecionado === deletedType.id) {
-                    mascoteData.tipoSelecionado = 'canino';
-                }
-                
-                mascoteData.customTypes.splice(index, 1);
-                saveCustomTypes();
-                renderTipoCriaturas();
-                renderCustomTypesList();
-                
-                mostrarFeedback('Tipo excluído!', 'success');
-            }
-        }
-
-        // ====================================================================
-        // FUNÇÕES DE ATUALIZAÇÃO DE DISPLAY
-        // ====================================================================
         function updateVida() {
             const atual = parseInt(document.getElementById('vida-atual').value) || 0;
             const max = parseInt(document.getElementById('vida-max').value) || 1;
@@ -922,20 +665,14 @@
             document.getElementById('defesa-display').textContent = value;
         }
 
-        function updateEnergia() {
-            const value = parseInt(document.getElementById('input-energia').value) || 0;
-            document.getElementById('energia-display').textContent = value;
-        }
-
         function updateNivelDisplay() {
             const nivel = parseInt(document.getElementById('mascote-nivel').value) || 1;
             const poder = Math.floor(
                 (parseInt(document.getElementById('input-lealdade').value) || 0) * 0.2 +
-                (parseInt(document.getElementById('input-agilidade').value) || 0) * 0.15 +
-                (parseInt(document.getElementById('input-forca').value) || 0) * 0.15 +
-                (parseInt(document.getElementById('input-percepcao').value) || 0) * 0.15 +
-                (parseInt(document.getElementById('input-defesa').value) || 0) * 0.15 +
-                (parseInt(document.getElementById('input-energia').value) || 0) * 0.2 +
+                (parseInt(document.getElementById('input-agilidade').value) || 0) * 0.2 +
+                (parseInt(document.getElementById('input-forca').value) || 0) * 0.2 +
+                (parseInt(document.getElementById('input-percepcao').value) || 0) * 0.2 +
+                (parseInt(document.getElementById('input-defesa').value) || 0) * 0.2 +
                 (nivel * 10)
             );
             
@@ -945,40 +682,6 @@
             if (display && poderDisplay) {
                 display.classList.remove('hidden');
                 poderDisplay.textContent = poder;
-            }
-            
-            // Atualizar total de atributos
-            const total =
-                (parseInt(document.getElementById('input-lealdade').value) || 0) +
-                (parseInt(document.getElementById('input-agilidade').value) || 0) +
-                (parseInt(document.getElementById('input-forca').value) || 0) +
-                (parseInt(document.getElementById('input-percepcao').value) || 0) +
-                (parseInt(document.getElementById('input-defesa').value) || 0) +
-                (parseInt(document.getElementById('input-energia').value) || 0);
-            
-            const totalEl = document.getElementById('total-atributos');
-            if (totalEl) {
-                totalEl.textContent = total;
-            }
-        }
-
-        function updatePassivaDisplay(tipo) {
-            const display = document.getElementById('passiva-display');
-            if (!display) return;
-            
-            if (mascoteData.currentPassiva && mascoteData.currentPassiva !== 'Clique em "Editar" para criar uma passiva especial para seu mascote.') {
-                display.textContent = mascoteData.currentPassiva;
-            } else {
-                // Passivas padrão baseadas no tipo
-                const passivasPadrao = {
-                    'canino': 'Instinto protetor: +10% de defesa quando o dono está com menos de 50% de vida.',
-                    'felino': 'Agilidade felina: +15% de chance de evitar ataques.',
-                    'ave': 'Visão apurada: +20% de chance de detectar perigos ocultos.',
-                    'reptil': 'Camuflagem natural: +25% de chance de não ser detectado.',
-                    'fantastico': 'Aura mágica: +5 em todos os atributos durante a noite.'
-                };
-                
-                display.textContent = passivasPadrao[tipo.id] || 'Clique em "Editar" para criar uma passiva especial para seu mascote.';
             }
         }
 
@@ -1004,10 +707,8 @@
         function addSkill() {
             const skill = {
                 id: Date.now(),
-                nome: `Nova Habilidade ${mascoteData.skills.length + 1}`,
-                descricao: 'Descreva esta habilidade...',
-                tipo: 'ativo',
-                nivel: 1,
+                nome: `Habilidade ${mascoteData.skills.length + 1}`,
+                descricao: 'Descrição da habilidade...',
                 custo: 0
             };
             
@@ -1048,18 +749,9 @@
                                 onchange="updateSkill(${skill.id}, 'nome', this.value)"
                                 class="bg-transparent border-none text-white font-semibold focus:outline-none focus:border-b focus:border-theme-blue">
                             <div class="flex items-center gap-2 mt-1">
-                                <select onchange="updateSkill(${skill.id}, 'tipo', this.value)" 
-                                    class="text-xs bg-theme-border text-white px-2 py-1 rounded">
-                                    <option value="ativo" ${skill.tipo === 'ativo' ? 'selected' : ''}>Ativo</option>
-                                    <option value="passivo" ${skill.tipo === 'passivo' ? 'selected' : ''}>Passivo</option>
-                                    <option value="suporte" ${skill.tipo === 'suporte' ? 'selected' : ''}>Suporte</option>
-                                </select>
-                                <span class="text-xs text-gray-500">Nível <input type="number" min="1" max="10" value="${skill.nivel}" 
-                                    onchange="updateSkill(${skill.id}, 'nivel', this.value)"
-                                    class="w-10 bg-transparent border-none text-center text-white focus:outline-none"></span>
                                 <span class="text-xs text-gray-500">Custo: <input type="number" min="0" value="${skill.custo}" 
                                     onchange="updateSkill(${skill.id}, 'custo', this.value)"
-                                    class="w-10 bg-transparent border-none text-center text-white focus:outline-none"> EN</span>
+                                    class="w-10 bg-transparent border-none text-center text-white focus:outline-none"></span>
                             </div>
                         </div>
                         <button onclick="removeSkill(${skill.id})" class="text-red-500 hover:text-red-400 transition-colors">
@@ -1083,35 +775,71 @@
             }
         }
 
-        function openEditPassivaModal() {
-            const textarea = document.getElementById('passiva-textarea');
-            if (textarea) {
-                textarea.value = mascoteData.currentPassiva;
+        // ====================================================================
+        // SISTEMA DE IMAGEM
+        // ====================================================================
+        function openImageModal() {
+            const preview = document.getElementById('image-preview');
+            if (mascoteData.imageData) {
+                preview.src = mascoteData.imageData;
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
             }
-            document.getElementById('edit-passiva-modal').classList.remove('hidden');
+            document.getElementById('image-modal').classList.remove('hidden');
         }
 
-        function closeEditPassivaModal() {
-            document.getElementById('edit-passiva-modal').classList.add('hidden');
+        function closeImageModal() {
+            document.getElementById('image-modal').classList.add('hidden');
         }
 
-        function savePassiva() {
-            const textarea = document.getElementById('passiva-textarea');
-            if (textarea) {
-                mascoteData.currentPassiva = textarea.value.trim() || mascoteData.currentPassiva;
-                closeEditPassivaModal();
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                mostrarFeedback('Por favor, selecione um arquivo de imagem.', 'error');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                mostrarFeedback('A imagem é muito grande. Máximo: 5MB', 'error');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                mascoteData.imageData = e.target.result;
                 
-                // Atualizar display
-                let tipo = TIPOS_PREDEFINIDOS.find(t => t.id === mascoteData.tipoSelecionado);
-                if (!tipo) {
-                    tipo = mascoteData.customTypes.find(t => t.id === mascoteData.tipoSelecionado);
-                }
-                if (tipo) {
-                    updatePassivaDisplay(tipo);
-                }
+                // Atualizar previews
+                const preview = document.getElementById('image-preview');
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                
+                const mainImage = document.getElementById('mascote-image');
+                mainImage.src = e.target.result;
+                mainImage.style.display = 'block';
                 
                 autoSave();
-                mostrarFeedback('Passiva salva!', 'success');
+                mostrarFeedback('Imagem carregada com sucesso!', 'success');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeImage() {
+            if (confirm('Tem certeza que deseja remover a imagem?')) {
+                mascoteData.imageData = null;
+                
+                const mainImage = document.getElementById('mascote-image');
+                mainImage.src = '';
+                mainImage.style.display = 'none';
+                
+                const preview = document.getElementById('image-preview');
+                preview.src = '';
+                preview.style.display = 'none';
+                
+                autoSave();
+                mostrarFeedback('Imagem removida!', 'success');
             }
         }
 
@@ -1120,68 +848,201 @@
         // ====================================================================
         function autoSave() {
             const data = getMascoteData();
-            localStorage.setItem('rpg_mascote_autosave', JSON.stringify(data));
+            localStorage.setItem('grimorio_mascote_autosave', JSON.stringify(data));
             mascoteData.lastAutoSave = new Date();
             
-            // Atualizar todos os displays
+            // Atualizar displays
             updateVida();
             updateLealdade();
             updateAgilidade();
             updateForca();
             updatePercepcao();
             updateDefesa();
-            updateEnergia();
             updateNivelDisplay();
             updateCharCounters();
+            
+            // Atualizar último salvamento
+            const lastSavedEl = document.getElementById('last-saved');
+            if (lastSavedEl) {
+                lastSavedEl.textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            }
         }
 
         // ====================================================================
-        // FUNÇÕES DE EXPORTAÇÃO
+        // FUNÇÕES DE IMPORT/EXPORT TXT
         // ====================================================================
+        function importFromTXT() {
+            document.getElementById('import-modal').classList.remove('hidden');
+            document.getElementById('import-textarea').value = '';
+            document.getElementById('import-textarea').focus();
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+        }
+
+        function processImport() {
+            const text = document.getElementById('import-textarea').value.trim();
+            if (!text) {
+                mostrarFeedback('Cole o conteúdo do arquivo TXT para importar.', 'error');
+                return;
+            }
+            
+            try {
+                const lines = text.split('\n');
+                const data = {};
+                
+                let currentSection = '';
+                let habilidades = [];
+                let currentHabilidade = null;
+                
+                for (let line of lines) {
+                    line = line.trim();
+                    
+                    if (line.startsWith('===')) {
+                        currentSection = line.replace(/=/g, '').trim().toLowerCase();
+                        continue;
+                    }
+                    
+                    if (line.includes(':')) {
+                        const [key, ...valueParts] = line.split(':');
+                        const value = valueParts.join(':').trim();
+                        
+                        switch(currentSection) {
+                            case 'informações básicas':
+                                if (key.trim() === 'Nome') data.nome = value;
+                                if (key.trim() === 'Tipo') data.tipo = value;
+                                if (key.trim() === 'Nível') data.nivel = parseInt(value);
+                                break;
+                                
+                            case 'status':
+                                if (key.trim() === 'Vida') {
+                                    const [atual, max] = value.split('/').map(v => parseInt(v.trim()));
+                                    data.vidaAtual = atual;
+                                    data.vidaMax = max;
+                                }
+                                if (key.trim() === 'Lealdade') data.lealdade = parseInt(value);
+                                if (key.trim() === 'Agilidade') data.agilidade = parseInt(value);
+                                if (key.trim() === 'Força') data.forca = parseInt(value);
+                                if (key.trim() === 'Percepção') data.percepcao = parseInt(value);
+                                if (key.trim() === 'Defesa') data.defesa = parseInt(value);
+                                break;
+                                
+                            case 'habilidades':
+                                if (line.includes('(Custo:')) {
+                                    if (currentHabilidade) habilidades.push(currentHabilidade);
+                                    
+                                    const habMatch = line.match(/(\d+)\.\s*(.+?)\s*\(Custo:\s*(\d+)/);
+                                    if (habMatch) {
+                                        currentHabilidade = {
+                                            nome: habMatch[2].trim(),
+                                            custo: parseInt(habMatch[3])
+                                        };
+                                    }
+                                } else if (currentHabilidade && line) {
+                                    currentHabilidade.descricao = (currentHabilidade.descricao || '') + line + ' ';
+                                }
+                                break;
+                                
+                            case 'descrições':
+                                if (key.trim() === 'Aparência') data.aparencia = value;
+                                if (key.trim() === 'Personalidade') data.personalidade = value;
+                                break;
+                                
+                            case 'história':
+                                data.historia = line;
+                                break;
+                        }
+                    } else if (line && currentSection === 'história') {
+                        data.historia = (data.historia || '') + line + '\n';
+                    }
+                }
+                
+                if (currentHabilidade) {
+                    habilidades.push(currentHabilidade);
+                }
+                
+                if (habilidades.length > 0) {
+                    data.habilidades = habilidades.map((h, i) => ({
+                        id: Date.now() + i,
+                        nome: h.nome || `Habilidade ${i + 1}`,
+                        descricao: h.descricao || '',
+                        custo: h.custo || 0
+                    }));
+                }
+                
+                // Mapear tipo
+                if (data.tipo) {
+                    const tipoMap = {
+                        'Canino': 'canino',
+                        'Felino': 'felino',
+                        'Ave': 'ave'
+                    };
+                    data.tipoSelecionado = tipoMap[data.tipo] || 'canino';
+                }
+                
+                loadMascoteData(data);
+                closeImportModal();
+                mostrarFeedback('Mascote importado com sucesso!', 'success');
+                
+            } catch (error) {
+                console.error('Erro ao importar:', error);
+                mostrarFeedback('Erro ao importar arquivo TXT. Verifique o formato.', 'error');
+            }
+        }
+
         function downloadTXT() {
             const data = getMascoteData();
-            let txtContent = '=== FICHA DE MASCOTE ===\n\n';
+            let txtContent = '';
             
+            // Informações básicas
+            txtContent += '=== INFORMAÇÕES BÁSICAS ===\n\n';
             txtContent += `Nome: ${data.nome || 'Sem nome'}\n`;
-            txtContent += `Tipo: ${data.tipoNome}\n`;
+            txtContent += `Tipo: ${getTipoNome(data.tipoSelecionado)}\n`;
             txtContent += `Nível: ${data.nivel}\n\n`;
             
-            txtContent += '=== STATUS ===\n';
+            // Status
+            txtContent += '=== STATUS ===\n\n';
             txtContent += `Vida: ${data.vidaAtual}/${data.vidaMax}\n`;
             txtContent += `Lealdade: ${data.lealdade}%\n`;
             txtContent += `Agilidade: ${data.agilidade}\n`;
             txtContent += `Força: ${data.forca}\n`;
             txtContent += `Percepção: ${data.percepcao}\n`;
-            txtContent += `Defesa: ${data.defesa}\n`;
-            txtContent += `Energia: ${data.energia}\n\n`;
+            txtContent += `Defesa: ${data.defesa}\n\n`;
             
-            txtContent += '=== PASSIVA ESPECIAL ===\n';
-            txtContent += `${data.passiva}\n\n`;
-            
-            txtContent += '=== HABILIDADES ===\n';
+            // Habilidades
             if (data.habilidades.length > 0) {
+                txtContent += '=== HABILIDADES ===\n\n';
                 data.habilidades.forEach((skill, index) => {
-                    txtContent += `${index + 1}. ${skill.nome} (${skill.tipo}, Nível ${skill.nivel}, Custo: ${skill.custo} EN)\n`;
-                    txtContent += `   ${skill.descricao}\n\n`;
+                    txtContent += `${index + 1}. ${skill.nome} (Custo: ${skill.custo})\n`;
+                    if (skill.descricao) {
+                        txtContent += `   ${skill.descricao}\n`;
+                    }
+                    txtContent += '\n';
                 });
-            } else {
-                txtContent += 'Nenhuma habilidade registrada.\n\n';
             }
             
-            txtContent += '=== DESCRIÇÕES ===\n';
+            // Descrições
+            txtContent += '=== DESCRIÇÕES ===\n\n';
             txtContent += `Aparência:\n${data.aparencia || 'Não descrita.'}\n\n`;
             txtContent += `Personalidade:\n${data.personalidade || 'Não descrita.'}\n\n`;
-            txtContent += `História:\n${data.historia || 'Não registrada.'}\n\n`;
             
-            txtContent += '=== METADADOS ===\n';
-            txtContent += `Salvo em: ${new Date().toLocaleString()}\n`;
-            txtContent += `Vinculado ao perfil: ${data.linkedProfile ? 'Sim' : 'Não'}\n`;
+            // História
+            if (data.historia) {
+                txtContent += '=== HISTÓRIA ===\n\n';
+                txtContent += data.historia + '\n\n';
+            }
             
-            const blob = new Blob([txtContent], { type: 'text/plain' });
+            // Metadados
+            txtContent += '=== METADADOS ===\n\n';
+            txtContent += `Exportado em: ${new Date().toLocaleString()}\n`;
+            txtContent += `Sistema: Grimório Digital - Mascote\n`;
+            
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `mascote_${data.nome || 'sem_nome'}.txt`;
+            a.download = `mascote_${data.nome || 'sem_nome'}_${new Date().toISOString().split('T')[0]}.txt`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1190,251 +1051,43 @@
             mostrarFeedback('Ficha exportada como TXT!', 'success');
         }
 
-        function getLealdadeTexto(valor) {
-            if (valor >= 90) return 'Inabalável';
-            if (valor >= 75) return 'Leal';
-            if (valor >= 50) return 'Confiavel';
-            if (valor >= 25) return 'Hesitante';
-            return 'Indisciplinado';
+        function getTipoNome(tipoId) {
+            const tipos = {
+                'canino': 'Canino',
+                'felino': 'Felino',
+                'ave': 'Ave'
+            };
+            return tipos[tipoId] || 'Desconhecido';
         }
 
         // ====================================================================
-        // FUNÇÕES DE INTEGRAÇÃO COM PERFIL (mantidas do seu código)
-        // ====================================================================
-        function loadActiveProfile() {
-            try {
-                const perfis = localStorage.getItem('rpg_sistema_perfis');
-                const perfilAtivoId = localStorage.getItem('perfil_ativo');
-                
-                if (!perfis || !perfilAtivoId) {
-                    showNoProfileWarning();
-                    mascoteData.linkedProfile = null;
-                    return null;
-                }
-                
-                const perfisObj = JSON.parse(perfis);
-                const perfilAtivo = perfisObj[perfilAtivoId];
-                
-                if (!perfilAtivo) {
-                    showNoProfileWarning();
-                    mascoteData.linkedProfile = null;
-                    return null;
-                }
-                
-                mascoteData.linkedProfile = perfilAtivoId;
-                updateProfileDisplay(perfilAtivo);
-                hideNoProfileWarning();
-                loadMascoteFromProfile(perfilAtivo);
-                
-                return perfilAtivo;
-                
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
-                showNoProfileWarning();
-                mascoteData.linkedProfile = null;
-                return null;
-            }
-        }
-
-        function updateProfileDisplay(perfil) {
-            const profileInfo = document.getElementById('profile-info');
-            const profileBadge = document.getElementById('profile-badge');
-            const profileNameDisplay = document.getElementById('profile-name-display');
-            
-            if (perfil) {
-                profileInfo.innerHTML = `
-                    <div class="relative">
-                        <div class="active-profile-indicator"></div>
-                        <div class="text-sm text-theme-muted mb-1">Vinculado a</div>
-                        <div class="font-cinzel font-bold text-theme-pink">${perfil.nome || 'Personagem'}</div>
-                    </div>
-                `;
-                
-                if (profileBadge) {
-                    profileBadge.classList.remove('hidden');
-                }
-                if (profileNameDisplay) {
-                    profileNameDisplay.textContent = perfil.nome || 'Personagem';
-                }
-                
-                setupNavButtons();
-                
-            } else {
-                profileInfo.innerHTML = `
-                    <div>
-                        <div class="text-sm text-theme-muted mb-1">Sem perfil ativo</div>
-                        <div class="font-cinzel font-bold text-theme-muted">Não vinculado</div>
-                    </div>
-                `;
-                
-                if (profileBadge) {
-                    profileBadge.classList.add('hidden');
-                }
-            }
-            
-            lucide.createIcons();
-        }
-
-        function setupNavButtons() {
-            const navButtons = document.getElementById('nav-buttons');
-            if (!navButtons) return;
-            
-            navButtons.innerHTML = `
-                <button onclick="goToIndex()" 
-                    class="flex items-center gap-2 px-3 py-2 text-sm bg-theme-panel hover:bg-theme-panel/80 border border-theme-border rounded transition-colors">
-                    <i data-lucide="home" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Início</span>
-                </button>
-                <button onclick="goToFicha()" 
-                    class="flex items-center gap-2 px-3 py-2 text-sm bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded transition-colors">
-                    <i data-lucide="edit-3" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Personagem</span>
-                </button>
-                <button onclick="goToPerfil()" 
-                    class="flex items-center gap-2 px-3 py-2 text-sm bg-theme-blue/20 hover:bg-theme-blue/30 text-theme-blue border border-theme-blue/30 rounded transition-colors">
-                    <i data-lucide="user" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Perfil</span>
-                </button>
-            `;
-            
-            lucide.createIcons();
-        }
-
-        // ====================================================================
-        // NAVEGAÇÃO
-        // ====================================================================
-        function goToIndex() {
-            window.location.href = 'index.html';
-        }
-        
-        function goToFicha() {
-            window.location.href = 'ficha.html';
-        }
-        
-        function goToPerfil() {
-            window.location.href = 'perfil.html';
-        }
-
-        // ====================================================================
-        // SISTEMA DE PERSISTÊNCIA INTEGRADO (mantidas do seu código)
+        // SISTEMA DE PERSISTÊNCIA
         // ====================================================================
         function getMascoteData() {
-            let tipo = TIPOS_PREDEFINIDOS.find(t => t.id === mascoteData.tipoSelecionado);
-            if (!tipo) {
-                tipo = mascoteData.customTypes.find(t => t.id === mascoteData.tipoSelecionado);
-            }
-            
             return {
                 nome: document.getElementById('mascote-nome').value,
-                tipoId: mascoteData.tipoSelecionado,
-                tipoNome: tipo ? tipo.nome : 'Desconhecido',
-                tipoCor: tipo ? tipo.cor : '#ec4899',
-                tipoIcone: tipo ? tipo.icone : 'dog',
-                
-                nivel: parseInt(document.getElementById('mascote-nivel').value),
-                vidaAtual: parseInt(document.getElementById('vida-atual').value),
-                vidaMax: parseInt(document.getElementById('vida-max').value),
-                lealdade: parseInt(document.getElementById('input-lealdade').value),
-                agilidade: parseInt(document.getElementById('input-agilidade').value),
-                forca: parseInt(document.getElementById('input-forca').value),
-                percepcao: parseInt(document.getElementById('input-percepcao').value),
-                defesa: parseInt(document.getElementById('input-defesa').value),
-                energia: parseInt(document.getElementById('input-energia').value),
-                
+                tipoSelecionado: mascoteData.tipoSelecionado,
+                nivel: parseInt(document.getElementById('mascote-nivel').value) || 1,
+                vidaAtual: parseInt(document.getElementById('vida-atual').value) || 50,
+                vidaMax: parseInt(document.getElementById('vida-max').value) || 50,
+                lealdade: parseInt(document.getElementById('input-lealdade').value) || 80,
+                agilidade: parseInt(document.getElementById('input-agilidade').value) || 70,
+                forca: parseInt(document.getElementById('input-forca').value) || 60,
+                percepcao: parseInt(document.getElementById('input-percepcao').value) || 65,
+                defesa: parseInt(document.getElementById('input-defesa').value) || 55,
                 aparencia: document.getElementById('mascote-aparencia').value,
                 personalidade: document.getElementById('mascote-personalidade').value,
                 historia: document.getElementById('mascote-historia').value,
-                
                 habilidades: mascoteData.skills,
-                passiva: mascoteData.currentPassiva,
-                
-                customTypes: mascoteData.customTypes,
-                linkedProfile: mascoteData.linkedProfile,
+                imageData: mascoteData.imageData,
                 timestamp: new Date().toISOString(),
                 version: '1.0'
             };
         }
 
-        function saveToProfile() {
-            if (!mascoteData.linkedProfile) {
-                showNoProfileModal();
-                return;
-            }
-            
-            const data = getMascoteData();
-            const btn = document.getElementById('btn-save-profile');
-            const originalHTML = btn.innerHTML;
-            
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i>`;
-            lucide.createIcons();
-
-            setTimeout(() => {
-                try {
-                    const perfis = localStorage.getItem('rpg_sistema_perfis');
-                    const perfilAtivoId = localStorage.getItem('perfil_ativo');
-                    
-                    if (!perfis || !perfilAtivoId) {
-                        throw new Error('Perfil não encontrado');
-                    }
-                    
-                    const perfisObj = JSON.parse(perfis);
-                    const perfilAtivo = perfisObj[perfilAtivoId];
-                    
-                    if (!perfilAtivo) {
-                        throw new Error('Perfil ativo inválido');
-                    }
-                    
-                    if (!perfilAtivo.dados) {
-                        perfilAtivo.dados = {};
-                    }
-                    
-                    perfilAtivo.dados.mascote = data;
-                    
-                    perfisObj[perfilAtivoId] = perfilAtivo;
-                    localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
-                    
-                    const mascoteIndex = {
-                        nome: data.nome || "Sem Nome",
-                        tipo: data.tipoNome || "Desconhecido",
-                        nivel: data.nivel || 1,
-                        icone: data.tipoIcone || "dog",
-                        cor: data.tipoCor || "#ec4899",
-                        temMascote: true,
-                        ultimaAtualizacao: new Date().toISOString()
-                    };
-                    
-                    localStorage.setItem('grimorio_mascote_index', JSON.stringify(mascoteIndex));
-                    
-                    btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Salvo!`;
-                    lucide.createIcons();
-                    
-                    document.getElementById('last-saved').textContent = 
-                        new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    
-                    mostrarFeedback("Mascote salvo no perfil com sucesso!", "success");
-                    
-                } catch (error) {
-                    console.error('Erro ao salvar no perfil:', error);
-                    btn.innerHTML = `<i data-lucide="alert-circle" class="w-4 h-4"></i> Erro`;
-                    lucide.createIcons();
-                    mostrarFeedback("Erro ao salvar no perfil. Salvando localmente...", "error");
-                    
-                    saveLocal();
-                }
-                
-                setTimeout(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = originalHTML;
-                    lucide.createIcons();
-                }, 2000);
-                
-            }, 800);
-        }
-
         function saveLocal() {
             const data = getMascoteData();
-            localStorage.setItem('rpg_mascote_completo', JSON.stringify(data));
+            localStorage.setItem('grimorio_mascote_completo', JSON.stringify(data));
             
             const btn = document.getElementById('btn-save-local');
             const originalHTML = btn.innerHTML;
@@ -1460,109 +1113,149 @@
             mostrarFeedback("Mascote salvo localmente!", "success");
         }
 
-        function loadMascoteFromProfile(perfil) {
-            if (!perfil || !perfil.dados || !perfil.dados.mascote) {
-                loadFromLocalStorage();
-                return;
-            }
-            
-            const data = perfil.dados.mascote;
-            loadMascoteData(data);
-        }
-
-        function loadFromLocalStorage() {
-            const data = JSON.parse(localStorage.getItem('rpg_mascote_completo'));
-            if (data) {
-                loadMascoteData(data);
-            } else {
-                resetToDefault();
-            }
-        }
-
         function loadMascoteData(data) {
-            document.getElementById('mascote-nome').value = data.nome || '';
-            document.getElementById('mascote-nivel').value = data.nivel || 1;
-            document.getElementById('vida-atual').value = data.vidaAtual || 50;
-            document.getElementById('vida-max').value = data.vidaMax || 50;
-            document.getElementById('input-lealdade').value = data.lealdade || 80;
-            document.getElementById('input-agilidade').value = data.agilidade || 70;
-            document.getElementById('input-forca').value = data.forca || 60;
-            document.getElementById('input-percepcao').value = data.percepcao || 65;
-            document.getElementById('input-defesa').value = data.defesa || 55;
-            document.getElementById('input-energia').value = data.energia || 75;
-            document.getElementById('mascote-aparencia').value = data.aparencia || '';
-            document.getElementById('mascote-personalidade').value = data.personalidade || '';
-            document.getElementById('mascote-historia').value = data.historia || '';
+            // Carregar dados básicos
+            if (data.nome) document.getElementById('mascote-nome').value = data.nome;
+            if (data.nivel) document.getElementById('mascote-nivel').value = data.nivel;
+            if (data.vidaAtual) document.getElementById('vida-atual').value = data.vidaAtual;
+            if (data.vidaMax) document.getElementById('vida-max').value = data.vidaMax;
+            if (data.lealdade) document.getElementById('input-lealdade').value = data.lealdade;
+            if (data.agilidade) document.getElementById('input-agilidade').value = data.agilidade;
+            if (data.forca) document.getElementById('input-forca').value = data.forca;
+            if (data.percepcao) document.getElementById('input-percepcao').value = data.percepcao;
+            if (data.defesa) document.getElementById('input-defesa').value = data.defesa;
+            if (data.aparencia) document.getElementById('mascote-aparencia').value = data.aparencia;
+            if (data.personalidade) document.getElementById('mascote-personalidade').value = data.personalidade;
+            if (data.historia) document.getElementById('mascote-historia').value = data.historia;
             
-            if (data.tipoId) {
-                mascoteData.tipoSelecionado = data.tipoId;
+            // Carregar tipo
+            if (data.tipoSelecionado) {
+                mascoteData.tipoSelecionado = data.tipoSelecionado;
+                selectTipoCriatura(data.tipoSelecionado);
             }
             
-            if (data.passiva) {
-                mascoteData.currentPassiva = data.passiva;
-            }
-            
+            // Carregar habilidades
             if (data.habilidades) {
                 mascoteData.skills = data.habilidades;
                 renderSkills();
             }
             
-            if (data.customTypes) {
-                mascoteData.customTypes = data.customTypes;
-                localStorage.setItem('mascote_custom_types', JSON.stringify(data.customTypes));
+            // Carregar imagem
+            if (data.imageData) {
+                mascoteData.imageData = data.imageData;
+                const mainImage = document.getElementById('mascote-image');
+                mainImage.src = data.imageData;
+                mainImage.style.display = 'block';
             }
             
-            if (data.linkedProfile) {
-                mascoteData.linkedProfile = data.linkedProfile;
-            }
-            
-            updateAllDisplays();
-        }
-
-        function updateAllDisplays() {
+            // Atualizar todos os displays
             updateVida();
             updateLealdade();
             updateAgilidade();
             updateForca();
             updatePercepcao();
             updateDefesa();
-            updateEnergia();
             updateNivelDisplay();
             updateCharCounters();
-            renderTipoCriaturas();
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('grimorio_mascote_completo');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    loadMascoteData(data);
+                    
+                    // Atualizar último salvamento
+                    if (data.timestamp) {
+                        const date = new Date(data.timestamp);
+                        document.getElementById('last-saved').textContent = 
+                            date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    }
+                    
+                    mostrarFeedback('Dados carregados!', 'success');
+                } catch (error) {
+                    console.error('Erro ao carregar:', error);
+                    resetToDefault();
+                }
+            } else {
+                resetToDefault();
+            }
+        }
+
+        // ====================================================================
+        // SISTEMA DE CONFIRMAÇÃO
+        // ====================================================================
+        function showConfirmModal(title, message, actionCallback) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            document.getElementById('confirm-action-btn').onclick = function() {
+                closeConfirmModal(true);
+                if (actionCallback) actionCallback();
+            };
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal(confirmed) {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            if (pendingAction && confirmed) {
+                pendingAction();
+            }
+            pendingAction = null;
+        }
+
+        function askReset() {
+            showConfirmModal(
+                'Resetar Mascote',
+                'Tem certeza que deseja resetar todos os dados do mascote? Esta ação não pode ser desfeita.',
+                resetMascote
+            );
+        }
+
+        // ====================================================================
+        // FUNÇÕES DE RESET
+        // ====================================================================
+        function resetToDefault() {
+            document.getElementById('mascote-nome').value = '';
+            document.getElementById('mascote-nivel').value = 1;
+            document.getElementById('vida-atual').value = 50;
+            document.getElementById('vida-max').value = 50;
+            document.getElementById('input-lealdade').value = 80;
+            document.getElementById('input-agilidade').value = 70;
+            document.getElementById('input-forca').value = 60;
+            document.getElementById('input-percepcao').value = 65;
+            document.getElementById('input-defesa').value = 55;
+            document.getElementById('mascote-aparencia').value = '';
+            document.getElementById('mascote-personalidade').value = '';
+            document.getElementById('mascote-historia').value = '';
             
-            let tipo = TIPOS_PREDEFINIDOS.find(t => t.id === mascoteData.tipoSelecionado);
-            if (!tipo) {
-                tipo = mascoteData.customTypes.find(t => t.id === mascoteData.tipoSelecionado);
-            }
-            if (tipo) {
-                updatePassivaDisplay(tipo);
-            }
+            mascoteData.skills = [];
+            renderSkills();
+            
+            mascoteData.tipoSelecionado = 'canino';
+            selectTipoCriatura('canino');
+            
+            mascoteData.imageData = null;
+            const mainImage = document.getElementById('mascote-image');
+            mainImage.src = '';
+            mainImage.style.display = 'none';
+            
+            updateAllDisplays();
+        }
+
+        function resetMascote() {
+            resetToDefault();
+            
+            localStorage.removeItem('grimorio_mascote_completo');
+            localStorage.removeItem('grimorio_mascote_autosave');
+            
+            document.getElementById('last-saved').textContent = 'Não salvo';
+            mostrarFeedback("Mascote resetado com sucesso!", "success");
         }
 
         // ====================================================================
-        // FUNÇÕES DE FEEDBACK E MODAIS
+        // FEEDBACK
         // ====================================================================
-        function showNoProfileWarning() {
-            document.getElementById('no-profile-warning').classList.remove('hidden');
-        }
-
-        function hideNoProfileWarning() {
-            document.getElementById('no-profile-warning').classList.add('hidden');
-        }
-
-        function showNoProfileModal() {
-            document.getElementById('no-profile-modal').classList.remove('hidden');
-        }
-
-        function hideNoProfileModal() {
-            document.getElementById('no-profile-modal').classList.add('hidden');
-        }
-
-        function hideWarning() {
-            document.getElementById('no-profile-warning').classList.add('hidden');
-        }
-
         function mostrarFeedback(mensagem, tipo = 'info') {
             const existing = document.querySelectorAll('.feedback-mascote');
             existing.forEach(el => el.remove());
@@ -1597,55 +1290,11 @@
         }
 
         // ====================================================================
-        // RESET E INICIALIZAÇÃO
-        // ====================================================================
-        function resetToDefault() {
-            document.getElementById('mascote-nome').value = '';
-            document.getElementById('mascote-nivel').value = 1;
-            document.getElementById('vida-atual').value = 50;
-            document.getElementById('vida-max').value = 50;
-            document.getElementById('input-lealdade').value = 80;
-            document.getElementById('input-agilidade').value = 70;
-            document.getElementById('input-forca').value = 60;
-            document.getElementById('input-percepcao').value = 65;
-            document.getElementById('input-defesa').value = 55;
-            document.getElementById('input-energia').value = 75;
-            document.getElementById('mascote-aparencia').value = '';
-            document.getElementById('mascote-personalidade').value = '';
-            document.getElementById('mascote-historia').value = '';
-            
-            mascoteData.skills = [];
-            renderSkills();
-            
-            mascoteData.tipoSelecionado = 'canino';
-            mascoteData.currentPassiva = 'Clique em "Editar" para criar uma passiva especial para seu mascote.';
-            
-            updateAllDisplays();
-        }
-
-        function resetMascote() {
-            if (confirm('Deseja realmente resetar todos os dados do mascote? (Os tipos personalizados serão mantidos)')) {
-                resetToDefault();
-                
-                localStorage.removeItem('rpg_mascote_completo');
-                localStorage.removeItem('rpg_mascote_autosave');
-                
-                document.getElementById('last-saved').textContent = 'Não salvo';
-                mostrarFeedback("Mascote resetado com sucesso!", "success");
-            }
-        }
-
-        // ====================================================================
         // INICIALIZAÇÃO
         // ====================================================================
         window.addEventListener('load', () => {
-            loadCustomTypes();
-            renderTipoCriaturas();
-            
-            const perfilAtivo = loadActiveProfile();
-            if (!perfilAtivo) {
-                loadFromLocalStorage();
-            }
+            // Carregar dados
+            loadFromLocalStorage();
             
             // Configurar eventos
             document.getElementById('vida-atual').addEventListener('input', updateVida);
@@ -1655,39 +1304,40 @@
             document.getElementById('input-forca').addEventListener('input', updateForca);
             document.getElementById('input-percepcao').addEventListener('input', updatePercepcao);
             document.getElementById('input-defesa').addEventListener('input', updateDefesa);
-            document.getElementById('input-energia').addEventListener('input', updateEnergia);
             document.getElementById('mascote-nivel').addEventListener('input', updateNivelDisplay);
             
             document.getElementById('mascote-aparencia').addEventListener('input', updateCharCounters);
             document.getElementById('mascote-personalidade').addEventListener('input', updateCharCounters);
             document.getElementById('mascote-historia').addEventListener('input', updateCharCounters);
             
-            document.getElementById('mascote-nome').addEventListener('input', autoSave);
-            document.getElementById('mascote-nivel').addEventListener('input', autoSave);
-            document.getElementById('vida-atual').addEventListener('input', autoSave);
-            document.getElementById('vida-max').addEventListener('input', autoSave);
-            document.getElementById('input-lealdade').addEventListener('input', autoSave);
-            document.getElementById('input-agilidade').addEventListener('input', autoSave);
-            document.getElementById('input-forca').addEventListener('input', autoSave);
-            document.getElementById('input-percepcao').addEventListener('input', autoSave);
-            document.getElementById('input-defesa').addEventListener('input', autoSave);
-            document.getElementById('input-energia').addEventListener('input', autoSave);
-            document.getElementById('mascote-aparencia').addEventListener('input', autoSave);
-            document.getElementById('mascote-personalidade').addEventListener('input', autoSave);
-            document.getElementById('mascote-historia').addEventListener('input', autoSave);
+            // Auto-save nos campos
+            const autoSaveFields = [
+                'mascote-nome', 'mascote-nivel', 'vida-atual', 'vida-max',
+                'input-lealdade', 'input-agilidade', 'input-forca',
+                'input-percepcao', 'input-defesa', 'mascote-aparencia',
+                'mascote-personalidade', 'mascote-historia'
+            ];
             
-            // Verificar auto-save
-            const autosave = localStorage.getItem('rpg_mascote_autosave');
-            if (autosave && !localStorage.getItem('rpg_mascote_completo')) {
-                if (confirm('Encontramos um auto-salvamento não salvo. Deseja restaurar?')) {
-                    const data = JSON.parse(autosave);
-                    loadMascoteData(data);
-                    mostrarFeedback("Auto-salvamento restaurado!", "info");
+            autoSaveFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', autoSave);
                 }
-            }
+            });
             
             lucide.createIcons();
         });
+
+        function updateAllDisplays() {
+            updateVida();
+            updateLealdade();
+            updateAgilidade();
+            updateForca();
+            updatePercepcao();
+            updateDefesa();
+            updateNivelDisplay();
+            updateCharCounters();
+        }
 
     </script>
 </body>
