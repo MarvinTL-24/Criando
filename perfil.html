@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    
+    <script src="grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -634,711 +634,212 @@
     </div>
 
     <script>
-        lucide.createIcons();
-        
         // ====================================================================
-        // VARIÁVEIS E CONSTANTES
+        // PERFIL.HTML - VERSÃO SIMPLIFICADA E FUNCIONAL
+        // Usa o sistema centralizado grimorio-core.js
         // ====================================================================
-        let activeProfileData = null;
         
-        // ====================================================================
-        // FUNÇÕES UTILITÁRIAS
-        // ====================================================================
-        function el(id) { return document.getElementById(id); }
-        
-        function showWarning(message) {
-            el('warning-message').textContent = message;
-            el('warning-modal').classList.remove('hidden');
-        }
-        
-        function hideWarning() { 
-            el('warning-modal').classList.add('hidden'); 
-        }
-        
-        function mostrarFeedback(mensagem, tipo = 'info') {
-            // Remover feedbacks antigos
-            const existing = document.querySelectorAll('.feedback-profile');
-            existing.forEach(el => el.remove());
-            
-            const feedback = document.createElement('div');
-            feedback.className = `feedback-profile px-4 py-3 rounded-lg border shadow-lg ${
-                tipo === 'success' ? 'bg-green-900/30 border-green-700 text-green-300' :
-                tipo === 'warning' ? 'bg-yellow-900/30 border-yellow-700 text-yellow-300' :
-                tipo === 'error' ? 'bg-red-900/30 border-red-700 text-red-300' :
-                'bg-blue-900/30 border-blue-700 text-blue-300'
-            }`;
-            
-            feedback.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <i data-lucide="${
-                        tipo === 'success' ? 'check-circle' :
-                        tipo === 'warning' ? 'alert-triangle' :
-                        tipo === 'error' ? 'x-circle' : 'info'
-                    }" class="w-4 h-4"></i>
-                    <span class="font-medium">${mensagem}</span>
-                </div>
-            `;
-            
-            document.body.appendChild(feedback);
+        // 1. Inicializar ícones
+        if (window.lucide) {
             lucide.createIcons();
-            
-            setTimeout(() => {
-                feedback.style.opacity = '0';
-                feedback.style.transform = 'translateX(20px)';
-                setTimeout(() => feedback.remove(), 500);
-            }, 3000);
         }
         
-        // ====================================================================
-        // NAVEGAÇÃO
-        // ====================================================================
+        // 2. Carregar dados do sistema centralizado
+        function carregarPerfil() {
+            try {
+                const personagem = GrimorioSystem.carregarPersonagem();
+                
+                if (!personagem) {
+                    mostrarErro('Nenhum personagem encontrado. Crie uma ficha primeiro.');
+                    return;
+                }
+                
+                // Atualizar todos os campos da interface
+                atualizarInterface(personagem);
+                
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+                mostrarErro('Erro ao carregar dados do personagem');
+            }
+        }
+        
+        // 3. Atualizar interface com dados do personagem
+        function atualizarInterface(personagem) {
+            // Informações básicas
+            document.getElementById('profile-title').textContent = personagem.nome || 'Personagem';
+            document.getElementById('active-profile-name').textContent = personagem.nome || 'Personagem';
+            document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
+            document.getElementById('display-titulo').textContent = personagem.titulo || 'Sem Título';
+            document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
+            document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
+            
+            // Atributos
+            const attrs = personagem.atributos || {};
+            document.getElementById('display-forca').textContent = attrs.forca || 0;
+            document.getElementById('display-destreza').textContent = attrs.destreza || 0;
+            document.getElementById('display-constituicao').textContent = attrs.constituicao || 0;
+            document.getElementById('display-inteligencia').textContent = attrs.inteligencia || 0;
+            document.getElementById('display-sabedoria').textContent = attrs.sabedoria || 0;
+            document.getElementById('display-carisma').textContent = attrs.carisma || 0;
+            
+            // Calcular total
+            const totalAtributos = Object.values(attrs).reduce((sum, val) => sum + val, 0);
+            document.getElementById('total-atributos').textContent = totalAtributos;
+            
+            // Nível e XP
+            document.getElementById('display-nivel').textContent = personagem.nivel || 1;
+            document.getElementById('display-xp').textContent = 
+                `${personagem.experiencia || 0}/${personagem.experienciaProximoNivel || 1000}`;
+            
+            const xpPercent = personagem.experienciaProximoNivel > 0 ? 
+                ((personagem.experiencia || 0) / personagem.experienciaProximoNivel) * 100 : 0;
+            document.getElementById('display-xp-bar').style.width = `${xpPercent}%`;
+            
+            // Recursos
+            const recursos = personagem.recursos || {};
+            document.getElementById('display-vida').textContent = 
+                `${recursos.vidaAtual || 0}/${recursos.vidaMaxima || 10}`;
+            document.getElementById('display-mana').textContent = 
+                `${recursos.manaAtual || 0}/${recursos.manaMaxima || 0}`;
+            document.getElementById('display-estamina').textContent = 
+                `${recursos.estaminaAtual || 0}/${recursos.estaminaMaxima || 20}`;
+            
+            // Barras de recursos
+            document.getElementById('display-vida-bar').style.width = 
+                recursos.vidaMaxima > 0 ? `${(recursos.vidaAtual / recursos.vidaMaxima) * 100}%` : '0%';
+            document.getElementById('display-mana-bar').style.width = 
+                recursos.manaMaxima > 0 ? `${(recursos.manaAtual / recursos.manaMaxima) * 100}%` : '0%';
+            document.getElementById('display-estamina-bar').style.width = 
+                recursos.estaminaMaxima > 0 ? `${(recursos.estaminaAtual / recursos.estaminaMaxima) * 100}%` : '0%';
+            
+            // Equipamentos
+            const equip = personagem.equipamentos || {};
+            document.getElementById('display-arma-principal').textContent = equip.armaPrincipal || 'Nenhuma';
+            document.getElementById('display-armadura').textContent = equip.armadura || 'Nenhuma';
+            document.getElementById('display-amuleto').textContent = equip.amuleto || 'Nenhum';
+            
+            // Mascote
+            if (personagem.mascote) {
+                document.getElementById('mascote-summary').innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full border-2 border-[#8b7355] flex items-center justify-center">
+                            <i data-lucide="dog" class="w-8 h-8 text-[#d4a76a]"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-cinzel font-bold text-[#f4d29a]">${personagem.mascote.nome || 'Mascote'}</h4>
+                            <p class="text-[#8b7355]">Nível ${personagem.mascote.nivel || 1}</p>
+                        </div>
+                    </div>
+                `;
+                if (window.lucide) lucide.createIcons();
+            }
+            
+            // Mostrar indicador ativo
+            document.getElementById('profile-active-indicator').classList.remove('hidden');
+            
+            console.log('Perfil atualizado:', personagem.nome);
+        }
+        
+        // 4. Funções de navegação
         function goToFicha() {
             window.location.href = 'ficha.html';
+        }
+        
+        function goToStatus() {
+            window.location.href = 'status.html';
         }
         
         function goToIndex() {
             window.location.href = 'index.html';
         }
         
-        // ====================================================================
-        // FUNÇÃO DE DEBUG PARA VER ESTRUTURA DOS DADOS
-        // ====================================================================
-        function debugDataStructure() {
-            console.log("=== DEBUG: Estrutura de Dados do Perfil ===");
-            
-            // Verificar se há perfil ativo
-            const perfilAtivoId = localStorage.getItem('perfil_ativo');
-            console.log("ID do perfil ativo:", perfilAtivoId);
-            
-            // Verificar todos os perfis salvos
-            const perfis = localStorage.getItem('rpg_sistema_perfis');
-            if (perfis) {
-                const perfisObj = JSON.parse(perfis);
-                console.log("Perfis encontrados:", Object.keys(perfisObj));
-                
-                if (perfilAtivoId && perfisObj[perfilAtivoId]) {
-                    const perfil = perfisObj[perfilAtivoId];
-                    console.log("Estrutura do perfil ativo:", perfil);
-                    console.log("Dados do perfil:", JSON.stringify(perfil, null, 2));
-                }
-            }
-            
-            // Verificar chaves específicas
-            console.log("=== Verificando localStorage ===");
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                if (key.includes('rpg') || key.includes('perfil') || key.includes('ficha')) {
-                    console.log(`Chave: ${key}`);
-                    try {
-                        const value = JSON.parse(localStorage.getItem(key));
-                        console.log(`Valor:`, value);
-                    } catch {
-                        console.log(`Valor (não-JSON):`, localStorage.getItem(key));
-                    }
-                }
-            }
-            
-            return true;
-        }
-        
-        // ====================================================================
-        // CARREGAR PERFIL ATIVO
-        // ====================================================================
-        function loadActiveProfile() {
-            try {
-                debugDataStructure();
-                
-                // 1. Tentar carregar do sistema de perfis
-                let perfis = localStorage.getItem('rpg_sistema_perfis');
-                let perfilAtivoId = localStorage.getItem('perfil_ativo');
-                
-                // 2. Se não encontrar, buscar dados da ficha antiga
-                if (!perfis || !perfilAtivoId) {
-                    console.log("Tentando métodos alternativos...");
-                    
-                    // Verificar se há ficha salva diretamente
-                    const fichaSalva = localStorage.getItem('ficha_rpg_data');
-                    if (fichaSalva) {
-                        console.log("Encontrada ficha direta");
-                        activeProfileData = JSON.parse(fichaSalva);
-                        updateProfileDisplay();
-                        mostrarFeedback("Dados carregados da ficha", "success");
-                        return true;
-                    }
-                    
-                    // Procurar por qualquer dado de personagem
-                    for (let i = 0; i < localStorage.length; i++) {
-                        const key = localStorage.key(i);
-                        if (key.includes('personagem') || key.includes('ficha')) {
-                            try {
-                                const data = JSON.parse(localStorage.getItem(key));
-                                if (data && (data.nome || data.atributos)) {
-                                    console.log(`Carregando dados de: ${key}`, data);
-                                    activeProfileData = data;
-                                    updateProfileDisplay();
-                                    mostrarFeedback("Dados carregados", "success");
-                                    return true;
-                                }
-                            } catch (e) {
-                                // Ignorar erros de parse
-                            }
-                        }
-                    }
-                    
-                    showWarning("Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.");
-                    return false;
-                }
-                
-                const perfisObj = JSON.parse(perfis);
-                activeProfileData = perfisObj[perfilAtivoId];
-                
-                if (!activeProfileData) {
-                    showWarning("Perfil ativo inválido. Crie uma nova ficha.");
-                    return false;
-                }
-                
-                // Verificar estrutura e corrigir se necessário
-                if (!activeProfileData.dados && (activeProfileData.atributos || activeProfileData.raca)) {
-                    console.log("Corrigindo estrutura de dados...");
-                    // Mover tudo para dentro de 'dados'
-                    activeProfileData = {
-                        nome: activeProfileData.nome || "Personagem",
-                        dados: { ...activeProfileData }
-                    };
-                    
-                    // Salvar corrigido
-                    perfisObj[perfilAtivoId] = activeProfileData;
-                    localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
-                }
-                
-                // Atualizar interface
-                updateProfileDisplay();
-                setupNavButtons();
-                
-                mostrarFeedback("Perfil carregado com sucesso!", "success");
-                return true;
-                
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
-                showWarning(`Erro ao carregar o perfil: ${error.message}`);
-                return false;
-            }
-        }
-        
-        // ====================================================================
-        // ATUALIZAR DISPLAY DO PERFIL
-        // ====================================================================
-        function updateProfileDisplay() {
-            if (!activeProfileData) {
-                console.log("Nenhum dado para exibir");
-                return;
-            }
-            
-            console.log("Atualizando display com:", activeProfileData);
-            
-            try {
-                // 1. Nome do personagem
-                const nome = activeProfileData.nome || 
-                            activeProfileData.dados?.basico?.nome ||
-                            activeProfileData.dados?.nome ||
-                            'Personagem Sem Nome';
-                
-                el('profile-title').textContent = nome;
-                el('active-profile-name').textContent = nome;
-                el('display-nome').textContent = nome;
-                
-                // 2. Informações básicas
-                let basico = activeProfileData.dados?.basico || activeProfileData.dados || activeProfileData;
-                
-                el('display-raca').textContent = basico.raca || 
-                                                basico.racas || 
-                                                'Não definido';
-                
-                el('display-classe').textContent = basico.classe || 
-                                                  basico.classes || 
-                                                  'Não definido';
-                
-                el('display-origem').textContent = basico.origem || 
-                                                  basico.origens || 
-                                                  'Não definido';
-                
-                el('display-idade').textContent = basico.idade || 
-                                                 basico.idades || 
-                                                 'Não definido';
-                
-                // 3. Atributos
-                let atributos = activeProfileData.dados?.atributos || activeProfileData;
-                
-                const attrs = {
-                    forca: atributos.forca || atributos.FOR || atributos.str || 0,
-                    destreza: atributos.destreza || atributos.DES || atributos.dex || 0,
-                    constituicao: atributos.constituicao || atributos.CON || atributos.con || 0,
-                    inteligencia: atributos.inteligencia || atributos.INT || atributos.int || 0,
-                    sabedoria: atributos.sabedoria || atributos.SAB || atributos.wis || 0,
-                    carisma: atributos.carisma || atributos.CAR || atributos.cha || 0
-                };
-                
-                // Exibir atributos
-                el('display-forca').textContent = attrs.forca;
-                el('display-destreza').textContent = attrs.destreza;
-                el('display-constituicao').textContent = attrs.constituicao;
-                el('display-inteligencia').textContent = attrs.inteligencia;
-                el('display-sabedoria').textContent = attrs.sabedoria;
-                el('display-carisma').textContent = attrs.carisma;
-                
-                // Calcular total
-                const total = Object.values(attrs).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-                el('total-atributos').textContent = total;
-                
-                // 4. Progressão
-                let progressao = activeProfileData.dados?.progressao || activeProfileData;
-                const nivel = parseInt(progressao.nivel || 1);
-                const xpAtual = parseInt(progressao.xp_atual || progressao.xp || progressao.experiencia || 0);
-                const xpProximo = 1000; // Valor padrão
-                
-                el('display-nivel').textContent = nivel;
-                el('display-xp').textContent = `${xpAtual}/${xpProximo}`;
-                
-                const xpPercent = Math.min(100, (xpAtual / xpProximo) * 100);
-                el('display-xp-bar').style.width = `${xpPercent}%`;
-                
-                const xpRestante = xpProximo - xpAtual;
-                el('display-proximo-nivel').textContent = `${xpRestante} XP restante`;
-                
-                // 5. Recursos
-                let recursos = activeProfileData.dados?.recursos || activeProfileData;
-                
-                // Valores padrão baseados em constituição
-                const constituicaoVal = parseInt(attrs.constituicao) || 10;
-                const vidaMax = parseInt(recursos.vida_max || recursos.vida || (constituicaoVal * 5));
-                const vidaAtual = parseInt(recursos.vida_atual || recursos.vida_atual || vidaMax);
-                const manaMax = parseInt(recursos.mana_max || recursos.mana || 10);
-                const manaAtual = parseInt(recursos.mana_atual || recursos.mana_atual || manaMax);
-                const estaminaMax = parseInt(recursos.estamina_max || recursos.estamina || 20);
-                const estaminaAtual = parseInt(recursos.estamina_atual || recursos.estamina_atual || estaminaMax);
-                
-                // Vida
-                el('display-vida').textContent = `${vidaAtual}/${vidaMax}`;
-                el('display-vida-bar').style.width = vidaMax > 0 ? `${(vidaAtual / vidaMax) * 100}%` : '0%';
-                el('display-vida-base').textContent = recursos.vida_base || vidaMax;
-                
-                // Mana
-                el('display-mana').textContent = `${manaAtual}/${manaMax}`;
-                el('display-mana-bar').style.width = manaMax > 0 ? `${(manaAtual / manaMax) * 100}%` : '0%';
-                el('display-mana-base').textContent = recursos.mana_base || manaMax;
-                
-                // Estamina
-                el('display-estamina').textContent = `${estaminaAtual}/${estaminaMax}`;
-                el('display-estamina-bar').style.width = estaminaMax > 0 ? `${(estaminaAtual / estaminaMax) * 100}%` : '0%';
-                el('display-estamina-base').textContent = recursos.estamina_base || estaminaMax;
-                
-                // 6. Destino/Sorte
-                let destino = activeProfileData.dados?.destino || activeProfileData;
-                
-                // Gerar dados aleatórios se não existirem
-                const dado1 = destino.dados?.[0] || Math.floor(Math.random() * 20) + 1;
-                const dado2 = destino.dados?.[1] || Math.floor(Math.random() * 20) + 1;
-                const dado3 = destino.dados?.[2] || Math.floor(Math.random() * 20) + 1;
-                
-                // Calcular sorte
-                const sorteCalculada = Math.floor(((dado1 + dado3) * 2 - dado2) / 2);
-                const sorteFinal = Math.max(0, Math.min(100, destino.valor || sorteCalculada));
-                
-                // Exibir dados
-                el('display-dado1').textContent = dado1;
-                el('display-dado2').textContent = dado2;
-                el('display-dado3').textContent = dado3;
-                
-                // Exibir sorte
-                el('display-sorte').textContent = sorteFinal + '%';
-                el('display-sorte-bar').style.width = `${sorteFinal}%`;
-                el('destiny-status').textContent = destino.fixada ? 'Fixado' : 'Variável';
-                
-                // Fórmula
-                const calc = `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${sorteFinal}`;
-                el('destiny-formula-display').textContent = calc;
-                
-                // Interpretação
-                updateDestinyInterpretation(sorteFinal);
-                
-                // 7. Equipamentos
-                let ficha = activeProfileData.dados?.ficha || activeProfileData;
-                
-                if (ficha.armas && Array.isArray(ficha.armas) && ficha.armas.length > 0) {
-                    el('display-arma-principal').textContent = ficha.armas[0].nome || 'Arma';
-                }
-                
-                if (ficha.equipamentos && Array.isArray(ficha.equipamentos)) {
-                    const armadura = ficha.equipamentos.find(e => 
-                        e.tipo && (e.tipo.toLowerCase().includes('armadura') || 
-                                  e.tipo.toLowerCase().includes('armor'))
-                    );
-                    if (armadura) {
-                        el('display-armadura').textContent = armadura.nome || 'Armadura';
-                    }
-                }
-                
-                // 8. Estatísticas derivadas
-                calculateDerivedStats(attrs);
-                
-                // 9. Mascote
-                loadMascoteSummary();
-                
-                // 10. Mostrar indicador ativo
-                el('profile-active-indicator').classList.remove('hidden');
-                
-                console.log("Display atualizado com sucesso!");
-                
-            } catch (error) {
-                console.error("Erro ao atualizar display:", error);
-                mostrarFeedback("Erro ao exibir dados do perfil", "error");
-            }
-        }
-        
-        // ====================================================================
-        // INTERPRETAÇÃO DO DESTINO
-        // ====================================================================
-        function updateDestinyInterpretation(sorte) {
-            const elInterpretation = el('destiny-interpretation');
-            if (!elInterpretation) return;
-            
-            let interpretation = '';
-            let colorClass = 'text-yellow-300';
-            
-            if (sorte >= 90) {
-                interpretation = '✨ DESTINO GLORIOSO! Os deuses sorriem para você. Seu caminho é iluminado pela sorte e oportunidades abundam.';
-                colorClass = 'text-yellow-300';
-            } else if (sorte >= 75) {
-                interpretation = '🎲 Sorte excelente! O vento sopra a seu favor. Momentos oportunos surgirão em sua jornada.';
-                colorClass = 'text-green-300';
-            } else if (sorte >= 60) {
-                interpretation = '🍀 Fortuna favorável. As probabilidades estão do seu lado na maioria dos desafios.';
-                colorClass = 'text-green-400';
-            } else if (sorte >= 40) {
-                interpretation = '⚖️ Destino equilibrado. Seu caminho é uma mistura de altos e baixos, como a maioria.';
-                colorClass = 'text-blue-300';
-            } else if (sorte >= 25) {
-                interpretation = '🌘 Sorte abaixo da média. Cuidado com decisões arriscadas - a prudência será sua aliada.';
-                colorClass = 'text-orange-300';
-            } else if (sorte >= 1) {
-                interpretation = '🌑 Sorte crítica. O destino testará sua resiliência. Grandes recompensas exigem grandes esforços.';
-                colorClass = 'text-red-300';
-            } else {
-                interpretation = '🎭 Seu destino ainda não foi revelado. Role os dados para descobrir seu caminho.';
-                colorClass = 'text-gray-400';
-            }
-            
-            elInterpretation.innerHTML = `<span class="${colorClass}">${interpretation}</span>`;
-        }
-        
-        // ====================================================================
-        // CÁLCULO DE ESTATÍSTICAS DERIVADAS
-        // ====================================================================
-        function calculateDerivedStats(attrs = null) {
-            if (!attrs) {
-                // Extrair dos elementos visuais
-                attrs = {
-                    forca: parseInt(el('display-forca').textContent) || 0,
-                    destreza: parseInt(el('display-destreza').textContent) || 0,
-                    constituicao: parseInt(el('display-constituicao').textContent) || 0,
-                    inteligencia: parseInt(el('display-inteligencia').textContent) || 0,
-                    sabedoria: parseInt(el('display-sabedoria').textContent) || 0
-                };
-            }
-            
-            const forca = parseInt(attrs.forca) || 0;
-            const destreza = parseInt(attrs.destreza) || 0;
-            const constituicao = parseInt(attrs.constituicao) || 0;
-            const inteligencia = parseInt(attrs.inteligencia) || 0;
-            const sabedoria = parseInt(attrs.sabedoria) || 0;
-            
-            // Fórmulas ajustáveis
-            const blindagem = constituicao * 2 + forca;
-            const velocidade = destreza * 3;
-            const iniciativa = destreza + inteligencia;
-            const percepcao = sabedoria * 2;
-            
-            el('display-blindagem').textContent = blindagem;
-            el('display-velocidade').textContent = velocidade;
-            el('display-iniciativa').textContent = iniciativa;
-            el('display-percepcao').textContent = percepcao;
-        }
-        
-        // ====================================================================
-        // CARREGAR RESUMO DO MASCOTE
-        // ====================================================================
-        function loadMascoteSummary() {
-            const container = el('mascote-summary');
-            if (!container) return;
-            
-            try {
-                // Tentar carregar do perfil ativo
-                if (!activeProfileData) {
-                    container.innerHTML = `
-                        <div class="text-center py-8 text-[#8b7355]">
-                            <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                            <p>Nenhum mascote vinculado</p>
-                            <button onclick="window.location.href='mascote.html'" 
-                                    class="mt-3 px-4 py-2 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
-                                Criar Mascote
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Buscar mascote
-                const mascote = activeProfileData.dados?.mascote || 
-                               activeProfileData.mascote;
-                
-                if (!mascote || !mascote.nome) {
-                    container.innerHTML = `
-                        <div class="text-center py-8 text-[#8b7355]">
-                            <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                            <p>Nenhum mascote vinculado</p>
-                            <button onclick="window.location.href='mascote.html'" 
-                                    class="mt-3 px-4 py-2 bg-gradient-to-r from-[#8b7355] to-[#d4a76a] rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
-                                Criar Mascote
-                            </button>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // Mostrar resumo do mascote
-                container.innerHTML = `
-                    <div class="flex items-center gap-4 mb-4">
-                        <div class="w-16 h-16 rounded-full flex items-center justify-center border-2" 
-                            style="border-color: ${mascote.tipoCor || '#ec4899'}; background: ${mascote.tipoCor || '#ec4899'}20">
-                            <i data-lucide="${mascote.tipoIcone || 'dog'}" 
-                            style="color: ${mascote.tipoCor || '#ec4899'}" 
-                            class="w-8 h-8"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-cinzel font-bold text-xl text-[#f4d29a]">${mascote.nome}</h4>
-                            <p class="text-[#8b7355]">
-                                ${mascote.tipoNome || 'Tipo'} • Nível ${mascote.nivel || 1}
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.lealdade || 80}%</div>
-                            <div class="text-xs text-[#8b7355]">Lealdade</div>
-                        </div>
-                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.vidaAtual || 0}/${mascote.vidaMax || 50}</div>
-                            <div class="text-xs text-[#8b7355]">Vida</div>
-                        </div>
-                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.habilidades?.length || 0}</div>
-                            <div class="text-xs text-[#8b7355]">Habilidades</div>
-                        </div>
-                        <div class="text-center p-2 bg-[#1a1510] rounded border border-[#8b7355]">
-                            <div class="text-lg font-bold text-[#f4d29a]">${mascote.forca || 0}</div>
-                            <div class="text-xs text-[#8b7355]">Força</div>
-                        </div>
-                    </div>
-                    
-                    ${mascote.passiva ? `
-                    <div class="mt-4 p-3 bg-[#1a1510] rounded border border-[#8b7355]/30">
-                        <div class="flex items-center gap-2 mb-1">
-                            <i data-lucide="zap" class="w-3 h-3 text-[#d4a76a]"></i>
-                            <span class="text-sm font-semibold text-[#d4a76a]">Passiva Especial</span>
-                        </div>
-                        <p class="text-sm text-[#f4d29a]">${mascote.passiva.substring(0, 100)}${mascote.passiva.length > 100 ? '...' : ''}</p>
-                    </div>
-                    ` : ''}
-                    
-                    <div class="mt-4">
-                        <button onclick="window.location.href='mascote.html'" 
-                                class="w-full px-4 py-2 bg-gradient-to-r from-[#8b7355]/30 to-[#d4a76a]/30 text-[#f4d29a] rounded border border-[#8b7355] hover:border-[#d4a76a] transition-colors text-sm">
-                            <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i>
-                            Ver Detalhes do Mascote
-                        </button>
-                    </div>
-                `;
-                
-                lucide.createIcons();
-                
-            } catch (error) {
-                console.error('Erro ao carregar mascote no perfil:', error);
-                container.innerHTML = `
-                    <div class="text-center py-8 text-[#8b7355]">
-                        <i data-lucide="alert-triangle" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                        <p>Erro ao carregar mascote</p>
-                    </div>
-                `;
-            }
-        }
-        
-        // ====================================================================
-        // CONFIGURAR BOTÕES DE NAVEGAÇÃO
-        // ====================================================================
-        function setupNavButtons() {
-            const navButtons = el('nav-buttons');
-            if (!navButtons) return;
-            
-            navButtons.innerHTML = `
-                <button onclick="goToIndex()" 
-                    class="flex items-center gap-2 px-4 py-2 text-sm bg-theme-panel hover:bg-theme-panel/80 border border-theme-border rounded transition-colors">
-                    <i data-lucide="home" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Início</span>
-                </button>
-                <button onclick="goToFicha()" 
-                    class="flex items-center gap-2 px-4 py-2 text-sm bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded transition-colors">
-                    <i data-lucide="edit-3" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Editar Ficha</span>
-                </button>
-                <button onclick="refreshProfile()" 
-                    class="flex items-center gap-2 px-4 py-2 text-sm bg-theme-blue/20 hover:bg-theme-blue/30 text-theme-blue border border-theme-blue/30 rounded transition-colors">
-                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                    <span class="hidden sm:inline">Atualizar</span>
-                </button>
-            `;
-            
-            lucide.createIcons();
-        }
-        
-        // ====================================================================
-        // FUNÇÕES DE AÇÃO
-        // ====================================================================
-        function refreshProfile() {
-            const success = loadActiveProfile();
-            if (success) {
-                mostrarFeedback("Perfil atualizado com sucesso!", "success");
-            }
-        }
-        
+        // 5. Exportar perfil
         function exportProfile() {
-            if (!activeProfileData) {
-                mostrarFeedback("Nenhum perfil para exportar", "error");
+            const json = GrimorioSystem.exportarPersonagem();
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `perfil_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            GrimorioSystem.mostrarNotificacao('Perfil exportado com sucesso!', 'success');
+        }
+        
+        // 6. Atualizar perfil
+        function refreshProfile() {
+            carregarPerfil();
+            GrimorioSystem.mostrarNotificacao('Perfil atualizado!', 'info');
+        }
+        
+        // 7. Mostrar erro
+        function mostrarErro(mensagem) {
+            document.getElementById('warning-message').textContent = mensagem;
+            document.getElementById('warning-modal').classList.remove('hidden');
+        }
+        
+        function hideWarning() {
+            document.getElementById('warning-modal').classList.add('hidden');
+        }
+        
+        // 8. Inicializar quando a página carregar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar se o sistema centralizado está carregado
+            if (typeof GrimorioSystem === 'undefined') {
+                console.error('Sistema Grimório não carregado! Carregue grimorio-core.js primeiro.');
+                mostrarErro('Sistema não carregado. Recarregue a página.');
                 return;
             }
             
-            try {
-                const dataStr = JSON.stringify(activeProfileData, null, 2);
-                const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-                
-                const exportFileDefaultName = `perfil_${activeProfileData.nome || 'personagem'}_${Date.now()}.json`;
-                
-                const linkElement = document.createElement('a');
-                linkElement.setAttribute('href', dataUri);
-                linkElement.setAttribute('download', exportFileDefaultName);
-                linkElement.click();
-                
-                mostrarFeedback("Perfil exportado como JSON!", "success");
-                
-            } catch (error) {
-                console.error('Erro ao exportar perfil:', error);
-                mostrarFeedback("Erro ao exportar perfil", "error");
+            // Carregar perfil após breve delay
+            setTimeout(carregarPerfil, 100);
+            
+            // Configurar botões de navegação
+            const navButtons = document.getElementById('nav-buttons');
+            if (navButtons) {
+                navButtons.innerHTML = `
+                    <button onclick="goToIndex()" class="nav-btn">
+                        <i data-lucide="home" class="w-4 h-4"></i> Início
+                    </button>
+                    <button onclick="goToFicha()" class="nav-btn bg-orange-500/20 text-orange-400">
+                        <i data-lucide="edit-3" class="w-4 h-4"></i> Editar Ficha
+                    </button>
+                    <button onclick="goToStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
+                        <i data-lucide="activity" class="w-4 h-4"></i> Status
+                    </button>
+                `;
+                if (window.lucide) lucide.createIcons();
             }
-        }
-        
-        // ====================================================================
-        // FUNÇÃO PARA CRIAR PERFIL DE TESTE (UTILITÁRIO)
-        // ====================================================================
-        function criarPerfilTeste() {
-            const perfilTeste = {
-                nome: "Aragorn, o Herdeiro",
-                dados: {
-                    basico: {
-                        raca: "Humano",
-                        classe: "Ranger",
-                        origem: "Rei no Exílio",
-                        idade: "87"
-                    },
-                    atributos: {
-                        forca: 18,
-                        destreza: 16,
-                        constituicao: 17,
-                        inteligencia: 14,
-                        sabedoria: 15,
-                        carisma: 13
-                    },
-                    recursos: {
-                        vida_max: 85,
-                        vida_atual: 85,
-                        vida_base: 85,
-                        mana_max: 20,
-                        mana_atual: 20,
-                        mana_base: 20,
-                        estamina_max: 45,
-                        estamina_atual: 45,
-                        estamina_base: 45
-                    },
-                    progressao: {
-                        nivel: 5,
-                        xp_atual: 3200
-                    },
-                    destino: {
-                        valor: 72,
-                        dados: [15, 8, 18],
-                        fixada: false
-                    },
-                    ficha: {
-                        armas: [
-                            { nome: "Andúril, a Chama do Oeste", tipo: "Espada Longa" }
-                        ],
-                        equipamentos: [
-                            { nome: "Cota de Malha Mithril", tipo: "Armadura" },
-                            { nome: "Anel de Barahir", tipo: "Amuleto" }
-                        ]
-                    },
-                    mascote: {
-                        nome: "Brego",
-                        tipoNome: "Cavalo Nobre",
-                        tipoIcone: "horse",
-                        tipoCor: "#d4a76a",
-                        nivel: 3,
-                        lealdade: 95,
-                        vidaMax: 120,
-                        vidaAtual: 120,
-                        forca: 16,
-                        passiva: "Velocidade do Vento: +10% de velocidade de movimento para o cavaleiro"
-                    }
-                }
-            };
             
-            // Salvar no localStorage
-            const perfis = { 'teste123': perfilTeste };
-            localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfis));
-            localStorage.setItem('perfil_ativo', 'teste123');
-            
-            console.log("Perfil de teste criado!");
-            mostrarFeedback("Perfil de teste criado com sucesso!", "success");
-            
-            // Recarregar
-            setTimeout(() => {
-                loadActiveProfile();
-            }, 500);
-        }
-        
-        // ====================================================================
-        // INICIALIZAÇÃO
-        // ====================================================================
-        window.addEventListener('load', function() {
-            // Criar ícones
-            lucide.createIcons();
-            
-            // Carregar perfil
-            setTimeout(() => {
-                const success = loadActiveProfile();
-                
-                if (!success) {
-                    // Desabilitar botões de ação se não há perfil
-                    const actionButtons = document.querySelectorAll('button[onclick^="export"], button[onclick^="refresh"]');
-                    actionButtons.forEach(btn => btn.disabled = true);
-                }
-            }, 100);
+            console.log('Página de perfil inicializada');
         });
         
-        // Expor função de teste para o console
-        window.criarPerfilTeste = criarPerfilTeste;
-    
+        // 9. Estilo para botões de navegação
+        const estiloNav = document.createElement('style');
+        estiloNav.textContent = `
+            .nav-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border: 1px solid #2a2a2e;
+                border-radius: 0.5rem;
+                background: #0f0f12;
+                color: #e8e4dc;
+                font-size: 0.875rem;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .nav-btn:hover {
+                background: #1a1a1e;
+                border-color: #4a9eff;
+            }
+        `;
+        document.head.appendChild(estiloNav);
     </script>
 </body>
 </html>

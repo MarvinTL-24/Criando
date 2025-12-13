@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Sistema de Classes</title>
+    <title>Grimório Digital - Escolha de Classe</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <script src="grimorio-sync.js"></script>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -27,24 +27,12 @@
                             panel: '#0f0f12',
                             border: '#2a2a2e',
                             text: '#e8e4dc',
-                            pink: '#ec4899',
-                            red: '#dc2626',
-                            purple: '#8b5cf6',
-                            yellow: '#f59e0b',
                             blue: '#4a9eff',
-                            green: '#22c55e',
-                            cyan: '#06b6d4',
                             orange: '#ff6b35',
-                            teal: '#14b8a6',
-                            indigo: '#6366f1',
-                            rose: '#f43f5e',
-                            amber: '#fbbf24',
-                            lime: '#84cc16',
-                            emerald: '#10b981',
-                            sky: '#0ea5e9',
-                            violet: '#7c3aed',
-                            fuchsia: '#d946ef',
-                            muted: '#606060'
+                            purple: '#8b5cf6',
+                            red: '#dc2626',
+                            green: '#22c55e',
+                            yellow: '#f59e0b'
                         }
                     }
                 }
@@ -55,984 +43,549 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Animações simplificadas */
-        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
-        @keyframes fadeInUp { 
-            to { opacity: 1; transform: translateY(0); } 
+        /* Animações */
+        .anim-entry {
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
         }
         
-        /* Modal simplificado */
-        .modal-backdrop {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
-            z-index: 1000; display: flex; align-items: center; justify-content: center;
-            padding: 1rem;
-        }
-        .modal-content {
-            background: #0f0f12; border: 1px solid #2a2a2e;
-            border-radius: 12px; width: 100%; max-width: 700px;
-            max-height: 90vh; overflow-y: auto;
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Cards simplificados */
+        /* Card com efeito de seleção */
         .class-card {
-            transition: transform 0.2s ease;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
+        
         .class-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-5px);
         }
         
-        /* Sistema de cores simplificado */
-        .color-option {
-            width: 32px; height: 32px; border-radius: 6px;
-            cursor: pointer; transition: transform 0.2s ease;
-        }
-        
-        /* Sliders simplificados */
-        .attr-slider {
-            width: 100%; height: 8px; appearance: none; -webkit-appearance: none;
-            background: transparent;
-        }
-        .attr-slider::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 16px; height: 16px;
-            border-radius: 50%; background: currentColor;
-            cursor: pointer; border: 2px solid #0a0a0c;
-        }
-        
-        /* Remover animações complexas para performance */
-        * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
+        .class-card.selected {
+            border-color: #4a9eff;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
         }
     </style>
 </head>
 <body class="min-h-screen font-sans">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="text-sm text-theme-muted">Sistema de Classes</span>
+    <!-- Barra de Navegação Simples -->
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="flex items-center gap-2 text-theme-text hover:text-theme-blue transition-colors">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span class="font-cinzel font-semibold">Voltar ao Hub</span>
+                    </a>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="font-cinzel text-lg font-bold text-theme-blue">Escolha de Classe</span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button onclick="salvarESair()" id="btn-confirmar" 
+                            class="px-4 py-2 bg-theme-blue text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors opacity-0">
+                        Confirmar Classe
+                    </button>
+                </div>
+            </div>
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 space-y-6">
-
+    <!-- Conteúdo Principal -->
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
         <!-- Cabeçalho -->
-        <header class="flex items-center gap-4 mb-8 anim-entry">
-            <div class="p-3 rounded-lg bg-gradient-to-br from-theme-purple/20 to-pink-600/20 border border-theme-purple/30">
-                <i data-lucide="swords" class="w-8 h-8 text-theme-purple"></i>
-            </div>
-            <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Classes</h1>
-                <p class="text-gray-400">Crie, edite e personalize classes totalmente customizáveis</p>
-            </div>
-        </header>
-
-        <!-- Seção 1: Sistema de Classes -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #8b5cf6;">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple">
-                    <i data-lucide="library" class="w-4 h-4"></i> Biblioteca de Classes
-                </h3>
-                <div class="flex items-center gap-2">
-                    <button onclick="exportClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
-                        <i data-lucide="download" class="w-3 h-3 inline mr-1"></i> Exportar
-                    </button>
-                    <button onclick="importClasses()" class="px-4 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
-                        <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Importar
-                    </button>
-                    <button onclick="openClassEditor()" class="px-4 py-2 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity text-sm">
-                        <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Nova Classe
-                    </button>
-                </div>
-            </div>
+        <div class="text-center mb-12 anim-entry">
+            <h1 class="font-cinzel text-4xl font-bold text-white mb-4">Escolha sua Classe</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">
+                Sua classe define seu papel no mundo. Escolha sabiamente, pois ela afeta seus atributos, habilidades e estilo de jogo.
+            </p>
+            <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mx-auto mt-6"></div>
+        </div>
+        
+        <!-- Classes Padrão -->
+        <section class="mb-12 anim-entry" style="animation-delay: 0.1s;">
+            <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="shield" class="w-6 h-6 text-theme-blue"></i>
+                Classes Principais
+            </h2>
             
-            <!-- Filtros -->
-            <div class="mb-6">
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="filterClasses('all')" id="filter-all" class="px-3 py-1 bg-theme-purple text-white rounded-lg text-sm font-medium">
-                        Todas
-                    </button>
-                    <button onclick="filterClasses('default')" id="filter-default" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
-                        <i data-lucide="shield" class="w-3 h-3 inline mr-1"></i> Padrão
-                    </button>
-                    <button onclick="filterClasses('custom')" id="filter-custom" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
-                        <i data-lucide="sparkles" class="w-3 h-3 inline mr-1"></i> Personalizadas
-                    </button>
-                    <button onclick="filterClasses('favorite')" id="filter-favorite" class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors text-sm">
-                        <i data-lucide="star" class="w-3 h-3 inline mr-1"></i> Favoritas
-                    </button>
-                    <div class="flex-1"></div>
-                    <input type="text" id="search-classes" placeholder="Buscar classe..." 
-                           class="px-3 py-1 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 outline-none focus:border-theme-purple text-sm w-48">
-                </div>
-            </div>
-            
-            <!-- Lista de Classes -->
-            <div id="classes-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Classes serão inseridas aqui -->
-            </div>
-            
-            <div class="mt-6 text-center">
-                <p class="text-sm text-theme-muted">
-                    <i data-lucide="info" class="w-3 h-3 inline mr-1"></i>
-                    Clique em uma classe para editar ou usar no personagem
-                </p>
-            </div>
-        </section>
-
-        <!-- Seção 2: Estatísticas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #4a9eff;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
-                <i data-lucide="bar-chart-3" class="w-4 h-4"></i> Estatísticas do Sistema
-            </h3>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-white mb-1" id="stats-total">0</div>
-                    <div class="text-xs text-theme-muted">Total de Classes</div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-green mb-1" id="stats-custom">0</div>
-                    <div class="text-xs text-theme-muted">Personalizadas</div>
-                </div>
-                
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-yellow mb-1" id="stats-favorites">0</div>
-                    <div class="text-xs text-theme-muted">Favoritas</div>
-                </div>
-                
-                <div class="bg-theme-bg border border-theme-border p-4 rounded-lg text-center">
-                    <div class="text-2xl font-bold text-theme-purple mb-1" id="stats-used">0</div>
-                    <div class="text-xs text-theme-muted">Em Uso</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção 3: Configurações do Sistema -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-6">
-                <i data-lucide="settings" class="w-4 h-4"></i> Configurações do Sistema
-            </h3>
-            
-            <div class="space-y-4">
-                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="shield-off" class="w-5 h-5 text-theme-yellow"></i>
-                        <div>
-                            <h4 class="font-medium text-white">Desativar Classes Padrão</h4>
-                            <p class="text-sm text-theme-muted">Mostrar apenas classes personalizadas</p>
+                <!-- Guerreiro -->
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
+                     onclick="selecionarClasse('Guerreiro')" data-classe="guerreiro">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-red-900/20 border border-red-800">
+                            <i data-lucide="sword" class="w-6 h-6 text-red-400"></i>
                         </div>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="disable-default-classes" class="sr-only peer">
-                        <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-theme-yellow"></div>
-                    </label>
-                </div>
-                
-                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="copy" class="w-5 h-5 text-theme-blue"></i>
-                        <div>
-                            <h4 class="font-medium text-white">Duplicar ao Editar</h4>
-                            <p class="text-sm text-theme-muted">Criar cópia ao editar classes padrão</p>
-                        </div>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="duplicate-on-edit" class="sr-only peer" checked>
-                        <div class="w-11 h-6 bg-gray-700 rounded-full peer peer-checked:bg-theme-blue"></div>
-                    </label>
-                </div>
-                
-                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="alert-triangle" class="w-5 h-5 text-theme-red"></i>
-                        <div>
-                            <h4 class="font-medium text-white">Resetar Sistema</h4>
-                            <p class="text-sm text-theme-muted">Restaurar classes padrão e limpar personalizadas</p>
-                        </div>
-                    </div>
-                    <button onclick="resetClassSystem()" 
-                            class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg border border-red-800 transition-colors text-sm">
-                        Resetar Tudo
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção 4: Pré-visualização -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.4s; border-left: 4px solid #22c55e;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green mb-6">
-                <i data-lucide="eye" class="w-4 h-4"></i> Pré-visualização
-            </h3>
-            
-            <div id="preview-container" class="bg-theme-bg border border-theme-border rounded-lg p-6">
-                <div class="text-center py-12">
-                    <i data-lucide="swords" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                    <p class="text-theme-muted">Selecione uma classe para ver a pré-visualização</p>
-                    <p class="text-xs text-theme-muted mt-1">Clique em uma classe na lista acima</p>
-                </div>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- Modal Editor de Classe -->
-    <div id="class-editor-modal" class="modal-backdrop hidden">
-        <div class="modal-content p-6">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-cinzel text-xl font-bold" id="modal-title" style="color: var(--class-color, #8b5cf6)">
-                    <i data-lucide="plus-circle" class="w-5 h-5 inline mr-2"></i>
-                    Criar Nova Classe
-                </h3>
-                <button onclick="closeClassEditor()" class="text-theme-muted hover:text-white">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-6">
-                <!-- Informações Básicas -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3">Informações Básicas</h4>
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm text-theme-muted mb-2">Nome da Classe</label>
-                            <input type="text" id="class-name" placeholder="Ex: Necromante, Engenheiro, Druida..."
-                                   class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-current outline-none">
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm text-theme-muted mb-2">Dificuldade</label>
-                            <select id="class-difficulty" 
-                                    class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-current outline-none cursor-pointer">
-                                <option value="easy" style="color: #22c55e">Fácil</option>
-                                <option value="medium" style="color: #f59e0b">Médio</option>
-                                <option value="hard" style="color: #ef4444">Difícil</option>
-                                <option value="expert" style="color: #8b5cf6">Especialista</option>
-                            </select>
-                        </div>
+                        <span class="px-3 py-1 bg-red-900/30 text-red-400 text-xs rounded-full border border-red-800">
+                            Dano/Tanque
+                        </span>
                     </div>
                     
-                    <div class="mt-4">
-                        <label class="block text-sm text-theme-muted mb-2">Descrição</label>
-                        <textarea id="class-description" placeholder="Descreva a classe, seu papel no grupo, estilo de jogo..."
-                                  class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-3 text-white focus:border-current outline-none h-24 resize-none"></textarea>
-                    </div>
-                </div>
-                
-                <!-- Cor e Ícone -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3">Aparência</h4>
-                    <div class="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm text-theme-muted mb-2">Cor da Classe</label>
-                            <div class="grid grid-cols-8 gap-2" id="color-palette">
-                                <!-- Cores via JS -->
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label class="block text-sm text-theme-muted mb-2">Ícone</label>
-                            <div class="grid grid-cols-8 gap-2" id="icon-palette">
-                                <!-- Ícones via JS -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Atributos Base -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3">Atributos Base</h4>
-                    <div class="space-y-4" id="attributes-container">
-                        <!-- Atributos via JS -->
-                    </div>
-                    <div class="mt-4 p-3 bg-theme-bg/50 rounded-lg border border-theme-border">
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">Guerreiro</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Mestre do combate corpo a corpo. Alta resistência e dano físico.
+                    </p>
+                    
+                    <div class="space-y-2">
                         <div class="flex items-center justify-between text-sm">
-                            <span class="text-theme-muted">Total de Pontos</span>
-                            <span class="font-bold text-white" id="total-points">0</span>
+                            <span class="text-gray-400">Força</span>
+                            <span class="font-bold text-red-400">+4</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Constituição</span>
+                            <span class="font-bold text-red-400">+3</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Habilidades Especiais -->
-                <div>
-                    <h4 class="font-semibold text-white mb-3">Habilidades Especiais</h4>
-                    <div id="skills-container">
-                        <!-- Habilidades via JS -->
+                <!-- Mago -->
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
+                     onclick="selecionarClasse('Mago')" data-classe="mago">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-blue-900/20 border border-blue-800">
+                            <i data-lucide="sparkles" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-400 text-xs rounded-full border border-blue-800">
+                            Dano Mágico
+                        </span>
                     </div>
-                    <button onclick="addSkill()" class="mt-2 w-full py-2 border border-dashed border-theme-border rounded-lg text-theme-muted hover:text-white hover:border-current transition-colors">
-                        <i data-lucide="plus" class="w-4 h-4 inline mr-1"></i>
-                        Adicionar Habilidade
-                    </button>
+                    
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">Mago</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Estudioso das artes arcanas. Poder mágico devastador.
+                    </p>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Inteligência</span>
+                            <span class="font-bold text-blue-400">+5</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Sabedoria</span>
+                            <span class="font-bold text-blue-400">+3</span>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- Ações -->
-                <div class="flex gap-3 pt-4 border-t border-theme-border">
-                    <button onclick="closeClassEditor()" 
-                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
-                        Cancelar
-                    </button>
-                    <button onclick="saveClass()" id="save-class-btn"
-                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-purple to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
-                        Salvar Classe
-                    </button>
+                <!-- Arqueiro -->
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
+                     onclick="selecionarClasse('Arqueiro')" data-classe="arqueiro">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-green-900/20 border border-green-800">
+                            <i data-lucide="target" class="w-6 h-6 text-green-400"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-green-900/30 text-green-400 text-xs rounded-full border border-green-800">
+                            Dano à Distância
+                        </span>
+                    </div>
+                    
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">Arqueiro</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Especialista em ataques à distância. Precisão letal e mobilidade.
+                    </p>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Destreza</span>
+                            <span class="font-bold text-green-400">+5</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Percepção</span>
+                            <span class="font-bold text-green-400">+3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Clérigo -->
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
+                     onclick="selecionarClasse('Clérigo')" data-classe="clerigo">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-yellow-900/20 border border-yellow-800">
+                            <i data-lucide="heart" class="w-6 h-6 text-yellow-400"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-yellow-900/30 text-yellow-400 text-xs rounded-full border border-yellow-800">
+                            Suporte/Cura
+                        </span>
+                    </div>
+                    
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">Clérigo</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Servo divino. Cura aliados e usa magias de proteção.
+                    </p>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Sabedoria</span>
+                            <span class="font-bold text-yellow-400">+5</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Carisma</span>
+                            <span class="font-bold text-yellow-400">+3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ladino -->
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
+                     onclick="selecionarClasse('Ladino')" data-classe="ladino">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-purple-900/20 border border-purple-800">
+                            <i data-lucide="ghost" class="w-6 h-6 text-purple-400"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-purple-900/30 text-purple-400 text-xs rounded-full border border-purple-800">
+                            Furtividade/Utilidade
+                        </span>
+                    </div>
+                    
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">Ladino</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Mestre da furtividade. Especialista em ataques furtivos e habilidades sociais.
+                    </p>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Destreza</span>
+                            <span class="font-bold text-purple-400">+4</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Inteligência</span>
+                            <span class="font-bold text-purple-400">+3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bárbaro -->
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
+                     onclick="selecionarClasse('Bárbaro')" data-classe="barbaro">
+                    <div class="flex items-start justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-orange-900/20 border border-orange-800">
+                            <i data-lucide="zap" class="w-6 h-6 text-orange-400"></i>
+                        </div>
+                        <span class="px-3 py-1 bg-orange-900/30 text-orange-400 text-xs rounded-full border border-orange-800">
+                            Dano/Fúria
+                        </span>
+                    </div>
+                    
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">Bárbaro</h3>
+                    <p class="text-gray-400 text-sm mb-4">
+                        Guerreiro feroz que entra em fúria. Dano massivo e resistência sobre-humana.
+                    </p>
+                    
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Força</span>
+                            <span class="font-bold text-orange-400">+5</span>
+                        </div>
+                        <div class="flex items-center justify-between text-sm">
+                            <span class="text-gray-400">Constituição</span>
+                            <span class="font-bold text-orange-400">+4</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
+        
+        <!-- Classe Atualmente Selecionada -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-8 anim-entry" style="animation-delay: 0.2s;">
+            <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-6 h-6 text-theme-green"></i>
+                Classe Selecionada
+            </h2>
+            
+            <div id="selected-class-container" class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg">
+                <i data-lucide="swords" class="w-16 h-16 mx-auto mb-4 text-gray-600"></i>
+                <p class="text-gray-500 mb-2">Nenhuma classe selecionada</p>
+                <p class="text-sm text-gray-600">Clique em uma classe acima para selecionar</p>
+            </div>
+            
+            <div id="class-details" class="hidden">
+                <!-- Detalhes serão preenchidos por JavaScript -->
+            </div>
+        </section>
+        
+        <!-- Ações -->
+        <div class="flex flex-col md:flex-row gap-4 justify-center anim-entry" style="animation-delay: 0.3s;">
+            <button onclick="window.location.href='index.html'" 
+                    class="px-6 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                <i data-lucide="x" class="w-4 h-4 inline mr-2"></i>
+                Cancelar
+            </button>
+            <button onclick="salvarESair()" id="btn-confirmar-final" 
+                    class="px-6 py-3 bg-gradient-to-r from-theme-blue to-blue-700 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity opacity-50 cursor-not-allowed">
+                <i data-lucide="check" class="w-4 h-4 inline mr-2"></i>
+                Confirmar e Salvar
+            </button>
         </div>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 mt-8 pb-12">
-        <div class="text-center text-sm text-theme-muted">
-            <p><i data-lucide="code" class="w-3 h-3 inline mr-1"></i> Sistema de Classes Totalmente Customizável</p>
-        </div>
-    </div>
+    </main>
 
     <script>
         // ====================================================================
-        // SISTEMA OTIMIZADO - SEM TRAVAMENTOS
+        // SISTEMA SIMPLIFICADO DE ESCOLHA DE CLASSE
         // ====================================================================
         
-        lucide.createIcons();
+        // Inicializar ícones
+        if (window.lucide) {
+            lucide.createIcons();
+        }
         
-        // Classes padrão
-        const DEFAULT_CLASSES = [
-            {
-                id: 'guerreiro',
-                name: 'Guerreiro',
-                description: 'Mestre das armas e da armadura pesada.',
-                color: '#dc2626',
-                icon: 'sword',
-                difficulty: 'medium',
-                attributes: { for: 4, dex: 2, con: 4, int: 1, wis: 2, cha: 1 },
-                skills: ['Provocar', 'Postura de Combate', 'Golpe Poderoso'],
-                tags: ['combate', 'tanque'],
-                isDefault: true,
-                isFavorite: false,
-                usageCount: 0
-            },
-            {
-                id: 'mago',
-                name: 'Mago',
-                description: 'Estudioso das artes arcanas.',
-                color: '#4a9eff',
-                icon: 'sparkles',
-                difficulty: 'hard',
-                attributes: { for: 1, dex: 2, con: 2, int: 6, wis: 4, cha: 3 },
-                skills: ['Conjurar Magia', 'Foco Arcano'],
-                tags: ['magia', 'suporte'],
-                isDefault: true,
-                isFavorite: false,
-                usageCount: 0
-            }
-        ];
-
-        // Paleta simplificada
-        const COLOR_PALETTE = ['#dc2626', '#ea580c', '#d97706', '#16a34a', '#0284c7', '#4f46e5', '#7c3aed', '#db2777'];
-        const ICON_PALETTE = ['sword', 'shield', 'sparkles', 'target', 'brain', 'heart', 'skull', 'star'];
-
-        // Sistema principal
-        let classes = [];
-        let editingClass = null;
-        let currentFilter = 'all';
-        let searchTimeout;
-
-        // ====================================================================
-        // FUNÇÕES UTILITÁRIAS OTIMIZADAS
-        // ====================================================================
+        // Variáveis do sistema
+        let classeSelecionada = null;
+        let dadosPersonagem = null;
+        const CHAVE_ARMAZENAMENTO = 'personagemSalvo';
         
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
+        // Inicializar sistema
+        function inicializarSistema() {
+            carregarPersonagem();
+            verificarClasseAtual();
+        }
+        
+        function carregarPersonagem() {
+            const dados = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+            if (dados) {
+                dadosPersonagem = JSON.parse(dados);
+            } else {
+                // Se não existir, criar dados básicos
+                dadosPersonagem = {
+                    'inp-nome': 'Novo Personagem',
+                    'inp-classe': 'Não Definida',
+                    'inp-raca': 'Humano',
+                    'inp-titulo': 'Aventureiro',
+                    atributos: {
+                        forca: 0,
+                        destreza: 0,
+                        constituicao: 0,
+                        inteligencia: 0,
+                        sabedoria: 0,
+                        carisma: 0
+                    },
+                    ultimaAtualizacao: new Date().toISOString()
                 };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
+                localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(dadosPersonagem));
+            }
         }
-
-        function throttle(func, limit) {
-            let inThrottle;
-            return function() {
-                const args = arguments;
-                const context = this;
-                if (!inThrottle) {
-                    func.apply(context, args);
-                    inThrottle = true;
-                    setTimeout(() => inThrottle = false, limit);
-                }
-            };
-        }
-
-        // ====================================================================
-        // INICIALIZAÇÃO
-        // ====================================================================
         
-        function init() {
-            loadClasses();
-            setupEventListeners();
-            renderClasses();
-            updateStatistics();
+        function verificarClasseAtual() {
+            if (dadosPersonagem && dadosPersonagem['inp-classe'] && dadosPersonagem['inp-classe'] !== 'Não Definida') {
+                // Se já tem classe definida, mostrá-la
+                const classeNome = dadosPersonagem['inp-classe'];
+                selecionarClasse(classeNome, true);
+            }
         }
-
-        function loadClasses() {
-            const saved = localStorage.getItem('grimorio_custom_classes');
-            const customClasses = saved ? JSON.parse(saved) : [];
-            classes = [...DEFAULT_CLASSES, ...customClasses];
-        }
-
-        function saveClasses() {
-            const customClasses = classes.filter(c => !c.isDefault);
-            localStorage.setItem('grimorio_custom_classes', JSON.stringify(customClasses));
-        }
-
-        // ====================================================================
-        // RENDERIZAÇÃO OTIMIZADA
-        // ====================================================================
         
-        function renderClasses() {
-            const container = document.getElementById('classes-container');
-            if (!container) return;
+        // Selecionar classe
+        function selecionarClasse(nomeClasse, naoAtualizarUI = false) {
+            classeSelecionada = nomeClasse;
             
-            const searchTerm = document.getElementById('search-classes')?.value.toLowerCase() || '';
-            let filtered = classes;
-            
-            // Aplicar filtro
-            if (currentFilter === 'custom') {
-                filtered = filtered.filter(c => !c.isDefault);
-            } else if (currentFilter === 'default') {
-                filtered = filtered.filter(c => c.isDefault);
-            } else if (currentFilter === 'favorite') {
-                filtered = filtered.filter(c => c.isFavorite);
+            if (!naoAtualizarUI) {
+                atualizarUI();
             }
             
-            // Aplicar busca
-            if (searchTerm) {
-                filtered = filtered.filter(c => 
-                    c.name.toLowerCase().includes(searchTerm) ||
-                    c.description.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            // Limitar renderização
-            filtered = filtered.slice(0, 30);
-            
-            // Usar DocumentFragment para renderização rápida
-            const fragment = document.createDocumentFragment();
-            
-            filtered.forEach(cls => {
-                const element = createClassCard(cls);
-                fragment.appendChild(element);
+            // Habilitar botão de confirmação
+            document.getElementById('btn-confirmar').style.opacity = '1';
+            document.getElementById('btn-confirmar-final').style.opacity = '1';
+            document.getElementById('btn-confirmar-final').classList.remove('cursor-not-allowed');
+            document.getElementById('btn-confirmar-final').classList.add('cursor-pointer');
+        }
+        
+        function atualizarUI() {
+            // Remover seleção de todas as classes
+            document.querySelectorAll('.class-card').forEach(card => {
+                card.classList.remove('selected');
             });
             
-            container.innerHTML = '';
-            container.appendChild(fragment);
+            // Adicionar seleção à classe clicada
+            const cardSelecionado = document.querySelector(`[data-classe="${classeSelecionada.toLowerCase()}"]`);
+            if (cardSelecionado) {
+                cardSelecionado.classList.add('selected');
+            }
             
-            updateStatistics();
+            // Atualizar painel de classe selecionada
+            atualizarPainelSelecionado();
         }
-
-        function createClassCard(cls) {
-            const div = document.createElement('div');
-            div.className = 'class-card bg-theme-bg border border-theme-border p-4 rounded-lg cursor-pointer';
-            div.style.borderColor = cls.color;
-            
-            const attrSum = Object.values(cls.attributes).reduce((a, b) => a + b, 0);
-            
-            div.innerHTML = `
-                <div class="flex items-start justify-between mb-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background: ${cls.color}20; color: ${cls.color}">
-                            <i data-lucide="${cls.icon}" class="w-5 h-5"></i>
-                        </div>
-                        <div>
-                            <h4 class="font-semibold text-white">${cls.name}</h4>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="px-2 py-1 rounded text-xs ${getDifficultyClass(cls.difficulty)}">
-                                    ${getDifficultyText(cls.difficulty)}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="flex gap-1">
-                        <button class="p-1 ${cls.isFavorite ? 'text-amber-400' : 'text-theme-muted'}">
-                            <i data-lucide="star" class="w-4 h-4 ${cls.isFavorite ? 'fill-current' : ''}"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <p class="text-sm text-theme-muted mb-3">${cls.description.substring(0, 80)}...</p>
-                
-                <div class="mb-3">
-                    <div class="flex justify-between text-xs text-white mb-1">
-                        <span>Atributos</span>
-                        <span>${attrSum} pontos</span>
-                    </div>
-                </div>
-                
-                <div class="mt-3 pt-3 border-t border-theme-border flex items-center justify-between text-xs">
-                    <span class="text-theme-muted">${cls.usageCount} uso${cls.usageCount !== 1 ? 's' : ''}</span>
-                    <button class="px-2 py-1 rounded bg-theme-bg border border-theme-border text-white hover:bg-white/5">
-                        Editar
-                    </button>
-                </div>
-            `;
-            
-            // Adicionar eventos
-            div.onclick = () => openClassEditor(cls.id);
-            const starBtn = div.querySelector('button');
-            starBtn.onclick = (e) => {
-                e.stopPropagation();
-                toggleFavorite(cls.id);
-            };
-            
-            return div;
-        }
-
-        function getDifficultyText(difficulty) {
-            const texts = { 'easy': 'Fácil', 'medium': 'Médio', 'hard': 'Difícil', 'expert': 'Especialista' };
-            return texts[difficulty] || difficulty;
-        }
-
-        function getDifficultyClass(difficulty) {
-            const classes = {
-                'easy': 'bg-green-900/30 text-green-400 border border-green-800',
-                'medium': 'bg-yellow-900/30 text-yellow-400 border border-yellow-800',
-                'hard': 'bg-red-900/30 text-red-400 border border-red-800',
-                'expert': 'bg-purple-900/30 text-purple-400 border border-purple-800'
-            };
-            return classes[difficulty] || classes.medium;
-        }
-
-        // ====================================================================
-        // GERENCIAMENTO DE CLASSES
-        // ====================================================================
         
-        function openClassEditor(classId = null) {
-            if (classId) {
-                const cls = classes.find(c => c.id === classId);
-                if (!cls) return;
-                editingClass = { ...cls };
-            } else {
-                editingClass = {
-                    id: 'custom_' + Date.now(),
-                    name: '',
-                    description: '',
-                    color: COLOR_PALETTE[0],
-                    icon: ICON_PALETTE[0],
-                    difficulty: 'medium',
-                    attributes: { for: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
-                    skills: [],
-                    tags: [],
-                    isDefault: false,
-                    isFavorite: false,
-                    usageCount: 0
-                };
-            }
+        function atualizarPainelSelecionado() {
+            const container = document.getElementById('selected-class-container');
+            const details = document.getElementById('class-details');
             
-            // Preencher formulário simplificado
-            document.getElementById('class-name').value = editingClass.name;
-            document.getElementById('class-description').value = editingClass.description;
-            document.getElementById('class-difficulty').value = editingClass.difficulty;
-            
-            // Inicializar paletas
-            initColorPalette();
-            initIconPalette();
-            initAttributes();
-            
-            // Abrir modal
-            document.getElementById('class-editor-modal').classList.remove('hidden');
-            updateTotalPoints();
-        }
-
-        function closeClassEditor() {
-            document.getElementById('class-editor-modal').classList.add('hidden');
-            editingClass = null;
-        }
-
-        function initColorPalette() {
-            const container = document.getElementById('color-palette');
-            if (!container) return;
-            
-            container.innerHTML = COLOR_PALETTE.map(color => `
-                <div class="color-option ${editingClass.color === color ? 'border-2 border-white' : ''}" 
-                     style="background-color: ${color}"
-                     onclick="selectColor('${color}')"></div>
-            `).join('');
-        }
-
-        function initIconPalette() {
-            const container = document.getElementById('icon-palette');
-            if (!container) return;
-            
-            container.innerHTML = ICON_PALETTE.map(icon => `
-                <button class="p-2 rounded border ${editingClass.icon === icon ? 'border-current bg-current/20' : 'border-theme-border bg-theme-bg'}" 
-                        style="${editingClass.icon === icon ? `border-color: ${editingClass.color}; background-color: ${editingClass.color}20` : ''}"
-                        onclick="selectIcon('${icon}')">
-                    <i data-lucide="${icon}" class="w-4 h-4 text-white"></i>
-                </button>
-            `).join('');
-            
-            lucide.createIcons();
-        }
-
-        function initAttributes() {
-            const container = document.getElementById('attributes-container');
-            const attributes = [
-                { key: 'for', name: 'Força' },
-                { key: 'dex', name: 'Destreza' },
-                { key: 'con', name: 'Constituição' },
-                { key: 'int', name: 'Inteligência' },
-                { key: 'wis', name: 'Sabedoria' },
-                { key: 'cha', name: 'Carisma' }
-            ];
-            
-            container.innerHTML = attributes.map(attr => `
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <span class="font-medium text-white">${attr.name}</span>
-                        <span class="font-bold text-white" id="attr-value-${attr.key}">${editingClass.attributes[attr.key] || 0}</span>
-                    </div>
-                    <input type="range" min="0" max="10" value="${editingClass.attributes[attr.key] || 0}" 
-                           class="attr-slider w-full" 
-                           oninput="updateAttribute('${attr.key}', this.value)"
-                           style="color: ${editingClass.color}">
-                </div>
-            `).join('');
-        }
-
-        function selectColor(color) {
-            editingClass.color = color;
-            initColorPalette();
-            initIconPalette();
-            initAttributes();
-        }
-
-        function selectIcon(icon) {
-            editingClass.icon = icon;
-            initIconPalette();
-        }
-
-        function updateAttribute(key, value) {
-            editingClass.attributes[key] = parseInt(value);
-            document.getElementById(`attr-value-${key}`).textContent = value;
-            updateTotalPoints();
-        }
-
-        function updateTotalPoints() {
-            if (!editingClass) return;
-            const total = Object.values(editingClass.attributes).reduce((a, b) => a + b, 0);
-            const element = document.getElementById('total-points');
-            if (element) {
-                element.textContent = total;
-                element.style.color = total > 20 ? '#ef4444' : total >= 15 ? '#22c55e' : '#f59e0b';
-            }
-        }
-
-        function addSkill() {
-            if (!editingClass.skills) editingClass.skills = [];
-            editingClass.skills.push('');
-            updateSkillsForm();
-        }
-
-        function updateSkillsForm() {
-            const container = document.getElementById('skills-container');
-            if (!container) return;
-            
-            container.innerHTML = (editingClass.skills || []).map((skill, index) => `
-                <div class="flex gap-2 mb-2">
-                    <input type="text" value="${skill}" placeholder="Nome da habilidade..."
-                           oninput="editingClass.skills[${index}] = this.value"
-                           class="flex-1 bg-theme-bg border border-theme-border rounded-lg px-3 py-2 text-white outline-none focus:border-current text-sm">
-                    <button onclick="editingClass.skills.splice(${index}, 1); updateSkillsForm()" 
-                            class="px-3 py-2 bg-theme-bg border border-theme-border rounded-lg text-white hover:bg-white/5 text-sm">
-                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            `).join('');
-            
-            lucide.createIcons();
-        }
-
-        function saveClass() {
-            if (!editingClass.name.trim()) {
-                alert('Por favor, insira um nome para a classe.');
+            if (!classeSelecionada) {
+                container.innerHTML = `
+                    <i data-lucide="swords" class="w-16 h-16 mx-auto mb-4 text-gray-600"></i>
+                    <p class="text-gray-500 mb-2">Nenhuma classe selecionada</p>
+                    <p class="text-sm text-gray-600">Clique em uma classe acima para selecionar</p>
+                `;
+                container.classList.remove('hidden');
+                details.classList.add('hidden');
                 return;
             }
             
-            const index = classes.findIndex(c => c.id === editingClass.id);
-            if (index !== -1) {
-                classes[index] = { ...editingClass };
-            } else {
-                classes.unshift(editingClass);
-            }
-            
-            saveClasses();
-            renderClasses();
-            closeClassEditor();
-            showNotification(`Classe "${editingClass.name}" salva!`);
-        }
-
-        // ====================================================================
-        // FUNÇÕES DE INTERFACE
-        // ====================================================================
-        
-        function filterClasses(filter) {
-            currentFilter = filter;
-            ['all', 'default', 'custom', 'favorite'].forEach(f => {
-                const btn = document.getElementById(`filter-${f}`);
-                if (btn) {
-                    btn.classList.toggle('bg-theme-purple', f === filter);
-                    btn.classList.toggle('bg-theme-bg', f !== filter);
+            // Informações das classes
+            const classesInfo = {
+                'Guerreiro': {
+                    cor: '#dc2626',
+                    icone: 'sword',
+                    descricao: 'Especialista em combate corpo a corpo com alta resistência.',
+                    atributos: { forca: 4, destreza: 2, constituicao: 4, inteligencia: 1, sabedoria: 2, carisma: 2 }
+                },
+                'Mago': {
+                    cor: '#4a9eff',
+                    icone: 'sparkles',
+                    descricao: 'Mestre das artes arcanas com poder mágico devastador.',
+                    atributos: { forca: 1, destreza: 2, constituicao: 2, inteligencia: 5, sabedoria: 4, carisma: 3 }
+                },
+                'Arqueiro': {
+                    cor: '#22c55e',
+                    icone: 'target',
+                    descricao: 'Especialista em ataques à distância com precisão letal.',
+                    atributos: { forca: 2, destreza: 5, constituicao: 3, inteligencia: 3, sabedoria: 3, carisma: 2 }
+                },
+                'Clérigo': {
+                    cor: '#f59e0b',
+                    icone: 'heart',
+                    descricao: 'Servo divino com habilidades de cura e proteção.',
+                    atributos: { forca: 2, destreza: 2, constituicao: 3, inteligencia: 3, sabedoria: 5, carisma: 3 }
+                },
+                'Ladino': {
+                    cor: '#8b5cf6',
+                    icone: 'ghost',
+                    descricao: 'Mestre da furtividade e habilidades sociais.',
+                    atributos: { forca: 2, destreza: 4, constituicao: 2, inteligencia: 4, sabedoria: 2, carisma: 4 }
+                },
+                'Bárbaro': {
+                    cor: '#ea580c',
+                    icone: 'zap',
+                    descricao: 'Guerreiro feroz que entra em fúria no combate.',
+                    atributos: { forca: 5, destreza: 2, constituicao: 4, inteligencia: 1, sabedoria: 2, carisma: 2 }
                 }
-            });
-            renderClasses();
-        }
-
-        function toggleFavorite(classId) {
-            const index = classes.findIndex(c => c.id === classId);
-            if (index !== -1) {
-                classes[index].isFavorite = !classes[index].isFavorite;
-                saveClasses();
-                renderClasses();
-                updateStatistics();
-            }
-        }
-
-        function updateStatistics() {
-            const total = classes.length;
-            const custom = classes.filter(c => !c.isDefault).length;
-            const favorites = classes.filter(c => c.isFavorite).length;
-            const used = classes.reduce((sum, c) => sum + c.usageCount, 0);
-            
-            document.getElementById('stats-total').textContent = total;
-            document.getElementById('stats-custom').textContent = custom;
-            document.getElementById('stats-favorites').textContent = favorites;
-            document.getElementById('stats-used').textContent = used;
-        }
-
-        function exportClasses() {
-            const data = {
-                classes: classes.filter(c => !c.isDefault),
-                exportDate: new Date().toISOString()
             };
             
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `classes_${new Date().toISOString().split('T')[0]}.json`;
-            link.click();
+            const info = classesInfo[classeSelecionada] || classesInfo['Guerreiro'];
             
-            showNotification('Classes exportadas!');
-        }
-
-        function importClasses() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.json';
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        if (data.classes) {
-                            data.classes.forEach(cls => {
-                                cls.id = 'imported_' + Date.now() + '_' + cls.id;
-                                cls.isDefault = false;
-                                classes.unshift(cls);
-                            });
-                            
-                            saveClasses();
-                            renderClasses();
-                            showNotification(`${data.classes.length} classes importadas!`);
-                        }
-                    } catch (error) {
-                        showNotification('Erro ao importar arquivo');
-                    }
-                };
-                reader.readAsText(file);
-            };
-            input.click();
-        }
-
-        function resetClassSystem() {
-            if (confirm('Resetar todas as classes personalizadas?')) {
-                localStorage.removeItem('grimorio_custom_classes');
-                classes = [...DEFAULT_CLASSES];
-                renderClasses();
-                showNotification('Sistema resetado!');
-            }
-        }
-
-        function showNotification(message) {
-            // Notificação simples
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 p-4 bg-theme-panel border border-theme-border rounded-lg shadow-lg z-50';
-            notification.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
-                    <span class="text-white">${message}</span>
+            container.classList.add('hidden');
+            details.classList.remove('hidden');
+            
+            details.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="p-3 rounded-lg" style="background: ${info.cor}20; border-color: ${info.cor}80; border-width: 1px">
+                                <i data-lucide="${info.icone}" style="color: ${info.cor}" class="w-8 h-8"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-cinzel text-2xl font-bold text-white">${classeSelecionada}</h3>
+                                <p class="text-gray-400">Classe selecionada</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-300 mb-6">${info.descricao}</p>
+                        
+                        <div class="space-y-2">
+                            <h4 class="font-semibold text-white">Bônus de Atributos</h4>
+                            ${Object.entries(info.atributos).map(([attr, valor]) => `
+                                <div class="flex items-center justify-between py-2 border-b border-theme-border">
+                                    <span class="text-gray-400 capitalize">${attr}</span>
+                                    <span class="font-bold" style="color: ${info.cor}">+${valor}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-semibold text-white mb-4">Efeitos na Ficha</h4>
+                        <ul class="space-y-3">
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-gray-300">A classe será salva automaticamente na sua ficha</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-gray-300">O hub principal será atualizado em tempo real</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-gray-300">Você poderá mudar a classe a qualquer momento</span>
+                            </li>
+                        </ul>
+                        
+                        <div class="mt-6 p-4 rounded-lg bg-theme-bg border border-theme-border">
+                            <h5 class="font-semibold text-white mb-2">Próximos Passos</h5>
+                            <p class="text-sm text-gray-400">
+                                Após confirmar, vá para a página de <a href="status.html" class="text-theme-blue hover:underline">Status</a> 
+                                para distribuir pontos de atributos ou <a href="ficha.html" class="text-theme-blue hover:underline">Ficha</a> 
+                                para completar suas informações.
+                            </p>
+                        </div>
+                    </div>
                 </div>
             `;
             
-            document.body.appendChild(notification);
+            // Atualizar ícones
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        }
+        
+        // Salvar e sair
+        function salvarESair() {
+            if (!classeSelecionada) {
+                alert('Por favor, selecione uma classe antes de confirmar.');
+                return;
+            }
+            
+            // Atualizar dados do personagem
+            if (!dadosPersonagem) {
+                carregarPersonagem();
+            }
+            
+            dadosPersonagem['inp-classe'] = classeSelecionada;
+            dadosPersonagem.ultimaAtualizacao = new Date().toISOString();
+            
+            // Salvar no localStorage
+            localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(dadosPersonagem));
+            
+            // Feedback visual
+            mostrarFeedbackSucesso();
+            
+            // Redirecionar após breve delay
+            setTimeout(() => {
+                window.location.href = 'index.html?classe=' + encodeURIComponent(classeSelecionada);
+            }, 1500);
+        }
+        
+        function mostrarFeedbackSucesso() {
+            const feedback = document.createElement('div');
+            feedback.className = 'fixed top-4 right-4 p-4 bg-green-900/20 border border-green-800 rounded-lg shadow-lg z-50';
+            feedback.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
+                    <div>
+                        <p class="font-semibold text-white">Classe salva com sucesso!</p>
+                        <p class="text-sm text-green-300">Redirecionando para o hub...</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(feedback);
             lucide.createIcons();
             
             setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
+                if (feedback.parentElement) {
+                    feedback.remove();
                 }
             }, 3000);
         }
-
-        // ====================================================================
-        // EVENT LISTENERS OTIMIZADOS
-        // ====================================================================
         
-        function setupEventListeners() {
-            // Busca com debounce
-            const searchInput = document.getElementById('search-classes');
-            if (searchInput) {
-                searchInput.addEventListener('input', debounce(renderClasses, 300));
-            }
-            
-            // Configurações
-            const disableDefault = document.getElementById('disable-default-classes');
-            if (disableDefault) {
-                disableDefault.addEventListener('change', (e) => {
-                    localStorage.setItem('disable_default_classes', e.target.checked);
-                    renderClasses();
-                });
-            }
-            
-            // Carregar configurações salvas
-            const savedDisable = localStorage.getItem('disable_default_classes');
-            if (disableDefault && savedDisable) {
-                disableDefault.checked = savedDisable === 'true';
-            }
-        }
-
-        // ====================================================================
-        // INICIALIZAÇÃO FINAL
-        // ====================================================================
-        
+        // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
-            // Animação inicial simplificada
-            const entries = document.querySelectorAll('.anim-entry');
-            entries.forEach((el, i) => {
-                el.style.animationDelay = `${i * 0.1}s`;
-            });
-            
-            // Inicializar sistema
-            init();
-            
-            // Forçar um reflow para ativar animações
-            setTimeout(() => {
-                document.body.style.visibility = 'visible';
-            }, 10);
+            inicializarSistema();
         });
-
-        // Esconder body até carregar
-        document.body.style.visibility = 'hidden';
-
-    // shared.js - Coloque em todas as páginas
-    class GrimorioSaveSystem {
-        static saveCharacter(data) {
-            localStorage.setItem('grimorio_character_data', JSON.stringify(data));
-            this.notifyUpdate('character');
-        }
-        
-        static saveMascot(data) {
-            localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
-            this.notifyUpdate('mascot');
-        }
-        
-        static saveItems(data) {
-            localStorage.setItem('grimorio_items_data', JSON.stringify(data));
-            this.notifyUpdate('items');
-        }
-        
-        static loadCharacter() {
-            const data = localStorage.getItem('grimorio_character_data');
-            return data ? JSON.parse(data) : null;
-        }
-        
-        static loadMascot() {
-            const data = localStorage.getItem('grimorio_mascot_data');
-            return data ? JSON.parse(data) : null;
-        }
-        
-        static loadItems() {
-            const data = localStorage.getItem('grimorio_items_data');
-            return data ? JSON.parse(data) : [];
-        }
-        
-        static notifyUpdate(type) {
-            // Dispara evento customizado
-            const event = new CustomEvent('grimorio-update', {
-                detail: { type: type, timestamp: Date.now() }
-            });
-            window.dispatchEvent(event);
-        }
-        
-        static exportAll() {
-            const allData = {
-                character: this.loadCharacter(),
-                mascot: this.loadMascot(),
-                items: this.loadItems(),
-                version: '2.0',
-                exportDate: new Date().toISOString()
-            };
-            
-            return JSON.stringify(allData, null, 2);
-        }
-        
-        static importAll(jsonString) {
-            try {
-                const data = JSON.parse(jsonString);
-                
-                if (data.character) {
-                    this.saveCharacter(data.character);
-                }
-                if (data.mascot) {
-                    this.saveMascot(data.mascot);
-                }
-                if (data.items) {
-                    this.saveItems(data.items);
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Erro ao importar:', error);
-                return false;
-            }
-        }
-    }
-
-    // Listener para atualizações em tempo real
-    window.addEventListener('grimorio-update', function(event) {
-        console.log('Dados atualizados:', event.detail.type);
-        // Atualiza a página atual com os novos dados
-        refreshCurrentPage();
-    });
-
-    // Função para detectar mudanças no localStorage de outras abas
-    window.addEventListener('storage', function(event) {
-        if (event.key.startsWith('grimorio_')) {
-            location.reload(); // Recarrega para mostrar dados atualizados
-        }
-    });
     </script>
 </body>
 </html>

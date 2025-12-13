@@ -370,55 +370,106 @@
             }
         });
 
-        // 3. Sistema de Ficha Ativa
+        // 3. SISTEMA DE FICHA ATIVA - VERSÃO CORRIGIDA
+        const CHAVE_ARMAZENAMENTO = 'personagemSalvo'; // Chave unificada para todo o sistema
+
+        function inicializarPersonagemPadrao() {
+            // Cria dados padrão se não existirem
+            if (!localStorage.getItem(CHAVE_ARMAZENAMENTO)) {
+                const personagemPadrao = {
+                    // Informações básicas (da ficha.html)
+                    'inp-nome': 'Novo Aventureiro',
+                    'inp-titulo': 'Viajante sem Destino',
+                    'inp-raca': 'Humano',
+                    'inp-classe': 'Não Definida',
+                    'inp-idade': '20',
+                    'inp-altura': '175',
+                    'inp-peso': '70',
+                    'inp-olhos': 'Castanhos',
+                    'inp-pele': 'Clara',
+                    'inp-cabelo': 'Preto',
+                    
+                    // Avatar/Imagem
+                    avatar: '', // URL da imagem, se houver
+                    
+                    // Status (de status.html) - TODOS COMEÇAM EM 0
+                    atributos: {
+                        forca: 0,
+                        destreza: 0,
+                        constituicao: 0,
+                        inteligencia: 0,
+                        sabedoria: 0,
+                        carisma: 0
+                    },
+                    
+                    // Sistema de Pontos
+                    pontosDisponiveis: 0,
+                    nivel: 1,
+                    
+                    // Modos
+                    modoChefe: false, // Permite edição livre quando true
+                    
+                    // Outras seções
+                    inventario: [],
+                    habilidades: [],
+                    proficiencias: [],
+                    mascoteVinculado: false,
+                    
+                    // Metadados
+                    ultimaAtualizacao: new Date().toISOString(),
+                    versaoSistema: '1.0'
+                };
+                
+                localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(personagemPadrao));
+                console.log('Personagem padrão criado com sucesso!');
+            }
+        }
+
         function carregarFichaAtiva() {
-            const dadosSalvos = localStorage.getItem('grimorio_ficha_personagem');
+            // Garante que existe um personagem para carregar
+            inicializarPersonagemPadrao();
+            
+            const dadosSalvos = localStorage.getItem(CHAVE_ARMAZENAMENTO);
             const containerVazio = document.getElementById('ficha-sem-dados');
             const containerComDados = document.getElementById('ficha-com-dados');
             const avatarContainer = document.getElementById('ficha-avatar');
             
             if (!dadosSalvos) {
-                // Mostrar estado vazio
                 if (containerVazio) containerVazio.classList.remove('hidden');
                 if (containerComDados) containerComDados.classList.add('hidden');
-                if (avatarContainer) {
-                    avatarContainer.style.backgroundImage = '';
-                    avatarContainer.innerHTML = '<i data-lucide="user" class="w-8 h-8 text-[#606060]"></i>';
-                    if (window.lucide) lucide.createIcons();
-                }
                 return;
             }
             
             try {
                 const dados = JSON.parse(dadosSalvos);
                 
+                // Atualizar timestamp
+                dados.ultimaAtualizacao = new Date().toISOString();
+                localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(dados));
+                
                 // Mostrar container com dados
                 if (containerVazio) containerVazio.classList.add('hidden');
                 if (containerComDados) containerComDados.classList.remove('hidden');
                 
                 // Preencher informações
-                if (document.getElementById('ficha-nome')) {
-                    document.getElementById('ficha-nome').textContent = dados['inp-nome'] || 'Sem nome';
-                }
-                if (document.getElementById('ficha-titulo')) {
-                    document.getElementById('ficha-titulo').textContent = dados['inp-titulo'] || 'Aventureiro sem título';
-                }
-                if (document.getElementById('ficha-classe')) {
-                    document.getElementById('ficha-classe').textContent = dados['inp-classe'] || 'Sem classe';
-                }
-                if (document.getElementById('ficha-raca')) {
-                    document.getElementById('ficha-raca').textContent = dados['inp-raca'] || 'Sem raça';
-                }
+                document.getElementById('ficha-nome').textContent = dados['inp-nome'] || 'Sem nome';
+                document.getElementById('ficha-titulo').textContent = dados['inp-titulo'] || 'Aventureiro sem título';
+                document.getElementById('ficha-classe').textContent = dados['inp-classe'] || 'Não Definida';
+                document.getElementById('ficha-raca').textContent = dados['inp-raca'] || 'Não Definida';
                 
                 // Carregar avatar
-                if (avatarContainer && dados.avatar) {
-                    avatarContainer.style.backgroundImage = dados.avatar;
+                if (avatarContainer && dados.avatar && dados.avatar.trim() !== '') {
+                    avatarContainer.style.backgroundImage = `url('${dados.avatar}')`;
                     avatarContainer.style.backgroundSize = 'cover';
                     avatarContainer.style.backgroundPosition = 'center';
-                    avatarContainer.innerHTML = ''; // Remove o ícone padrão
+                    avatarContainer.innerHTML = '';
+                } else {
+                    avatarContainer.style.backgroundImage = '';
+                    avatarContainer.innerHTML = '<i data-lucide="user" class="w-8 h-8 text-[#606060]"></i>';
+                    if (window.lucide) lucide.createIcons();
                 }
                 
-                // Mostrar última atualização
+                // Atualizar última modificação
                 const atualizacaoEl = document.getElementById('ultima-atualizacao');
                 if (atualizacaoEl && dados.ultimaAtualizacao) {
                     const data = new Date(dados.ultimaAtualizacao);
@@ -440,35 +491,87 @@
                 console.error('Erro ao carregar ficha ativa:', error);
             }
         }
-        
+
+        // 4. SISTEMA DE ATUALIZAÇÃO AUTOMÁTICA DE CLASSE
+        function atualizarClasseNaFicha(novaClasse) {
+            try {
+                const dadosSalvos = localStorage.getItem(CHAVE_ARMAZENAMENTO);
+                if (!dadosSalvos) return;
+                
+                const dados = JSON.parse(dadosSalvos);
+                
+                // Atualiza a classe
+                dados['inp-classe'] = novaClasse;
+                dados.ultimaAtualizacao = new Date().toISOString();
+                
+                // Salva de volta
+                localStorage.setItem(CHAVE_ARMAZENAMENTO, JSON.stringify(dados));
+                
+                // Atualiza a exibição se estiver no index.html
+                if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/') {
+                    carregarFichaAtiva();
+                }
+                
+                console.log(`Classe atualizada para: ${novaClasse}`);
+                
+            } catch (error) {
+                console.error('Erro ao atualizar classe:', error);
+            }
+        }
+
+        // 5. FUNÇÃO PARA LIMPAR FICHA
         function limparFichaAtiva() {
-            if (confirm('Deseja remover a ficha ativa do hub?\n\nIsso apagará todos os dados salvos localmente.')) {
-                localStorage.removeItem('grimorio_ficha_personagem');
-                carregarFichaAtiva();
+            if (confirm('Deseja resetar TODOS os dados do personagem?\n\nIsso apagará nome, classe, status, inventário...')) {
+                // Remove tudo e recria o padrão
+                localStorage.removeItem(CHAVE_ARMAZENAMENTO);
                 
                 // Feedback visual
                 const feedback = document.createElement('div');
                 feedback.className = 'fixed top-4 right-4 px-4 py-3 rounded-lg bg-red-900/20 border border-red-700 text-red-300 z-[100] animate-fadeIn';
-                feedback.textContent = 'Ficha removida do hub!';
+                feedback.textContent = 'Personagem resetado!';
                 document.body.appendChild(feedback);
                 
+                // Recria personagem padrão e recarrega
                 setTimeout(() => {
-                    feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
-                    setTimeout(() => feedback.remove(), 500);
-                }, 3000);
+                    inicializarPersonagemPadrao();
+                    carregarFichaAtiva();
+                    
+                    setTimeout(() => {
+                        feedback.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                        setTimeout(() => feedback.remove(), 500);
+                    }, 2000);
+                }, 500);
             }
         }
-        
-        // 4. Inicializar sistema de ficha ativa
-        document.addEventListener('DOMContentLoaded', function() {
-            // Carregar ficha ativa após um breve delay
-            setTimeout(carregarFichaAtiva, 300);
-            
-            // Atualizar periodicamente (caso a ficha seja editada em outra aba)
-            setInterval(carregarFichaAtiva, 5000);
+
+        // 6. LISTENER PARA EVENTOS DE ATUALIZAÇÃO DE CLASSE
+        // Isso permite que a página classe.html comunique mudanças
+        window.addEventListener('storage', function(e) {
+            if (e.key === CHAVE_ARMAZENAMENTO) {
+                carregarFichaAtiva();
+            }
         });
-        
-        // 5. Adicionar estilo para animação de feedback
+
+        // 7. INICIALIZAÇÃO DA PÁGINA
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializa sistema
+            inicializarPersonagemPadrao();
+            
+            // Carrega ficha após um breve delay
+            setTimeout(carregarFichaAtiva, 100);
+            
+            // Atualizar periodicamente (para sincronizar entre abas)
+            setInterval(carregarFichaAtiva, 3000);
+            
+            // Verificar se há parâmetros de classe na URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const classeParam = urlParams.get('classe');
+            if (classeParam) {
+                atualizarClasseNaFicha(classeParam);
+            }
+        });
+
+        // 8. Adicionar estilo para animação de feedback
         const estiloAnimacao = document.createElement('style');
         estiloAnimacao.textContent = `
             @keyframes fadeIn {
