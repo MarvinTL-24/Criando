@@ -2222,6 +2222,65 @@
                 });
             }
         }
+        // Adicione esta função no sistema de derivados
+        function resetarDerivadosAvancados() {
+            if (!confirm('Tem certeza que deseja resetar TODOS os derivados avançados?\n\nIsso irá resetar blindagem, velocidade, iniciativa, percepção, visão noturna, esquiva e resistência para 0.')) {
+                return;
+            }
+            
+            // Resetar derivados
+            Object.keys(sistemaDerivados.derivados).forEach(key => {
+                sistemaDerivados.derivados[key].valor = 0;
+                sistemaDerivados.derivados[key].ativo = false;
+            });
+            
+            // Resetar recursos
+            sistemaDerivados.recursos.vida.atual = 100;
+            sistemaDerivados.recursos.mana.atual = 100;
+            sistemaDerivados.recursos.estamina.atual = 100;
+            
+            // Atualizar interface
+            atualizarDisplayRecurso('vida');
+            atualizarDisplayRecurso('mana');
+            atualizarDisplayRecurso('estamina');
+            gerarCardsDerivados();
+            
+            // Salvar
+            salvarDerivadosNoLocalStorage();
+            
+            mostrarFeedback('Derivados avançados resetados com sucesso!', 'success');
+        }
+
+        // Adicione também uma função para resetar apenas recursos
+        function resetarRecursos() {
+            if (confirm('Resetar recursos vitais para valores máximos?')) {
+                sistemaDerivados.recursos.vida.atual = sistemaDerivados.recursos.vida.max;
+                sistemaDerivados.recursos.mana.atual = sistemaDerivados.recursos.mana.max;
+                sistemaDerivados.recursos.estamina.atual = sistemaDerivados.recursos.estamina.max;
+                
+                atualizarDisplayRecurso('vida');
+                atualizarDisplayRecurso('mana');
+                atualizarDisplayRecurso('estamina');
+                
+                salvarDerivadosNoLocalStorage();
+                mostrarFeedback('Recursos restaurados!', 'success');
+            }
+        }
+
+        // Adicione também uma função para resetar apenas derivados (sem recursos)
+        function resetarApenasDerivados() {
+            if (!confirm('Resetar apenas derivados (blindagem, velocidade, etc.) para 0?')) {
+                return;
+            }
+            
+            Object.keys(sistemaDerivados.derivados).forEach(key => {
+                sistemaDerivados.derivados[key].valor = 0;
+            });
+            
+            gerarCardsDerivados();
+            salvarDerivadosNoLocalStorage();
+            mostrarFeedback('Derivados resetados!', 'info');
+        }
 
         // FUNÇÕES DO SISTEMA DE DERIVADOS
         function inicializarSistemaDerivados() {
@@ -2237,56 +2296,54 @@
             
             const estilo = document.createElement('style');
             estilo.textContent = `
-                .derivado-card {
-                    transition: all 0.3s ease;
-                    border: 2px solid transparent;
+                /* ... estilos existentes ... */
+                
+                /* Novas classes para recursos */
+                .card-vida {
+                    border-color: var(--recurso-vida) !important;
                 }
                 
-                .derivado-card:hover {
-                    transform: translateY(-2px);
-                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+                .card-mana {
+                    border-color: var(--recurso-mana) !important;
                 }
                 
-                .recurso-bar {
-                    transition: width 0.5s ease;
-                }
-                
-                .dice-rolling {
-                    animation: diceRoll 0.8s ease-out;
-                }
-                
-                @keyframes diceRoll {
-                    0% { transform: rotate(0deg) scale(1); }
-                    25% { transform: rotate(90deg) scale(1.1); }
-                    50% { transform: rotate(180deg) scale(1.2); }
-                    75% { transform: rotate(270deg) scale(1.1); }
-                    100% { transform: rotate(360deg) scale(1); }
-                }
-                
-                .high-roll {
-                    box-shadow: 0 0 20px rgba(212, 167, 106, 0.5);
-                    border-color: #f4d29a !important;
+                .card-estamina {
+                    border-color: var(--recurso-estamina) !important;
                 }
             `;
             document.head.appendChild(estilo);
             
             const recursosHTML = `
                 <div class="mb-8">
-                    <h3 class="font-cinzel text-xl font-bold text-white mb-4 flex items-center gap-2">
-                        <i data-lucide="heart" class="w-5 h-5 text-red-400"></i>
-                        Recursos Vitais (0-100)
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-4 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="heart" class="w-5 h-5 text-red-400"></i>
+                            Recursos Vitais (0-100)
+                        </span>
+                        <button onclick="resetarDerivadosAvancados()" 
+                                class="px-4 py-2 bg-gradient-to-r from-red-600 to-red-800 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 text-sm">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            Resetar Derivados
+                        </button>
                     </h3>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <!-- Vida -->
-                        <div class="bg-[#0f0f12] border border-[#2a2a2e] rounded-xl p-4">
+                        <div class="card-vida bg-[#0f0f12] border-2 rounded-xl p-4">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="heart" class="w-4 h-4 text-red-400"></i>
-                                    <span class="font-semibold text-white">Vida</span>
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center recurso-vida">
+                                        <i data-lucide="heart" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-semibold text-white">Vida</span>
+                                        <p class="text-xs text-gray-400">Saúde do personagem</p>
+                                    </div>
                                 </div>
                                 <div class="font-mono text-lg">
-                                    <span id="vida-atual">${sistemaDerivados.recursos.vida.atual}</span>/<span id="vida-max">${sistemaDerivados.recursos.vida.max}</span>
+                                    <span id="vida-atual" class="recurso-vida">${sistemaDerivados.recursos.vida.atual}</span>
+                                    <span class="text-gray-500">/</span>
+                                    <span id="vida-max">${sistemaDerivados.recursos.vida.max}</span>
                                 </div>
                             </div>
                             
@@ -2299,7 +2356,7 @@
                             <div class="flex gap-2">
                                 <input type="number" id="input-vida" min="0" max="${sistemaDerivados.recursos.vida.max}" 
                                     value="${sistemaDerivados.recursos.vida.atual}"
-                                    class="flex-1 bg-[#0a0a0c] border border-[#2a2a2e] rounded-lg px-3 py-2 text-white text-center">
+                                    class="flex-1 bg-[#0a0a0c] border border-[#2a2a2e] rounded-lg px-3 py-2 text-white text-center recurso-vida">
                                 <button onclick="ajustarRecurso('vida', document.getElementById('input-vida').value)" 
                                         class="px-3 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white">
                                     <i data-lucide="check" class="w-4 h-4"></i>
@@ -2308,14 +2365,21 @@
                         </div>
                         
                         <!-- Mana -->
-                        <div class="bg-[#0f0f12] border border-[#2a2a2e] rounded-xl p-4">
+                        <div class="card-mana bg-[#0f0f12] border-2 rounded-xl p-4">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="sparkles" class="w-4 h-4 text-blue-400"></i>
-                                    <span class="font-semibold text-white">Mana</span>
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center recurso-mana">
+                                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-semibold text-white">Mana</span>
+                                        <p class="text-xs text-gray-400">Poder mágico</p>
+                                    </div>
                                 </div>
                                 <div class="font-mono text-lg">
-                                    <span id="mana-atual">${sistemaDerivados.recursos.mana.atual}</span>/<span id="mana-max">${sistemaDerivados.recursos.mana.max}</span>
+                                    <span id="mana-atual" class="recurso-mana">${sistemaDerivados.recursos.mana.atual}</span>
+                                    <span class="text-gray-500">/</span>
+                                    <span id="mana-max">${sistemaDerivados.recursos.mana.max}</span>
                                 </div>
                             </div>
                             
@@ -2328,7 +2392,7 @@
                             <div class="flex gap-2">
                                 <input type="number" id="input-mana" min="0" max="${sistemaDerivados.recursos.mana.max}" 
                                     value="${sistemaDerivados.recursos.mana.atual}"
-                                    class="flex-1 bg-[#0a0a0c] border border-[#2a2a2e] rounded-lg px-3 py-2 text-white text-center">
+                                    class="flex-1 bg-[#0a0a0c] border border-[#2a2a2e] rounded-lg px-3 py-2 text-white text-center recurso-mana">
                                 <button onclick="ajustarRecurso('mana', document.getElementById('input-mana').value)" 
                                         class="px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white">
                                     <i data-lucide="check" class="w-4 h-4"></i>
@@ -2337,14 +2401,21 @@
                         </div>
                         
                         <!-- Estamina -->
-                        <div class="bg-[#0f0f12] border border-[#2a2a2e] rounded-xl p-4">
+                        <div class="card-estamina bg-[#0f0f12] border-2 rounded-xl p-4">
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
-                                    <i data-lucide="zap" class="w-4 h-4 text-green-400"></i>
-                                    <span class="font-semibold text-white">Estamina</span>
+                                    <div class="w-8 h-8 rounded-lg flex items-center justify-center recurso-estamina">
+                                        <i data-lucide="zap" class="w-4 h-4"></i>
+                                    </div>
+                                    <div>
+                                        <span class="font-semibold text-white">Estamina</span>
+                                        <p class="text-xs text-gray-400">Energia física</p>
+                                    </div>
                                 </div>
                                 <div class="font-mono text-lg">
-                                    <span id="estamina-atual">${sistemaDerivados.recursos.estamina.atual}</span>/<span id="estamina-max">${sistemaDerivados.recursos.estamina.max}</span>
+                                    <span id="estamina-atual" class="recurso-estamina">${sistemaDerivados.recursos.estamina.atual}</span>
+                                    <span class="text-gray-500">/</span>
+                                    <span id="estamina-max">${sistemaDerivados.recursos.estamina.max}</span>
                                 </div>
                             </div>
                             
@@ -2357,7 +2428,7 @@
                             <div class="flex gap-2">
                                 <input type="number" id="input-estamina" min="0" max="${sistemaDerivados.recursos.estamina.max}" 
                                     value="${sistemaDerivados.recursos.estamina.atual}"
-                                    class="flex-1 bg-[#0a0a0c] border border-[#2a2a2e] rounded-lg px-3 py-2 text-white text-center">
+                                    class="flex-1 bg-[#0a0a0c] border border-[#2a2a2e] rounded-lg px-3 py-2 text-white text-center recurso-estamina">
                                 <button onclick="ajustarRecurso('estamina', document.getElementById('input-estamina').value)" 
                                         class="px-3 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-white">
                                     <i data-lucide="check" class="w-4 h-4"></i>
@@ -2368,32 +2439,7 @@
                 </div>
             `;
             
-            const derivadosHTML = `
-                <div class="mb-8">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-cinzel text-xl font-bold text-white flex items-center gap-2">
-                            <i data-lucide="activity" class="w-5 h-5 text-purple-400"></i>
-                            Derivados Avançados (Opcionais)
-                        </h3>
-                        <button onclick="calcularTodosDerivados()" 
-                                class="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                            <i data-lucide="calculator" class="w-4 h-4"></i>
-                            Calcular Todos
-                        </button>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-derivados">
-                        <!-- Derivados serão gerados dinamicamente -->
-                    </div>
-                </div>
-            `;
-            
-            container.innerHTML = recursosHTML + derivadosHTML;
-            gerarCardsDerivados();
-            
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            // ... resto do código permanece igual ...
         }
 
         function gerarCardsDerivados() {
@@ -3491,7 +3537,10 @@
         window.atualizarAtributos = atualizarAtributos;
         window.atualizarNivel = atualizarNivel;
         window.inicializarSistemaSorte = inicializarSistemaSorte;
-
+        // Adicione ao final do script, junto com as outras exportações
+        window.resetarDerivadosAvancados = resetarDerivadosAvancados;
+        window.resetarRecursos = resetarRecursos;
+        window.resetarApenasDerivados = resetarApenasDerivados;
         // INICIALIZAÇÃO PRINCIPAL
         document.addEventListener('DOMContentLoaded', function() {
             try {
