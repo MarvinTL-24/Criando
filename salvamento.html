@@ -1,478 +1,1156 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Sistema de Save</title>
+    <title>Grimório Digital - Save System</title>
     
-    <!-- Fontes -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    
-    <!-- Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <script src="grimorio-core.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
-    <!-- Estilos -->
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/utilities.css">
-    
-    <!-- Scripts -->
-    <script src="js/grimorio-core.js" defer></script>
-    <script src="js/app.js" defer></script>
-    <script src="js/save-system.js" defer></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            pink: '#ec4899',
+                            red: '#dc2626',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            blue: '#4a9eff',
+                            green: '#22c55e',
+                            cyan: '#06b6d4',
+                            orange: '#ff6b35',
+                            teal: '#14b8a6',
+                            indigo: '#6366f1',
+                            muted: '#606060'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        /* Estilos específicos para a página de save */
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Animações */
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Modal */
+        .modal-backdrop {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
+            z-index: 1000; display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+        }
+        .modal-content {
+            background: #0f0f12; border: 1px solid #2a2a2e;
+            border-radius: 12px; width: 100%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto;
+        }
+        
+        /* Cards de save */
         .save-card {
-            position: relative;
-            overflow: hidden;
             transition: all 0.3s ease;
+            border: 2px solid transparent;
         }
-        
-        .save-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .save-card:hover {
+            transform: translateY(-3px);
+            border-color: #4a9eff40;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        
-        .save-card:hover::before {
-            opacity: 1;
-        }
-        
-        .save-type-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            z-index: 2;
-        }
-        
-        .save-preview {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: var(--radius-md);
-            padding: var(--space-3);
-            margin-top: var(--space-3);
-        }
-        
-        .save-actions {
-            display: flex;
-            gap: var(--space-2);
-            margin-top: var(--space-3);
-        }
-        
-        /* Drag and drop area */
-        .drop-zone {
-            border: 2px dashed var(--color-border);
-            border-radius: var(--radius-lg);
-            padding: var(--space-8);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .drop-zone.dragover {
-            border-color: var(--color-purple);
-            background: rgba(139, 92, 246, 0.05);
-        }
-        
-        .drop-zone:hover {
-            border-color: var(--color-purple);
+        .save-card.active {
+            border-color: #4a9eff;
+            background: rgba(74, 158, 255, 0.05);
         }
         
         /* Progress bar */
-        .upload-progress {
-            height: 6px;
-            background: var(--color-border);
-            border-radius: var(--radius-sm);
-            overflow: hidden;
-            margin-top: var(--space-2);
+        .progress-bar {
+            height: 4px; background: #2a2a2e; border-radius: 2px; overflow: hidden;
         }
-        
-        .upload-progress-bar {
-            height: 100%;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-sm);
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #4a9eff, #06b6d4);
             transition: width 0.3s ease;
         }
     </style>
 </head>
-<body class="min-h-screen">
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="navbar-container">
-                <a href="index.html" class="navbar-brand">
-                    <div class="navbar-logo">
-                        <i data-lucide="book-open"></i>
-                    </div>
-                    <span>Grimório Digital</span>
-                </a>
-                
-                <div class="navbar-divider"></div>
-                
-                <span class="navbar-title">Sistema de Save</span>
-                
-                <button class="navbar-toggle lg:hidden" id="navbarToggle">
-                    <i data-lucide="menu"></i>
-                </button>
-                
-                <ul class="navbar-nav" id="navbarNav">
-                    <li><a href="index.html" class="nav-link"><i data-lucide="home"></i> Início</a></li>
-                    <li><a href="ficha.html" class="nav-link"><i data-lucide="user"></i> Ficha</a></li>
-                    <li><a href="mascote.html" class="nav-link"><i data-lucide="dog"></i> Mascote</a></li>
-                    <li><a href="classes.html" class="nav-link"><i data-lucide="swords"></i> Classes</a></li>
-                    <li><a href="save.html" class="nav-link active"><i data-lucide="save"></i> Save</a></li>
-                </ul>
-            </div>
+<body class="min-h-screen font-sans">
+
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="text-sm text-theme-muted">Save System</span>
         </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
     </nav>
 
-    <!-- Conteúdo Principal -->
-    <main class="container py-8">
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+
         <!-- Cabeçalho -->
-        <header class="mb-8">
-            <div class="flex items-center gap-4 mb-4">
-                <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-500/20 border border-blue-500/30 flex items-center justify-center">
-                    <i data-lucide="save" class="w-8 h-8 text-blue-500"></i>
-                </div>
-                <div>
-                    <h1 class="text-4xl font-bold">Sistema de Save</h1>
-                    <p class="text-muted">Gerencie backups, exporte e importe seus dados</p>
-                </div>
+        <header class="flex items-center gap-4 mb-8 anim-entry">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-theme-blue/20 to-cyan-600/20 border border-theme-blue/30">
+                <i data-lucide="save" class="w-8 h-8 text-theme-blue"></i>
+            </div>
+            <div>
+                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Save</h1>
+                <p class="text-gray-400">Gerencie seus saves de personagem</p>
             </div>
         </header>
 
-        <!-- Seção 1: Status do Sistema -->
-        <section class="card mb-8">
-            <div class="card-header">
-                <h2 class="card-title flex items-center gap-2">
-                    <i data-lucide="activity" class="w-5 h-5 text-blue-500"></i>
-                    Status do Sistema
-                </h2>
+        <!-- Seção 1: Informações -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #4a9eff;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
+                <i data-lucide="info" class="w-4 h-4"></i> Como Funciona
+            </h3>
+            
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-theme-blue/10 flex items-center justify-center">
+                            <i data-lucide="download" class="w-5 h-5 text-theme-blue"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white">1. Exportar</h4>
+                            <p class="text-sm text-theme-muted">Gere um arquivo TXT com todos os dados</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-theme-green/10 flex items-center justify-center">
+                            <i data-lucide="upload" class="w-5 h-5 text-theme-green"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white">2. Importar</h4>
+                            <p class="text-sm text-theme-muted">Carregue um save anterior para continuar</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-theme-purple/10 flex items-center justify-center">
+                            <i data-lucide="refresh-cw" class="w-5 h-5 text-theme-purple"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-white">3. Atualizar</h4>
+                            <p class="text-sm text-theme-muted">Suba o TXT atualizado após jogar</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="text-center p-4 bg-panel rounded-lg border border-border">
-                        <div class="text-2xl font-bold text-white mb-1" id="total-saves">0</div>
-                        <div class="text-sm text-muted">Saves Totais</div>
-                    </div>
-                    
-                    <div class="text-center p-4 bg-panel rounded-lg border border-border">
-                        <div class="text-2xl font-bold text-green-500 mb-1" id="character-saves">0</div>
-                        <div class="text-sm text-muted">Personagens</div>
-                    </div>
-                    
-                    <div class="text-center p-4 bg-panel rounded-lg border border-border">
-                        <div class="text-2xl font-bold text-purple-500 mb-1" id="backup-saves">0</div>
-                        <div class="text-sm text-muted">Backups</div>
-                    </div>
-                    
-                    <div class="text-center p-4 bg-panel rounded-lg border border-border">
-                        <div class="text-2xl font-bold text-amber-500 mb-1" id="last-save">--:--</div>
-                        <div class="text-sm text-muted">Último Save</div>
+            
+            <div class="mt-6 p-4 bg-theme-bg/50 rounded-lg border border-theme-border">
+                <div class="flex items-start gap-3">
+                    <i data-lucide="lightbulb" class="w-5 h-5 text-theme-yellow mt-0.5"></i>
+                    <div>
+                        <p class="text-sm text-white">
+                            <span class="font-semibold text-theme-yellow">Dica:</span> 
+                            Salve um arquivo TXT antes de encerrar a sessão. Quando for jogar novamente, 
+                            importe o arquivo para restaurar tudo exatamente como estava.
+                        </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 2: Ações Rápidas -->
-        <section class="card mb-8">
-            <div class="card-header">
-                <h2 class="card-title flex items-center gap-2">
-                    <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
-                    Ações Rápidas
-                </h2>
+        <!-- Seção 2: Saves Locais -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #22c55e;">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green">
+                    <i data-lucide="hard-drive" class="w-4 h-4"></i> Saves Locais
+                </h3>
+                <span class="text-sm text-theme-muted" id="save-count">0 saves</span>
             </div>
-            <div class="card-body">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <!-- Exportar Personagem -->
-                    <button onclick="SaveSystem.exportCharacter()" 
-                            class="save-card card p-5 text-left hover:border-blue-500 transition-colors group">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                                <i data-lucide="download" class="w-6 h-6 text-blue-500"></i>
-                            </div>
-                            <i data-lucide="chevron-right" class="w-5 h-5 text-muted group-hover:text-blue-500"></i>
-                        </div>
-                        <h3 class="font-semibold text-white mb-2">Exportar Personagem</h3>
-                        <p class="text-sm text-muted">Gera arquivo JSON com dados atuais</p>
-                    </button>
-                    
-                    <!-- Backup Completo -->
-                    <button onclick="SaveSystem.exportCompleteBackup()" 
-                            class="save-card card p-5 text-left hover:border-purple-500 transition-colors group">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
-                                <i data-lucide="database" class="w-6 h-6 text-purple-500"></i>
-                            </div>
-                            <i data-lucide="chevron-right" class="w-5 h-5 text-muted group-hover:text-purple-500"></i>
-                        </div>
-                        <h3 class="font-semibold text-white mb-2">Backup Completo</h3>
-                        <p class="text-sm text-muted">Exporta TODOS os dados do sistema</p>
-                    </button>
-                    
-                    <!-- Importar Save -->
-                    <button onclick="SaveSystem.openImportModal()" 
-                            class="save-card card p-5 text-left hover:border-green-500 transition-colors group">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-                                <i data-lucide="upload" class="w-6 h-6 text-green-500"></i>
-                            </div>
-                            <i data-lucide="chevron-right" class="w-5 h-5 text-muted group-hover:text-green-500"></i>
-                        </div>
-                        <h3 class="font-semibold text-white mb-2">Importar Save</h3>
-                        <p class="text-sm text-muted">Carregue um arquivo salvo anteriormente</p>
-                    </button>
+            
+            <div id="saves-container" class="space-y-4">
+                <!-- Saves serão inseridos aqui -->
+                <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
+                    <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                    <p class="text-theme-muted">Nenhum save local encontrado</p>
+                    <p class="text-xs text-theme-muted mt-1">Exporte seu personagem para criar um save</p>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 3: Saves Locais -->
-        <section class="card mb-8">
-            <div class="card-header flex items-center justify-between">
-                <h2 class="card-title flex items-center gap-2">
-                    <i data-lucide="hard-drive" class="w-5 h-5 text-green-500"></i>
-                    Saves Locais
-                </h2>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-muted" id="local-saves-count">0 saves</span>
-                    <button onclick="SaveSystem.refreshSaves()" class="btn btn-ghost btn-sm">
-                        <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                <div id="saves-container" class="space-y-4">
-                    <!-- Saves serão carregados aqui via JavaScript -->
-                    <div class="text-center py-12 border-2 border-dashed border-border rounded-lg">
-                        <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-muted"></i>
-                        <p class="text-muted">Nenhum save local encontrado</p>
-                        <p class="text-xs text-muted mt-1">Exporte seu personagem para criar um save</p>
+        <!-- Seção 3: Ações Rápidas -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-6">
+                <i data-lucide="zap" class="w-4 h-4"></i> Ações Rápidas
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="exportCurrentCharacter()" 
+                        class="save-card bg-theme-bg border border-theme-border p-5 rounded-lg text-left hover:border-theme-blue transition-colors group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 rounded-lg bg-theme-blue/10 flex items-center justify-center group-hover:bg-theme-blue/20 transition-colors">
+                            <i data-lucide="download" class="w-6 h-6 text-theme-blue"></i>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-theme-muted group-hover:text-theme-blue"></i>
                     </div>
-                </div>
+                    <h4 class="font-semibold text-white mb-2">Exportar Personagem Atual</h4>
+                    <p class="text-sm text-theme-muted">Gera TXT com dados atuais da ficha principal</p>
+                </button>
+                
+                <button onclick="openImportModal()" 
+                        class="save-card bg-theme-bg border border-theme-border p-5 rounded-lg text-left hover:border-theme-green transition-colors group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 rounded-lg bg-theme-green/10 flex items-center justify-center group-hover:bg-theme-green/20 transition-colors">
+                            <i data-lucide="upload" class="w-6 h-6 text-theme-green"></i>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-theme-muted group-hover:text-theme-green"></i>
+                    </div>
+                    <h4 class="font-semibold text-white mb-2">Importar Save</h4>
+                    <p class="text-sm text-theme-muted">Carregue um arquivo TXT salvo anteriormente</p>
+                </button>
+                
+                <button onclick="exportAllData()" 
+                        class="save-card bg-theme-bg border border-theme-border p-5 rounded-lg text-left hover:border-theme-purple transition-colors group">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 rounded-lg bg-theme-purple/10 flex items-center justify-center group-hover:bg-theme-purple/20 transition-colors">
+                            <i data-lucide="database" class="w-6 h-6 text-theme-purple"></i>
+                        </div>
+                        <i data-lucide="chevron-right" class="w-5 h-5 text-theme-muted group-hover:text-theme-purple"></i>
+                    </div>
+                    <h4 class="font-semibold text-white mb-2">Backup Completo</h4>
+                    <p class="text-sm text-theme-muted">Exporta TODOS os dados (ficha + mascote)</p>
+                </button>
             </div>
         </section>
 
         <!-- Seção 4: Configurações -->
-        <section class="card">
-            <div class="card-header">
-                <h2 class="card-title flex items-center gap-2">
-                    <i data-lucide="settings" class="w-5 h-5 text-purple-500"></i>
-                    Configurações do Save
-                </h2>
-            </div>
-            <div class="card-body">
-                <div class="space-y-4">
-                    <!-- Auto-save -->
-                    <div class="flex items-center justify-between p-4 bg-panel rounded-lg border border-border">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="refresh-cw" class="w-5 h-5 text-purple-500"></i>
-                            <div>
-                                <h4 class="font-medium text-white">Auto-save</h4>
-                                <p class="text-sm text-muted">Salva automaticamente ao modificar dados</p>
-                            </div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="auto-save-toggle" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <!-- Backup Automático -->
-                    <div class="flex items-center justify-between p-4 bg-panel rounded-lg border border-border">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="shield" class="w-5 h-5 text-blue-500"></i>
-                            <div>
-                                <h4 class="font-medium text-white">Backup Automático</h4>
-                                <p class="text-sm text-muted">Cria backup a cada alteração importante</p>
-                            </div>
-                        </div>
-                        <label class="toggle">
-                            <input type="checkbox" id="auto-backup-toggle" checked>
-                            <span class="toggle-slider"></span>
-                        </label>
-                    </div>
-                    
-                    <!-- Limpar Dados -->
-                    <div class="flex items-center justify-between p-4 bg-panel rounded-lg border border-border">
-                        <div class="flex items-center gap-3">
-                            <i data-lucide="trash-2" class="w-5 h-5 text-red-500"></i>
-                            <div>
-                                <h4 class="font-medium text-white">Limpar Dados</h4>
-                                <p class="text-sm text-muted">Remove todos os saves locais</p>
-                            </div>
-                        </div>
-                        <button onclick="SaveSystem.confirmClearAll()" 
-                                class="btn btn-outline btn-sm text-red-500 hover:bg-red-500/10">
-                            Limpar Tudo
-                        </button>
-                    </div>
-                    
-                    <!-- Informações de Armazenamento -->
-                    <div class="p-4 bg-panel/50 rounded-lg border border-border">
-                        <h4 class="font-medium text-white mb-2 flex items-center gap-2">
-                            <i data-lucide="info" class="w-4 h-4 text-blue-500"></i>
-                            Informações
-                        </h4>
-                        <div class="space-y-2 text-sm text-muted">
-                            <p>• Todos os dados são processados localmente no seu navegador</p>
-                            <p>• Nenhuma informação é enviada para servidores externos</p>
-                            <p>• Recomenda-se fazer backup regularmente</p>
-                            <p>• Use a função "Exportar" antes de limpar cache do navegador</p>
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.4s; border-left: 4px solid #8b5cf6;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-purple mb-6">
+                <i data-lucide="settings" class="w-4 h-4"></i> Configurações
+            </h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="refresh-cw" class="w-5 h-5 text-theme-purple"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Auto-save</h4>
+                            <p class="text-sm text-theme-muted">Salva automaticamente ao sair da página</p>
                         </div>
                     </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="auto-save-toggle" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer 
+                                    peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] 
+                                    after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                    peer-checked:bg-theme-purple"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="shield" class="w-5 h-5 text-theme-blue"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Backup Automático</h4>
+                            <p class="text-sm text-theme-muted">Cria backup a cada alteração importante</p>
+                        </div>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="backup-toggle" class="sr-only peer" checked>
+                        <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer 
+                                    peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] 
+                                    after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all 
+                                    peer-checked:bg-theme-blue"></div>
+                    </label>
+                </div>
+                
+                <div class="flex items-center justify-between p-4 bg-theme-bg rounded-lg border border-theme-border">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="trash-2" class="w-5 h-5 text-theme-red"></i>
+                        <div>
+                            <h4 class="font-medium text-white">Limpar Dados</h4>
+                            <p class="text-sm text-theme-muted">Remove todos os saves locais</p>
+                        </div>
+                    </div>
+                    <button onclick="confirmClearAllData()" 
+                            class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg border border-red-800 transition-colors text-sm">
+                        Limpar Tudo
+                    </button>
                 </div>
             </div>
         </section>
-    </main>
 
-    <!-- Modals -->
-    
+    </div>
+
     <!-- Modal de Importação -->
-    <div id="import-modal" class="modal-backdrop">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title flex items-center gap-2">
-                    <i data-lucide="upload" class="w-5 h-5 text-green-500"></i>
+    <div id="import-modal" class="modal-backdrop hidden">
+        <div class="modal-content p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="font-cinzel text-xl font-bold text-theme-green">
+                    <i data-lucide="upload" class="w-5 h-5 inline mr-2"></i>
                     Importar Save
                 </h3>
-                <button onclick="SaveSystem.closeImportModal()" class="modal-close">
+                <button onclick="closeImportModal()" class="text-theme-muted hover:text-white">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <div class="modal-body">
-                <div class="space-y-6">
-                    <div>
-                        <label class="form-label">Selecione o arquivo</label>
-                        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-                            <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 text-muted"></i>
-                            <p class="font-medium text-white mb-1">Arraste e solte o arquivo aqui</p>
-                            <p class="text-sm text-muted">ou clique para selecionar</p>
-                            <p class="text-xs text-muted mt-3">Formatos suportados: .json, .txt</p>
-                        </div>
-                        <input type="file" id="file-input" accept=".json,.txt" class="hidden">
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-white mb-3">Selecione o arquivo TXT</label>
+                    <div class="border-2 border-dashed border-theme-border rounded-lg p-8 text-center cursor-pointer hover:border-theme-green transition-colors"
+                         id="drop-zone"
+                         onclick="document.getElementById('file-input').click()">
+                        <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                        <p class="text-white font-medium mb-1">Arraste e solte o arquivo aqui</p>
+                        <p class="text-sm text-theme-muted">ou clique para selecionar</p>
+                        <p class="text-xs text-theme-muted mt-3">Formatos suportados: .txt</p>
                     </div>
-                    
-                    <div id="file-info" class="hidden">
-                        <div class="bg-panel border border-border rounded-lg p-4">
-                            <div class="flex items-center justify-between mb-2">
-                                <div class="flex items-center gap-2">
-                                    <i data-lucide="file-text" class="w-4 h-4 text-green-500"></i>
-                                    <span id="file-name" class="font-medium text-white"></span>
-                                </div>
-                                <span id="file-size" class="text-sm text-muted"></span>
+                    <input type="file" id="file-input" accept=".txt" class="hidden" onchange="handleFileSelect(event)">
+                </div>
+                
+                <div id="file-info" class="hidden">
+                    <div class="bg-theme-bg border border-theme-border rounded-lg p-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="file-text" class="w-4 h-4 text-theme-green"></i>
+                                <span id="file-name" class="font-medium text-white"></span>
                             </div>
-                            <div class="upload-progress">
-                                <div id="upload-progress-bar" class="upload-progress-bar" style="width: 0%"></div>
-                            </div>
+                            <span id="file-size" class="text-sm text-theme-muted"></span>
+                        </div>
+                        <div class="progress-bar mt-2">
+                            <div id="upload-progress" class="progress-fill" style="width: 0%"></div>
                         </div>
                     </div>
-                    
-                    <div class="flex gap-3">
-                        <button onclick="SaveSystem.closeImportModal()" 
-                                class="btn btn-outline flex-1">
-                            Cancelar
-                        </button>
-                        <button onclick="SaveSystem.processImport()" id="import-btn" disabled
-                                class="btn btn-success flex-1">
-                            Importar Save
-                        </button>
-                    </div>
+                </div>
+                
+                <div class="flex gap-3 pt-4 border-t border-theme-border">
+                    <button onclick="closeImportModal()" 
+                            class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
+                        Cancelar
+                    </button>
+                    <button onclick="processImport()" id="import-btn" disabled
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-theme-green to-emerald-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed">
+                        Importar Save
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <!-- Modal de Confirmação -->
-    <div id="confirm-modal" class="modal-backdrop">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="confirm-title"></h3>
-                <button onclick="SaveSystem.closeConfirmModal()" class="modal-close">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
+    <div id="confirm-modal" class="modal-backdrop hidden">
+        <div class="modal-content p-6">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-900/20 flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                </div>
+                <h3 class="font-cinzel text-xl font-bold text-white mb-2" id="confirm-title"></h3>
+                <p class="text-theme-muted" id="confirm-message"></p>
             </div>
-            <div class="modal-body">
-                <p class="text-muted" id="confirm-message"></p>
-            </div>
-            <div class="modal-footer">
-                <button onclick="SaveSystem.closeConfirmModal()" 
-                        class="btn btn-outline flex-1">
+            
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" 
+                        class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
                     Cancelar
                 </button>
-                <button onclick="SaveSystem.executeConfirmedAction()" id="confirm-action-btn"
-                        class="btn btn-danger flex-1">
+                <button onclick="executeConfirmedAction()" id="confirm-action-btn"
+                        class="flex-1 px-4 py-3 bg-gradient-to-r from-red-600 to-red-700 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
                     Confirmar
                 </button>
             </div>
         </div>
     </div>
-    
+
     <!-- Modal de Resultado -->
-    <div id="result-modal" class="modal-backdrop">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="result-title"></h3>
-                <button onclick="SaveSystem.closeResultModal()" class="modal-close">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center mb-6">
-                    <div id="result-icon" class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
-                        <!-- Ícone será inserido via JS -->
-                    </div>
-                    <p class="text-muted" id="result-message"></p>
+    <div id="result-modal" class="modal-backdrop hidden">
+        <div class="modal-content p-6">
+            <div class="text-center mb-6">
+                <div id="result-icon" class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center">
+                    <!-- Ícone será inserido via JS -->
                 </div>
+                <h3 class="font-cinzel text-xl font-bold text-white mb-2" id="result-title"></h3>
+                <p class="text-theme-muted" id="result-message"></p>
             </div>
-            <div class="modal-footer">
-                <button onclick="SaveSystem.closeResultModal()" 
-                        class="btn btn-outline flex-1">
+            
+            <div class="flex gap-3">
+                <button onclick="closeResultModal()" 
+                        class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
                     Fechar
                 </button>
-                <button onclick="SaveSystem.viewImportedData()" id="view-data-btn" class="hidden btn btn-primary flex-1">
+                <button onclick="viewImportedData()" id="view-data-btn" class="hidden flex-1 px-4 py-3 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity">
                     Ver Dados
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="container py-8 mt-8 border-t border-border">
-        <div class="text-center text-sm text-muted">
-            <p><i data-lucide="shield" class="w-3 h-3 inline mr-1"></i> Sistema de Save - Grimório Digital v3.0</p>
-            <p class="mt-1">Todos os dados são processados localmente no seu navegador</p>
+    <div class="max-w-6xl mx-auto px-4 mt-8 pb-12">
+        <div class="text-center text-sm text-theme-muted">
+            <p><i data-lucide="shield" class="w-3 h-3 inline mr-1"></i> Todos os dados são processados localmente - nada é enviado para servidores</p>
         </div>
-    </footer>
+    </div>
 
-    <!-- Script de inicialização -->
     <script>
-        // Inicializar ícones
         lucide.createIcons();
-        
-        // Configurar navbar mobile
-        document.getElementById('navbarToggle')?.addEventListener('click', function() {
-            document.getElementById('navbarNav').classList.toggle('open');
-        });
-        
-        // Marcar body como carregado
-        document.addEventListener('DOMContentLoaded', function() {
-            document.body.classList.add('loaded');
+
+        // ====================================================================
+        // DADOS GLOBAIS
+        // ====================================================================
+        let currentSaveData = null;
+        let selectedFile = null;
+        let confirmedAction = null;
+
+        // ====================================================================
+        // FUNÇÕES DE MODAL
+        // ====================================================================
+        function openImportModal() {
+            document.getElementById('import-modal').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('import-modal').classList.add('hidden');
+            resetImportForm();
+        }
+
+        function openConfirmModal(title, message, action) {
+            document.getElementById('confirm-title').textContent = title;
+            document.getElementById('confirm-message').textContent = message;
+            confirmedAction = action;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            confirmedAction = null;
+        }
+
+        function executeConfirmedAction() {
+            if (confirmedAction === 'clearAll') {
+                clearAllData();
+            }
+            closeConfirmModal();
+        }
+
+        function openResultModal(type, title, message, showViewButton = false) {
+            const icon = document.getElementById('result-icon');
+            const titleEl = document.getElementById('result-title');
+            const messageEl = document.getElementById('result-message');
+            const viewBtn = document.getElementById('view-data-btn');
             
-            // Inicializar sistema de save
-            if (window.SaveSystem) {
-                SaveSystem.init();
+            // Configurar ícone
+            icon.innerHTML = '';
+            let iconElement;
+            if (type === 'success') {
+                iconElement = document.createElement('i');
+                iconElement.setAttribute('data-lucide', 'check-circle');
+                iconElement.className = 'w-8 h-8 text-green-500';
+                icon.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-green-900/20 flex items-center justify-center';
+            } else if (type === 'error') {
+                iconElement = document.createElement('i');
+                iconElement.setAttribute('data-lucide', 'x-circle');
+                iconElement.className = 'w-8 h-8 text-red-500';
+                icon.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-red-900/20 flex items-center justify-center';
+            } else {
+                iconElement = document.createElement('i');
+                iconElement.setAttribute('data-lucide', 'info');
+                iconElement.className = 'w-8 h-8 text-blue-500';
+                icon.className = 'w-16 h-16 mx-auto mb-4 rounded-full bg-blue-900/20 flex items-center justify-center';
+            }
+            icon.appendChild(iconElement);
+            
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+            viewBtn.classList.toggle('hidden', !showViewButton);
+            
+            document.getElementById('result-modal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').classList.add('hidden');
+        }
+
+        // ====================================================================
+        // FUNÇÕES DE IMPORT/EXPORT
+        // ====================================================================
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.name.endsWith('.txt')) {
+                openResultModal('error', 'Formato Inválido', 'Por favor, selecione um arquivo .txt');
+                return;
             }
             
-            // Configurar tema salvo
-            const savedTheme = localStorage.getItem('grimorio_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
+            selectedFile = file;
+            
+            // Atualizar UI
+            document.getElementById('file-name').textContent = file.name;
+            document.getElementById('file-size').textContent = formatFileSize(file.size);
+            document.getElementById('file-info').classList.remove('hidden');
+            document.getElementById('import-btn').disabled = false;
+            
+            // Simular progresso
+            simulateUploadProgress();
+        }
+
+        function simulateUploadProgress() {
+            const progressBar = document.getElementById('upload-progress');
+            let progress = 0;
+            
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBar.style.width = `${progress}%`;
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                }
+            }, 50);
+        }
+
+        function processImport() {
+            if (!selectedFile) return;
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                try {
+                    const content = e.target.result;
+                    currentSaveData = parseSaveFile(content);
+                    
+                    openResultModal('success', 'Importação Concluída', 
+                        'Save importado com sucesso! Os dados estão prontos para serem carregados.', true);
+                    
+                    // Salvar no localStorage para uso futuro
+                    localStorage.setItem('last_imported_save', content);
+                    
+                    // Atualizar lista de saves
+                    loadLocalSaves();
+                    
+                    closeImportModal();
+                } catch (error) {
+                    openResultModal('error', 'Erro na Importação', 
+                        'Não foi possível processar o arquivo. Verifique se é um save válido do Grimório Digital.');
+                }
+            };
+            
+            reader.onerror = function() {
+                openResultModal('error', 'Erro na Leitura', 
+                    'Não foi possível ler o arquivo. Tente novamente.');
+            };
+            
+            reader.readAsText(selectedFile);
+        }
+
+        function parseSaveFile(content) {
+            // Analisar o formato do save
+            const lines = content.split('\n');
+            const saveData = {
+                type: 'unknown',
+                metadata: {},
+                character: {},
+                mascot: {},
+                items: [],
+                timestamp: new Date().toISOString()
+            };
+            
+            // Detectar tipo de save
+            if (content.includes('=== FICHA DE PERSONAGEM ===')) {
+                saveData.type = 'character';
+                saveData.metadata = extractCharacterMetadata(lines);
+            } else if (content.includes('=== FICHA DE MASCOTE ===')) {
+                saveData.type = 'mascot';
+                saveData.metadata = extractMascotMetadata(lines);
+            } else if (content.includes('=== BACKUP COMPLETO ===')) {
+                saveData.type = 'complete';
+                // Processar backup completo
+            }
+            
+            // Extrair dados específicos
+            if (saveData.type === 'character') {
+                saveData.character = extractCharacterData(lines);
+            } else if (saveData.type === 'mascot') {
+                saveData.mascot = extractMascotData(lines);
+            }
+            
+            return saveData;
+        }
+
+        function extractCharacterMetadata(lines) {
+            const metadata = {};
+            for (const line of lines) {
+                if (line.includes('Nome:')) {
+                    metadata.nome = line.split(':')[1]?.trim();
+                } else if (line.includes('Classe:')) {
+                    metadata.classe = line.split(':')[1]?.trim();
+                } else if (line.includes('Nível:')) {
+                    metadata.nivel = parseInt(line.split(':')[1]?.trim()) || 1;
+                } else if (line.includes('Gerado em:')) {
+                    metadata.data = line.split(':')[1]?.trim();
+                }
+            }
+            return metadata;
+        }
+
+        function extractMascotMetadata(lines) {
+            const metadata = {};
+            for (const line of lines) {
+                if (line.includes('NOME:')) {
+                    metadata.nome = line.split(':')[1]?.trim();
+                } else if (line.includes('TIPO:')) {
+                    metadata.tipo = line.split(':')[1]?.trim();
+                } else if (line.includes('NÍVEL:')) {
+                    metadata.nivel = parseInt(line.split(':')[1]?.trim()) || 1;
+                }
+            }
+            return metadata;
+        }
+
+        function extractCharacterData(lines) {
+            // Implementar extração detalhada dos dados do personagem
+            const characterData = {};
+            
+            let section = '';
+            for (const line of lines) {
+                const trimmed = line.trim();
+                
+                if (trimmed.includes('===')) {
+                    section = trimmed.replace(/=/g, '').trim().toLowerCase();
+                } else if (trimmed && section) {
+                    // Processar dados baseado na seção
+                    if (section.includes('atributos')) {
+                        const [attr, value] = trimmed.split(':');
+                        if (attr && value) {
+                            characterData[attr.trim().toLowerCase()] = parseInt(value.trim()) || 0;
+                        }
+                    } else if (section.includes('recursos')) {
+                        const [resource, values] = trimmed.split(':');
+                        if (resource && values) {
+                            const [current, max] = values.split('/');
+                            characterData[resource.trim().toLowerCase()] = {
+                                current: parseInt(current.trim()) || 0,
+                                max: parseInt(max.trim()) || 0
+                            };
+                        }
+                    }
+                }
+            }
+            
+            return characterData;
+        }
+
+        function extractMascotData(lines) {
+            const mascotData = {};
+            
+            let section = '';
+            for (const line of lines) {
+                const trimmed = line.trim();
+                
+                if (trimmed.includes('===')) {
+                    section = trimmed.replace(/=/g, '').trim().toLowerCase();
+                } else if (trimmed && section) {
+                    if (section.includes('status')) {
+                        const [stat, value] = trimmed.split(':');
+                        if (stat && value) {
+                            mascotData[stat.trim().toLowerCase()] = value.trim();
+                        }
+                    }
+                }
+            }
+            
+            return mascotData;
+        }
+
+        function exportCurrentCharacter() {
+            // Coletar dados atuais da ficha principal
+            const characterData = getCurrentCharacterData();
+            const saveContent = generateCharacterSave(characterData);
+            
+            downloadSaveFile(saveContent, 'personagem');
+            
+            // Salvar localmente
+            saveLocalSave(characterData.metadata.nome, saveContent, 'character');
+            
+            openResultModal('success', 'Exportação Concluída', 
+                `Personagem "${characterData.metadata.nome}" exportado com sucesso!`);
+        }
+
+        function exportAllData() {
+            // Coletar dados completos
+            const completeData = getCompleteData();
+            const saveContent = generateCompleteSave(completeData);
+            
+            downloadSaveFile(saveContent, 'backup_completo');
+            
+            // Salvar localmente
+            saveLocalSave('Backup Completo', saveContent, 'complete');
+            
+            openResultModal('success', 'Backup Concluído', 
+                'Todos os dados foram exportados com sucesso!');
+        }
+
+        function getCurrentCharacterData() {
+            // Buscar dados da ficha principal do localStorage
+            const fichaData = localStorage.getItem('grimorio_ficha_personagem');
+            const nome = localStorage.getItem('grimorio_nome_personagem') || 'Personagem Sem Nome';
+            const classe = localStorage.getItem('grimorio_classe_personagem') || 'Desconhecida';
+            const raca = localStorage.getItem('grimorio_raca_personagem') || 'Desconhecida';
+            
+            // Buscar dados de status
+            const statsData = localStorage.getItem('rpg_stats');
+            let stats = {};
+            if (statsData) {
+                try {
+                    stats = JSON.parse(statsData);
+                } catch (e) {
+                    console.error('Erro ao parsear stats:', e);
+                }
+            }
+            
+            return {
+                metadata: {
+                    nome: nome,
+                    classe: classe,
+                    raca: raca,
+                    nivel: stats.GLOBAL_LEVEL || 1,
+                    xp: stats.GLOBAL_XP || 0,
+                    data: new Date().toLocaleString('pt-BR')
+                },
+                stats: stats,
+                ficha: fichaData ? JSON.parse(fichaData) : {}
+            };
+        }
+
+        function getCompleteData() {
+            return {
+                character: {
+                    // Busca dados de TODAS as páginas
+                    nome: localStorage.getItem('grimorio_nome_personagem'),
+                    classe: localStorage.getItem('grimorio_classe_personagem'),
+                    raca: localStorage.getItem('grimorio_raca_personagem'),
+                    stats: JSON.parse(localStorage.getItem('rpg_stats') || '{}'),
+                    inventario: JSON.parse(localStorage.getItem('rpg_inventario') || '[]'),
+                    // ... adicione todos os dados necessários
+                },
+                mascot: JSON.parse(localStorage.getItem('rpg_mascote_completo') || 'null'),
+                sistema_classes: JSON.parse(localStorage.getItem('grimorio_custom_classes') || '[]'),
+                configuracoes: {
+                    tema: localStorage.getItem('grimorio_tema'),
+                    // ... outras configurações
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+
+        function getMascotData() {
+            const mascoteData = localStorage.getItem('rpg_mascote_completo');
+            if (mascoteData) {
+                try {
+                    return JSON.parse(mascoteData);
+                } catch (e) {
+                    console.error('Erro ao parsear dados do mascote:', e);
+                }
+            }
+            return null;
+        }
+
+        function getItemsData() {
+            // Implementar coleta de dados de itens
+            return [];
+        }
+
+        function generateCharacterSave(data) {
+            let save = '='.repeat(50) + '\n';
+            save += '            FICHA DE PERSONAGEM - GRIMÓRIO DIGITAL\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            save += `Nome: ${data.metadata.nome}\n`;
+            save += `Classe: ${data.metadata.classe}\n`;
+            save += `Raça: ${data.metadata.raca}\n`;
+            save += `Nível: ${data.metadata.nivel}\n`;
+            save += `XP: ${data.metadata.xp}\n\n`;
+            
+            save += '='.repeat(50) + '\n';
+            save += '                 ATRIBUTOS\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            // Adicionar atributos do personagem
+            if (data.stats) {
+                const attributes = ['attr-forca', 'attr-destreza', 'attr-constituicao', 
+                                   'attr-inteligencia', 'attr-sabedoria', 'attr-carisma'];
+                attributes.forEach(attr => {
+                    if (data.stats[attr] !== undefined) {
+                        const name = attr.replace('attr-', '').charAt(0).toUpperCase() + 
+                                   attr.replace('attr-', '').slice(1);
+                        save += `${name}: ${data.stats[attr]}\n`;
+                    }
+                });
+            }
+            
+            save += '\n' + '='.repeat(50) + '\n';
+            save += '                 RECURSOS\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            // Adicionar recursos
+            const resources = {
+                'input-vida-atual': 'Vida Atual',
+                'input-vida-max': 'Vida Máxima',
+                'input-mana-atual': 'Mana Atual', 
+                'input-mana-max': 'Mana Máxima'
+            };
+            
+            Object.entries(resources).forEach(([key, label]) => {
+                if (data.stats[key] !== undefined) {
+                    save += `${label}: ${data.stats[key]}\n`;
+                }
+            });
+            
+            save += '\n' + '='.repeat(50) + '\n';
+            save += '                 INVENTÁRIO\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            // Adicionar itens (simplificado)
+            save += 'Itens serão carregados na próxima versão.\n\n';
+            
+            save += '='.repeat(50) + '\n';
+            save += `Gerado em: ${data.metadata.data}\n`;
+            save += '='.repeat(50);
+            
+            return save;
+        }
+
+        function generateCompleteSave(data) {
+            let save = '='.repeat(50) + '\n';
+            save += '            BACKUP COMPLETO - GRIMÓRIO DIGITAL\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            save += `Versão: ${data.version}\n`;
+            save += `Data do Backup: ${new Date(data.timestamp).toLocaleString('pt-BR')}\n\n`;
+            
+            save += '='.repeat(50) + '\n';
+            save += '                 PERSONAGEM\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            save += `Nome: ${data.character.metadata.nome}\n`;
+            save += `Classe: ${data.character.metadata.classe}\n`;
+            save += `Nível: ${data.character.metadata.nivel}\n\n`;
+            
+            save += '='.repeat(50) + '\n';
+            save += '                 MASCOTE\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            if (data.mascot) {
+                save += `Nome: ${data.mascot.nome || 'Sem nome'}\n`;
+                save += `Tipo: ${data.mascot.tipoNome || 'Desconhecido'}\n`;
+                save += `Nível: ${data.mascot.nivel || 1}\n`;
+            } else {
+                save += 'Nenhum mascote cadastrado.\n';
+            }
+            
+            save += '\n' + '='.repeat(50) + '\n';
+            save += '                 ITENS\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            if (data.items && data.items.length > 0) {
+                data.items.forEach((item, index) => {
+                    save += `${index + 1}. ${item.nome || 'Item'} - ${item.descricao || 'Sem descrição'}\n`;
+                });
+            } else {
+                save += 'Nenhum item registrado.\n';
+            }
+            
+            save += '\n' + '='.repeat(50) + '\n';
+            save += '                 DADOS TÉCNICOS\n';
+            save += '='.repeat(50) + '\n\n';
+            
+            save += `Timestamp: ${data.timestamp}\n`;
+            save += `Total de Itens: ${data.items ? data.items.length : 0}\n`;
+            save += `Personagem Criado: ${data.character.metadata.data}\n`;
+            
+            save += '\n' + '='.repeat(50) + '\n';
+            save += '         FIM DO BACKUP - GRIMÓRIO DIGITAL\n';
+            save += '='.repeat(50);
+            
+            return save;
+        }
+
+        function downloadSaveFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `Grimorio_${filename}_${new Date().toISOString().split('T')[0]}.txt`;
+            link.click();
+        }
+
+        // ====================================================================
+        // GERENCIAMENTO DE SAVES LOCAIS
+        // ====================================================================
+        function saveLocalSave(name, content, type) {
+            const saves = getLocalSaves();
+            
+            const newSave = {
+                id: Date.now(),
+                name: name,
+                type: type,
+                content: content,
+                date: new Date().toISOString(),
+                size: content.length
+            };
+            
+            saves.unshift(newSave); // Adicionar no início
+            localStorage.setItem('grimorio_local_saves', JSON.stringify(saves));
+            
+            loadLocalSaves();
+        }
+
+        function getLocalSaves() {
+            const saves = localStorage.getItem('grimorio_local_saves');
+            return saves ? JSON.parse(saves) : [];
+        }
+
+        function loadLocalSaves() {
+            const saves = getLocalSaves();
+            const container = document.getElementById('saves-container');
+            const countElement = document.getElementById('save-count');
+            
+            countElement.textContent = `${saves.length} save${saves.length !== 1 ? 's' : ''}`;
+            
+            if (saves.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
+                        <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
+                        <p class="text-theme-muted">Nenhum save local encontrado</p>
+                        <p class="text-xs text-theme-muted mt-1">Exporte seu personagem para criar um save</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            saves.forEach(save => {
+                const saveElement = document.createElement('div');
+                saveElement.className = 'save-card bg-theme-bg border border-theme-border p-4 rounded-lg';
+                saveElement.innerHTML = `
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-lg ${getSaveTypeColor(save.type)} flex items-center justify-center">
+                                <i data-lucide="${getSaveTypeIcon(save.type)}" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-white">${save.name}</h4>
+                                <p class="text-xs text-theme-muted">${formatDate(save.date)}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="loadSave(${save.id})" class="p-2 text-theme-blue hover:bg-theme-blue/10 rounded-lg">
+                                <i data-lucide="upload" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteSave(${save.id})" class="p-2 text-theme-red hover:bg-red-900/20 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-theme-muted">${getSaveTypeName(save.type)}</span>
+                        <span class="text-theme-muted">${formatFileSize(save.size)}</span>
+                    </div>
+                `;
+                container.appendChild(saveElement);
+            });
+            
+            lucide.createIcons();
+        }
+
+        function getSaveTypeColor(type) {
+            switch(type) {
+                case 'character': return 'bg-theme-blue/20';
+                case 'mascot': return 'bg-theme-pink/20';
+                case 'complete': return 'bg-theme-purple/20';
+                default: return 'bg-gray-700';
+            }
+        }
+
+        function getSaveTypeIcon(type) {
+            switch(type) {
+                case 'character': return 'user';
+                case 'mascot': return 'dog';
+                case 'complete': return 'database';
+                default: return 'file';
+            }
+        }
+
+        function getSaveTypeName(type) {
+            switch(type) {
+                case 'character': return 'Personagem';
+                case 'mascot': return 'Mascote';
+                case 'complete': return 'Backup Completo';
+                default: return 'Arquivo';
+            }
+        }
+
+        function loadSave(saveId) {
+            const saves = getLocalSaves();
+            const save = saves.find(s => s.id === saveId);
+            
+            if (save) {
+                currentSaveData = parseSaveFile(save.content);
+                
+                openResultModal('success', 'Save Carregado', 
+                    `"${save.name}" carregado com sucesso! Pronto para importar.`, true);
+            }
+        }
+
+        function deleteSave(saveId) {
+            openConfirmModal(
+                'Excluir Save',
+                'Tem certeza que deseja excluir este save? Esta ação não pode ser desfeita.',
+                'delete'
+            );
+            
+            // Configurar ação específica
+            confirmedAction = () => {
+                const saves = getLocalSaves();
+                const filtered = saves.filter(s => s.id !== saveId);
+                localStorage.setItem('grimorio_local_saves', JSON.stringify(filtered));
+                loadLocalSaves();
+                closeConfirmModal();
+            };
+        }
+
+        function viewImportedData() {
+            if (currentSaveData) {
+                alert(`Dados prontos para importação:\n\nTipo: ${currentSaveData.type}\nNome: ${currentSaveData.metadata.nome || 'Desconhecido'}\n\nUse a função de importação na página correspondente.`);
+                closeResultModal();
+            }
+        }
+
+        // ====================================================================
+        // FUNÇÕES UTILITÁRIAS
+        // ====================================================================
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+        }
+
+        function resetImportForm() {
+            selectedFile = null;
+            document.getElementById('file-input').value = '';
+            document.getElementById('file-info').classList.add('hidden');
+            document.getElementById('import-btn').disabled = true;
+            document.getElementById('upload-progress').style.width = '0%';
+        }
+
+        function confirmClearAllData() {
+            openConfirmModal(
+                'Limpar Todos os Dados',
+                'Isso excluirá TODOS os saves locais. Esta ação não pode ser desfeita.',
+                'clearAll'
+            );
+        }
+
+        function clearAllData() {
+            localStorage.removeItem('grimorio_local_saves');
+            loadLocalSaves();
+            openResultModal('success', 'Dados Limpos', 'Todos os saves locais foram removidos.');
+        }
+
+        // ====================================================================
+        // DRAG AND DROP
+        // ====================================================================
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-theme-green', 'bg-theme-green/5');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('border-theme-green', 'bg-theme-green/5');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-theme-green', 'bg-theme-green/5');
+                
+                const file = e.dataTransfer.files[0];
+                if (file && file.name.endsWith('.txt')) {
+                    // Simular seleção de arquivo
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.getElementById('file-input').files = dataTransfer.files;
+                    handleFileSelect({ target: { files: [file] } });
+                } else {
+                    openResultModal('error', 'Arquivo Inválido', 'Por favor, selecione um arquivo .txt');
+                }
+            });
+        }
+
+        // ====================================================================
+        // INICIALIZAÇÃO
+        // ====================================================================
+        window.addEventListener('load', () => {
+            loadLocalSaves();
+            setupDragAndDrop();
+            lucide.createIcons();
+            
+            // Configurar auto-save
+            const autoSaveToggle = document.getElementById('auto-save-toggle');
+            const backupToggle = document.getElementById('backup-toggle');
+            
+            // Carregar configurações salvas
+            const autoSaveEnabled = localStorage.getItem('auto_save_enabled') !== 'false';
+            const backupEnabled = localStorage.getItem('backup_enabled') !== 'false';
+            
+            autoSaveToggle.checked = autoSaveEnabled;
+            backupToggle.checked = backupEnabled;
+            
+            // Salvar configurações ao alterar
+            autoSaveToggle.addEventListener('change', (e) => {
+                localStorage.setItem('auto_save_enabled', e.target.checked);
+            });
+            
+            backupToggle.addEventListener('change', (e) => {
+                localStorage.setItem('backup_enabled', e.target.checked);
+            });
+            
+            // Auto-save ao sair da página
+            if (autoSaveEnabled) {
+                window.addEventListener('beforeunload', () => {
+                    const characterData = getCurrentCharacterData();
+                    const saveContent = generateCharacterSave(characterData);
+                    saveLocalSave(characterData.metadata.nome, saveContent, 'character');
+                });
+            }
         });
     </script>
 </body>
