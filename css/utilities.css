@@ -317,6 +317,7 @@
     display: block;
     -webkit-box-orient: horizontal;
     -webkit-line-clamp: none;
+    line-clamp: none;
 }
 
 /* Text Decoration Thickness */
