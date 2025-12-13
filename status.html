@@ -1975,20 +1975,25 @@
         // ============================================================
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar ícones
-            if (window.lucide) {
-                lucide.createIcons();
+            try {
+                console.log('DOM carregado - Inicializando sistemas...');
+                
+                // Inicializar ícones
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+                
+                // Corrigir estilos Tailwind primeiro
+                setTimeout(corrigirEstilosTailwind, 100);
+                
+                // Inicializar todos os sistemas
+                inicializarTodosSistemas();
+                
+                console.log('Todos os sistemas carregados com sucesso');
+            } catch (error) {
+                console.error('Erro na inicialização:', error);
+                StatusSystemAvancado.showNotification('Erro ao inicializar sistemas!', 'error');
             }
-            
-            console.log('Inicializando todos os sistemas...');
-            
-            // Corrigir estilos Tailwind primeiro
-            setTimeout(corrigirEstilosTailwind, 100);
-            
-            // Inicializar todos os sistemas
-            inicializarTodosSistemas();
-            
-            console.log('Todos os sistemas carregados com sucesso');
         });
         
         // CARREGAR DADOS DO SISTEMA
@@ -1999,9 +2004,6 @@
             renderHistorico(statusData.historico);
         }
         
-        // ============================================================
-        // FUNÇÃO PARA INICIALIZAR TODOS OS SISTEMAS
-        // ============================================================
         function inicializarTodosSistemas() {
             // Inicializar sistema principal
             StatusSystemAvancado.init();
@@ -2012,20 +2014,25 @@
             // Configurar eventos do sistema principal
             setupEventListeners();
             
-            // Inicializar sistema de sorte/derivados
-            inicializarSistemaSorte();
-            
-            // Integrar os dois sistemas
-            const data = StatusSystemAvancado.load();
-            
-            // Atualizar atributos no sistema de derivados
-            if (window.atualizarAtributos) {
-                window.atualizarAtributos(data.atributos);
-            }
-            
-            // Atualizar nível no sistema de derivados
-            if (window.atualizarNivel) {
-                window.atualizarNivel(data.nivel, data.experiencia);
+            // Verificar se o sistema de sorte está disponível
+            if (typeof inicializarSistemaSorte !== 'undefined') {
+                // Inicializar sistema de sorte/derivados
+                inicializarSistemaSorte();
+                
+                // Integrar os dois sistemas
+                const data = StatusSystemAvancado.load();
+                
+                // Atualizar atributos no sistema de derivados
+                if (window.atualizarAtributos) {
+                    window.atualizarAtributos(data.atributos);
+                }
+                
+                // Atualizar nível no sistema de derivados
+                if (window.atualizarNivel) {
+                    window.atualizarNivel(data.nivel, data.experiencia);
+                }
+            } else {
+                console.warn('Sistema de sorte não disponível');
             }
             
             console.log('Todos os sistemas inicializados');
