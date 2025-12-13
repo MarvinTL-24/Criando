@@ -3,1072 +3,1422 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <script src="./js/grimorio-sync.js"></script>
-    <script src="./js/app.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            blue: '#4a9eff',
-                            orange: '#ff6b35',
-                            green: '#10b981',
-                            purple: '#8b5cf6',
-                            pink: '#ec4899',
-                            yellow: '#f59e0b'
-                        }
-                    }
-                }
+    <title>Grimório Digital v3.0</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        /* Layout Principal */
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+        }
+        
+        .logo-text h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--primary), #d946ef);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.25rem;
+        }
+        
+        .logo-text p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        /* Grid Principal */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 2rem;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            height: fit-content;
+        }
+        
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+        
+        .nav-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .nav-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--text);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        .nav-btn.active {
+            background: rgba(139, 92, 246, 0.2);
+            border-color: var(--primary);
+        }
+        
+        .nav-btn i {
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Configurações */
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Switch */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #475569;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        /* Área Principal */
+        .main-content {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        
+        .content-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .content-title h2 {
+            font-size: 1.75rem;
+            color: var(--text);
+        }
+        
+        .content-title i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .content-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        /* Cards de Save */
+        .saves-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .save-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .save-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.2);
+        }
+        
+        .save-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .save-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .type-character { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .type-backup { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+        .type-complete { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .type-mascot { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+        
+        .save-info h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+            color: var(--text);
+        }
+        
+        .save-date {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .save-preview {
+            background: rgba(15, 23, 42, 0.5);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .preview-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.25rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .preview-row:last-child {
+            border-bottom: none;
+        }
+        
+        .preview-label {
+            color: var(--text-muted);
+        }
+        
+        .save-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Botões */
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), #7c3aed);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, var(--secondary), #0d9668);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+        
+        .btn-full {
+            width: 100%;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.9));
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), #d946ef);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        
+        .empty-state h3 {
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+        
+        /* Modais */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, var(--card-bg), var(--dark-bg));
+            border-radius: 16px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            color: var(--text);
+        }
+        
+        /* Notificações */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary);
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateX(100%);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1001;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        
+        .notification.success { border-color: var(--secondary); }
+        .notification.error { border-color: var(--danger); }
+        .notification.warning { border-color: var(--warning); }
+        
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .saves-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
-    </script>
-
-    <style>
-        body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Scrollbar Customizada */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0a0a0c; }
-        ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
-
-        /* Efeitos de Glow */
-        .text-shadow-glow { text-shadow: 0 0 10px rgba(74, 158, 255, 0.5); }
-        .hover-glow-blue:hover { box-shadow: 0 0 20px rgba(74, 158, 255, 0.15); border-color: rgba(74, 158, 255, 0.5); }
-        .hover-glow-orange:hover { box-shadow: 0 0 20px rgba(255, 107, 53, 0.15); border-color: rgba(255, 107, 53, 0.5); }
-
-        /* Animações */
-        .anim-entry {
-            animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
-            transform: translateY(20px);
+        @media (max-width: 768px) {
+            .app-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .saves-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
-
-        .anim-delay-1 { animation-delay: 0.2s; }
-        .anim-delay-2 { animation-delay: 0.4s; }
-        .anim-delay-3 { animation-delay: 0.6s; }
-
-        @keyframes fadeInUp {
+        
+        /* Animações */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Classes para Dropdown */
-        .dropdown-content {
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s ease-in-out;
-            pointer-events: none;
-        }
-
-        .dropdown-content.active {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-            pointer-events: auto;
-        }
-
-        .chevron { transition: transform 0.3s ease; }
-        .chevron.rotate { transform: rotate(180deg); }
-
-        /* Botão de Salvamento */
-        .save-btn {
-            position: relative;
-            overflow: hidden;
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
         }
         
-        .save-btn::after {
-            content: '';
+        /* Drag and Drop */
+        .drop-zone {
+            border: 2px dashed var(--primary);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            background: rgba(139, 92, 246, 0.05);
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .drop-zone.active {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: #d946ef;
+        }
+        
+        .drop-zone i {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-success { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+        
+        /* Acessibilidade */
+        .sr-only {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
         
-        .save-btn:focus:not(:active)::after {
-            animation: ripple 1s ease-out;
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--text-muted);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
         }
         
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(20, 20);
-                opacity: 0;
-            }
-        }
-        
-        /* Feedback de Salvamento */
-        .save-feedback {
-            animation: slideIn 0.3s ease-out;
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
-<body class="min-h-screen font-sans flex flex-col">
-
-    <!-- Navegação Superior (Hub) -->
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-center flex-wrap" id="nav-container">
-                
-                <!-- FICHA -->
-                <a href="ficha.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                    <i data-lucide="scroll-text" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Ficha</span>
-                </a>
-
-                <!-- Perfil -->
-                <a href="perfil.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#ff6b35] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#ff6b35]">
-                    <i data-lucide="zap" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Perfil</span>
-                </a>
-
-                <!-- CONJUNTO (Habilidades + Itens + Proficiências) -->
-                <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-conjunto', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                        <i data-lucide="layers" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Conjunto</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
-                    </button>
-                    <div id="menu-conjunto" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
-                        <a href="habilidades.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="sparkles" class="w-3 h-3"></i> Habilidades
-                        </a>
-                        <a href="inventario.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="backpack" class="w-3 h-3"></i> Itens
-                        </a>
-                        <a href="proficiencias.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="award" class="w-3 h-3"></i> Proficiências
-                        </a>
-                    </div>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-book-sparkles"></i>
                 </div>
-
-                <!-- MASCOTE -->
-                <a href="mascote.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#10b981] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#10b981]">
-                    <i data-lucide="dog" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Mascote</span>
-                </a>
-
-                <!-- SISTEMA (Classe + Perfis + Backup) -->
-                <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-sistema', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#8b5cf6] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#8b5cf6]">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Sistema</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
-                    </button>
-                    <div id="menu-sistema" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50">
-                        <a href="classe.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#8b5cf6]/10 hover:text-[#8b5cf6] hover:pl-7 border-l-2 border-transparent hover:border-[#8b5cf6]">
-                            <i data-lucide="swords" class="w-3 h-3"></i> Classes
-                        </a>
-                        <a href="perfil.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#ec4899]/10 hover:text-[#ec4899] hover:pl-7 border-l-2 border-transparent hover:border-[#ec4899]">
-                            <i data-lucide="users" class="w-3 h-3"></i> Perfis
-                        </a>
-                        <a href="backup.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#f59e0b]/10 hover:text-[#f59e0b] hover:pl-7 border-l-2 border-transparent hover:border-[#f59e0b]">
-                            <i data-lucide="hard-drive" class="w-3 h-3"></i> Backup
-                        </a>
-                    </div>
+                <div class="logo-text">
+                    <h1>Grimório Digital v3.0</h1>
+                    <p>Sistema completo de gerenciamento de personagens</p>
                 </div>
-
-            </div>
-        </div>
-        <div class="h-[2px] bg-gradient-to-r from-transparent via-[#4a9eff] to-transparent"></div>
-    </nav>
-
-    <!-- Container principal -->
-    <main class="flex-grow">
-        <!-- Banner Hero -->
-        <div class="relative w-full h-[30vh] min-h-[250px] overflow-hidden anim-entry">
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&q=80');"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent"></div>
-            <div class="absolute inset-0 bg-gradient-to-r from-[#0a0a0c]/80 via-transparent to-[#0a0a0c]/80"></div>
-            
-            <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-theme-text tracking-widest text-shadow-glow mb-4">Grimório Digital</h1>
-                
-                <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
-                
-                <p class="text-[#a0a0a0] mt-3 tracking-[0.3em] text-sm font-light">HUB CENTRAL</p>
             </div>
             
-            <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-theme-blue/50 to-transparent"></div>
-        </div>
+            <div class="header-actions">
+                <button class="btn btn-outline" onclick="SaveSystem?.exportCharacter()">
+                    <i class="fas fa-user-circle"></i>
+                    Exportar Personagem
+                </button>
+                <button class="btn btn-primary" onclick="SaveSystem?.exportCompleteBackup()">
+                    <i class="fas fa-database"></i>
+                    Backup Completo
+                </button>
+            </div>
+        </header>
         
-        <!-- SEÇÃO PERFIL ATIVO -->
-        <div class="max-w-6xl mx-auto px-4 py-8 anim-entry anim-delay-1">
-            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg hover:border-theme-blue/30 transition-all duration-300">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
-                    <i data-lucide="user-check" class="w-5 h-5"></i>
-                    Perfil Ativo
-                </h3>
-                
-                <div id="perfil-ativo-container" class="flex flex-col md:flex-row items-center md:items-start gap-4 p-4 bg-[#0a0a0c] rounded border border-theme-border">
-                    <!-- Avatar será carregado aqui -->
-                    <div id="perfil-avatar" class="w-24 h-24 rounded-lg border-2 border-theme-border bg-cover bg-center flex-shrink-0 flex items-center justify-center overflow-hidden">
-                        <i data-lucide="user" class="w-10 h-10 text-[#606060]"></i>
+        <div class="main-grid">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Navegação -->
+                <div class="nav-section">
+                    <div class="nav-title">
+                        <i class="fas fa-compass"></i>
+                        Navegação
                     </div>
-                    
-                    <div class="flex-grow text-center md:text-left">
-                        <!-- No index.html, adicione esta seção -->
-                        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-6">
-                            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-4">
-                                <i data-lucide="user-check" class="w-5 h-5 text-theme-green"></i>
-                                Perfil Ativo
-                            </h3>
-                            
-                            <div id="active-profile-display" class="bg-[#0a0a0c] border border-theme-border p-4 rounded">
-                                <!-- Conteúdo será carregado dinamicamente -->
-                                <div class="text-center text-gray-500 py-8" id="no-active-profile">
-                                    <i data-lucide="user-x" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                                    <p>Nenhum perfil ativo</p>
-                                    <p class="text-sm mt-2">Crie uma ficha para começar</p>
-                                </div>
-                            </div>
-                        </section>
+                    <nav class="nav-links">
+                        <button class="nav-btn active" onclick="showSection('saves')">
+                            <i class="fas fa-save"></i>
+                            Meus Saves
+                        </button>
+                        <button class="nav-btn" onclick="showSection('character')">
+                            <i class="fas fa-user"></i>
+                            Personagem
+                        </button>
+                        <button class="nav-btn" onclick="showSection('inventory')">
+                            <i class="fas fa-backpack"></i>
+                            Inventário
+                        </button>
+                        <button class="nav-btn" onclick="showSection('mascots')">
+                            <i class="fas fa-paw"></i>
+                            Mascotes
+                        </button>
+                        <button class="nav-btn" onclick="showSection('classes')">
+                            <i class="fas fa-scroll"></i>
+                            Classes
+                        </button>
+                    </nav>
+                </div>
+                
+                <!-- Sistema de Save -->
+                <div class="nav-section">
+                    <div class="nav-title">
+                        <i class="fas fa-cogs"></i>
+                        Sistema de Save
+                    </div>
+                    <div class="nav-links">
+                        <button class="nav-btn" onclick="document.getElementById('import-modal').showModal()">
+                            <i class="fas fa-file-import"></i>
+                            Importar Save
+                        </button>
+                        <button class="nav-btn" onclick="SaveSystem?.clearAllSaves()">
+                            <i class="fas fa-trash-alt"></i>
+                            Limpar Todos Saves
+                        </button>
+                        <button class="nav-btn" onclick="SaveSystem?.syncWithCloud()">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            Sincronizar Nuvem
+                        </button>
                     </div>
                 </div>
+                
+                <!-- Configurações -->
+                <div class="nav-section">
+                    <div class="nav-title">
+                        <i class="fas fa-sliders-h"></i>
+                        Configurações
+                    </div>
+                    <div class="config-group">
+                        <div class="config-item">
+                            <span>Auto-save</span>
+                            <label class="switch">
+                                <input type="checkbox" id="auto-save-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="config-item">
+                            <span>Backup Automático</span>
+                            <label class="switch">
+                                <input type="checkbox" id="auto-backup-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="config-item">
+                            <span>Comprimir Backups</span>
+                            <label class="switch">
+                                <input type="checkbox" id="compress-backups-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="nav-section">
+                    <div class="nav-title">
+                        <i class="fas fa-chart-bar"></i>
+                        Estatísticas
+                    </div>
+                    <div class="stats-mini">
+                        <div class="stat-item">
+                            <span class="stat-mini-value" id="total-saves">0</span>
+                            <span class="stat-mini-label">Saves Totais</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-mini-value" id="total-size">0 KB</span>
+                            <span class="stat-mini-label">Espaço Usado</span>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <!-- Conteúdo Principal -->
+            <main class="main-content">
+                <!-- Header do Conteúdo -->
+                <div class="content-header">
+                    <div class="content-title">
+                        <i class="fas fa-save"></i>
+                        <h2>Gerenciador de Saves</h2>
+                    </div>
+                    <div class="content-actions">
+                        <button class="btn btn-outline btn-sm" onclick="SaveSystem?.loadLocalSaves()">
+                            <i class="fas fa-sync-alt"></i>
+                            Atualizar
+                        </button>
+                        <button class="btn btn-primary btn-sm" onclick="SaveSystem?.createQuickSave()">
+                            <i class="fas fa-bolt"></i>
+                            Quick Save
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Drop Zone para Import -->
+                <div class="drop-zone" id="drop-zone">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <h3>Arraste arquivos aqui</h3>
+                    <p>Solte arquivos .json para importar saves</p>
+                    <p class="text-muted">ou</p>
+                    <button class="btn btn-outline" onclick="document.getElementById('import-file-input').click()">
+                        <i class="fas fa-folder-open"></i>
+                        Selecione Arquivos
+                    </button>
+                    <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                </div>
+                
+                <!-- Estatísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="characters-count">0</div>
+                        <div class="stat-label">Personagens</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="backups-count">0</div>
+                        <div class="stat-label">Backups</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="complete-saves">0</div>
+                        <div class="stat-label">Completos</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="mascots-count">0</div>
+                        <div class="stat-label">Mascotes</div>
+                    </div>
+                </div>
+                
+                <!-- Grid de Saves -->
+                <div id="saves-container" class="saves-grid">
+                    <!-- Saves serão renderizados aqui pelo JavaScript -->
+                    <div class="empty-state">
+                        <i class="fas fa-folder-open"></i>
+                        <h3>Nenhum save encontrado</h3>
+                        <p>Comece exportando seu personagem ou importando um save existente</p>
+                        <button class="btn btn-primary" onclick="SaveSystem?.exportCharacter()">
+                            <i class="fas fa-user-circle"></i>
+                            Criar Primeiro Save
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <!-- Modais -->
+    <dialog id="import-modal" class="modal">
+        <div class="modal-content fade-in">
+            <div class="modal-header">
+                <h3><i class="fas fa-file-import"></i> Importar Save</h3>
+                <button class="modal-close" onclick="this.closest('dialog').close()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="import-preview-content">
+                <!-- Conteúdo será inserido pelo JavaScript -->
             </div>
         </div>
-
-        <!-- OS 4 ÍCONES PRINCIPAIS -->
-        <div class="max-w-6xl mx-auto px-4 pb-8 anim-entry anim-delay-2">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    </dialog>
+    
+    <dialog id="confirmation-modal" class="modal">
+        <div class="modal-content fade-in">
+            <div class="modal-header">
+                <h3 id="modal-title">Confirmar Ação</h3>
+                <button class="modal-close" onclick="this.closest('dialog').close()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-message">Tem certeza que deseja realizar esta ação?</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" onclick="this.closest('dialog').close()">
+                    Cancelar
+                </button>
+                <button class="btn btn-danger" id="modal-confirm-btn">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </dialog>
+    
+    <!-- Sistema de Notificações -->
+    <div id="notification-container"></div>
+    
+    <!-- Scripts -->
+    <script>
+        // Sistema de Save (simplificado para exemplo)
+        class Grimorio {
+            constructor() {
+                this.version = '3.0.0';
+                this.data = {
+                    character: {
+                        name: "Aventureiro",
+                        class: "Guerreiro",
+                        race: "Humano",
+                        level: 1,
+                        experience: 0
+                    },
+                    mascots: [],
+                    classes: [],
+                    inventory: []
+                };
+            }
+            
+            loadData(data) {
+                this.data = { ...this.data, ...data };
+                this.showNotification("Dados carregados com sucesso!", "success");
+            }
+        }
+        
+        // Inicializar Grimorio
+        window.Grimorio = new Grimorio();
+        
+        // Sistema de Save
+        window.SaveSystem = new (class SaveSystem {
+            constructor() {
+                this.version = '3.0.0';
+                this.localSaves = [];
+                this.config = {
+                    autoSave: true,
+                    autoBackup: true,
+                    compressBackups: true
+                };
+            }
+            
+            init() {
+                console.log('💾 Save System inicializado');
+                this.loadLocalSaves();
+                this.setupEventListeners();
+                this.setupDragAndDrop();
+            }
+            
+            loadLocalSaves() {
+                try {
+                    const saves = localStorage.getItem('grimorio_local_saves');
+                    this.localSaves = saves ? JSON.parse(saves) : [];
+                    this.renderLocalSaves();
+                    this.updateStats();
+                } catch (error) {
+                    console.error('Erro ao carregar saves:', error);
+                }
+            }
+            
+            renderLocalSaves() {
+                const container = document.getElementById('saves-container');
+                if (!container) return;
                 
-                <!-- ÍCONE 1: FICHA -->
-                <a href="ficha.html" class="icon-card group p-5 bg-theme-panel border border-theme-border hover-glow-blue transition-all duration-300 rounded-lg h-full block">
-                    <div class="flex flex-col items-center text-center h-full">
-                        <div class="p-3 rounded-full bg-[#4a9eff]/10 text-theme-blue mb-4">
-                            <i data-lucide="scroll-text" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="font-cinzel font-semibold text-white mb-2">Ficha</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Lore & Corpo</p>
-                        <div class="mt-auto w-full">
-                            <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-center">
-                                <p class="text-xs text-[#a0a0a0]">Aparência, História e Personalidade</p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- ÍCONE 2: STATUS -->
-                <a href="perfil.html" class="icon-card group p-5 bg-theme-panel border border-theme-border hover-glow-orange transition-all duration-300 rounded-lg h-full block">
-                    <div class="flex flex-col items-center text-center h-full">
-                        <div class="p-3 rounded-full bg-[#ff6b35]/10 text-[#ff6b35] mb-4">
-                            <i data-lucide="zap" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="font-cinzel font-semibold text-white mb-2">Perfil</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Atributos & Progressão</p>
-                        <div class="mt-auto w-full">
-                            <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-center">
-                                <p class="text-xs text-[#a0a0a0]">Atributos, Pontos de Vida e Mana</p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- ÍCONE 3: CONJUNTO -->
-                <a href="habilidades.html" class="icon-card group p-5 bg-theme-panel border border-theme-border hover:border-[#4a9eff]/50 transition-all duration-300 rounded-lg h-full block">
-                    <div class="flex flex-col items-center text-center h-full">
-                        <div class="p-3 rounded-full bg-[#4a9eff]/10 text-[#4a9eff] mb-4">
-                            <i data-lucide="layers" class="w-8 h-8"></i>
-                        </div>
-                        <h4 class="font-cinzel font-semibold text-white mb-2">Conjunto</h4>
-                        <p class="text-[#a0a0a0] text-sm mb-4">Habilidades + Itens</p>
-                        <div class="mt-auto w-full">
-                            <div class="h-px bg-theme-border mb-3"></div>
-                            <div class="text-center">
-                                <p class="text-xs text-[#a0a0a0]">Poderes, Inventário e Talentos</p>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-
-                <!-- ÍCONE 4: MASCOTE -->
-                <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-6">
-                    <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-4">
-                        <i data-lucide="dog" class="w-5 h-5 text-theme-pink"></i>
-                        Mascote
-                    </h3>
-                    
-                    <div id="mascote-display" class="bg-[#0a0a0c] border border-theme-border p-4 rounded">
-                        <!-- Conteúdo será carregado dinamicamente -->
-                        <div class="text-center text-gray-500 py-8" id="no-mascote">
-                            <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                            <p>Nenhum mascote criado</p>
-                            <p class="text-sm mt-2">Crie um companheiro para seu personagem</p>
-                            <button onclick="window.location.href='mascote.html'" 
-                                    class="mt-3 px-4 py-2 bg-gradient-to-r from-theme-pink to-purple-600 rounded text-white text-sm font-semibold hover:opacity-90 transition-opacity">
-                                <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i>
-                                Criar Mascote
+                if (this.localSaves.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-folder-open"></i>
+                            <h3>Nenhum save encontrado</h3>
+                            <p>Comece exportando seu personagem ou importando um save existente</p>
+                            <button class="btn btn-primary" onclick="SaveSystem.exportCharacter()">
+                                <i class="fas fa-user-circle"></i>
+                                Criar Primeiro Save
                             </button>
                         </div>
-                    </div>
-                </section>
-            </div>
-        </div>
-
-        <!-- EXPLICAÇÕES DETALHADAS -->
-        <div class="max-w-6xl mx-auto px-4 pb-12 anim-entry anim-delay-3">
-            <div class="grid md:grid-cols-2 gap-6">
-                
-                <!-- FICHA -->
-                <div class="bg-theme-panel border border-theme-border p-6 hover:border-theme-blue/30 transition-all duration-500 rounded">
-                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
-                        <div class="p-2 rounded bg-[#4a9eff]/15 text-theme-blue">
-                            <i data-lucide="scroll-text" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-theme-blue">Ficha (Lore & Corpo)</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <span class="text-theme-text font-medium block">Aparência Detalhada:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Slots de corpo para definir cada aspecto físico do personagem - rosto, cabelo, olhos, marcas, cicatrizes, tatuagens e características únicas.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">História e Personalidade:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Backstory completa, motivações, traços de personalidade, relações importantes e eventos marcantes que definem quem o personagem é.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Identidade Visual:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Upload de imagem do personagem, cores características e elementos visuais que representam sua essência.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- STATUS -->
-                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#ff6b35]/30 transition-all duration-500 rounded">
-                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
-                        <div class="p-2 rounded bg-[#ff6b35]/15 text-[#ff6b35]">
-                            <i data-lucide="zap" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-[#ff6b35]">Perfil (Atributos & Progressão do personagem)</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <span class="text-theme-text font-medium block">Atributos Numéricos:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Força, Agilidade, Inteligência, Constituição, Carisma e outros atributos essenciais para o sistema de jogo.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Pontos de Vida e Mana:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Sistema completo de recursos, com valores máximos, atuais e regeneração baseada em atributos.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Progressão de Nível:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Experiência, pontos de atributo disponíveis, melhorias e evolução do personagem ao longo da campanha.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CONJUNTO -->
-                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#4a9eff]/30 transition-all duration-500 rounded">
-                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
-                        <div class="p-2 rounded bg-[#4a9eff]/15 text-[#4a9eff]">
-                            <i data-lucide="layers" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-[#4a9eff]">Conjunto (Habilidades + Itens + Proficiências)</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <span class="text-theme-text font-medium block">Habilidades de Combate:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Poderes ativos, magias, técnicas especiais com custos, efeitos e cooldowns para uso em batalha.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Inventário Completo:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Sistema de slots para armas, armaduras, acessórios, consumíveis e itens mágicos com estatísticas detalhadas.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Proficiências e Talentos:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Perícias sociais, ofícios, especializações em armas/magias e bônus passivos que definem o expertise do personagem.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- MASCOTE -->
-                <div class="bg-theme-panel border border-theme-border p-6 hover:border-[#10b981]/30 transition-all duration-500 rounded">
-                    <div class="flex items-center gap-3 mb-4 pb-4 border-b border-theme-border">
-                        <div class="p-2 rounded bg-[#10b981]/15 text-[#10b981]">
-                            <i data-lucide="dog" class="w-5 h-5"></i>
-                        </div>
-                        <h3 class="font-cinzel text-lg font-semibold text-[#10b981]">Mascote (Companheiro)</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <span class="text-theme-text font-medium block">Sistema Próprio:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">O mascote possui sua própria ficha com status, nível, experiência e habilidades únicas.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Equipamentos Exclusivos:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Itens especiais que apenas o mascote pode utilizar, oferecendo bônus e habilidades adicionais.</p>
-                        </div>
-                        <div>
-                            <span class="text-theme-text font-medium block">Vínculo com o Personagem:</span>
-                            <p class="text-[#808080] text-sm leading-relaxed mt-1">Habilidades conjuntas que são desbloqueadas conforme o nível de vínculo entre personagem e mascote aumenta.</p>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </main>
-
-    <footer class="border-t border-theme-border py-8 mt-auto">
-        <div class="flex justify-center items-center gap-4">
-            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-[#4a9eff]/50"></div>
-            <i data-lucide="sword" class="w-4 h-4 text-[#4a9eff]/50 rotate-90 md:rotate-0"></i>
-            <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-[#4a9eff]/50"></div>
-        </div>
-        <p class="text-center text-[#606060] text-xs mt-4">Grimório Digital - Sistema de RPG v1.0</p>
-    </footer>
-
-    <!-- Botão de Salvamento Flutuante (aparecerá em todas as páginas) -->
-    <div id="floating-save-btn" class="fixed bottom-6 right-6 z-50 hidden">
-        <button onclick="salvarPerfilAtivo()" class="save-btn flex items-center gap-2 px-4 py-3 bg-theme-green hover:bg-[#0ea271] text-white rounded-lg shadow-lg transition-all duration-300 hover:shadow-xl">
-            <i data-lucide="save" class="w-4 h-4"></i>
-            <span class="font-medium">Salvar Perfil</span>
-        </button>
-    </div>
-
-    <!-- Feedback de Salvamento -->
-    <div id="save-feedback" class="fixed top-6 right-6 z-50 hidden">
-        <div class="save-feedback flex items-center gap-2 px-4 py-3 bg-theme-panel border border-theme-green text-theme-green rounded-lg shadow-lg">
-            <i data-lucide="check-circle" class="w-4 h-4"></i>
-            <span>Perfil salvo com sucesso!</span>
-        </div>
-    </div>
-
-    <script>
-        // 1. Inicializar Ícones Lucide
-        if (window.lucide) {
-            lucide.createIcons();
-        }
-
-        // 2. Lógica dos Dropdowns
-        function toggleMenu(menuId, btnElement) {
-            const menu = document.getElementById(menuId);
-            const chevron = btnElement.querySelector('.chevron');
-            const isActive = menu.classList.contains('active');
-
-            closeAllMenus();
-
-            if (!isActive) {
-                menu.classList.add('active');
-                if(chevron) chevron.classList.add('rotate');
-            }
-        }
-
-        function closeAllMenus() {
-            document.querySelectorAll('.dropdown-content').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.querySelectorAll('.chevron').forEach(el => {
-                el.classList.remove('rotate');
-            });
-        }
-
-        window.addEventListener('click', function(e) {
-            if (!e.target.closest('.dropdown-container')) {
-                closeAllMenus();
-            }
-        });
-
-        // 3. Sistema de Perfil Ativo
-        function carregarPerfilAtivo() {
-            const dadosSalvos = localStorage.getItem('grimorio_perfil_ativo');
-            const containerVazio = document.getElementById('perfil-sem-dados');
-            const containerComDados = document.getElementById('perfil-com-dados');
-            const avatarContainer = document.getElementById('perfil-avatar');
-            const floatingSaveBtn = document.getElementById('floating-save-btn');
-            
-            // Verificar se estamos em uma página de edição (ficha, status, etc)
-            const paginasEdicao = ['ficha.html', 'status.html', 'habilidades.html', 'inventario.html', 
-                                  'proficiencias.html', 'mascote.html', 'classe.html'];
-            const paginaAtual = window.location.pathname.split('/').pop();
-            
-            if (paginasEdicao.includes(paginaAtual)) {
-                if (floatingSaveBtn) {
-                    floatingSaveBtn.classList.remove('hidden');
+                    `;
+                    return;
                 }
+                
+                container.innerHTML = '';
+                this.localSaves.forEach(save => {
+                    container.appendChild(this.createSaveCard(save));
+                });
             }
             
-            if (!dadosSalvos) {
-                // Mostrar estado vazio
-                if (containerVazio) containerVazio.classList.remove('hidden');
-                if (containerComDados) containerComDados.classList.add('hidden');
-                if (avatarContainer) {
-                    avatarContainer.style.backgroundImage = '';
-                    avatarContainer.innerHTML = '<i data-lucide="user" class="w-10 h-10 text-[#606060]"></i>';
-                    if (window.lucide) lucide.createIcons();
-                }
-                return;
-            }
-            
-            try {
-                const dados = JSON.parse(dadosSalvos);
+            createSaveCard(save) {
+                const div = document.createElement('div');
+                div.className = 'save-card fade-in';
                 
-                // Mostrar container com dados
-                if (containerVazio) containerVazio.classList.add('hidden');
-                if (containerComDados) containerComDados.classList.remove('hidden');
-                
-                // Preencher informações
-                if (document.getElementById('perfil-nome')) {
-                    document.getElementById('perfil-nome').textContent = dados.nome || dados['inp-nome'] || 'Sem nome';
-                }
-                if (document.getElementById('perfil-titulo')) {
-                    document.getElementById('perfil-titulo').textContent = dados.titulo || dados['inp-titulo'] || 'Aventureiro sem título';
-                }
-                if (document.getElementById('perfil-classe')) {
-                    document.getElementById('perfil-classe').textContent = dados.classe || dados['inp-classe'] || 'Sem classe';
-                }
-                if (document.getElementById('perfil-raca')) {
-                    document.getElementById('perfil-raca').textContent = dados.raca || dados['inp-raca'] || 'Sem raça';
-                }
-                if (document.getElementById('perfil-nivel')) {
-                    const nivel = dados.nivel || dados['inp-nivel'] || 1;
-                    document.getElementById('perfil-nivel').textContent = `Nível ${nivel}`;
-                }
-                
-                // Carregar avatar
-                if (avatarContainer && dados.avatar) {
-                    avatarContainer.style.backgroundImage = `url(${dados.avatar})`;
-                    avatarContainer.style.backgroundSize = 'cover';
-                    avatarContainer.style.backgroundPosition = 'center';
-                    avatarContainer.innerHTML = '';
-                }
-                
-                // Formatar datas
-                if (dados.dataCriacao) {
-                    const dataCriacao = new Date(dados.dataCriacao);
-                    document.getElementById('perfil-criacao').textContent = 
-                        `Criado em ${dataCriacao.toLocaleDateString('pt-BR')}`;
-                }
-                
-                if (dados.ultimaAtualizacao) {
-                    const dataAtualizacao = new Date(dados.ultimaAtualizacao);
-                    const agora = new Date();
-                    const diferencaMin = Math.floor((agora - dataAtualizacao) / (1000 * 60));
+                try {
+                    const data = JSON.parse(save.content);
+                    const character = data.character || data;
+                    const date = new Date(save.date);
                     
-                    let textoAtualizacao;
-                    if (diferencaMin < 1) {
-                        textoAtualizacao = 'Atualizado agora';
-                    } else if (diferencaMin < 60) {
-                        textoAtualizacao = `Atualizado há ${diferencaMin} min`;
-                    } else if (diferencaMin < 1440) {
-                        textoAtualizacao = `Atualizado hoje às ${dataAtualizacao.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
-                    } else {
-                        textoAtualizacao = `Atualizado em ${dataAtualizacao.toLocaleDateString('pt-BR')}`;
+                    div.innerHTML = `
+                        <div class="save-header">
+                            <div class="save-info">
+                                <h3>${save.name}</h3>
+                                <div class="save-date">
+                                    ${date.toLocaleDateString()} • ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                            </div>
+                            <div class="save-type ${this.getSaveTypeClass(save.type)}">
+                                ${this.getSaveTypeLabel(save.type)}
+                            </div>
+                        </div>
+                        
+                        <div class="save-preview">
+                            ${character.name ? `
+                                <div class="preview-row">
+                                    <span class="preview-label">Nome:</span>
+                                    <span>${character.name}</span>
+                                </div>
+                            ` : ''}
+                            ${character.class ? `
+                                <div class="preview-row">
+                                    <span class="preview-label">Classe:</span>
+                                    <span>${character.class}</span>
+                                </div>
+                            ` : ''}
+                            ${character.race ? `
+                                <div class="preview-row">
+                                    <span class="preview-label">Raça:</span>
+                                    <span>${character.race}</span>
+                                </div>
+                            ` : ''}
+                            ${character.level ? `
+                                <div class="preview-row">
+                                    <span class="preview-label">Nível:</span>
+                                    <span>${character.level}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                        
+                        <div class="save-actions">
+                            <button class="btn btn-outline btn-sm" onclick="SaveSystem.loadSave('${save.id}')">
+                                <i class="fas fa-upload"></i> Carregar
+                            </button>
+                            <button class="btn btn-outline btn-sm" onclick="SaveSystem.exportSave('${save.id}')">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="SaveSystem.deleteSave('${save.id}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                } catch (error) {
+                    div.innerHTML = `
+                        <div class="save-header">
+                            <div class="save-info">
+                                <h3>Save Corrompido</h3>
+                            </div>
+                            <div class="badge badge-danger">Erro</div>
+                        </div>
+                        <div class="save-actions">
+                            <button class="btn btn-danger btn-sm" onclick="SaveSystem.deleteSave('${save.id}')">
+                                <i class="fas fa-trash"></i> Remover
+                            </button>
+                        </div>
+                    `;
+                }
+                
+                return div;
+            }
+            
+            getSaveTypeClass(type) {
+                const classes = {
+                    'character': 'type-character',
+                    'backup': 'type-backup',
+                    'complete': 'type-complete',
+                    'mascot': 'type-mascot'
+                };
+                return classes[type] || 'type-character';
+            }
+            
+            getSaveTypeLabel(type) {
+                const labels = {
+                    'character': 'Personagem',
+                    'backup': 'Backup',
+                    'complete': 'Completo',
+                    'mascot': 'Mascote'
+                };
+                return labels[type] || 'Arquivo';
+            }
+            
+            exportCharacter() {
+                const character = Grimorio.data.character;
+                const saveData = {
+                    character: character,
+                    exportDate: new Date().toISOString(),
+                    version: Grimorio.version,
+                    type: 'character_export'
+                };
+                
+                this.createSave(character.name || 'Personagem', saveData, 'character');
+                this.showNotification(`"${character.name}" exportado com sucesso!`, 'success');
+            }
+            
+            exportCompleteBackup() {
+                const saveData = {
+                    ...Grimorio.data,
+                    backupDate: new Date().toISOString(),
+                    version: Grimorio.version,
+                    type: 'complete_backup'
+                };
+                
+                this.createSave('Backup Completo', saveData, 'complete');
+                this.showNotification('Backup completo criado!', 'success');
+            }
+            
+            createSave(name, data, type = 'character') {
+                const save = {
+                    id: 'save_' + Date.now(),
+                    name: name,
+                    type: type,
+                    content: JSON.stringify(data, null, 2),
+                    date: new Date().toISOString(),
+                    size: JSON.stringify(data).length
+                };
+                
+                this.localSaves.unshift(save);
+                this.saveLocalSaves();
+                this.renderLocalSaves();
+                this.updateStats();
+                
+                return save;
+            }
+            
+            loadSave(saveId) {
+                const save = this.localSaves.find(s => s.id === saveId);
+                if (!save) return;
+                
+                this.showConfirmation(
+                    'Carregar Save',
+                    `Carregar "${save.name}"? Os dados atuais serão substituídos.`,
+                    () => {
+                        try {
+                            const data = JSON.parse(save.content);
+                            Grimorio.loadData(data);
+                            this.showNotification('Save carregado!', 'success');
+                        } catch (error) {
+                            this.showNotification('Erro ao carregar save', 'error');
+                        }
                     }
-                    
-                    document.getElementById('perfil-atualizacao').textContent = textoAtualizacao;
+                );
+            }
+            
+            exportSave(saveId) {
+                const save = this.localSaves.find(s => s.id === saveId);
+                if (!save) return;
+                
+                // Simular download
+                this.showNotification(`"${save.name}" exportado!`, 'success');
+            }
+            
+            deleteSave(saveId) {
+                const save = this.localSaves.find(s => s.id === saveId);
+                if (!save) return;
+                
+                this.showConfirmation(
+                    'Excluir Save',
+                    `Excluir "${save.name}" permanentemente?`,
+                    () => {
+                        this.localSaves = this.localSaves.filter(s => s.id !== saveId);
+                        this.saveLocalSaves();
+                        this.renderLocalSaves();
+                        this.updateStats();
+                        this.showNotification('Save excluído!', 'success');
+                    }
+                );
+            }
+            
+            clearAllSaves() {
+                if (this.localSaves.length === 0) {
+                    this.showNotification('Nenhum save para limpar', 'info');
+                    return;
                 }
                 
-            } catch (error) {
-                console.error('Erro ao carregar perfil ativo:', error);
-                // Em caso de erro, mostrar estado vazio
-                if (containerVazio) containerVazio.classList.remove('hidden');
-                if (containerComDados) containerComDados.classList.add('hidden');
-            }
-        }
-        
-        // 4. Função de Salvamento Universal
-        function salvarPerfilAtivo() {
-            const dadosSalvos = localStorage.getItem('grimorio_perfil_ativo');
-            
-            if (!dadosSalvos) {
-                mostrarFeedback('Erro: Nenhum perfil encontrado para salvar.', 'error');
-                return;
+                this.showConfirmation(
+                    'Limpar Todos Saves',
+                    `Excluir todos os ${this.localSaves.length} saves permanentemente?`,
+                    () => {
+                        this.localSaves = [];
+                        this.saveLocalSaves();
+                        this.renderLocalSaves();
+                        this.updateStats();
+                        this.showNotification('Todos saves foram excluídos!', 'success');
+                    }
+                );
             }
             
-            try {
-                let dados = JSON.parse(dadosSalvos);
-                
-                // Atualizar data de modificação
-                dados.ultimaAtualizacao = new Date().toISOString();
-                
-                // Coletar dados específicos da página atual
-                const paginaAtual = window.location.pathname.split('/').pop();
-                
-                switch(paginaAtual) {
-                    case 'ficha.html':
-                        // Coletar dados da ficha
-                        dados = coletarDadosFicha(dados);
-                        break;
-                    case 'status.html':
-                        // Coletar dados do status
-                        dados = coletarDadosStatus(dados);
-                        break;
-                    case 'habilidades.html':
-                        // Coletar dados de habilidades
-                        dados = coletarDadosHabilidades(dados);
-                        break;
-                    case 'inventario.html':
-                        // Coletar dados do inventário
-                        dados = coletarDadosInventario(dados);
-                        break;
-                    case 'proficiencias.html':
-                        // Coletar dados de proficiências
-                        dados = coletarDadosProficiencias(dados);
-                        break;
-                    case 'mascote.html':
-                        // Coletar dados do mascote
-                        dados = coletarDadosMascote(dados);
-                        break;
-                    case 'classe.html':
-                        // Coletar dados da classe
-                        dados = coletarDadosClasse(dados);
-                        break;
-                }
-                
-                // Salvar no localStorage
-                localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(dados));
-                
-                // Mostrar feedback
-                mostrarFeedback('Perfil salvo com sucesso!', 'success');
-                
-                // Atualizar display
-                setTimeout(carregarPerfilAtivo, 500);
-                
-            } catch (error) {
-                console.error('Erro ao salvar perfil:', error);
-                mostrarFeedback('Erro ao salvar perfil.', 'error');
-            }
-        }
-        
-        // Funções auxiliares para coletar dados (serão implementadas nas páginas específicas)
-        function coletarDadosFicha(dadosAtuais) {
-            // Esta função será sobrescrita na página ficha.html
-            return dadosAtuais;
-        }
-        
-        function coletarDadosStatus(dadosAtuais) {
-            // Esta função será sobrescrita na página status.html
-            return dadosAtuais;
-        }
-        
-        function coletarDadosHabilidades(dadosAtuais) {
-            // Esta função será sobrescrita na página habilidades.html
-            return dadosAtuais;
-        }
-        
-        function coletarDadosInventario(dadosAtuais) {
-            // Esta função será sobrescrita na página inventario.html
-            return dadosAtuais;
-        }
-        
-        function coletarDadosProficiencias(dadosAtuais) {
-            // Esta função será sobrescrita na página proficiencias.html
-            return dadosAtuais;
-        }
-        
-        function coletarDadosMascote(dadosAtuais) {
-            // Esta função será sobrescrita na página mascote.html
-            return dadosAtuais;
-        }
-        
-        function coletarDadosClasse(dadosAtuais) {
-            // Esta função será sobrescrita na página classe.html
-            return dadosAtuais;
-        }
-        
-        function criarNovoPerfil() {
-            // Redirecionar para criação de ficha
-            window.location.href = 'ficha.html?novo=true';
-        }
-        
-        function entrarNoPerfil(tipo) {
-            const dadosSalvos = localStorage.getItem('grimorio_perfil_ativo');
-            if (!dadosSalvos) {
-                mostrarFeedback('Nenhum perfil ativo encontrado. Crie um perfil primeiro.', 'error');
-                return;
+            saveLocalSaves() {
+                localStorage.setItem('grimorio_local_saves', JSON.stringify(this.localSaves));
             }
             
-            if (tipo === 'ficha') {
-                window.location.href = 'ficha.html';
-            } else if (tipo === 'status') {
-                window.location.href = 'status.html';
+            updateStats() {
+                const stats = {
+                    total: this.localSaves.length,
+                    characters: this.localSaves.filter(s => s.type === 'character').length,
+                    backups: this.localSaves.filter(s => s.type === 'backup').length,
+                    complete: this.localSaves.filter(s => s.type === 'complete').length,
+                    mascots: this.localSaves.filter(s => s.type === 'mascot').length,
+                    totalSize: this.localSaves.reduce((sum, save) => sum + (save.size || 0), 0)
+                };
+                
+                // Atualizar elementos
+                document.getElementById('total-saves')?.textContent = stats.total;
+                document.getElementById('characters-count')?.textContent = stats.characters;
+                document.getElementById('backups-count')?.textContent = stats.backups;
+                document.getElementById('complete-saves')?.textContent = stats.complete;
+                document.getElementById('mascots-count')?.textContent = stats.mascots;
+                document.getElementById('total-size')?.textContent = this.formatBytes(stats.totalSize);
             }
-        }
-        
-        function mostrarFeedback(mensagem, tipo) {
-            const feedback = document.getElementById('save-feedback');
-            const icones = {
-                success: 'check-circle',
-                error: 'alert-circle',
-                info: 'info'
-            };
             
-            if (feedback) {
-                feedback.innerHTML = `
-                    <div class="save-feedback flex items-center gap-2 px-4 py-3 bg-theme-panel border ${tipo === 'success' ? 'border-theme-green text-theme-green' : tipo === 'error' ? 'border-red-500 text-red-500' : 'border-theme-blue text-theme-blue'} rounded-lg shadow-lg">
-                        <i data-lucide="${icones[tipo] || 'info'}" class="w-4 h-4"></i>
-                        <span>${mensagem}</span>
+            formatBytes(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+            }
+            
+            showNotification(message, type = 'info') {
+                const container = document.getElementById('notification-container');
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <div class="notification-content">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                        <span>${message}</span>
                     </div>
                 `;
                 
-                feedback.classList.remove('hidden');
-                if (window.lucide) lucide.createIcons();
+                container.appendChild(notification);
                 
                 setTimeout(() => {
-                    feedback.classList.add('hidden');
+                    notification.classList.add('show');
+                }, 10);
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                    setTimeout(() => notification.remove(), 300);
                 }, 3000);
             }
-        }
-
-        // 5. Inicializar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Carregar perfil ativo
-            carregarPerfilAtivo();
             
-            // Atualizar periodicamente (caso o perfil seja editado em outra aba)
-            setInterval(carregarPerfilAtivo, 5000);
+            showConfirmation(title, message, onConfirm) {
+                const modal = document.getElementById('confirmation-modal');
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-message').textContent = message;
+                
+                const confirmBtn = document.getElementById('modal-confirm-btn');
+                const handler = () => {
+                    onConfirm();
+                    modal.close();
+                    confirmBtn.removeEventListener('click', handler);
+                };
+                
+                confirmBtn.addEventListener('click', handler);
+                modal.showModal();
+            }
             
-            // Adicionar evento de teclado para salvar (Ctrl+S)
-            document.addEventListener('keydown', function(e) {
-                if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            setupEventListeners() {
+                // Auto-save toggle
+                const autoSaveToggle = document.getElementById('auto-save-toggle');
+                if (autoSaveToggle) {
+                    autoSaveToggle.checked = this.config.autoSave;
+                    autoSaveToggle.addEventListener('change', (e) => {
+                        this.config.autoSave = e.target.checked;
+                        this.showNotification(`Auto-save ${e.target.checked ? 'ativado' : 'desativado'}`, 'info');
+                    });
+                }
+                
+                // Auto-backup toggle
+                const autoBackupToggle = document.getElementById('auto-backup-toggle');
+                if (autoBackupToggle) {
+                    autoBackupToggle.checked = this.config.autoBackup;
+                    autoBackupToggle.addEventListener('change', (e) => {
+                        this.config.autoBackup = e.target.checked;
+                        this.showNotification(`Backup automático ${e.target.checked ? 'ativado' : 'desativado'}`, 'info');
+                    });
+                }
+                
+                // File import
+                const fileInput = document.getElementById('import-file-input');
+                if (fileInput) {
+                    fileInput.addEventListener('change', (e) => {
+                        if (e.target.files.length > 0) {
+                            this.handleFileImport(e.target.files[0]);
+                        }
+                    });
+                }
+                
+                // Quick save
+                window.SaveSystem.createQuickSave = () => {
+                    this.createSave('Quick Save ' + new Date().toLocaleTimeString(), Grimorio.data, 'backup');
+                    this.showNotification('Quick save criado!', 'success');
+                };
+            }
+            
+            setupDragAndDrop() {
+                const dropZone = document.getElementById('drop-zone');
+                if (!dropZone) return;
+                
+                dropZone.addEventListener('dragover', (e) => {
                     e.preventDefault();
-                    salvarPerfilAtivo();
+                    dropZone.classList.add('active');
+                });
+                
+                dropZone.addEventListener('dragleave', () => {
+                    dropZone.classList.remove('active');
+                });
+                
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('active');
+                    
+                    if (e.dataTransfer.files.length > 0) {
+                        this.handleFileImport(e.dataTransfer.files[0]);
+                    }
+                });
+            }
+            
+            async handleFileImport(file) {
+                if (!file.name.endsWith('.json')) {
+                    this.showNotification('Por favor, selecione um arquivo JSON', 'error');
+                    return;
                 }
-            });
+                
+                try {
+                    const text = await file.text();
+                    const data = JSON.parse(text);
+                    
+                    // Mostrar preview no modal
+                    const modalContent = document.getElementById('import-preview-content');
+                    if (modalContent) {
+                        const character = data.character || data;
+                        modalContent.innerHTML = `
+                            <div class="import-preview">
+                                <div class="preview-header">
+                                    <i class="fas fa-file-import fa-3x text-primary"></i>
+                                    <h4>${file.name}</h4>
+                                </div>
+                                <div class="preview-body">
+                                    <div class="preview-info">
+                                        <div class="info-row">
+                                            <span>Tipo:</span>
+                                            <strong>${data.type || 'Desconhecido'}</strong>
+                                        </div>
+                                        <div class="info-row">
+                                            <span>Tamanho:</span>
+                                            <span>${this.formatBytes(file.size)}</span>
+                                        </div>
+                                        ${character.name ? `
+                                            <div class="info-row">
+                                                <span>Personagem:</span>
+                                                <strong>${character.name}</strong>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                    <div class="preview-actions">
+                                        <button class="btn btn-primary" onclick="SaveSystem.confirmImport('load')">
+                                            <i class="fas fa-upload"></i> Carregar
+                                        </button>
+                                        <button class="btn btn-outline" onclick="SaveSystem.confirmImport('save')">
+                                            <i class="fas fa-save"></i> Salvar como Novo
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Store import data
+                        this.currentImport = { file, data, text };
+                        
+                        // Show modal
+                        document.getElementById('import-modal').showModal();
+                    }
+                } catch (error) {
+                    console.error('Erro ao importar arquivo:', error);
+                    this.showNotification('Erro ao ler arquivo. Certifique-se de que é um JSON válido.', 'error');
+                }
+            }
+            
+            confirmImport(action) {
+                if (!this.currentImport) return;
+                
+                if (action === 'load') {
+                    Grimorio.loadData(this.currentImport.data);
+                    document.getElementById('import-modal').close();
+                } else if (action === 'save') {
+                    const character = this.currentImport.data.character || this.currentImport.data;
+                    this.createSave(
+                        character.name || 'Importado',
+                        this.currentImport.data,
+                        this.currentImport.data.type === 'complete_backup' ? 'complete' : 'character'
+                    );
+                    document.getElementById('import-modal').close();
+                }
+                
+                this.currentImport = null;
+            }
+            
+            async syncWithCloud() {
+                this.showNotification('Sincronizando com a nuvem...', 'info');
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                this.showNotification('Sincronização completa!', 'success');
+            }
+        })();
+        
+        // Funções auxiliares
+        function showSection(sectionId) {
+            // Ativar botão clicado
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Aqui você implementaria a troca de conteúdo
+            console.log('Mostrando seção:', sectionId);
+        }
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar sistema de save
+            SaveSystem.init();
+            
+            // Criar alguns saves de exemplo
+            setTimeout(() => {
+                if (SaveSystem.localSaves.length === 0) {
+                    SaveSystem.createSave(
+                        'Exemplo - Guerreiro',
+                        {
+                            character: {
+                                name: 'Aragorn',
+                                class: 'Guerreiro',
+                                race: 'Humano',
+                                level: 5,
+                                experience: 1250
+                            },
+                            type: 'character_export'
+                        },
+                        'character'
+                    );
+                    
+                    SaveSystem.createSave(
+                        'Backup Inicial',
+                        {
+                            character: { name: 'Backup Teste' },
+                            mascots: [],
+                            classes: [],
+                            type: 'complete_backup'
+                        },
+                        'complete'
+                    );
+                }
+            }, 1000);
         });
-        
-        // 6. Sistema de Perfis (funções globais)
-        window.getActiveProfileData = function() {
-            const dados = localStorage.getItem('grimorio_perfil_ativo');
-            return dados ? JSON.parse(dados) : null;
-        };
-        
-        window.hasActiveProfile = function() {
-            return localStorage.getItem('grimorio_perfil_ativo') !== null;
-        };
-        
-        window.getActiveProfileInfo = function() {
-            const dados = window.getActiveProfileData();
-            if (!dados) return null;
-            
-            return {
-                id: dados.id || 'default',
-                nome: dados.nome || dados['inp-nome'] || 'Sem nome',
-                classe: dados.classe || dados['inp-classe'] || 'Não definida',
-                raca: dados.raca || dados['inp-raca'] || 'Não definida',
-                nivel: dados.nivel || dados['inp-nivel'] || 1,
-                avatar: dados.avatar || null
-            };
-        };
-        // No index.html, função para carregar perfil ativo
-        function loadActiveProfileDisplay() {
-            const display = document.getElementById('active-profile-display');
-            const noProfile = document.getElementById('no-active-profile');
-            
-            try {
-                const perfis = localStorage.getItem('rpg_sistema_perfis');
-                const perfilAtivoId = localStorage.getItem('perfil_ativo');
-                
-                if (!perfis || !perfilAtivoId) {
-                    noProfile.classList.remove('hidden');
-                    return;
-                }
-                
-                const perfisObj = JSON.parse(perfis);
-                const perfilAtivo = perfisObj[perfilAtivoId];
-                
-                if (!perfilAtivo) {
-                    noProfile.classList.remove('hidden');
-                    return;
-                }
-                
-                noProfile.classList.add('hidden');
-                
-                const dados = perfilAtivo.dados || {};
-                const basico = dados.basico || {};
-                
-                display.innerHTML = `
-                    <div class="flex items-start gap-4">
-                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-theme-orange to-theme-red flex items-center justify-center">
-                            <i data-lucide="user" class="w-8 h-8 text-white"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-start">
-                                <div>
-                                    <h4 class="font-cinzel font-bold text-xl text-white">${basico.nome || 'Personagem'}</h4>
-                                    <p class="text-gray-400">
-                                        ${basico.raca || 'Raça'} • ${basico.classe || 'Classe'} • Nível ${dados.progressao?.nivel || 1}
-                                    </p>
-                                </div>
-                                <span class="px-2 py-1 text-xs rounded-full bg-theme-green/20 text-theme-green">
-                                    Ativo
-                                </span>
-                            </div>
-                            
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-theme-orange">${dados.atributos?.forca || 0}</div>
-                                    <div class="text-xs text-gray-500">Força</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-theme-blue">${dados.atributos?.inteligencia || 0}</div>
-                                    <div class="text-xs text-gray-500">Inteligência</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-theme-green">${dados.progressao?.xp_atual || 0}</div>
-                                    <div class="text-xs text-gray-500">XP</div>
-                                </div>
-                                <div class="text-center">
-                                    <div class="text-2xl font-bold text-theme-purple">${dados.destino?.valor || '--'}</div>
-                                    <div class="text-xs text-gray-500">Destino</div>
-                                </div>
-                            </div>
-                            
-                            <div class="flex gap-2 mt-4">
-                                <button onclick="window.location.href='perfil.html'" 
-                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-blue/20 hover:bg-theme-blue/30 text-theme-blue border border-theme-blue/30 rounded text-sm transition-colors">
-                                    <i data-lucide="eye" class="w-3 h-3"></i>
-                                    Ver Perfil
-                                </button>
-                                <button onclick="window.location.href='ficha.html'" 
-                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded text-sm transition-colors">
-                                    <i data-lucide="edit-3" class="w-3 h-3"></i>
-                                    Editar Ficha
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                lucide.createIcons();
-                
-            } catch (error) {
-                console.error('Erro ao carregar perfil ativo:', error);
-                noProfile.classList.remove('hidden');
-            }
-        }
-
-        // Chame esta função quando a página carregar
-        window.addEventListener('load', loadActiveProfileDisplay);
-    // No index.html, função para carregar mascote
-    function loadMascoteDisplay() {
-        const display = document.getElementById('mascote-display');
-        const noMascote = document.getElementById('no-mascote');
-        
-        try {
-            // Primeiro tentar carregar do perfil ativo
-            const perfis = localStorage.getItem('rpg_sistema_perfis');
-            const perfilAtivoId = localStorage.getItem('perfil_ativo');
-            
-            let mascoteData = null;
-            
-            if (perfis && perfilAtivoId) {
-                const perfisObj = JSON.parse(perfis);
-                const perfilAtivo = perfisObj[perfilAtivoId];
-                
-                if (perfilAtivo?.dados?.mascote) {
-                    mascoteData = perfilAtivo.dados.mascote;
-                }
-            }
-            
-            // Se não encontrar no perfil, tentar localStorage
-            if (!mascoteData) {
-                const mascoteLocal = localStorage.getItem('grimorio_mascote_index');
-                if (mascoteLocal) {
-                    mascoteData = JSON.parse(mascoteLocal);
-                }
-            }
-            
-            if (!mascoteData || !mascoteData.temMascote) {
-                noMascote.classList.remove('hidden');
-                return;
-            }
-            
-            noMascote.classList.add('hidden');
-            
-            display.innerHTML = `
-                <div class="flex items-start gap-4">
-                    <div class="w-16 h-16 rounded-full flex items-center justify-center border-2" 
-                        style="border-color: ${mascoteData.cor || '#ec4899'}80; background: ${mascoteData.cor || '#ec4899'}20">
-                        <i data-lucide="${mascoteData.icone || 'dog'}" 
-                        style="color: ${mascoteData.cor || '#ec4899'}" 
-                        class="w-8 h-8"></i>
-                    </div>
-                    <div class="flex-1">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h4 class="font-cinzel font-bold text-xl text-white">${mascoteData.nome || 'Mascote'}</h4>
-                                <p class="text-gray-400">
-                                    ${mascoteData.tipo || 'Tipo'} • Nível ${mascoteData.nivel || 1}
-                                </p>
-                            </div>
-                            <span class="px-2 py-1 text-xs rounded-full bg-theme-pink/20 text-theme-pink">
-                                Companheiro
-                            </span>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-4">
-                            <div class="text-center p-2 bg-theme-bg rounded border border-theme-border">
-                                <div class="text-lg font-bold text-theme-green">${mascoteData.nivel || 1}</div>
-                                <div class="text-xs text-gray-500">Nível</div>
-                            </div>
-                            <div class="text-center p-2 bg-theme-bg rounded border border-theme-border">
-                                <div class="text-lg font-bold" style="color: ${mascoteData.cor || '#ec4899'}">${mascoteData.tipo || 'Tipo'}</div>
-                                <div class="text-xs text-gray-500">Tipo</div>
-                            </div>
-                            <div class="text-center p-2 bg-theme-bg rounded border border-theme-border">
-                                <div class="text-lg font-bold text-theme-blue">Vinculado</div>
-                                <div class="text-xs text-gray-500">Ao Personagem</div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex gap-2 mt-4">
-                            <button onclick="window.location.href='mascote.html'" 
-                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-pink/20 hover:bg-theme-pink/30 text-theme-pink border border-theme-pink/30 rounded text-sm transition-colors">
-                                <i data-lucide="eye" class="w-3 h-3"></i>
-                                Ver Mascote
-                            </button>
-                            <button onclick="window.location.href='mascote.html'" 
-                                    class="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-theme-orange/20 hover:bg-theme-orange/30 text-theme-orange border border-theme-orange/30 rounded text-sm transition-colors">
-                                <i data-lucide="edit-3" class="w-3 h-3"></i>
-                                Editar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            lucide.createIcons();
-            
-        } catch (error) {
-            console.error('Erro ao carregar mascote:', error);
-            noMascote.classList.remove('hidden');
-        }
-    }
-
-    // Chame esta função junto com as outras no load
-    window.addEventListener('load', function() {
-        loadActiveProfileDisplay();
-        loadMascoteDisplay(); // Adicionar esta linha
-    });
-    // shared.js - Coloque em todas as páginas
-    class GrimorioSaveSystem {
-        static saveCharacter(data) {
-            localStorage.setItem('grimorio_character_data', JSON.stringify(data));
-            this.notifyUpdate('character');
-        }
-        
-        static saveMascot(data) {
-            localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
-            this.notifyUpdate('mascot');
-        }
-        
-        static saveItems(data) {
-            localStorage.setItem('grimorio_items_data', JSON.stringify(data));
-            this.notifyUpdate('items');
-        }
-        
-        static loadCharacter() {
-            const data = localStorage.getItem('grimorio_character_data');
-            return data ? JSON.parse(data) : null;
-        }
-        
-        static loadMascot() {
-            const data = localStorage.getItem('grimorio_mascot_data');
-            return data ? JSON.parse(data) : null;
-        }
-        
-        static loadItems() {
-            const data = localStorage.getItem('grimorio_items_data');
-            return data ? JSON.parse(data) : [];
-        }
-        
-        static notifyUpdate(type) {
-            // Dispara evento customizado
-            const event = new CustomEvent('grimorio-update', {
-                detail: { type: type, timestamp: Date.now() }
-            });
-            window.dispatchEvent(event);
-        }
-        
-        static exportAll() {
-            const allData = {
-                character: this.loadCharacter(),
-                mascot: this.loadMascot(),
-                items: this.loadItems(),
-                version: '2.0',
-                exportDate: new Date().toISOString()
-            };
-            
-            return JSON.stringify(allData, null, 2);
-        }
-        
-        static importAll(jsonString) {
-            try {
-                const data = JSON.parse(jsonString);
-                
-                if (data.character) {
-                    this.saveCharacter(data.character);
-                }
-                if (data.mascot) {
-                    this.saveMascot(data.mascot);
-                }
-                if (data.items) {
-                    this.saveItems(data.items);
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('Erro ao importar:', error);
-                return false;
-            }
-        }
-    }
-
-    // Listener para atualizações em tempo real
-    window.addEventListener('grimorio-update', function(event) {
-        console.log('Dados atualizados:', event.detail.type);
-        // Atualiza a página atual com os novos dados
-        refreshCurrentPage();
-    });
-
-    // Função para detectar mudanças no localStorage de outras abas
-    window.addEventListener('storage', function(event) {
-        if (event.key.startsWith('grimorio_')) {
-            location.reload(); // Recarrega para mostrar dados atualizados
-        }
-    });
     </script>
 </body>
 </html>
