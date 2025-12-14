@@ -3945,6 +3945,58 @@
                 StatusSystemAvancado.showNotification('Erro ao inicializar sistemas!', 'error');
             }
         });
+        
+        // Adicione esta função no status.html como fallback
+        function inicializarIntegracaoPerfil() {
+            console.log('Fallback: inicializarIntegracaoPerfil chamada');
+            
+            try {
+                // Tenta usar a função principal
+                if (window.inicializarIntegracao) {
+                    return inicializarIntegracao();
+                }
+                
+                // Fallback básico se a integração não estiver disponível
+                console.warn('Integração não disponível, criando botão básico...');
+                
+                // Criar botão básico de sincronização
+                const navContainer = document.querySelector('nav div[style*="display: flex; gap: 0.75rem; flex-wrap: wrap;"]');
+                if (navContainer) {
+                    const syncBtn = document.createElement('button');
+                    syncBtn.innerHTML = '<i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i> Sincronizar';
+                    syncBtn.style = `
+                        padding: 0.5rem 1rem;
+                        background: linear-gradient(135deg, #22c55e, #10b981);
+                        color: white;
+                        border: none;
+                        border-radius: 0.5rem;
+                        font-weight: 600;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                    `;
+                    syncBtn.onclick = function() {
+                        if (confirm('Sincronizar dados com a ficha do personagem?')) {
+                            if (window.GrimorioSystem && window.StatusSystemAvancado) {
+                                const statusData = StatusSystemAvancado.load();
+                                GrimorioSystem.sincronizarStatus(statusData);
+                                alert('✅ Dados sincronizados!');
+                            } else {
+                                alert('❌ Sistemas não disponíveis');
+                            }
+                        }
+                    };
+                    navContainer.appendChild(syncBtn);
+                }
+                
+            } catch (error) {
+                console.error('Erro no fallback:', error);
+            }
+        }
+
+        // Expor para o evento DOMContentLoaded
+        window.inicializarIntegracaoPerfil = inicializarIntegracaoPerfil;
     </script>
 </body>
 </html>
