@@ -8,7 +8,7 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -25,8 +25,13 @@
             --accent-purple: #8b5cf6;
             --accent-yellow: #f59e0b;
             --accent-pink: #ec4899;
-            --accent-teal: #14b8a6;
             --destiny-gold: #d4a76a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
@@ -38,18 +43,19 @@
             overflow-x: hidden;
         }
         
-        .font-cinzel { font-family: 'Cinzel', serif; }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-cinzel { 
+            font-family: 'Cinzel', serif; 
+            font-weight: 600;
+        }
         
-        /* NAVBAR COMPACTA */
+        /* NAVBAR SIMPLES */
         .navbar {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0;
             position: sticky;
             top: 0;
-            background: rgba(15, 15, 18, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
             z-index: 100;
-            padding: 0.75rem 0;
         }
         
         .nav-container {
@@ -59,8 +65,6 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.5rem;
         }
         
         .nav-button {
@@ -69,175 +73,224 @@
             color: white;
             border: none;
             border-radius: 0.5rem;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            transition: all 0.2s;
             font-size: 0.875rem;
+            transition: transform 0.2s;
         }
         
         .nav-button:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
         }
         
-        /* CARD UNIFICADO */
-        .card {
+        /* LAYOUT PRINCIPAL */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent-blue);
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+        }
+        
+        /* CARD SIMPLIFICADO */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: 1rem;
             padding: 1.25rem;
-            margin-bottom: 1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            transition: border-color 0.3s;
         }
         
-        .card:hover {
+        .stat-card:hover {
             border-color: var(--accent-blue);
-            transform: translateY(-2px);
         }
         
-        .card-header {
+        .stat-header {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 0.75rem;
             margin-bottom: 1rem;
         }
         
-        .card-title {
-            font-weight: 600;
-            font-size: 1.125rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-        
-        /* CONTROLES UNIFICADOS */
-        .value-control {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin: 1rem 0;
-        }
-        
-        .value-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-align: center;
-            min-width: 100px;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .btn-group {
-            display: flex;
-            gap: 0.25rem;
-        }
-        
-        .btn-control {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-            font-size: 1.25rem;
-            font-weight: bold;
-            cursor: pointer;
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.75rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s;
+            flex-shrink: 0;
         }
         
-        .btn-control:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: scale(1.05);
+        .stat-info {
+            flex: 1;
         }
         
-        .btn-control:active {
-            transform: scale(0.95);
-        }
-        
-        .btn-large {
-            width: auto;
-            padding: 0.5rem 1rem;
+        .stat-name {
+            font-weight: 600;
             font-size: 1rem;
+            margin-bottom: 0.25rem;
         }
         
-        /* SISTEMA DE DESTINO */
-        .destiny-card {
-            background: linear-gradient(135deg, rgba(26, 21, 16, 0.9), rgba(42, 35, 24, 0.9));
-            border: 1px solid rgba(212, 167, 106, 0.3);
-            padding: 1.5rem;
+        .stat-description {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
         }
         
-        .dice-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 1.5rem 0;
-            gap: 1rem;
-        }
-        
-        .dice-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 3rem;
+        .stat-value {
+            font-family: 'Inter', sans-serif;
+            font-size: 2.5rem;
             font-weight: 700;
-            color: var(--destiny-gold);
-            text-shadow: 0 0 10px rgba(212, 167, 106, 0.3);
+            text-align: center;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 0.5rem;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* PROGRESS BAR COMO CONTROLE */
+        .progress-control {
+            margin: 1rem 0;
         }
         
         .progress-bar {
-            height: 8px;
+            height: 6px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            margin: 1rem 0;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
             overflow: hidden;
         }
         
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
-            border-radius: 4px;
-            transition: width 0.5s ease;
+            border-radius: 3px;
+            transition: width 0.3s;
+            position: relative;
         }
         
-        /* INPUT SIMPLES */
-        input[type="number"] {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
+        .progress-handle {
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: grab;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            border: 2px solid var(--bg-panel);
+        }
+        
+        .progress-handle:active {
+            cursor: grabbing;
+        }
+        
+        .progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+        
+        /* SISTEMA DE DESTINO */
+        .destiny-section {
+            background: linear-gradient(135deg, rgba(26, 21, 16, 0.9), rgba(42, 35, 24, 0.9));
+            border: 1px solid rgba(212, 167, 106, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dice-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .dice-box {
             text-align: center;
-            transition: all 0.2s;
+            padding: 1rem;
+            background: rgba(26, 21, 16, 0.5);
+            border-radius: 0.75rem;
+            border: 1px solid rgba(212, 167, 106, 0.2);
         }
         
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-            box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+        .dice-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--destiny-gold);
+            margin: 0.5rem 0;
         }
         
-        /* MODAL COMPACTO */
+        .destiny-result {
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .destiny-percentage {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--destiny-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* ESTATÍSTICAS DERIVADAS (TEXTUAL) */
+        .derived-stats {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+        
+        .derived-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .derived-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* MODAL */
         .modal {
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(4px);
             z-index: 1000;
-            display: none;
             align-items: center;
             justify-content: center;
             padding: 1rem;
@@ -249,78 +302,65 @@
         
         .modal-content {
             background: var(--bg-panel);
-            border: 1px solid var(--border-color);
             border-radius: 1rem;
-            width: 100%;
+            padding: 1.5rem;
             max-width: 500px;
+            width: 100%;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 1.5rem;
         }
         
         /* UTILITIES */
-        .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: 1fr; }
-        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
-        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
-        .gap-4 { gap: 1rem; }
-        .gap-6 { gap: 1.5rem; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mb-6 { margin-bottom: 1.5rem; }
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
-        .justify-center { justify-content: center; }
-        .flex-col { flex-direction: column; }
-        .space-y-4 > * + * { margin-top: 1rem; }
-        .text-center { text-align: center; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
         .w-full { width: 100%; }
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; }
         
-        /* RESPONSIVIDADE */
-        @media (max-width: 768px) {
-            .grid-cols-3, .grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-            
-            .dice-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .value-control {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .btn-group {
-                justify-content: center;
-            }
+        /* BOTÕES */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
         }
         
-        /* ANIMAÇÕES */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
         }
         
-        .animate-fadeIn {
-            animation: fadeIn 0.3s ease-out;
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
         }
         
-        .animate-pulse {
-            animation: pulse 0.3s ease-in-out;
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(110%);
         }
         
-        /* CORES DINÂMICAS */
-        .color-vida { color: var(--accent-red); border-color: rgba(220, 38, 38, 0.3); }
-        .color-mana { color: var(--accent-blue); border-color: rgba(59, 130, 246, 0.3); }
-        .color-estamina { color: var(--accent-green); border-color: rgba(34, 197, 94, 0.3); }
+        /* CORES DOS ATRIBUTOS */
+        .color-vida { color: var(--accent-red); }
+        .color-mana { color: var(--accent-blue); }
+        .color-estamina { color: var(--accent-green); }
         .color-forca { color: var(--accent-red); }
         .color-destreza { color: var(--accent-green); }
         .color-constituicao { color: var(--accent-yellow); }
@@ -328,57 +368,55 @@
         .color-sabedoria { color: var(--accent-purple); }
         .color-carisma { color: var(--accent-pink); }
         
-        /* SCROLLBAR */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
+        .bg-vida { background: rgba(255, 71, 87, 0.2); }
+        .bg-mana { background: rgba(74, 158, 255, 0.2); }
+        .bg-estamina { background: rgba(34, 197, 94, 0.2); }
+        .bg-forca { background: rgba(255, 71, 87, 0.2); }
+        .bg-destreza { background: rgba(34, 197, 94, 0.2); }
+        .bg-constituicao { background: rgba(245, 158, 11, 0.2); }
+        .bg-inteligencia { background: rgba(74, 158, 255, 0.2); }
+        .bg-sabedoria { background: rgba(139, 92, 246, 0.2); }
+        .bg-carisma { background: rgba(236, 72, 153, 0.2); }
         
-        ::-webkit-scrollbar-track {
-            background: var(--bg-panel);
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 3px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-blue);
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .dice-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- NAVBAR COMPACTA -->
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="flex items-center gap-2 text-primary no-underline hover-opacity">
-                    <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
-                    <span class="font-cinzel font-600 text-sm">Voltar</span>
+                <a href="index.html" class="flex items-center gap-2 no-underline hover-opacity">
+                    <i data-lucide="arrow-left"></i>
+                    <span class="font-cinzel">Voltar</span>
                 </a>
-                <div style="width: 1px; height: 1.25rem; background: var(--border-color);"></div>
-                <h1 class="font-cinzel text-lg" style="
-                    background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-                    -webkit-background-clip: text;
-                    background-clip: text;
-                    color: transparent;
-                ">
-                    Sistema de Status
-                </h1>
+                <h1 class="font-cinzel" style="color: var(--accent-blue);">Sistema de Status</h1>
             </div>
             
             <div class="flex gap-2">
                 <button id="btn-importar" class="nav-button" style="background: var(--accent-green);">
-                    <i data-lucide="upload" style="width: 0.875rem; height: 0.875rem;"></i>
+                    <i data-lucide="upload"></i>
                     Importar
                 </button>
                 <button id="btn-exportar" class="nav-button">
-                    <i data-lucide="download" style="width: 0.875rem; height: 0.875rem;"></i>
+                    <i data-lucide="download"></i>
                     Exportar
                 </button>
                 <button id="btn-config" class="nav-button" style="background: var(--accent-purple);">
-                    <i data-lucide="settings" style="width: 0.875rem; height: 0.875rem;"></i>
+                    <i data-lucide="settings"></i>
                     Configurar
                 </button>
             </div>
@@ -386,453 +424,423 @@
     </nav>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main style="max-width: 1200px; margin: 0 auto; padding: 1.5rem;">
+    <div class="container">
         <!-- RECURSOS VITAIS -->
-        <section class="animate-fadeIn mb-6">
-            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
-                <i data-lucide="heart" style="width: 1.25rem; height: 1.25rem; color: var(--accent-red);"></i>
+        <section class="mb-6">
+            <h2 class="section-title">
+                <i data-lucide="heart"></i>
                 Recursos Vitais
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Template para recursos -->
-                <div class="card" data-resource="vida">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="heart" style="width: 1.25rem; height: 1.25rem; color: var(--accent-red);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-vida">Vida</h3>
-                                <p class="text-secondary text-xs">Pontos atuais</p>
-                            </div>
+            <div class="card-grid">
+                <!-- VIDA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-vida">
+                            <i data-lucide="heart" class="color-vida"></i>
                         </div>
-                        <div class="text-right">
-                            <div id="vida-atual" class="font-mono text-2xl color-vida">100</div>
-                            <div class="text-secondary text-xs">/ <span id="vida-maxima">100</span></div>
+                        <div class="stat-info">
+                            <div class="stat-name color-vida">Vida</div>
+                            <div class="stat-description">Pontos de vida atuais</div>
                         </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-vida" id="display-vida">100</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustValue('vida-atual', -10)" title="-10">-10</button>
-                            <button class="btn-control" onclick="adjustValue('vida-atual', -1)" title="-1">-</button>
-                            <button class="btn-control" onclick="adjustValue('vida-atual', 1)" title="+1">+</button>
-                            <button class="btn-control" onclick="adjustValue('vida-atual', 10)" title="+10">+10</button>
-                        </div>
-                    </div>
+                    <div class="stat-value color-vida" id="vida-atual">100</div>
                     
-                    <div>
-                        <label class="block text-secondary text-xs mb-1">Vida Máxima</label>
-                        <input type="number" id="input-vida-maxima" min="1" max="9999" value="100" 
-                               onchange="updateMax('vida', this.value)">
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="vida-atual" data-max="200">
+                            <div class="progress-fill bg-vida" style="width: 50%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span id="vida-maxima">100</span>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Mana -->
-                <div class="card" data-resource="mana">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="flame" style="width: 1.25rem; height: 1.25rem; color: var(--accent-blue);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-mana">Mana</h3>
-                                <p class="text-secondary text-xs">Pontos atuais</p>
-                            </div>
+                <!-- MANA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-mana">
+                            <i data-lucide="flame" class="color-mana"></i>
                         </div>
-                        <div class="text-right">
-                            <div id="mana-atual" class="font-mono text-2xl color-mana">100</div>
-                            <div class="text-secondary text-xs">/ <span id="mana-maxima">100</span></div>
+                        <div class="stat-info">
+                            <div class="stat-name color-mana">Mana</div>
+                            <div class="stat-description">Pontos de mana atuais</div>
                         </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-mana" id="display-mana">100</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustValue('mana-atual', -10)">-10</button>
-                            <button class="btn-control" onclick="adjustValue('mana-atual', -1)">-</button>
-                            <button class="btn-control" onclick="adjustValue('mana-atual', 1)">+</button>
-                            <button class="btn-control" onclick="adjustValue('mana-atual', 10)">+10</button>
-                        </div>
-                    </div>
+                    <div class="stat-value color-mana" id="mana-atual">100</div>
                     
-                    <div>
-                        <label class="block text-secondary text-xs mb-1">Mana Máxima</label>
-                        <input type="number" id="input-mana-maxima" min="1" max="9999" value="100" 
-                               onchange="updateMax('mana', this.value)">
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="mana-atual" data-max="200">
+                            <div class="progress-fill bg-mana" style="width: 50%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span id="mana-maxima">100</span>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Estamina -->
-                <div class="card" data-resource="estamina">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="zap" style="width: 1.25rem; height: 1.25rem; color: var(--accent-green);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-estamina">Estamina</h3>
-                                <p class="text-secondary text-xs">Pontos atuais</p>
-                            </div>
+                <!-- ESTAMINA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-estamina">
+                            <i data-lucide="zap" class="color-estamina"></i>
                         </div>
-                        <div class="text-right">
-                            <div id="estamina-atual" class="font-mono text-2xl color-estamina">100</div>
-                            <div class="text-secondary text-xs">/ <span id="estamina-maxima">100</span></div>
+                        <div class="stat-info">
+                            <div class="stat-name color-estamina">Estamina</div>
+                            <div class="stat-description">Pontos de estamina atuais</div>
                         </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-estamina" id="display-estamina">100</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustValue('estamina-atual', -10)">-10</button>
-                            <button class="btn-control" onclick="adjustValue('estamina-atual', -1)">-</button>
-                            <button class="btn-control" onclick="adjustValue('estamina-atual', 1)">+</button>
-                            <button class="btn-control" onclick="adjustValue('estamina-atual', 10)">+10</button>
-                        </div>
-                    </div>
+                    <div class="stat-value color-estamina" id="estamina-atual">100</div>
                     
-                    <div>
-                        <label class="block text-secondary text-xs mb-1">Estamina Máxima</label>
-                        <input type="number" id="input-estamina-maxima" min="1" max="9999" value="100" 
-                               onchange="updateMax('estamina', this.value)">
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="estamina-atual" data-max="200">
+                            <div class="progress-fill bg-estamina" style="width: 50%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span id="estamina-maxima">100</span>
+                        </div>
                     </div>
                 </div>
             </div>
             
             <div class="text-center mt-4">
-                <button onclick="restaurarRecursos()" class="btn-control btn-large" style="background: var(--accent-green); color: white;">
-                    <i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i>
+                <button onclick="restaurarRecursos()" class="btn btn-success">
+                    <i data-lucide="refresh-cw"></i>
                     Restaurar Recursos
                 </button>
             </div>
         </section>
 
-        <!-- ATRIBUTOS PRIMÁRIOS -->
-        <section class="animate-fadeIn mb-6">
-            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
-                <i data-lucide="activity" style="width: 1.25rem; height: 1.25rem; color: var(--accent-blue);"></i>
+        <!-- ATRIBUTOS -->
+        <section class="mb-6">
+            <h2 class="section-title">
+                <i data-lucide="activity"></i>
                 Atributos (0-100)
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Template para atributos -->
-                <div class="card" data-attribute="forca">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="sword" style="width: 1.25rem; height: 1.25rem; color: var(--accent-red);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-forca">Força</h3>
-                                <p class="text-secondary text-xs">Poder físico</p>
-                            </div>
+            <div class="card-grid">
+                <!-- FORÇA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-forca">
+                            <i data-lucide="sword" class="color-forca"></i>
                         </div>
-                        <div id="forca" class="font-mono text-2xl color-forca">0</div>
+                        <div class="stat-info">
+                            <div class="stat-name color-forca">Força</div>
+                            <div class="stat-description">Poder físico</div>
+                        </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-forca" id="display-forca">0</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustAttribute('forca', -5)">-5</button>
-                            <button class="btn-control" onclick="adjustAttribute('forca', -1)">-</button>
-                            <button class="btn-control" onclick="adjustAttribute('forca', 1)">+</button>
-                            <button class="btn-control" onclick="adjustAttribute('forca', 5)">+5</button>
+                    <div class="stat-value color-forca" id="forca">0</div>
+                    
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="forca" data-max="100">
+                            <div class="progress-fill bg-forca" style="width: 0%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span>100</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Destreza -->
-                <div class="card" data-attribute="destreza">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="wind" style="width: 1.25rem; height: 1.25rem; color: var(--accent-green);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-destreza">Destreza</h3>
-                                <p class="text-secondary text-xs">Agilidade</p>
-                            </div>
+                <!-- DESTREZA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-destreza">
+                            <i data-lucide="wind" class="color-destreza"></i>
                         </div>
-                        <div id="destreza" class="font-mono text-2xl color-destreza">0</div>
+                        <div class="stat-info">
+                            <div class="stat-name color-destreza">Destreza</div>
+                            <div class="stat-description">Agilidade</div>
+                        </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-destreza" id="display-destreza">0</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustAttribute('destreza', -5)">-5</button>
-                            <button class="btn-control" onclick="adjustAttribute('destreza', -1)">-</button>
-                            <button class="btn-control" onclick="adjustAttribute('destreza', 1)">+</button>
-                            <button class="btn-control" onclick="adjustAttribute('destreza', 5)">+5</button>
+                    <div class="stat-value color-destreza" id="destreza">0</div>
+                    
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="destreza" data-max="100">
+                            <div class="progress-fill bg-destreza" style="width: 0%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span>100</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Constituição -->
-                <div class="card" data-attribute="constituicao">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(245, 158, 11, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="shield" style="width: 1.25rem; height: 1.25rem; color: var(--accent-yellow);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-constituicao">Constituição</h3>
-                                <p class="text-secondary text-xs">Resistência</p>
-                            </div>
+                <!-- CONSTITUIÇÃO -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-constituicao">
+                            <i data-lucide="shield" class="color-constituicao"></i>
                         </div>
-                        <div id="constituicao" class="font-mono text-2xl color-constituicao">0</div>
+                        <div class="stat-info">
+                            <div class="stat-name color-constituicao">Constituição</div>
+                            <div class="stat-description">Resistência</div>
+                        </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-constituicao" id="display-constituicao">0</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustAttribute('constituicao', -5)">-5</button>
-                            <button class="btn-control" onclick="adjustAttribute('constituicao', -1)">-</button>
-                            <button class="btn-control" onclick="adjustAttribute('constituicao', 1)">+</button>
-                            <button class="btn-control" onclick="adjustAttribute('constituicao', 5)">+5</button>
+                    <div class="stat-value color-constituicao" id="constituicao">0</div>
+                    
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="constituicao" data-max="100">
+                            <div class="progress-fill bg-constituicao" style="width: 0%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span>100</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Inteligência -->
-                <div class="card" data-attribute="inteligencia">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="brain" style="width: 1.25rem; height: 1.25rem; color: var(--accent-blue);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-inteligencia">Inteligência</h3>
-                                <p class="text-secondary text-xs">Conhecimento</p>
-                            </div>
+                <!-- INTELIGÊNCIA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-inteligencia">
+                            <i data-lucide="brain" class="color-inteligencia"></i>
                         </div>
-                        <div id="inteligencia" class="font-mono text-2xl color-inteligencia">0</div>
+                        <div class="stat-info">
+                            <div class="stat-name color-inteligencia">Inteligência</div>
+                            <div class="stat-description">Conhecimento</div>
+                        </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-inteligencia" id="display-inteligencia">0</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustAttribute('inteligencia', -5)">-5</button>
-                            <button class="btn-control" onclick="adjustAttribute('inteligencia', -1)">-</button>
-                            <button class="btn-control" onclick="adjustAttribute('inteligencia', 1)">+</button>
-                            <button class="btn-control" onclick="adjustAttribute('inteligencia', 5)">+5</button>
+                    <div class="stat-value color-inteligencia" id="inteligencia">0</div>
+                    
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="inteligencia" data-max="100">
+                            <div class="progress-fill bg-inteligencia" style="width: 0%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span>100</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Sabedoria -->
-                <div class="card" data-attribute="sabedoria">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="eye" style="width: 1.25rem; height: 1.25rem; color: var(--accent-purple);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-sabedoria">Sabedoria</h3>
-                                <p class="text-secondary text-xs">Percepção</p>
-                            </div>
+                <!-- SABEDORIA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-sabedoria">
+                            <i data-lucide="eye" class="color-sabedoria"></i>
                         </div>
-                        <div id="sabedoria" class="font-mono text-2xl color-sabedoria">0</div>
+                        <div class="stat-info">
+                            <div class="stat-name color-sabedoria">Sabedoria</div>
+                            <div class="stat-description">Percepção</div>
+                        </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-sabedoria" id="display-sabedoria">0</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustAttribute('sabedoria', -5)">-5</button>
-                            <button class="btn-control" onclick="adjustAttribute('sabedoria', -1)">-</button>
-                            <button class="btn-control" onclick="adjustAttribute('sabedoria', 1)">+</button>
-                            <button class="btn-control" onclick="adjustAttribute('sabedoria', 5)">+5</button>
+                    <div class="stat-value color-sabedoria" id="sabedoria">0</div>
+                    
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="sabedoria" data-max="100">
+                            <div class="progress-fill bg-sabedoria" style="width: 0%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span>100</span>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Carisma -->
-                <div class="card" data-attribute="carisma">
-                    <div class="card-header">
-                        <div class="flex items-center gap-2">
-                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(236, 72, 153, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="sparkles" style="width: 1.25rem; height: 1.25rem; color: var(--accent-pink);"></i>
-                            </div>
-                            <div>
-                                <h3 class="card-title color-carisma">Carisma</h3>
-                                <p class="text-secondary text-xs">Persuasão</p>
-                            </div>
+                <!-- CARISMA -->
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon bg-carisma">
+                            <i data-lucide="sparkles" class="color-carisma"></i>
                         </div>
-                        <div id="carisma" class="font-mono text-2xl color-carisma">0</div>
+                        <div class="stat-info">
+                            <div class="stat-name color-carisma">Carisma</div>
+                            <div class="stat-description">Persuasão</div>
+                        </div>
                     </div>
                     
-                    <div class="value-control">
-                        <div class="value-display color-carisma" id="display-carisma">0</div>
-                        <div class="btn-group">
-                            <button class="btn-control" onclick="adjustAttribute('carisma', -5)">-5</button>
-                            <button class="btn-control" onclick="adjustAttribute('carisma', -1)">-</button>
-                            <button class="btn-control" onclick="adjustAttribute('carisma', 1)">+</button>
-                            <button class="btn-control" onclick="adjustAttribute('carisma', 5)">+5</button>
+                    <div class="stat-value color-carisma" id="carisma">0</div>
+                    
+                    <div class="progress-control">
+                        <div class="progress-bar" data-stat="carisma" data-max="100">
+                            <div class="progress-fill bg-carisma" style="width: 0%">
+                                <div class="progress-handle"></div>
+                            </div>
+                        </div>
+                        <div class="progress-labels">
+                            <span>0</span>
+                            <span>100</span>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="flex justify-center gap-3 mt-4">
-                <button onclick="distribuirAleatorio()" class="btn-control btn-large" style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white;">
-                    <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
+                <button onclick="distribuirAleatorio()" class="btn btn-primary">
+                    <i data-lucide="dice-5"></i>
                     Sorteio Aleatório
                 </button>
-                <button onclick="resetarAtributos()" class="btn-control btn-large" style="background: var(--accent-red); color: white;">
-                    <i data-lucide="trash-2" style="width: 1rem; height: 1rem;"></i>
+                <button onclick="resetarAtributos()" class="btn btn-danger">
+                    <i data-lucide="trash-2"></i>
                     Resetar
                 </button>
             </div>
         </section>
 
         <!-- SISTEMA DE DESTINO -->
-        <section class="animate-fadeIn mb-6">
-            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
-                <i data-lucide="clover" style="width: 1.25rem; height: 1.25rem; color: var(--destiny-gold);"></i>
+        <section class="mb-6">
+            <h2 class="section-title" style="color: var(--destiny-gold);">
+                <i data-lucide="clover"></i>
                 Sistema de Destino
             </h2>
             
-            <div class="destiny-card">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- Rolagem -->
-                    <div class="flex-col space-y-4">
-                        <h3 class="text-lg font-600 flex items-center gap-2" style="color: #f4d29a;">
-                            <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
-                            Rolagem do Destino
-                        </h3>
-                        
-                        <div class="dice-container">
-                            <div class="text-center">
-                                <div class="dice-value" id="dado-fe">0</div>
-                                <div class="text-sm text-secondary mt-1">Fé</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="dice-value" id="dado-sorte">0</div>
-                                <div class="text-sm text-secondary mt-1">Sorte</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="dice-value" id="dado-destino">0</div>
-                                <div class="text-sm text-secondary mt-1">Destino</div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-center">
-                            <div id="indice-sorte" class="font-mono text-3xl mb-2" style="color: var(--destiny-gold);">--</div>
-                            <div class="text-sm text-secondary" id="calculo-sorte">
-                                Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2
-                            </div>
-                        </div>
-                        
-                        <div class="flex gap-2">
-                            <button onclick="rolarSorte()" class="btn-control btn-large flex-1" style="background: rgba(26, 21, 16, 0.5); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
-                                <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
-                                Rolar Destino
-                            </button>
-                            <button onclick="fixarSorte()" class="btn-control btn-large flex-1" style="background: rgba(26, 21, 16, 0.5); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
-                                <i data-lucide="lock" style="width: 1rem; height: 1rem;"></i>
-                                Fixar
-                            </button>
-                        </div>
+            <div class="destiny-section">
+                <div class="dice-container">
+                    <div class="dice-box">
+                        <div class="text-sm">Fé</div>
+                        <div class="dice-value" id="dado-fe">0</div>
                     </div>
-                    
-                    <!-- Status -->
-                    <div class="flex-col space-y-4">
-                        <h3 class="text-lg font-600 flex items-center gap-2" style="color: #f4d29a;">
-                            <i data-lucide="sparkles" style="width: 1rem; height: 1rem;"></i>
-                            Status do Destino
-                        </h3>
-                        
-                        <div style="background: rgba(26, 21, 16, 0.5); border: 1px solid rgba(212, 167, 106, 0.3); border-radius: 0.75rem; padding: 1.5rem;">
-                            <div class="text-center mb-4">
-                                <div id="display-sorte" class="font-mono text-4xl mb-3" style="color: var(--destiny-gold);">--</div>
-                                <div class="progress-bar">
-                                    <div id="sorte-bar" class="progress-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                            
-                            <div class="text-center">
-                                <div class="text-sm text-secondary mb-1">Status:</div>
-                                <div id="status-sorte" class="text-lg font-600" style="color: var(--destiny-gold);">
-                                    Não definido
-                                </div>
-                                <div class="text-xs text-secondary mt-2" id="rolls-info">
-                                    Rolagens restantes: ilimitadas
-                                </div>
-                            </div>
-                        </div>
+                    <div class="dice-box">
+                        <div class="text-sm">Sorte</div>
+                        <div class="dice-value" id="dado-sorte">0</div>
                     </div>
+                    <div class="dice-box">
+                        <div class="text-sm">Destino</div>
+                        <div class="dice-value" id="dado-destino">0</div>
+                    </div>
+                </div>
+                
+                <div class="destiny-result">
+                    <div class="destiny-percentage" id="indice-sorte">--</div>
+                    <div class="text-sm" id="calculo-sorte">
+                        ((Fé + Destino) × 2 - Sorte) ÷ 2
+                    </div>
+                </div>
+                
+                <div class="progress-control mb-4">
+                    <div class="progress-bar" style="background: rgba(212, 167, 106, 0.1);">
+                        <div class="progress-fill" style="background: var(--destiny-gold); width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="text-center mb-4">
+                    <div class="text-sm" style="color: var(--destiny-gold);" id="status-sorte">
+                        Não definido
+                    </div>
+                    <div class="text-sm mt-1" id="rolls-info">
+                        Rolagens restantes: ilimitadas
+                    </div>
+                </div>
+                
+                <div class="flex gap-3">
+                    <button onclick="rolarSorte()" class="btn w-full" style="background: rgba(212, 167, 106, 0.2); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
+                        <i data-lucide="dice-5"></i>
+                        Rolar Destino
+                    </button>
+                    <button onclick="fixarSorte()" class="btn w-full" style="background: rgba(212, 167, 106, 0.2); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
+                        <i data-lucide="lock"></i>
+                        Fixar
+                    </button>
                 </div>
             </div>
         </section>
 
-        <!-- ESTATÍSTICAS AVANÇADAS (TEXTUAL) -->
-        <section class="animate-fadeIn">
-            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
-                <i data-lucide="layers" style="width: 1.25rem; height: 1.25rem; color: var(--accent-purple);"></i>
+        <!-- ESTATÍSTICAS DERIVADAS -->
+        <section class="mb-6">
+            <h2 class="section-title">
+                <i data-lucide="layers"></i>
                 Estatísticas Avançadas
             </h2>
             
-            <div class="card">
-                <div id="derived-stats" class="space-y-3 font-mono text-sm">
-                    <!-- As estatísticas derivadas serão calculadas aqui -->
-                    <div>Blindagem: <span id="calc-blindagem" style="color: var(--accent-blue);">0</span></div>
-                    <div>Velocidade: <span id="calc-velocidade" style="color: var(--accent-green);">0</span></div>
-                    <div>Iniciativa: <span id="calc-iniciativa" style="color: var(--accent-yellow);">0</span></div>
-                    <div>Percepção: <span id="calc-percepcao" style="color: var(--accent-purple);">0</span></div>
+            <div class="derived-stats">
+                <div class="derived-item">
+                    <span>Blindagem:</span>
+                    <span style="color: var(--accent-blue);" id="calc-blindagem">0</span>
                 </div>
-                <div class="text-xs text-secondary mt-3">
+                <div class="derived-item">
+                    <span>Velocidade:</span>
+                    <span style="color: var(--accent-green);" id="calc-velocidade">0</span>
+                </div>
+                <div class="derived-item">
+                    <span>Iniciativa:</span>
+                    <span style="color: var(--accent-yellow);" id="calc-iniciativa">0</span>
+                </div>
+                <div class="derived-item">
+                    <span>Percepção:</span>
+                    <span style="color: var(--accent-purple);" id="calc-percepcao">0</span>
+                </div>
+                <div class="text-sm mt-4" style="color: var(--text-secondary);">
                     *Calculadas automaticamente com base nos atributos
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 
-    <footer class="border-t border-border-color py-4 text-center text-secondary text-sm mt-6">
-        <p>Sistema de Status - Grimório Digital v3.0</p>
+    <!-- RODAPÉ -->
+    <footer class="border-t border-border-color py-4 text-center text-sm" style="color: var(--text-secondary);">
+        Sistema de Status - Grimório Digital v3.0
     </footer>
 
     <!-- MODAL DE CONFIGURAÇÕES -->
     <div id="modal-config" class="modal">
         <div class="modal-content">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-cinzel text-lg" style="color: var(--accent-blue);">
-                    <i data-lucide="settings" style="width: 1rem; height: 1rem; vertical-align: middle; margin-right: 0.5rem;"></i>
+                <h3 class="font-cinzel" style="color: var(--accent-blue);">
+                    <i data-lucide="settings"></i>
                     Configurações
                 </h3>
-                <button onclick="fecharModal('modal-config')" class="btn-control">
-                    <i data-lucide="x" style="width: 1rem; height: 1rem;"></i>
+                <button onclick="fecharModal('modal-config')" class="btn" style="background: rgba(255,255,255,0.1);">
+                    <i data-lucide="x"></i>
                 </button>
             </div>
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-secondary text-sm mb-2">Limite por Atributo</label>
-                    <input type="number" id="config-limite-atributo" min="10" max="1000" value="100" class="w-full">
+                    <label class="block text-sm mb-2">Limite por Atributo</label>
+                    <input type="number" id="config-limite-atributo" class="w-full p-2 rounded" value="100" min="10" max="500">
                 </div>
                 
                 <div>
-                    <label class="block text-secondary text-sm mb-2">Pontos por Nível</label>
-                    <input type="number" id="config-pontos-nivel" min="0" max="100" value="5" class="w-full">
+                    <label class="block text-sm mb-2">Pontos por Nível</label>
+                    <input type="number" id="config-pontos-nivel" class="w-full p-2 rounded" value="5" min="0" max="50">
                 </div>
                 
                 <div>
-                    <label class="block text-secondary text-sm mb-2">Mínimo para Sorteio Aleatório</label>
-                    <input type="number" id="config-minimo-aleatorio" min="0" max="1000" value="18" class="w-full">
+                    <label class="block text-sm mb-2">Mínimo para Sorteio</label>
+                    <input type="number" id="config-minimo-aleatorio" class="w-full p-2 rounded" value="18" min="0" max="200">
                 </div>
                 
                 <div>
-                    <label class="block text-secondary text-sm mb-2">Rolagens Máximas de Destino</label>
-                    <input type="number" id="config-rolagens-maximas" min="1" max="10" value="3" class="w-full">
+                    <label class="block text-sm mb-2">Rolagens de Destino</label>
+                    <input type="number" id="config-rolagens-maximas" class="w-full p-2 rounded" value="3" min="1" max="10">
                 </div>
             </div>
             
             <div class="flex gap-3 mt-6">
-                <button onclick="fecharModal('modal-config')" class="btn-control btn-large flex-1" style="background: rgba(255, 255, 255, 0.05);">
+                <button onclick="fecharModal('modal-config')" class="btn w-full" style="background: rgba(255,255,255,0.1);">
                     Cancelar
                 </button>
-                <button onclick="salvarConfiguracoes()" class="btn-control btn-large flex-1" style="background: var(--accent-green); color: white;">
-                    <i data-lucide="save" style="width: 1rem; height: 1rem;"></i>
+                <button onclick="salvarConfiguracoes()" class="btn btn-success w-full">
+                    <i data-lucide="save"></i>
                     Salvar
                 </button>
             </div>
@@ -842,6 +850,7 @@
     <script>
     lucide.createIcons();
     
+    // Dados do sistema
     let statusData = {
         recursos: {
             vida: { atual: 100, max: 100 },
@@ -873,54 +882,111 @@
         }
     };
     
-    // FUNÇÕES DE CONTROLE
-    function adjustValue(resource, amount) {
-        const current = statusData.recursos[resource].atual;
-        const max = statusData.recursos[resource].max;
-        const newValue = Math.max(0, Math.min(max, current + amount));
-        
-        statusData.recursos[resource].atual = newValue;
-        updateDisplay(`${resource}-atual`, newValue);
-        updateDisplay(`display-${resource}`, newValue);
-        salvarDados();
-        updateDerivedStats();
-    }
-    
-    function adjustAttribute(attribute, amount) {
-        const current = statusData.atributos[attribute];
-        const max = statusData.config.limiteAtributo;
-        const newValue = Math.max(0, Math.min(max, current + amount));
-        
-        statusData.atributos[attribute] = newValue;
-        updateDisplay(attribute, newValue);
-        updateDisplay(`display-${attribute}`, newValue);
-        salvarDados();
-        updateDerivedStats();
-    }
-    
-    function updateMax(resource, value) {
-        const max = parseInt(value) || 0;
-        const atual = statusData.recursos[resource].atual;
-        
-        if (max > 0) {
-            statusData.recursos[resource].max = max;
-            statusData.recursos[resource].atual = Math.min(atual, max);
+    // Controles de progress bar
+    class ProgressBarControl {
+        constructor(element) {
+            this.bar = element;
+            this.fill = element.querySelector('.progress-fill');
+            this.handle = element.querySelector('.progress-handle');
+            this.statId = element.dataset.stat;
+            this.max = parseInt(element.dataset.max) || 100;
+            this.isDragging = false;
             
-            updateDisplay(`${resource}-maxima`, max);
-            updateDisplay(`${resource}-atual`, statusData.recursos[resource].atual);
-            updateDisplay(`display-${resource}`, statusData.recursos[resource].atual);
+            this.init();
+        }
+        
+        init() {
+            this.bar.addEventListener('click', (e) => this.handleClick(e));
+            this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
+            document.addEventListener('mousemove', (e) => this.drag(e));
+            document.addEventListener('mouseup', () => this.stopDrag());
+            
+            // Touch events para mobile
+            this.bar.addEventListener('touchstart', (e) => this.handleClick(e.touches[0]));
+            this.handle.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]));
+            document.addEventListener('touchmove', (e) => this.drag(e.touches[0]), { passive: false });
+            document.addEventListener('touchend', () => this.stopDrag());
+        }
+        
+        getCurrentValue() {
+            const valueElement = document.getElementById(this.statId);
+            return parseInt(valueElement.textContent) || 0;
+        }
+        
+        setValue(value) {
+            const clampedValue = Math.max(0, Math.min(this.max, value));
+            const percentage = (clampedValue / this.max) * 100;
+            
+            this.fill.style.width = `${percentage}%`;
+            
+            const valueElement = document.getElementById(this.statId);
+            valueElement.textContent = clampedValue;
+            
+            // Atualizar dados
+            this.updateData(clampedValue);
+        }
+        
+        updateData(value) {
+            // Recursos
+            if (this.statId.includes('-atual')) {
+                const resource = this.statId.split('-')[0];
+                statusData.recursos[resource].atual = value;
+                
+                // Atualizar máximo se for vida
+                if (resource === 'vida') {
+                    document.getElementById('vida-maxima').textContent = statusData.recursos.vida.max;
+                } else if (resource === 'mana') {
+                    document.getElementById('mana-maxima').textContent = statusData.recursos.mana.max;
+                } else if (resource === 'estamina') {
+                    document.getElementById('estamina-maxima').textContent = statusData.recursos.estamina.max;
+                }
+            }
+            // Atributos
+            else if (statusData.atributos[this.statId] !== undefined) {
+                statusData.atributos[this.statId] = value;
+            }
+            
             salvarDados();
+            updateDerivedStats();
+        }
+        
+        handleClick(e) {
+            if (this.isDragging) return;
+            
+            const rect = this.bar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+            const value = Math.round((percentage / 100) * this.max);
+            
+            this.setValue(value);
+        }
+        
+        startDrag(e) {
+            this.isDragging = true;
+            e.preventDefault();
+        }
+        
+        drag(e) {
+            if (!this.isDragging) return;
+            
+            const rect = this.bar.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            const value = Math.round((percentage / 100) * this.max);
+            
+            this.setValue(value);
+        }
+        
+        stopDrag() {
+            this.isDragging = false;
         }
     }
     
-    function updateDisplay(id, value) {
-        const element = document.getElementById(id);
-        if (element) {
-            element.textContent = value;
-            element.classList.add('animate-pulse');
-            setTimeout(() => element.classList.remove('animate-pulse'), 300);
-        }
-    }
+    // Inicializar todas as progress bars
+    const progressBars = [];
+    document.querySelectorAll('.progress-bar').forEach(bar => {
+        progressBars.push(new ProgressBarControl(bar));
+    });
     
     // SISTEMA DE DESTINO
     function rolarSorte() {
@@ -947,14 +1013,13 @@
         statusData.sorte.rolagens++;
         
         // Atualizar display
-        updateDisplay('dado-fe', dado1);
-        updateDisplay('dado-sorte', dado2);
-        updateDisplay('dado-destino', dado3);
-        updateDisplay('indice-sorte', `${resultado}%`);
-        updateDisplay('display-sorte', `${resultado}%`);
+        document.getElementById('dado-fe').textContent = dado1;
+        document.getElementById('dado-sorte').textContent = dado2;
+        document.getElementById('dado-destino').textContent = dado3;
+        document.getElementById('indice-sorte').textContent = `${resultado}%`;
         
         // Barra de progresso
-        document.getElementById('sorte-bar').style.width = `${resultado}%`;
+        document.querySelector('.destiny-section .progress-fill').style.width = `${resultado}%`;
         
         // Status
         let status = 'Neutro';
@@ -964,7 +1029,7 @@
         else if (resultado < 45) status = 'Muito Azarado';
         
         statusData.sorte.status = status;
-        updateDisplay('status-sorte', status);
+        document.getElementById('status-sorte').textContent = status;
         
         // Fórmula
         document.getElementById('calculo-sorte').textContent = 
@@ -975,7 +1040,7 @@
         document.getElementById('rolls-info').textContent = 
             `Rolagens restantes: ${restantes}`;
         
-        mostrarNotificacao(`Destino: ${resultado}% (${restantes} rolagens restantes)`, 'success');
+        mostrarNotificacao(`Destino: ${resultado}%`, 'success');
         salvarDados();
     }
     
@@ -991,23 +1056,34 @@
         salvarDados();
     }
     
-    // SORTEIO ALEATÓRIO DE ATRIBUTOS
+    // SORTEIO ALEATÓRIO
     function distribuirAleatorio() {
         const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
         const totalAtual = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
         
         if (totalAtual >= statusData.config.minimoAleatorio) {
-            // Calcular pontos para distribuir
-            const pontos = Math.floor(statusData.config.pontosPorNivel * 0.6);
+            // Distribuir pontos baseados na configuração
+            const pontos = Math.max(1, Math.floor(statusData.config.pontosPorNivel * 0.8));
             
             for (let i = 0; i < pontos; i++) {
                 const randomAttr = atributos[Math.floor(Math.random() * atributos.length)];
                 if (statusData.atributos[randomAttr] < statusData.config.limiteAtributo) {
-                    adjustAttribute(randomAttr, 1);
+                    statusData.atributos[randomAttr]++;
+                    
+                    // Atualizar visual
+                    const element = document.getElementById(randomAttr);
+                    const bar = document.querySelector(`[data-stat="${randomAttr}"]`);
+                    const progressBar = progressBars.find(pb => pb.statId === randomAttr);
+                    
+                    if (progressBar) {
+                        progressBar.setValue(statusData.atributos[randomAttr]);
+                    }
                 }
             }
             
-            mostrarNotificacao(`${pontos} pontos distribuídos aleatoriamente!`, 'success');
+            mostrarNotificacao(`${pontos} pontos distribuídos!`, 'success');
+            salvarDados();
+            updateDerivedStats();
         } else {
             mostrarNotificacao(`Mínimo de ${statusData.config.minimoAleatorio} pontos necessários`, 'warning');
         }
@@ -1018,9 +1094,13 @@
             const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
             atributos.forEach(attr => {
                 statusData.atributos[attr] = 0;
-                updateDisplay(attr, 0);
-                updateDisplay(`display-${attr}`, 0);
+                
+                const progressBar = progressBars.find(pb => pb.statId === attr);
+                if (progressBar) {
+                    progressBar.setValue(0);
+                }
             });
+            
             mostrarNotificacao('Atributos resetados!', 'info');
             salvarDados();
             updateDerivedStats();
@@ -1031,29 +1111,31 @@
         if (confirm('Restaurar todos os recursos?')) {
             ['vida', 'mana', 'estamina'].forEach(resource => {
                 statusData.recursos[resource].atual = statusData.recursos[resource].max;
-                updateDisplay(`${resource}-atual`, statusData.recursos[resource].atual);
-                updateDisplay(`display-${resource}`, statusData.recursos[resource].atual);
+                
+                const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
+                if (progressBar) {
+                    progressBar.setValue(statusData.recursos[resource].atual);
+                }
             });
+            
             mostrarNotificacao('Recursos restaurados!', 'success');
             salvarDados();
         }
     }
     
-    // ESTATÍSTICAS DERIVADAS (CÁLCULO AUTOMÁTICO)
+    // ESTATÍSTICAS DERIVADAS
     function updateDerivedStats() {
         const { forca, destreza, constituicao, inteligencia, sabedoria } = statusData.atributos;
         
-        // Cálculos baseados nos atributos
         const blindagem = Math.floor((constituicao * 0.7) + (forca * 0.3));
         const velocidade = Math.floor((destreza * 0.6) + (constituicao * 0.4));
         const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
         const percepcao = Math.floor((sabedoria * 0.8) + (inteligencia * 0.2));
         
-        // Atualizar display
-        updateDisplay('calc-blindagem', blindagem);
-        updateDisplay('calc-velocidade', velocidade);
-        updateDisplay('calc-iniciativa', iniciativa);
-        updateDisplay('calc-percepcao', percepcao);
+        document.getElementById('calc-blindagem').textContent = blindagem;
+        document.getElementById('calc-velocidade').textContent = velocidade;
+        document.getElementById('calc-iniciativa').textContent = iniciativa;
+        document.getElementById('calc-percepcao').textContent = percepcao;
     }
     
     // CONFIGURAÇÕES
@@ -1150,28 +1232,38 @@
     function carregarDadosNaInterface() {
         // Recursos
         ['vida', 'mana', 'estamina'].forEach(resource => {
-            updateDisplay(`${resource}-atual`, statusData.recursos[resource].atual);
-            updateDisplay(`${resource}-maxima`, statusData.recursos[resource].max);
-            updateDisplay(`display-${resource}`, statusData.recursos[resource].atual);
-            document.getElementById(`input-${resource}-maxima`).value = statusData.recursos[resource].max;
+            const value = statusData.recursos[resource].atual;
+            const max = statusData.recursos[resource].max;
+            
+            document.getElementById(`${resource}-atual`).textContent = value;
+            document.getElementById(`${resource}-maxima`).textContent = max;
+            
+            const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
+            if (progressBar) {
+                progressBar.setValue(value);
+            }
         });
         
         // Atributos
         Object.keys(statusData.atributos).forEach(attr => {
-            updateDisplay(attr, statusData.atributos[attr]);
-            updateDisplay(`display-${attr}`, statusData.atributos[attr]);
+            const value = statusData.atributos[attr];
+            document.getElementById(attr).textContent = value;
+            
+            const progressBar = progressBars.find(pb => pb.statId === attr);
+            if (progressBar) {
+                progressBar.setValue(value);
+            }
         });
         
         // Sorte
         if (statusData.sorte.indice > 0) {
-            updateDisplay('dado-fe', statusData.sorte.dado1);
-            updateDisplay('dado-sorte', statusData.sorte.dado2);
-            updateDisplay('dado-destino', statusData.sorte.dado3);
-            updateDisplay('indice-sorte', `${statusData.sorte.indice}%`);
-            updateDisplay('display-sorte', `${statusData.sorte.indice}%`);
-            updateDisplay('status-sorte', statusData.sorte.status);
+            document.getElementById('dado-fe').textContent = statusData.sorte.dado1;
+            document.getElementById('dado-sorte').textContent = statusData.sorte.dado2;
+            document.getElementById('dado-destino').textContent = statusData.sorte.dado3;
+            document.getElementById('indice-sorte').textContent = `${statusData.sorte.indice}%`;
+            document.getElementById('status-sorte').textContent = statusData.sorte.status;
             
-            document.getElementById('sorte-bar').style.width = `${statusData.sorte.indice}%`;
+            document.querySelector('.destiny-section .progress-fill').style.width = `${statusData.sorte.indice}%`;
             document.getElementById('calculo-sorte').textContent = 
                 `((${statusData.sorte.dado1} + ${statusData.sorte.dado3}) × 2 - ${statusData.sorte.dado2}) ÷ 2 = ${statusData.sorte.indice}`;
             
@@ -1186,7 +1278,7 @@
     // PERSISTÊNCIA
     function salvarDados() {
         try {
-            localStorage.setItem('grimorio_status', JSON.stringify(statusData));
+            localStorage.setItem('grimorio_status_simple', JSON.stringify(statusData));
         } catch (error) {
             console.error('Erro ao salvar:', error);
         }
@@ -1194,7 +1286,7 @@
     
     function carregarDados() {
         try {
-            const dados = localStorage.getItem('grimorio_status');
+            const dados = localStorage.getItem('grimorio_status_simple');
             if (dados) {
                 const parsed = JSON.parse(dados);
                 statusData = { ...statusData, ...parsed };
@@ -1222,7 +1314,7 @@
             font-weight: 600;
             font-size: 0.875rem;
             z-index: 1000;
-            animation: fadeIn 0.3s ease-out;
+            animation: slideIn 0.3s ease-out;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -1231,8 +1323,7 @@
         notification.innerHTML = `
             <i data-lucide="${tipo === 'success' ? 'check-circle' : 
                             tipo === 'error' ? 'x-circle' : 
-                            tipo === 'warning' ? 'alert-triangle' : 'info'}" 
-               style="width: 1rem; height: 1rem;"></i>
+                            tipo === 'warning' ? 'alert-triangle' : 'info'}"></i>
             <span>${mensagem}</span>
         `;
         
@@ -1255,12 +1346,6 @@
         document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
         
         updateDerivedStats();
-        
-        // Atualizar estatísticas sempre que um atributo mudar
-        document.querySelectorAll('[data-attribute]').forEach(card => {
-            const observer = new MutationObserver(updateDerivedStats);
-            observer.observe(card.querySelector('.font-mono'), { characterData: true, subtree: true });
-        });
     });
     </script>
 </body>
