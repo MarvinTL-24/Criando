@@ -144,6 +144,7 @@
             transition: all 0.3s ease;
             cursor: pointer;
             min-height: 150px;
+            position: relative;
         }
         
         .item-slot:hover {
@@ -179,6 +180,61 @@
             max-height: 80%;
             object-fit: contain;
         }
+
+        .skill-progress {
+            height: 4px;
+            background: #2a2a2e;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .skill-progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .upload-btn {
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        
+        .upload-btn input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .maestria-badge {
+            background: linear-gradient(45deg, #f59e0b, #d97706);
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            animation: pulse 2s infinite;
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-20">
@@ -196,13 +252,13 @@
             </div>
             
             <div class="flex items-center gap-3" id="nav-buttons">
-                <button onclick="goToStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
+                <button onclick="carregarStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
                     <i data-lucide="activity" class="w-4 h-4"></i> Status
                 </button>
-                <button onclick="goToEquipamentos()" class="nav-btn bg-green-500/20 text-green-400">
+                <button onclick="carregarEquipamentos()" class="nav-btn bg-green-500/20 text-green-400">
                     <i data-lucide="sword" class="w-4 h-4"></i> Equipamentos
                 </button>
-                <button onclick="goToHabilidades()" class="nav-btn bg-purple-500/20 text-purple-400">
+                <button onclick="carregarHabilidades()" class="nav-btn bg-purple-500/20 text-purple-400">
                     <i data-lucide="zap" class="w-4 h-4"></i> Habilidades
                 </button>
             </div>
@@ -216,13 +272,14 @@
         <header class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 animate-fade-in-up">
             <div class="flex items-center gap-6 w-full md:w-auto">
                 <!-- Avatar/Imagem -->
-                <div id="avatar-display" class="avatar-container w-24 h-24 rounded-lg overflow-hidden flex items-center justify-center">
+                <div id="avatar-display" class="avatar-container w-24 h-24 rounded-lg overflow-hidden flex items-center justify-center cursor-pointer" onclick="alterarAvatar()">
                     <i data-lucide="user" class="w-12 h-12 text-[#606060]" id="avatar-icon"></i>
+                    <img id="avatar-image" class="hidden w-full h-full object-cover">
                 </div>
                 
                 <div class="flex-grow">
-                    <h1 class="text-3xl font-cinzel font-bold text-white" id="profile-title">Perfil do Personagem</h1>
-                    <p class="text-gray-400" id="profile-subtitle">Status, Equipamentos e Habilidades</p>
+                    <h1 id="profile-title" class="text-3xl font-cinzel font-bold text-white">Perfil do Personagem</h1>
+                    <p id="profile-subtitle" class="text-gray-400">Status, Equipamentos e Habilidades</p>
                 </div>
             </div>
             
@@ -235,21 +292,29 @@
             </div>
         </header>
 
-        <!-- Seção 1: Status Principal (Preenchido pelo status.html) -->
+        <!-- Seção 1: Status Principal -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-0">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 rounded-lg bg-theme-red/10 border border-theme-red/20">
                     <i data-lucide="activity" class="w-4 h-4 text-theme-red"></i>
                 </div>
                 <h3 class="font-cinzel text-lg font-semibold text-white">Status Principal</h3>
-                <button onclick="goToStatus()" class="ml-auto text-sm text-theme-blue hover:underline">
-                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Editar Status
-                </button>
+                <div class="ml-auto flex gap-2">
+                    <button onclick="editarStatus()" class="text-sm text-theme-blue hover:underline">
+                        <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Editar
+                    </button>
+                    <button onclick="calcularDerivados()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="calculator" class="w-3 h-3 inline mr-1"></i> Calcular
+                    </button>
+                    <button onclick="toggleDerivados()" class="text-sm text-theme-purple hover:underline">
+                        <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Ocultar
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <!-- Vida -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg card-hover">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2 rounded-full bg-theme-red/10">
@@ -257,9 +322,13 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-red">Vida</span>
+                                <div class="text-xs text-gray-500" id="vida-percent">0%</div>
                             </div>
                         </div>
-                        <span class="font-mono text-xl font-bold text-white" id="display-vida">0/0</span>
+                        <div class="text-right">
+                            <span class="font-mono text-xl font-bold text-white" id="display-vida">0/0</span>
+                            <div class="text-xs text-gray-500">HP</div>
+                        </div>
                     </div>
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-vida-bar" class="h-full bg-gradient-to-r from-red-600 to-red-400 stat-bar-fill" style="width: 0%"></div>
@@ -267,7 +336,7 @@
                 </div>
 
                 <!-- Mana -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg card-hover">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2 rounded-full bg-theme-blue/10">
@@ -275,9 +344,13 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-blue">Mana</span>
+                                <div class="text-xs text-gray-500" id="mana-percent">0%</div>
                             </div>
                         </div>
-                        <span class="font-mono text-xl font-bold text-white" id="display-mana">0/0</span>
+                        <div class="text-right">
+                            <span class="font-mono text-xl font-bold text-white" id="display-mana">0/0</span>
+                            <div class="text-xs text-gray-500">MP</div>
+                        </div>
                     </div>
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-mana-bar" class="h-full bg-gradient-to-r from-blue-600 to-blue-400 stat-bar-fill" style="width: 0%"></div>
@@ -285,7 +358,7 @@
                 </div>
 
                 <!-- Estamina -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg card-hover">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2 rounded-full bg-theme-green/10">
@@ -293,9 +366,13 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-green">Estamina</span>
+                                <div class="text-xs text-gray-500" id="estamina-percent">0%</div>
                             </div>
                         </div>
-                        <span class="font-mono text-xl font-bold text-white" id="display-estamina">0/0</span>
+                        <div class="text-right">
+                            <span class="font-mono text-xl font-bold text-white" id="display-estamina">0/0</span>
+                            <div class="text-xs text-gray-500">SP</div>
+                        </div>
                     </div>
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-estamina-bar" class="h-full bg-gradient-to-r from-green-600 to-green-400 stat-bar-fill" style="width: 0%"></div>
@@ -304,125 +381,153 @@
             </div>
 
             <!-- Atributos -->
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mt-6">
-                <div class="text-center">
-                    <div class="text-lg font-bold text-theme-red" id="display-forca">0</div>
-                    <div class="text-xs text-gray-500">Força</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-lg font-bold text-theme-green" id="display-destreza">0</div>
-                    <div class="text-xs text-gray-500">Destreza</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-lg font-bold text-theme-yellow" id="display-constituicao">0</div>
-                    <div class="text-xs text-gray-500">Constituição</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-lg font-bold text-theme-blue" id="display-inteligencia">0</div>
-                    <div class="text-xs text-gray-500">Inteligência</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-lg font-bold text-theme-purple" id="display-sabedoria">0</div>
-                    <div class="text-xs text-gray-500">Sabedoria</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-lg font-bold text-theme-pink" id="display-carisma">0</div>
-                    <div class="text-xs text-gray-500">Carisma</div>
-                </div>
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mt-6" id="atributos-container">
+                <!-- Atributos serão carregados dinamicamente -->
             </div>
         </section>
 
-        <!-- Seção 2: Sorte e Destino (Preenchido pelo status.html) -->
+        <!-- Seção 2: Classe e Pontos -->
         <section class="bg-destiny-1 border border-destiny p-6 rounded-lg animate-fade-in-up anim-delay-1">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-lg bg-theme-purple/10 border border-theme-purple/20">
-                        <i data-lucide="clover" class="w-4 h-4 text-theme-purple"></i>
+                        <i data-lucide="crown" class="w-4 h-4 text-theme-purple"></i>
                     </div>
-                    <h3 class="font-cinzel text-lg font-semibold text-destiny-light">Sorte & Destino</h3>
+                    <h3 class="font-cinzel text-lg font-semibold text-destiny-light">Classe & Pontos</h3>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm text-destiny-dark">Status:</span>
-                    <span id="destiny-status" class="text-sm font-bold text-destiny-gold">Não Definido</span>
+                <button onclick="editarClasse()" class="text-sm text-destiny-gold hover:underline">
+                    <i data-lucide="edit-3" class="w-3 h-3 inline mr-1"></i> Alterar
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Informações da Classe -->
+                <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl">
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4">Classe do Personagem</h4>
+                    <div id="classe-info">
+                        <div class="text-center py-4">
+                            <i data-lucide="user-plus" class="w-12 h-12 mx-auto text-destiny-dark mb-3"></i>
+                            <p class="text-destiny-dark">Nenhuma classe selecionada</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pontos Extras -->
+                <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl">
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4">Pontos Extras</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-destiny-light">Pontos Disponíveis</span>
+                                <span class="text-2xl font-bold text-destiny-gold" id="pontos-disponiveis">0</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div id="pontos-progress" class="skill-progress-fill bg-gradient-to-r from-destiny-gold to-yellow-400" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-destiny-light">Nível</span>
+                                <span class="text-xl font-bold text-destiny-gold" id="nivel-personagem">1</span>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-destiny-light">Experiência</span>
+                                <span class="text-xl font-bold text-destiny-gold" id="experiencia-personagem">0/1000</span>
+                            </div>
+                            <div class="skill-progress">
+                                <div id="exp-progress" class="skill-progress-fill bg-gradient-to-r from-blue-500 to-purple-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 3: Sorte e Destino -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-2">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
+                        <i data-lucide="clover" class="w-4 h-4 text-theme-blue"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Sorte & Destino</h3>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="rolarSorte()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="dice-5" class="w-3 h-3 inline mr-1"></i> Rolar
+                    </button>
+                    <button onclick="editarSorte()" class="text-sm text-theme-blue hover:underline">
+                        <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Editar
+                    </button>
                 </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
                 <!-- Índice de Sorte -->
-                <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl text-center">
-                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-theme-purple to-theme-pink flex items-center justify-center shadow-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-6 rounded-xl text-center card-hover">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-theme-purple to-theme-pink flex items-center justify-center shadow-lg animate-float">
                         <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
                     </div>
-                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-2">Índice de Sorte</h4>
-                    <div class="text-5xl font-bold font-mono text-destiny-gold mb-2" id="display-sorte">--</div>
-                    <div class="h-2 bg-destiny-1 rounded-full overflow-hidden mb-3">
+                    <h4 class="font-cinzel font-bold text-white text-lg mb-2">Índice de Sorte</h4>
+                    <div class="text-5xl font-bold font-mono text-theme-gold mb-2" id="display-sorte">--</div>
+                    <div class="h-2 bg-theme-border rounded-full overflow-hidden mb-3">
                         <div id="display-sorte-bar" class="h-full bg-gradient-to-r from-theme-purple to-theme-pink stat-bar-fill" style="width: 0%"></div>
                     </div>
+                    <div id="destiny-status" class="text-sm text-gray-400">Status: Não Definido</div>
                 </div>
 
                 <!-- Dados Fixos -->
-                <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl">
-                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4">Dados Fixos</h4>
+                <div class="bg-[#0a0a0c] border border-theme-border p-6 rounded-xl card-hover">
+                    <h4 class="font-cinzel font-bold text-white text-lg mb-4">Dados de Sorte</h4>
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="text-center">
-                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
-                                <span class="text-xl font-bold text-destiny-light" id="display-dado1">0</span>
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-theme-panel border border-theme-border flex items-center justify-center">
+                                <span class="text-xl font-bold text-white" id="display-dado1">0</span>
                             </div>
-                            <div class="text-xs text-destiny-dark">Fé</div>
+                            <div class="text-xs text-gray-500">Fé</div>
                         </div>
                         <div class="text-center">
-                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
-                                <span class="text-xl font-bold text-destiny-light" id="display-dado2">0</span>
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-theme-panel border border-theme-border flex items-center justify-center">
+                                <span class="text-xl font-bold text-white" id="display-dado2">0</span>
                             </div>
-                            <div class="text-xs text-destiny-dark">Sorte</div>
+                            <div class="text-xs text-gray-500">Sorte</div>
                         </div>
                         <div class="text-center">
-                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
-                                <span class="text-xl font-bold text-destiny-light" id="display-dado3">0</span>
+                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-theme-panel border border-theme-border flex items-center justify-center">
+                                <span class="text-xl font-bold text-white" id="display-dado3">0</span>
                             </div>
-                            <div class="text-xs text-destiny-dark">Destino</div>
+                            <div class="text-xs text-gray-500">Destino</div>
                         </div>
                     </div>
-                    <div class="text-sm text-destiny-dark" id="destiny-formula-display">
+                    <div class="text-sm text-gray-500" id="destiny-formula-display">
                         Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 3: Estatísticas Avançadas (Preenchido pelo status.html) -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-2">
+        <!-- Seção 4: Estatísticas Avançadas -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-2" id="estatisticas-avancadas">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
                     <i data-lucide="bar-chart" class="w-4 h-4 text-theme-blue"></i>
                 </div>
                 <h3 class="font-cinzel text-lg font-semibold text-white">Estatísticas Avançadas</h3>
+                <button onclick="toggleDerivados()" class="ml-auto text-sm text-theme-purple hover:underline">
+                    <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Ocultar
+                </button>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
-                    <div class="text-2xl font-bold text-white font-mono" id="display-blindagem">0</div>
-                    <div class="text-xs uppercase text-gray-500 mt-1">Blindagem</div>
-                </div>
-                
-                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
-                    <div class="text-2xl font-bold text-white font-mono" id="display-velocidade">0</div>
-                    <div class="text-xs uppercase text-gray-500 mt-1">Velocidade</div>
-                </div>
-                
-                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
-                    <div class="text-2xl font-bold text-white font-mono" id="display-iniciativa">0</div>
-                    <div class="text-xs uppercase text-gray-500 mt-1">Iniciativa</div>
-                </div>
-                
-                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
-                    <div class="text-2xl font-bold text-white font-mono" id="display-percepcao">0</div>
-                    <div class="text-xs uppercase text-gray-500 mt-1">Percepção</div>
-                </div>
+                <!-- Estatísticas serão carregadas dinamicamente -->
             </div>
         </section>
 
-        <!-- Seção 4: Equipamentos (5 slots editáveis) -->
+        <!-- Seção 5: Equipamentos -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-3">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
@@ -431,42 +536,22 @@
                     </div>
                     <h3 class="font-cinzel text-lg font-semibold text-white">Equipamentos</h3>
                 </div>
-                <button onclick="editarEquipamentos()" class="text-sm text-theme-orange hover:underline">
-                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Gerenciar
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="importarEquipamento()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Importar
+                    </button>
+                    <button onclick="editarEquipamentos()" class="text-sm text-theme-orange hover:underline">
+                        <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Gerenciar
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="equipamentos-container">
                 <!-- Slots serão preenchidos dinamicamente -->
-                <div class="item-slot text-center" onclick="editarEquipamento(0)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 1</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarEquipamento(1)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 2</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarEquipamento(2)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 3</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarEquipamento(3)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 4</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarEquipamento(4)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 5</div>
-                </div>
             </div>
         </section>
 
-        <!-- Seção 5: Habilidades (5 slots editáveis) -->
+        <!-- Seção 6: Habilidades -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-3">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
@@ -475,42 +560,22 @@
                     </div>
                     <h3 class="font-cinzel text-lg font-semibold text-white">Habilidades</h3>
                 </div>
-                <button onclick="editarHabilidades()" class="text-sm text-theme-purple hover:underline">
-                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Gerenciar
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="criarHabilidade()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="plus" class="w-3 h-3 inline mr-1"></i> Criar
+                    </button>
+                    <button onclick="editarHabilidades()" class="text-sm text-theme-purple hover:underline">
+                        <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Gerenciar
+                    </button>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="habilidades-container">
                 <!-- Slots serão preenchidos dinamicamente -->
-                <div class="item-slot text-center" onclick="editarHabilidade(0)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 1</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarHabilidade(1)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 2</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarHabilidade(2)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 3</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarHabilidade(3)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 4</div>
-                </div>
-                <div class="item-slot text-center" onclick="editarHabilidade(4)">
-                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                    <div class="text-sm text-gray-500">Clique para adicionar</div>
-                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 5</div>
-                </div>
             </div>
         </section>
 
-        <!-- Seção 6: Inventário Rápido (3 slots) -->
+        <!-- Seção 7: Inventário Rápido -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-4">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
@@ -525,23 +590,15 @@
             </div>
 
             <div class="flex justify-center gap-8" id="inventario-rapido">
-                <div class="quick-item" onclick="usarItem(0)">
-                    <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
-                </div>
-                <div class="quick-item" onclick="usarItem(1)">
-                    <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
-                </div>
-                <div class="quick-item" onclick="usarItem(2)">
-                    <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
-                </div>
+                <!-- Itens serão carregados dinamicamente -->
             </div>
             <div class="text-center text-sm text-gray-500 mt-4">
                 Clique em um item para usar rapidamente
             </div>
         </section>
 
-        <!-- Seção 7: Mascote -->
-        <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg animate-fade-in-up anim-delay-4">
+        <!-- Seção 8: Mascote -->
+        <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg animate-fade-in-up anim-delay-4 card-hover">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-lg bg-[#8b7355]/20 border border-[#8b7355]">
@@ -549,44 +606,77 @@
                     </div>
                     <h3 class="font-cinzel text-lg font-semibold text-[#f4d29a]">Mascote Companheiro</h3>
                 </div>
-                <button onclick="window.location.href='mascote.html'" 
-                        class="flex items-center gap-2 px-3 py-2 text-sm bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded-lg transition-colors">
-                    <i data-lucide="edit-3" class="w-3 h-3"></i>
-                    Editar Mascote
-                </button>
+                <div class="flex gap-2">
+                    <button onclick="importarMascoteTXT()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Importar TXT
+                    </button>
+                    <button onclick="editarMascote()" class="text-sm text-[#d4a76a] hover:underline">
+                        <i data-lucide="edit-3" class="w-3 h-3 inline mr-1"></i> Editar
+                    </button>
+                </div>
             </div>
             
             <div id="mascote-summary">
-                <div class="text-center py-8 text-[#8b7355]">
-                    <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                    <p>Nenhum mascote vinculado</p>
-                    <p class="text-sm mt-2">Crie um mascote para acompanhar seu personagem</p>
-                </div>
+                <!-- Conteúdo será carregado dinamicamente -->
             </div>
         </div>
 
+        <!-- Seção 9: Proficiências e Maestrias -->
+        <section class="bg-gradient-to-br from-gray-900 to-gray-800 border border-gray-700 p-6 rounded-lg animate-fade-in-up anim-delay-4">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-yellow-500/20 border border-yellow-500/30">
+                        <i data-lucide="trophy" class="w-4 h-4 text-yellow-400"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Proficiências e Maestrias</h3>
+                </div>
+                <button onclick="carregarProficiencias()" class="text-sm text-yellow-400 hover:underline">
+                    <i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Atualizar
+                </button>
+            </div>
+            
+            <div id="proficiencias-container">
+                <div class="text-center py-4">
+                    <i data-lucide="swords" class="w-12 h-12 mx-auto text-gray-600 mb-3"></i>
+                    <p class="text-gray-500">Carregando proficiências...</p>
+                </div>
+            </div>
+        </section>
+
     </div>
 
-    <!-- Rodapé -->
+    <!-- Rodapé com botões de ação -->
     <div class="max-w-7xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6" data-html2pdf-ignore="true">
-        <button onclick="exportProfile()" 
-            class="group flex items-center gap-2 px-6 py-3 bg-theme-purple hover:bg-purple-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Exportar Perfil</span>
+        <button onclick="exportarTXT()" 
+            class="group flex items-center gap-2 px-6 py-3 bg-blue-900/30 hover:bg-blue-900/50 border border-blue-700/50 text-blue-300 rounded-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="file-text" class="w-4 h-4"></i>
+            <span>Exportar TXT</span>
         </button>
         
-        <button onclick="refreshProfile()" 
-            class="group flex items-center gap-2 px-6 py-3 bg-theme-blue hover:bg-blue-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-            <span>Atualizar Tudo</span>
+        <button onclick="exportarJSON()" 
+            class="group flex items-center gap-2 px-6 py-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-700/50 text-purple-300 rounded-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="code" class="w-4 h-4"></i>
+            <span>Exportar JSON</span>
+        </button>
+        
+        <button onclick="importarPerfil()" 
+            class="group flex items-center gap-2 px-6 py-3 bg-green-900/30 hover:bg-green-900/50 border border-green-700/50 text-green-300 rounded-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="upload" class="w-4 h-4"></i>
+            <span>Importar Perfil</span>
+        </button>
+        
+        <button onclick="salvarPerfil()" 
+            class="group flex items-center gap-2 px-6 py-3 bg-theme-orange hover:bg-orange-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            <span>Salvar Perfil</span>
         </button>
     </div>
 
-    <!-- Modal para editar equipamentos/habilidades -->
+    <!-- Modal Principal -->
     <div id="edit-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
         <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-cinzel font-bold text-xl text-white" id="modal-title">Editar Item</h3>
+                <h3 class="font-cinzel font-bold text-xl text-white" id="modal-title">Editar</h3>
                 <button onclick="fecharModal()" class="text-gray-400 hover:text-white">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
@@ -601,7 +691,7 @@
                     class="px-4 py-2 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
                     Cancelar
                 </button>
-                <button onclick="salvarItem()" 
+                <button onclick="salvarModal()" 
                     class="px-4 py-2 bg-theme-orange hover:bg-orange-600 rounded-lg text-white">
                     Salvar
                 </button>
@@ -609,573 +699,146 @@
         </div>
     </div>
 
+    <!-- Modal de Upload de Imagem -->
+    <div id="upload-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-cinzel font-bold text-xl text-white">Upload de Imagem</h3>
+                <button onclick="fecharUploadModal()" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm text-gray-400 mb-2">Escolha uma imagem</label>
+                <div class="upload-btn border-2 border-dashed border-theme-border rounded-lg p-8 text-center cursor-pointer hover:border-theme-blue transition-colors">
+                    <i data-lucide="upload" class="w-10 h-10 mx-auto text-gray-500 mb-2"></i>
+                    <p class="text-gray-400 mb-1">Arraste e solte ou clique para selecionar</p>
+                    <p class="text-xs text-gray-600">PNG, JPG, GIF até 5MB</p>
+                    <input type="file" id="file-input" accept="image/*" class="hidden">
+                </div>
+                <div id="image-preview" class="mt-4 hidden">
+                    <img id="preview-image" class="max-w-full h-32 object-contain mx-auto rounded">
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="fecharUploadModal()" 
+                    class="px-4 py-2 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
+                    Cancelar
+                </button>
+                <button onclick="confirmarUpload()" 
+                    class="px-4 py-2 bg-theme-green hover:bg-green-600 rounded-lg text-white">
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
     // ====================================================================
-    // SISTEMA DE PERFIL SIMPLIFICADO
+    // SISTEMA DE PERFIL COMPLETO
     // ====================================================================
 
-    // 1. Inicializar ícones
+    // Inicializar ícones
     if (window.lucide) {
         lucide.createIcons();
     }
 
-    // 2. Carregar dados do status (txt do status.html)
-    function carregarDadosStatus() {
-        try {
-            // Carregar dados do status salvo
-            const statusData = localStorage.getItem('grimorio_status_data');
-            if (statusData) {
-                const dados = JSON.parse(statusData);
-                atualizarStatus(dados);
-            }
-            
-            // Carregar dados da sorte (fixos)
-            carregarDadosSorte();
-            
-            // Atualizar timestamp
-            document.getElementById('last-update').textContent = 
-                new Date().toLocaleString('pt-BR');
-                
-        } catch (error) {
-            console.error('Erro ao carregar status:', error);
-        }
-    }
+    // Variáveis globais
+    let modalType = '';
+    let modalData = {};
+    let currentUploadType = '';
+    let currentUploadTarget = '';
+    let currentEquipamentoIndex = null;
+    let currentHabilidadeIndex = null;
 
-    // 3. Atualizar seção de status
-    function atualizarStatus(dados) {
-        if (!dados) return;
-        
-        // Recursos vitais
-        if (dados.vida) {
-            document.getElementById('display-vida').textContent = `${dados.vida.atual || 0}/${dados.vida.maxima || 0}`;
-            const vidaPercent = dados.vida.maxima > 0 ? (dados.vida.atual / dados.vida.maxima) * 100 : 0;
-            document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
-        }
-        
-        if (dados.mana) {
-            document.getElementById('display-mana').textContent = `${dados.mana.atual || 0}/${dados.mana.maxima || 0}`;
-            const manaPercent = dados.mana.maxima > 0 ? (dados.mana.atual / dados.mana.maxima) * 100 : 0;
-            document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
-        }
-        
-        if (dados.estamina) {
-            document.getElementById('display-estamina').textContent = `${dados.estamina.atual || 0}/${dados.estamina.maxima || 0}`;
-            const estaminaPercent = dados.estamina.maxima > 0 ? (dados.estamina.atual / dados.estamina.maxima) * 100 : 0;
-            document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
-        }
-        
-        // Atributos
-        if (dados.atributos) {
-            document.getElementById('display-forca').textContent = dados.atributos.forca || 0;
-            document.getElementById('display-destreza').textContent = dados.atributos.destreza || 0;
-            document.getElementById('display-constituicao').textContent = dados.atributos.constituicao || 0;
-            document.getElementById('display-inteligencia').textContent = dados.atributos.inteligencia || 0;
-            document.getElementById('display-sabedoria').textContent = dados.atributos.sabedoria || 0;
-            document.getElementById('display-carisma').textContent = dados.atributos.carisma || 0;
-        }
-        
-        // Estatísticas avançadas
-        if (dados.estatisticas) {
-            document.getElementById('display-blindagem').textContent = dados.estatisticas.blindagem || 0;
-            document.getElementById('display-velocidade').textContent = dados.estatisticas.velocidade || 0;
-            document.getElementById('display-iniciativa').textContent = dados.estatisticas.iniciativa || 0;
-            document.getElementById('display-percepcao').textContent = dados.estatisticas.percepcao || 0;
-        }
-    }
-
-    // 4. Carregar dados da sorte (fixos)
-    function carregarDadosSorte() {
-        try {
-            // Carregar dados salvos ou usar padrão
-            const sorteData = localStorage.getItem('grimorio_sorte_data');
-            if (sorteData) {
-                const dados = JSON.parse(sorteData);
-                atualizarSorte(dados);
-            } else {
-                // Dados padrão
-                const dadosPadrao = {
-                    dado1: 5,  // Fé
-                    dado2: 5,  // Sorte
-                    dado3: 5,  // Destino
-                    sorte: 50, // Índice de sorte (50% neutro)
-                    status: 'Neutro'
-                };
-                localStorage.setItem('grimorio_sorte_data', JSON.stringify(dadosPadrao));
-                atualizarSorte(dadosPadrao);
-            }
-        } catch (error) {
-            console.error('Erro ao carregar dados da sorte:', error);
-        }
-    }
-
-    // 5. Atualizar seção de sorte
-    function atualizarSorte(dados) {
-        if (!dados) return;
-        
-        // Dados fixos
-        document.getElementById('display-dado1').textContent = dados.dado1 || 0;
-        document.getElementById('display-dado2').textContent = dados.dado2 || 0;
-        document.getElementById('display-dado3').textContent = dados.dado3 || 0;
-        
-        // Índice de sorte
-        document.getElementById('display-sorte').textContent = `${dados.sorte || 0}%`;
-        document.getElementById('display-sorte-bar').style.width = `${dados.sorte || 0}%`;
+    // Dados do personagem
+    const personagem = {
+        nome: "Novo Personagem",
+        classe: "Não Definida",
+        nivel: 1,
+        experiencia: 0,
+        experienciaProximo: 1000,
+        pontosDisponiveis: 0,
+        pontosExtra: 0,
         
         // Status
-        document.getElementById('destiny-status').textContent = dados.status || 'Neutro';
+        status: {
+            vida: { atual: 10, max: 10 },
+            mana: { atual: 0, max: 0 },
+            estamina: { atual: 20, max: 20 },
+            forca: 0,
+            destreza: 0,
+            constituicao: 0,
+            inteligencia: 0,
+            sabedoria: 0,
+            carisma: 0
+        },
         
-        // Fórmula
-        const formula = `((${dados.dado1} + ${dados.dado3}) × 2 - ${dados.dado2}) ÷ 2 = ${((dados.dado1 + dados.dado3) * 2 - dados.dado2) / 2}`;
-        document.getElementById('destiny-formula-display').textContent = formula;
-    }
-
-    // 6. Sistema de Equipamentos
-    function carregarEquipamentos() {
-        try {
-            const equipamentos = JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]');
-            const container = document.getElementById('equipamentos-container');
-            
-            container.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                const equipamento = equipamentos[i];
-                
-                if (equipamento) {
-                    container.innerHTML += `
-                        <div class="item-slot filled" onclick="editarEquipamento(${i})">
-                            <div class="flex items-center justify-center mb-3">
-                                ${equipamento.icone ? 
-                                    `<img src="${equipamento.icone}" alt="${equipamento.nome}" class="w-10 h-10 object-contain">` :
-                                    `<i data-lucide="${equipamento.iconeLucide || 'sword'}" class="w-10 h-10 text-theme-orange"></i>`
-                                }
-                            </div>
-                            <div class="font-bold text-white text-sm mb-1">${equipamento.nome}</div>
-                            <div class="text-xs text-gray-400 mb-2">${equipamento.tipo || 'Equipamento'}</div>
-                            ${equipamento.mana ? `<div class="text-xs text-theme-blue mb-1">Mana: ${equipamento.mana}</div>` : ''}
-                            ${equipamento.cooldown ? `<div class="text-xs text-theme-orange mb-1">Cooldown: ${equipamento.cooldown}s</div>` : ''}
-                            <div class="text-xs text-gray-500 truncate">${equipamento.descricao || ''}</div>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML += `
-                        <div class="item-slot text-center" onclick="editarEquipamento(${i})">
-                            <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                            <div class="text-sm text-gray-500">Clique para adicionar</div>
-                            <div class="text-xs text-gray-600 mt-2">Slot ${i + 1}</div>
-                        </div>
-                    `;
-                }
-            }
-            
-            if (window.lucide) lucide.createIcons();
-        } catch (error) {
-            console.error('Erro ao carregar equipamentos:', error);
+        // Sorte
+        sorte: {
+            fe: 5,
+            sorte: 5,
+            destino: 5,
+            indice: 50,
+            status: "Neutro"
+        },
+        
+        // Equipamentos (5 slots)
+        equipamentos: Array(5).fill(null),
+        
+        // Habilidades (5 slots)
+        habilidades: Array(5).fill(null),
+        
+        // Inventário rápido (3 slots)
+        inventarioRapido: Array(3).fill(null),
+        
+        // Mascote
+        mascote: null,
+        
+        // Avatar
+        avatar: null,
+        
+        // Derivados (opcionais)
+        derivados: {
+            mostrar: true,
+            blindagem: 0,
+            velocidade: 0,
+            iniciativa: 0,
+            percepcao: 0
         }
-    }
+    };
 
-    // 7. Sistema de Habilidades
-    function carregarHabilidades() {
-        try {
-            const habilidades = JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]');
-            const container = document.getElementById('habilidades-container');
-            
-            container.innerHTML = '';
-            for (let i = 0; i < 5; i++) {
-                const habilidade = habilidades[i];
-                
-                if (habilidade) {
-                    container.innerHTML += `
-                        <div class="item-slot filled" onclick="editarHabilidade(${i})">
-                            <div class="flex items-center justify-center mb-3">
-                                ${habilidade.icone ? 
-                                    `<img src="${habilidade.icone}" alt="${habilidade.nome}" class="w-10 h-10 object-contain">` :
-                                    `<i data-lucide="${habilidade.iconeLucide || 'zap'}" class="w-10 h-10 text-theme-purple"></i>`
-                                }
-                            </div>
-                            <div class="font-bold text-white text-sm mb-1">${habilidade.nome}</div>
-                            <div class="text-xs text-gray-400 mb-2">${habilidade.tipo || 'Habilidade'}</div>
-                            ${habilidade.mana ? `<div class="text-xs text-theme-blue mb-1">Mana: ${habilidade.mana}</div>` : ''}
-                            ${habilidade.cooldown ? `<div class="text-xs text-theme-orange mb-1">Cooldown: ${habilidade.cooldown}s</div>` : ''}
-                            <div class="text-xs text-gray-500 truncate">${habilidade.descricao || ''}</div>
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML += `
-                        <div class="item-slot text-center" onclick="editarHabilidade(${i})">
-                            <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
-                            <div class="text-sm text-gray-500">Clique para adicionar</div>
-                            <div class="text-xs text-gray-600 mt-2">Slot ${i + 1}</div>
-                        </div>
-                    `;
-                }
-            }
-            
-            if (window.lucide) lucide.createIcons();
-        } catch (error) {
-            console.error('Erro ao carregar habilidades:', error);
-        }
-    }
+    // Classes disponíveis
+    const classes = [
+        { nome: "Guerreiro", cor: "#dc2626", icone: "sword", bonus: "+2 Força, +1 Constituição" },
+        { nome: "Mago", cor: "#4a9eff", icone: "sparkles", bonus: "+2 Inteligência, +1 Sabedoria" },
+        { nome: "Arqueiro", cor: "#22c55e", icone: "crosshair", bonus: "+2 Destreza, +1 Sabedoria" },
+        { nome: "Clérigo", cor: "#8b5cf6", icone: "heart", bonus: "+2 Sabedoria, +1 Carisma" },
+        { nome: "Ladino", cor: "#f59e0b", icone: "eye", bonus: "+2 Destreza, +1 Inteligência" },
+        { nome: "Bárbaro", cor: "#ef4444", icone: "axe", bonus: "+3 Força, +1 Constituição" },
+        { nome: "Paladino", cor: "#fbbf24", icone: "shield", bonus: "+1 Força, +1 Sabedoria, +1 Carisma" },
+        { nome: "Druida", cor: "#10b981", icone: "leaf", bonus: "+2 Sabedoria, +1 Constituição" }
+    ];
 
-    // 8. Sistema de Inventário Rápido
-    function carregarInventarioRapido() {
-        try {
-            const inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
-            const container = document.getElementById('inventario-rapido');
-            
-            container.innerHTML = '';
-            for (let i = 0; i < 3; i++) {
-                const item = inventario[i];
-                
-                if (item && item.icone) {
-                    container.innerHTML += `
-                        <div class="quick-item" onclick="usarItem(${i})" title="${item.nome || 'Item'}">
-                            <img src="${item.icone}" alt="${item.nome || 'Item'}" class="w-10 h-10 object-contain">
-                        </div>
-                    `;
-                } else {
-                    container.innerHTML += `
-                        <div class="quick-item" onclick="usarItem(${i})">
-                            <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
-                        </div>
-                    `;
-                }
-            }
-            
-            if (window.lucide) lucide.createIcons();
-        } catch (error) {
-            console.error('Erro ao carregar inventário:', error);
-        }
-    }
+    // ====================================================================
+    // FUNÇÕES DE INICIALIZAÇÃO
+    // ====================================================================
 
-    // 9. Modal para editar items
-    let itemEditando = null;
-    let tipoEditando = ''; // 'equipamento' ou 'habilidade'
-
-    function editarEquipamento(index) {
-        itemEditando = index;
-        tipoEditando = 'equipamento';
+    function inicializar() {
+        carregarDados();
+        atualizarInterface();
+        atualizarTimestamp();
         
-        const equipamentos = JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]');
-        const equipamento = equipamentos[index] || {
-            nome: '',
-            tipo: '',
-            icone: '',
-            iconeLucide: 'sword',
-            mana: '',
-            cooldown: '',
-            descricao: ''
-        };
+        // Atualizar a cada 10 segundos
+        setInterval(atualizarTimestamp, 10000);
         
-        document.getElementById('modal-title').textContent = `Editar Equipamento ${index + 1}`;
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome</label>
-                    <input type="text" id="edit-nome" value="${equipamento.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Tipo</label>
-                    <input type="text" id="edit-tipo" value="${equipamento.tipo}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Ícone (URL ou nome do ícone Lucide)</label>
-                    <input type="text" id="edit-icone" value="${equipamento.icone || equipamento.iconeLucide || 'sword'}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="sword, shield, wand, etc.">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Mana</label>
-                        <input type="number" id="edit-mana" value="${equipamento.mana || ''}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Cooldown (s)</label>
-                        <input type="number" id="edit-cooldown" value="${equipamento.cooldown || ''}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="0">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="edit-descricao" rows="3"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${equipamento.descricao || ''}</textarea>
-                </div>
-            </div>
-        `;
+        // Inicializar eventos de upload
+        document.getElementById('file-input').addEventListener('change', previewImage);
         
-        document.getElementById('edit-modal').classList.remove('hidden');
-    }
-
-    function editarHabilidade(index) {
-        itemEditando = index;
-        tipoEditando = 'habilidade';
-        
-        const habilidades = JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]');
-        const habilidade = habilidades[index] || {
-            nome: '',
-            tipo: '',
-            icone: '',
-            iconeLucide: 'zap',
-            mana: '',
-            cooldown: '',
-            descricao: ''
-        };
-        
-        document.getElementById('modal-title').textContent = `Editar Habilidade ${index + 1}`;
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome</label>
-                    <input type="text" id="edit-nome" value="${habilidade.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Tipo</label>
-                    <input type="text" id="edit-tipo" value="${habilidade.tipo}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Ícone (URL ou nome do ícone Lucide)</label>
-                    <input type="text" id="edit-icone" value="${habilidade.icone || habilidade.iconeLucide || 'zap'}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="zap, shield, flame, etc.">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Mana</label>
-                        <input type="number" id="edit-mana" value="${habilidade.mana || ''}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Cooldown (s)</label>
-                        <input type="number" id="edit-cooldown" value="${habilidade.cooldown || ''}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="0">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="edit-descricao" rows="3"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${habilidade.descricao || ''}</textarea>
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-    }
-
-    function salvarItem() {
-        const nome = document.getElementById('edit-nome').value;
-        const tipo = document.getElementById('edit-tipo').value;
-        const icone = document.getElementById('edit-icone').value;
-        const mana = document.getElementById('edit-mana').value;
-        const cooldown = document.getElementById('edit-cooldown').value;
-        const descricao = document.getElementById('edit-descricao').value;
-        
-        let item = {
-            nome: nome,
-            tipo: tipo,
-            mana: mana,
-            cooldown: cooldown,
-            descricao: descricao
-        };
-        
-        // Verificar se o ícone é uma URL ou nome do Lucide
-        if (icone.startsWith('http://') || icone.startsWith('https://') || icone.startsWith('data:')) {
-            item.icone = icone;
-        } else {
-            item.iconeLucide = icone;
-        }
-        
-        if (tipoEditando === 'equipamento') {
-            let equipamentos = JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]');
-            equipamentos[itemEditando] = item;
-            localStorage.setItem('grimorio_equipamentos', JSON.stringify(equipamentos));
-            carregarEquipamentos();
-        } else if (tipoEditando === 'habilidade') {
-            let habilidades = JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]');
-            habilidades[itemEditando] = item;
-            localStorage.setItem('grimorio_habilidades', JSON.stringify(habilidades));
-            carregarHabilidades();
-        }
-        
-        fecharModal();
-        GrimorioSystem.mostrarNotificacao('Item salvo com sucesso!', 'success');
-    }
-
-    function fecharModal() {
-        document.getElementById('edit-modal').classList.add('hidden');
-        itemEditando = null;
-        tipoEditando = '';
-    }
-
-    // 10. Funções para usar itens rápidos
-    function usarItem(index) {
-        const inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
-        const item = inventario[index];
-        
-        if (item) {
-            GrimorioSystem.mostrarNotificacao(`Usando: ${item.nome}`, 'info');
-            // Aqui você pode adicionar lógica para usar o item
-        } else {
-            // Abrir modal para configurar o slot
-            editarInventarioSlot(index);
-        }
-    }
-
-    function editarInventarioSlot(index) {
-        itemEditando = index;
-        tipoEditando = 'inventario';
-        
-        const inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
-        const item = inventario[index] || {
-            nome: '',
-            icone: '',
-            descricao: ''
-        };
-        
-        document.getElementById('modal-title').textContent = `Configurar Item Rápido ${index + 1}`;
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome do Item</label>
-                    <input type="text" id="edit-nome" value="${item.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">URL do Ícone</label>
-                    <input type="text" id="edit-icone" value="${item.icone}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="https://... ou data:image/...">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="edit-descricao" rows="2"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${item.descricao || ''}</textarea>
-                </div>
-                
-                <div class="text-sm text-gray-500">
-                    <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
-                    Use URLs de imagens ou imagens em base64
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-        
-        // Sobrescrever a função salvarItem para inventário
-        const salvarOriginal = salvarItem;
-        window.salvarItem = function() {
-            const nome = document.getElementById('edit-nome').value;
-            const icone = document.getElementById('edit-icone').value;
-            const descricao = document.getElementById('edit-descricao').value;
-            
-            let item = {
-                nome: nome,
-                icone: icone,
-                descricao: descricao
-            };
-            
-            let inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
-            inventario[itemEditando] = item;
-            localStorage.setItem('grimorio_inventario_rapido', JSON.stringify(inventario));
-            carregarInventarioRapido();
-            
-            fecharModal();
-            GrimorioSystem.mostrarNotificacao('Item configurado!', 'success');
-            
-            // Restaurar função original
-            window.salvarItem = salvarOriginal;
-        };
-    }
-
-    function editarInventario() {
-        GrimorioSystem.mostrarNotificacao('Clique em um slot para configurar', 'info');
-    }
-
-    // 11. Navegação
-    function goToStatus() {
-        window.location.href = 'status.html';
-    }
-
-    function goToEquipamentos() {
-        // Foco nos equipamentos (rolar para seção)
-        document.getElementById('equipamentos-container').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    function goToHabilidades() {
-        // Foco nas habilidades (rolar para seção)
-        document.getElementById('habilidades-container').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // 12. Exportar perfil
-    function exportProfile() {
-        try {
-            const dados = {
-                status: JSON.parse(localStorage.getItem('grimorio_status_data') || '{}'),
-                sorte: JSON.parse(localStorage.getItem('grimorio_sorte_data') || '{}'),
-                equipamentos: JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]'),
-                habilidades: JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]'),
-                inventario: JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]'),
-                exportadoEm: new Date().toISOString()
-            };
-            
-            const json = JSON.stringify(dados, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `perfil_grimorio_${new Date().getTime()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            GrimorioSystem.mostrarNotificacao('Perfil exportado!', 'success');
-        } catch (error) {
-            console.error('Erro ao exportar:', error);
-            GrimorioSystem.mostrarNotificacao('Erro ao exportar', 'error');
-        }
-    }
-
-    // 13. Atualizar tudo
-    function refreshProfile() {
-        carregarDadosStatus();
-        carregarEquipamentos();
-        carregarHabilidades();
-        carregarInventarioRapido();
-        GrimorioSystem.mostrarNotificacao('Perfil atualizado!', 'info');
-    }
-
-    // 14. Inicializar
-    document.addEventListener('DOMContentLoaded', function() {
-        // Carregar todos os dados
-        carregarDadosStatus();
-        carregarEquipamentos();
-        carregarHabilidades();
-        carregarInventarioRapido();
-        
-        // Atualizar a cada 5 segundos
-        setInterval(refreshProfile, 5000);
-        
-        // Estilo para botões de navegação
-        const estilo = document.createElement('style');
-        estilo.textContent = `
+        // Aplicar estilos aos botões de navegação
+        const estilo = `
             .nav-btn {
                 display: flex;
                 align-items: center;
@@ -1195,9 +858,1858 @@
                 transform: translateY(-1px);
             }
         `;
-        document.head.appendChild(estilo);
         
-        console.log('Perfil carregado com sucesso!');
+        const styleSheet = document.createElement('style');
+        styleSheet.textContent = estilo;
+        document.head.appendChild(styleSheet);
+        
+        console.log('Perfil inicializado com sucesso!');
+    }
+
+    function carregarDados() {
+        try {
+            const dadosSalvos = localStorage.getItem('grimorio_perfil_completo');
+            if (dadosSalvos) {
+                Object.assign(personagem, JSON.parse(dadosSalvos));
+                console.log('Dados carregados do localStorage');
+            }
+            
+            // Sincronizar com GrimorioSystem se disponível
+            if (window.GrimorioSystem && GrimorioSystem.carregarPersonagem) {
+                const dadosGrimorio = GrimorioSystem.carregarPersonagem();
+                if (dadosGrimorio) {
+                    sincronizarComGrimorio(dadosGrimorio);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados:', error);
+        }
+    }
+
+    function sincronizarComGrimorio(dadosGrimorio) {
+        // Sincronizar dados básicos
+        personagem.nome = dadosGrimorio.nome || personagem.nome;
+        personagem.classe = dadosGrimorio.classe || personagem.classe;
+        personagem.nivel = dadosGrimorio.nivel || personagem.nivel;
+        personagem.pontosDisponiveis = dadosGrimorio.pontosDisponiveis || personagem.pontosDisponiveis;
+        
+        // Sincronizar atributos
+        if (dadosGrimorio.atributos) {
+            personagem.status.forca = dadosGrimorio.atributos.forca || 0;
+            personagem.status.destreza = dadosGrimorio.atributos.destreza || 0;
+            personagem.status.constituicao = dadosGrimorio.atributos.constituicao || 0;
+            personagem.status.inteligencia = dadosGrimorio.atributos.inteligencia || 0;
+            personagem.status.sabedoria = dadosGrimorio.atributos.sabedoria || 0;
+            personagem.status.carisma = dadosGrimorio.atributos.carisma || 0;
+        }
+        
+        // Sincronizar recursos
+        if (dadosGrimorio.recursos) {
+            personagem.status.vida.max = dadosGrimorio.recursos.vidaMaxima || 10;
+            personagem.status.vida.atual = dadosGrimorio.recursos.vidaAtual || personagem.status.vida.max;
+            personagem.status.mana.max = dadosGrimorio.recursos.manaMaxima || 0;
+            personagem.status.mana.atual = dadosGrimorio.recursos.manaAtual || personagem.status.mana.max;
+            personagem.status.estamina.max = dadosGrimorio.recursos.estaminaMaxima || 20;
+            personagem.status.estamina.atual = dadosGrimorio.recursos.estaminaAtual || personagem.status.estamina.max;
+        }
+        
+        // Calcular derivados
+        calcularDerivadosAutomaticos();
+    }
+
+    function salvarDados() {
+        try {
+            localStorage.setItem('grimorio_perfil_completo', JSON.stringify(personagem));
+            console.log('Dados salvos no localStorage');
+            
+            // Sincronizar com GrimorioSystem
+            if (window.GrimorioSystem && GrimorioSystem.salvarPersonagem) {
+                const dadosParaGrimorio = {
+                    nome: personagem.nome,
+                    classe: personagem.classe,
+                    nivel: personagem.nivel,
+                    pontosDisponiveis: personagem.pontosDisponiveis,
+                    atributos: {
+                        forca: personagem.status.forca,
+                        destreza: personagem.status.destreza,
+                        constituicao: personagem.status.constituicao,
+                        inteligencia: personagem.status.inteligencia,
+                        sabedoria: personagem.status.sabedoria,
+                        carisma: personagem.status.carisma
+                    },
+                    recursos: {
+                        vidaMaxima: personagem.status.vida.max,
+                        vidaAtual: personagem.status.vida.atual,
+                        manaMaxima: personagem.status.mana.max,
+                        manaAtual: personagem.status.mana.atual,
+                        estaminaMaxima: personagem.status.estamina.max,
+                        estaminaAtual: personagem.status.estamina.atual
+                    }
+                };
+                GrimorioSystem.salvarPersonagem(dadosParaGrimorio);
+            }
+            
+            mostrarNotificacao('Perfil salvo com sucesso!', 'success');
+        } catch (error) {
+            console.error('Erro ao salvar dados:', error);
+            mostrarNotificacao('Erro ao salvar perfil', 'error');
+        }
+    }
+
+    // ====================================================================
+    // ATUALIZAÇÃO DA INTERFACE
+    // ====================================================================
+
+    function atualizarInterface() {
+        // Avatar
+        atualizarAvatar();
+        
+        // Status
+        atualizarStatus();
+        
+        // Atributos
+        atualizarAtributos();
+        
+        // Classe e Pontos
+        atualizarClassePontos();
+        
+        // Sorte
+        atualizarSorte();
+        
+        // Estatísticas Avançadas
+        atualizarEstatisticasAvancadas();
+        
+        // Equipamentos
+        atualizarEquipamentos();
+        
+        // Habilidades
+        atualizarHabilidades();
+        
+        // Inventário Rápido
+        atualizarInventarioRapido();
+        
+        // Mascote
+        atualizarMascote();
+        
+        // Proficiências
+        carregarProficiencias();
+    }
+
+    function atualizarAvatar() {
+        const avatarImg = document.getElementById('avatar-image');
+        const avatarIcon = document.getElementById('avatar-icon');
+        
+        if (personagem.avatar) {
+            avatarImg.src = personagem.avatar;
+            avatarImg.classList.remove('hidden');
+            avatarIcon.classList.add('hidden');
+        } else {
+            avatarImg.classList.add('hidden');
+            avatarIcon.classList.remove('hidden');
+        }
+        
+        // Atualizar título do perfil
+        document.getElementById('profile-title').textContent = personagem.nome;
+        document.getElementById('profile-subtitle').textContent = `${personagem.classe} - Nível ${personagem.nivel}`;
+    }
+
+    function atualizarStatus() {
+        // Vida
+        const vida = personagem.status.vida;
+        const vidaPercent = (vida.atual / vida.max) * 100;
+        document.getElementById('display-vida').textContent = `${vida.atual}/${vida.max}`;
+        document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
+        document.getElementById('vida-percent').textContent = `${Math.round(vidaPercent)}%`;
+        
+        // Mana
+        const mana = personagem.status.mana;
+        const manaPercent = mana.max > 0 ? (mana.atual / mana.max) * 100 : 0;
+        document.getElementById('display-mana').textContent = `${mana.atual}/${mana.max}`;
+        document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
+        document.getElementById('mana-percent').textContent = `${Math.round(manaPercent)}%`;
+        
+        // Estamina
+        const estamina = personagem.status.estamina;
+        const estaminaPercent = (estamina.atual / estamina.max) * 100;
+        document.getElementById('display-estamina').textContent = `${estamina.atual}/${estamina.max}`;
+        document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
+        document.getElementById('estamina-percent').textContent = `${Math.round(estaminaPercent)}%`;
+    }
+
+    function atualizarAtributos() {
+        const atributos = [
+            { id: 'forca', nome: 'Força', valor: personagem.status.forca, cor: 'red' },
+            { id: 'destreza', nome: 'Destreza', valor: personagem.status.destreza, cor: 'green' },
+            { id: 'constituicao', nome: 'Constituição', valor: personagem.status.constituicao, cor: 'yellow' },
+            { id: 'inteligencia', nome: 'Inteligência', valor: personagem.status.inteligencia, cor: 'blue' },
+            { id: 'sabedoria', nome: 'Sabedoria', valor: personagem.status.sabedoria, cor: 'purple' },
+            { id: 'carisma', nome: 'Carisma', valor: personagem.status.carisma, cor: 'pink' }
+        ];
+        
+        let html = '';
+        atributos.forEach(attr => {
+            html += `
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-${attr.cor}" id="display-${attr.id}">${attr.valor}</div>
+                    <div class="text-xs text-gray-500">${attr.nome}</div>
+                    <div class="flex justify-center gap-1 mt-1">
+                        <button onclick="alterarAtributo('${attr.id}', -1)" class="w-5 h-5 text-xs hover:bg-white/10 rounded">-</button>
+                        <button onclick="alterarAtributo('${attr.id}', 1)" class="w-5 h-5 text-xs hover:bg-white/10 rounded">+</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        document.getElementById('atributos-container').innerHTML = html;
+    }
+
+    function atualizarClassePontos() {
+        // Classe
+        const classe = classes.find(c => c.nome === personagem.classe);
+        let classeHTML = `
+            <div class="text-center py-4">
+                <i data-lucide="user-plus" class="w-12 h-12 mx-auto text-destiny-dark mb-3"></i>
+                <p class="text-destiny-dark">Nenhuma classe selecionada</p>
+            </div>
+        `;
+        
+        if (classe) {
+            classeHTML = `
+                <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 rounded-full flex items-center justify-center" style="background-color: ${classe.cor}20; border: 2px solid ${classe.cor}40">
+                        <i data-lucide="${classe.icone}" class="w-8 h-8" style="color: ${classe.cor}"></i>
+                    </div>
+                    <h5 class="text-xl font-bold text-destiny-light mb-1">${classe.nome}</h5>
+                    <p class="text-sm text-destiny-dark mb-3">${classe.bonus}</p>
+                    <div class="text-xs text-destiny-gold bg-destiny-1 px-3 py-1 rounded-full inline-block">
+                        Bônus de Classe Ativo
+                    </div>
+                </div>
+            `;
+        }
+        
+        document.getElementById('classe-info').innerHTML = classeHTML;
+        
+        // Pontos
+        const pontosPercent = Math.min(100, (personagem.pontosDisponiveis / 20) * 100);
+        document.getElementById('pontos-disponiveis').textContent = personagem.pontosDisponiveis;
+        document.getElementById('pontos-progress').style.width = `${pontosPercent}%`;
+        
+        // Nível e Experiência
+        const expPercent = Math.min(100, (personagem.experiencia / personagem.experienciaProximo) * 100);
+        document.getElementById('nivel-personagem').textContent = personagem.nivel;
+        document.getElementById('experiencia-personagem').textContent = `${personagem.experiencia}/${personagem.experienciaProximo}`;
+        document.getElementById('exp-progress').style.width = `${expPercent}%`;
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function atualizarSorte() {
+        const sorte = personagem.sorte;
+        const indice = ((sorte.fe + sorte.destino) * 2 - sorte.sorte) / 2;
+        const percentual = Math.max(0, Math.min(100, indice * 5 + 50));
+        
+        personagem.sorte.indice = percentual;
+        personagem.sorte.status = percentual >= 60 ? "Sorte Alta" : percentual <= 40 ? "Sorte Baixa" : "Neutro";
+        
+        document.getElementById('display-sorte').textContent = `${Math.round(percentual)}%`;
+        document.getElementById('display-sorte-bar').style.width = `${percentual}%`;
+        document.getElementById('display-dado1').textContent = sorte.fe;
+        document.getElementById('display-dado2').textContent = sorte.sorte;
+        document.getElementById('display-dado3').textContent = sorte.destino;
+        document.getElementById('destiny-status').textContent = `Status: ${personagem.sorte.status}`;
+        document.getElementById('destiny-formula-display').textContent = 
+            `Fórmula: ((${sorte.fe} + ${sorte.destino}) × 2 - ${sorte.sorte}) ÷ 2 = ${indice.toFixed(1)}`;
+    }
+
+    function atualizarEstatisticasAvancadas() {
+        if (!personagem.derivados.mostrar) {
+            document.getElementById('estatisticas-avancadas').classList.add('hidden');
+            return;
+        }
+        
+        document.getElementById('estatisticas-avancadas').classList.remove('hidden');
+        
+        const estatisticas = [
+            { id: 'blindagem', nome: 'Blindagem', valor: personagem.derivados.blindagem, cor: 'gray', icone: 'shield' },
+            { id: 'velocidade', nome: 'Velocidade', valor: personagem.derivados.velocidade, cor: 'green', icone: 'zap' },
+            { id: 'iniciativa', nome: 'Iniciativa', valor: personagem.derivados.iniciativa, cor: 'blue', icone: 'clock' },
+            { id: 'percepcao', nome: 'Percepção', valor: personagem.derivados.percepcao, cor: 'purple', icone: 'eye' }
+        ];
+        
+        let html = '';
+        estatisticas.forEach(stat => {
+            html += `
+                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border card-hover">
+                    <div class="inline-block p-2 rounded-lg mb-2" style="background-color: var(--theme-${stat.cor}20)">
+                        <i data-lucide="${stat.icone}" class="w-5 h-5" style="color: var(--theme-${stat.cor})"></i>
+                    </div>
+                    <div class="text-2xl font-bold text-white font-mono" id="display-${stat.id}">${stat.valor}</div>
+                    <div class="text-xs uppercase text-gray-500 mt-1">${stat.nome}</div>
+                    <div class="flex justify-center gap-1 mt-2">
+                        <button onclick="alterarDerivado('${stat.id}', -1)" class="w-5 h-5 text-xs hover:bg-white/10 rounded">-</button>
+                        <button onclick="alterarDerivado('${stat.id}', 1)" class="w-5 h-5 text-xs hover:bg-white/10 rounded">+</button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        document.querySelector('#estatisticas-avancadas .grid').innerHTML = html;
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function atualizarEquipamentos() {
+        const container = document.getElementById('equipamentos-container');
+        let html = '';
+        
+        for (let i = 0; i < 5; i++) {
+            const equipamento = personagem.equipamentos[i];
+            
+            if (equipamento) {
+                html += `
+                    <div class="item-slot filled card-hover" onclick="editarEquipamento(${i})">
+                        <div class="absolute top-2 right-2 text-xs px-2 py-1 rounded" style="background-color: ${equipamento.raridadeCor || '#8b7355'}20; color: ${equipamento.raridadeCor || '#d4a76a'}">
+                            ${equipamento.raridade || 'Comum'}
+                        </div>
+                        <div class="flex items-center justify-center mb-3">
+                            ${equipamento.imagem ? 
+                                `<img src="${equipamento.imagem}" alt="${equipamento.nome}" class="w-12 h-12 object-contain">` :
+                                `<i data-lucide="${equipamento.icone || 'sword'}" class="w-10 h-10 text-theme-orange"></i>`
+                            }
+                        </div>
+                        <div class="font-bold text-white text-sm mb-1 truncate">${equipamento.nome}</div>
+                        <div class="text-xs text-gray-400 mb-2">${equipamento.tipo || 'Equipamento'}</div>
+                        ${equipamento.bonus ? `<div class="text-xs text-theme-green mb-1">${equipamento.bonus}</div>` : ''}
+                        <div class="text-xs text-gray-500 truncate">${equipamento.descricao || ''}</div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="item-slot text-center card-hover" onclick="editarEquipamento(${i})">
+                        <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                        <div class="text-sm text-gray-500">Clique para adicionar</div>
+                        <div class="text-xs text-gray-600 mt-2">Slot ${i + 1}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        container.innerHTML = html;
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function atualizarHabilidades() {
+        const container = document.getElementById('habilidades-container');
+        let html = '';
+        
+        for (let i = 0; i < 5; i++) {
+            const habilidade = personagem.habilidades[i];
+            
+            if (habilidade) {
+                html += `
+                    <div class="item-slot filled card-hover" onclick="editarHabilidade(${i})">
+                        <div class="absolute top-2 right-2 text-xs px-2 py-1 rounded bg-${habilidade.tipoCor || 'purple'}-900/30 text-${habilidade.tipoCor || 'purple'}-400">
+                            ${habilidade.tipo || 'Ativa'}
+                        </div>
+                        <div class="flex items-center justify-center mb-3">
+                            ${habilidade.imagem ? 
+                                `<img src="${habilidade.imagem}" alt="${habilidade.nome}" class="w-12 h-12 object-contain">` :
+                                `<i data-lucide="${habilidade.icone || 'zap'}" class="w-10 h-10 text-theme-purple"></i>`
+                            }
+                        </div>
+                        <div class="font-bold text-white text-sm mb-1 truncate">${habilidade.nome}</div>
+                        <div class="text-xs text-gray-400 mb-2">Nível ${habilidade.nivel || 1}</div>
+                        ${habilidade.custo ? `<div class="text-xs text-theme-blue mb-1">Custo: ${habilidade.custo}</div>` : ''}
+                        ${habilidade.cooldown ? `<div class="text-xs text-theme-orange mb-1">CD: ${habilidade.cooldown}s</div>` : ''}
+                        <div class="text-xs text-gray-500 truncate">${habilidade.descricao || ''}</div>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="item-slot text-center card-hover" onclick="editarHabilidade(${i})">
+                        <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                        <div class="text-sm text-gray-500">Clique para adicionar</div>
+                        <div class="text-xs text-gray-600 mt-2">Slot ${i + 1}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        container.innerHTML = html;
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function atualizarInventarioRapido() {
+        const container = document.getElementById('inventario-rapido');
+        let html = '';
+        
+        for (let i = 0; i < 3; i++) {
+            const item = personagem.inventarioRapido[i];
+            
+            if (item && item.imagem) {
+                html += `
+                    <div class="quick-item card-hover" onclick="usarItem(${i})" title="${item.nome || 'Item'}">
+                        <img src="${item.imagem}" alt="${item.nome || 'Item'}" class="w-10 h-10 object-contain">
+                        ${item.quantidade ? `<div class="absolute -top-1 -right-1 bg-theme-red text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">${item.quantidade}</div>` : ''}
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="quick-item card-hover" onclick="usarItem(${i})">
+                        <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
+                    </div>
+                `;
+            }
+        }
+        
+        container.innerHTML = html;
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function atualizarMascote() {
+        const container = document.getElementById('mascote-summary');
+        
+        if (personagem.mascote) {
+            container.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="text-center">
+                        ${personagem.mascote.imagem ? 
+                            `<img src="${personagem.mascote.imagem}" alt="${personagem.mascote.nome}" class="w-32 h-32 object-contain mx-auto rounded-lg mb-4">` :
+                            `<div class="w-32 h-32 mx-auto mb-4 rounded-lg bg-destiny-2 border border-destiny flex items-center justify-center">
+                                <i data-lucide="dog" class="w-16 h-16 text-destiny-dark"></i>
+                            </div>`
+                        }
+                        <h4 class="text-xl font-bold text-destiny-light">${personagem.mascote.nome}</h4>
+                        <p class="text-destiny-dark">${personagem.mascote.tipo || 'Companheiro'}</p>
+                    </div>
+                    <div>
+                        <h5 class="font-bold text-destiny-light mb-3">Informações</h5>
+                        ${personagem.mascote.nivel ? `<p class="text-sm text-destiny-dark mb-1"><span class="text-destiny-gold">Nível:</span> ${personagem.mascote.nivel}</p>` : ''}
+                        ${personagem.mascote.habilidades ? `<p class="text-sm text-destiny-dark mb-1"><span class="text-destiny-gold">Habilidades:</span> ${personagem.mascote.habilidades}</p>` : ''}
+                        ${personagem.mascote.descricao ? `<p class="text-sm text-destiny-dark mt-3">${personagem.mascote.descricao}</p>` : ''}
+                        ${personagem.mascote.importadoEm ? `<p class="text-xs text-destiny-dark/70 mt-4">Importado em: ${personagem.mascote.importadoEm}</p>` : ''}
+                    </div>
+                </div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="text-center py-8 text-[#8b7355]">
+                    <i data-lucide="dog" class="w-16 h-16 mx-auto mb-3 opacity-50"></i>
+                    <p class="text-lg mb-2">Nenhum mascote vinculado</p>
+                    <p class="text-sm mb-4">Crie um mascote para acompanhar seu personagem</p>
+                    <button onclick="importarMascoteTXT()" class="px-4 py-2 bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded-lg transition-colors text-sm">
+                        <i data-lucide="upload" class="w-3 h-3 inline mr-1"></i> Importar do TXT
+                    </button>
+                </div>
+            `;
+        }
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    async function carregarProficiencias() {
+        const container = document.getElementById('proficiencias-container');
+        
+        try {
+            const proficienciasData = localStorage.getItem('rpg_proficiencias');
+            if (!proficienciasData) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i data-lucide="swords" class="w-12 h-12 mx-auto text-gray-600 mb-3"></i>
+                        <p class="text-gray-500">Nenhuma proficiência encontrada</p>
+                        <p class="text-sm text-gray-600 mt-2">Visite a página de Estilos de Combate para adicionar proficiências</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const dados = JSON.parse(proficienciasData);
+            
+            // Contar maestrias (nível 10)
+            let totalMaestrias = 0;
+            let totalHabilidades = 0;
+            let totalNivel = 0;
+            
+            // Processar armas
+            if (dados.armas) {
+                Object.values(dados.armas).forEach(subcat => {
+                    subcat.forEach(habilidade => {
+                        totalHabilidades++;
+                        totalNivel += habilidade.nivel;
+                        if (habilidade.nivel >= 10) totalMaestrias++;
+                    });
+                });
+            }
+            
+            // Processar outras categorias
+            ['magia', 'pactos', 'invocacao', 'especiais'].forEach(cat => {
+                if (dados[cat]) {
+                    dados[cat].forEach(habilidade => {
+                        totalHabilidades++;
+                        totalNivel += habilidade.nivel;
+                        if (habilidade.nivel >= 10) totalMaestrias++;
+                    });
+                }
+            });
+            
+            const porcentagemMaestria = totalHabilidades > 0 ? Math.round((totalMaestrias / totalHabilidades) * 100) : 0;
+            const nivelMedio = totalHabilidades > 0 ? Math.round(totalNivel / totalHabilidades) : 0;
+            
+            container.innerHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
+                        <div class="text-3xl font-bold text-yellow-400 mb-1">${totalMaestrias}</div>
+                        <div class="text-sm text-gray-400">Maestrias</div>
+                        <div class="text-xs text-yellow-600 mt-1">Nível 10 alcançado</div>
+                    </div>
+                    <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
+                        <div class="text-3xl font-bold text-blue-400 mb-1">${totalHabilidades}</div>
+                        <div class="text-sm text-gray-400">Habilidades</div>
+                        <div class="text-xs text-blue-600 mt-1">Total registrado</div>
+                    </div>
+                    <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
+                        <div class="text-3xl font-bold text-green-400 mb-1">${nivelMedio}</div>
+                        <div class="text-sm text-gray-400">Nível Médio</div>
+                        <div class="text-xs text-green-600 mt-1">Média geral</div>
+                    </div>
+                </div>
+                
+                ${totalMaestrias > 0 ? `
+                    <div class="mb-6">
+                        <h4 class="font-medium text-white mb-3 flex items-center gap-2">
+                            <i data-lucide="crown" class="w-4 h-4 text-yellow-400"></i>
+                            Maestrias Alcançadas
+                        </h4>
+                        <div class="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
+                            <div class="h-3 bg-gray-800 rounded-full overflow-hidden mb-2">
+                                <div class="h-full bg-gradient-to-r from-yellow-500 to-orange-500" style="width: ${porcentagemMaestria}%"></div>
+                            </div>
+                            <div class="text-sm text-gray-400 text-center">
+                                ${porcentagemMaestria}% das habilidades em maestria
+                            </div>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="text-center">
+                    <button onclick="window.location.href='estilos-combate.html'" 
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors text-sm">
+                        <i data-lucide="swords" class="w-4 h-4"></i>
+                        Gerenciar Proficiências
+                    </button>
+                </div>
+            `;
+            
+        } catch (error) {
+            console.error('Erro ao carregar proficiências:', error);
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <i data-lucide="alert-circle" class="w-12 h-12 mx-auto text-red-500 mb-3"></i>
+                    <p class="text-gray-500">Erro ao carregar proficiências</p>
+                    <p class="text-sm text-gray-600 mt-2">${error.message}</p>
+                </div>
+            `;
+        }
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    // ====================================================================
+    // FUNÇÕES DE INTERAÇÃO
+    // ====================================================================
+
+    function alterarAvatar() {
+        currentUploadType = 'avatar';
+        abrirUploadModal();
+    }
+
+    function editarStatus() {
+        modalType = 'status';
+        modalData = { ...personagem.status };
+        
+        document.getElementById('modal-title').textContent = 'Editar Status';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <h4 class="text-white font-medium mb-3">Recursos Vitais</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Vida Atual</label>
+                            <input type="number" id="modal-vida-atual" value="${modalData.vida.atual}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Vida Máxima</label>
+                            <input type="number" id="modal-vida-max" value="${modalData.vida.max}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Mana Atual</label>
+                            <input type="number" id="modal-mana-atual" value="${modalData.mana.atual}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Mana Máxima</label>
+                            <input type="number" id="modal-mana-max" value="${modalData.mana.max}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Estamina Atual</label>
+                            <input type="number" id="modal-estamina-atual" value="${modalData.estamina.atual}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Estamina Máxima</label>
+                            <input type="number" id="modal-estamina-max" value="${modalData.estamina.max}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-white font-medium mb-3">Atributos (0-100)</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Força</label>
+                            <input type="number" id="modal-forca" value="${modalData.forca}" min="0" max="100"
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Destreza</label>
+                            <input type="number" id="modal-destreza" value="${modalData.destreza}" min="0" max="100"
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Constituição</label>
+                            <input type="number" id="modal-constituicao" value="${modalData.constituicao}" min="0" max="100"
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Inteligência</label>
+                            <input type="number" id="modal-inteligencia" value="${modalData.inteligencia}" min="0" max="100"
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Sabedoria</label>
+                            <input type="number" id="modal-sabedoria" value="${modalData.sabedoria}" min="0" max="100"
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Carisma</label>
+                            <input type="number" id="modal-carisma" value="${modalData.carisma}" min="0" max="100"
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function alterarAtributo(atributo, delta) {
+        if (personagem.pontosDisponiveis < delta && delta > 0) {
+            mostrarNotificacao('Pontos insuficientes!', 'error');
+            return;
+        }
+        
+        personagem.status[atributo] = Math.max(0, Math.min(100, personagem.status[atributo] + delta));
+        personagem.pontosDisponiveis -= delta;
+        
+        calcularDerivadosAutomaticos();
+        atualizarInterface();
+        salvarDados();
+    }
+
+    function calcularDerivados() {
+        // Calcular derivados automaticamente baseado nos atributos
+        personagem.derivados.blindagem = Math.floor(personagem.status.constituicao / 10);
+        personagem.derivados.velocidade = Math.floor(personagem.status.destreza / 5);
+        personagem.derivados.iniciativa = Math.floor((personagem.status.destreza + personagem.status.sabedoria) / 8);
+        personagem.derivados.percepcao = Math.floor(personagem.status.sabedoria / 4);
+        
+        // Calcular recursos máximos baseado em atributos
+        personagem.status.vida.max = 10 + (personagem.status.constituicao * 2);
+        personagem.status.mana.max = personagem.status.inteligencia * 3;
+        personagem.status.estamina.max = 20 + personagem.status.constituicao + personagem.status.destreza;
+        
+        atualizarInterface();
+        mostrarNotificacao('Derivados calculados automaticamente!', 'success');
+    }
+
+    function calcularDerivadosAutomaticos() {
+        // Calcular apenas se mostrar derivados estiver ativo
+        if (!personagem.derivados.mostrar) return;
+        
+        calcularDerivados();
+    }
+
+    function toggleDerivados() {
+        personagem.derivados.mostrar = !personagem.derivados.mostrar;
+        atualizarEstatisticasAvancadas();
+        salvarDados();
+        
+        const botao = document.querySelector('#estatisticas-avancadas button');
+        if (botao) {
+            botao.innerHTML = personagem.derivados.mostrar ? 
+                '<i data-lucide="eye-off" class="w-3 h-3 inline mr-1"></i> Ocultar' :
+                '<i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Mostrar';
+        }
+        
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function alterarDerivado(derivado, delta) {
+        personagem.derivados[derivado] = Math.max(0, personagem.derivados[derivado] + delta);
+        atualizarEstatisticasAvancadas();
+        salvarDados();
+    }
+
+    function editarClasse() {
+        modalType = 'classe';
+        
+        document.getElementById('modal-title').textContent = 'Selecionar Classe';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Personagem</label>
+                    <input type="text" id="modal-nome" value="${personagem.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Selecione uma Classe</label>
+                    <div class="grid grid-cols-2 gap-3" id="classes-list">
+                        ${classes.map(classe => `
+                            <button onclick="selecionarClasse('${classe.nome}')" 
+                                    class="p-3 rounded-lg border text-left transition-all ${personagem.classe === classe.nome ? 'border-' + classe.cor.replace('#', '') + ' bg-' + classe.cor.replace('#', '') + '20' : 'border-theme-border hover:border-' + classe.cor.replace('#', '')}">
+                                <div class="flex items-center gap-3">
+                                    <div class="p-2 rounded" style="background-color: ${classe.cor}20">
+                                        <i data-lucide="${classe.icone}" class="w-4 h-4" style="color: ${classe.cor}"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-medium text-white">${classe.nome}</div>
+                                        <div class="text-xs text-gray-400">${classe.bonus}</div>
+                                    </div>
+                                </div>
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Pontos Extras</label>
+                    <div class="flex items-center gap-4">
+                        <button onclick="alterarPontosExtra(-1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">-</button>
+                        <div class="text-center flex-1">
+                            <div class="text-3xl font-bold text-white" id="pontos-extra-display">${personagem.pontosExtra}</div>
+                            <div class="text-xs text-gray-500">Pontos Extras</div>
+                        </div>
+                        <button onclick="alterarPontosExtra(1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">+</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function selecionarClasse(nomeClasse) {
+        personagem.classe = nomeClasse;
+        
+        // Aplicar bônus da classe
+        const classe = classes.find(c => c.nome === nomeClasse);
+        if (classe) {
+            const botao = document.querySelector(`[onclick="selecionarClasse('${nomeClasse}')"]`);
+            document.querySelectorAll('#classes-list button').forEach(btn => {
+                btn.classList.remove('border-blue-500', 'bg-blue-500/20');
+            });
+            if (botao) {
+                const corClasse = classe.cor.replace('#', '');
+                botao.classList.add(`border-${corClasse}`, `bg-${corClasse}20`);
+            }
+        }
+    }
+
+    function alterarPontosExtra(delta) {
+        personagem.pontosExtra = Math.max(0, personagem.pontosExtra + delta);
+        personagem.pontosDisponiveis += delta;
+        document.getElementById('pontos-extra-display').textContent = personagem.pontosExtra;
+    }
+
+    function rolarSorte() {
+        personagem.sorte.fe = Math.floor(Math.random() * 10) + 1;
+        personagem.sorte.sorte = Math.floor(Math.random() * 10) + 1;
+        personagem.sorte.destino = Math.floor(Math.random() * 10) + 1;
+        
+        atualizarSorte();
+        salvarDados();
+        
+        mostrarNotificacao('Dados de sorte rolados!', 'success');
+    }
+
+    function editarSorte() {
+        modalType = 'sorte';
+        modalData = { ...personagem.sorte };
+        
+        document.getElementById('modal-title').textContent = 'Editar Dados de Sorte';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Fé (1-10)</label>
+                        <input type="number" id="modal-fe" value="${modalData.fe}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Sorte (1-10)</label>
+                        <input type="number" id="modal-sorte" value="${modalData.sorte}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Destino (1-10)</label>
+                        <input type="number" id="modal-destino" value="${modalData.destino}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                </div>
+                
+                <div class="p-4 bg-theme-panel/50 rounded-lg">
+                    <div class="text-sm text-gray-400 mb-2">Fórmula de Cálculo</div>
+                    <div class="font-mono text-xs text-white">
+                        Índice de Sorte = ((Fé + Destino) × 2 - Sorte) ÷ 2
+                    </div>
+                    <div class="text-xs text-gray-500 mt-2">
+                        Resultado é convertido para percentual (0-100%)
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function importarEquipamento() {
+        currentUploadType = 'equipamento';
+        abrirUploadModal();
+    }
+
+    function editarEquipamento(index) {
+        currentEquipamentoIndex = index;
+        const equipamento = personagem.equipamentos[index] || {
+            nome: '',
+            tipo: 'Arma',
+            icone: 'sword',
+            imagem: '',
+            descricao: '',
+            bonus: '',
+            raridade: 'Comum',
+            raridadeCor: '#8b7355'
+        };
+        
+        modalType = 'equipamento';
+        modalData = { ...equipamento };
+        
+        document.getElementById('modal-title').textContent = equipamento.nome ? `Editar ${equipamento.nome}` : 'Novo Equipamento';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Equipamento</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                            <option value="Arma" ${modalData.tipo === 'Arma' ? 'selected' : ''}>Arma</option>
+                            <option value="Armadura" ${modalData.tipo === 'Armadura' ? 'selected' : ''}>Armadura</option>
+                            <option value="Acessório" ${modalData.tipo === 'Acessório' ? 'selected' : ''}>Acessório</option>
+                            <option value="Consumível" ${modalData.tipo === 'Consumível' ? 'selected' : ''}>Consumível</option>
+                            <option value="Mágico" ${modalData.tipo === 'Mágico' ? 'selected' : ''}>Mágico</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Raridade</label>
+                        <select id="modal-raridade" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                            <option value="Comum" ${modalData.raridade === 'Comum' ? 'selected' : ''}>Comum</option>
+                            <option value="Incomum" ${modalData.raridade === 'Incomum' ? 'selected' : ''}>Incomum</option>
+                            <option value="Raro" ${modalData.raridade === 'Raro' ? 'selected' : ''}>Raro</option>
+                            <option value="Épico" ${modalData.raridade === 'Épico' ? 'selected' : ''}>Épico</option>
+                            <option value="Lendário" ${modalData.raridade === 'Lendário' ? 'selected' : ''}>Lendário</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Ícone (nome do ícone Lucide)</label>
+                    <input type="text" id="modal-icone" value="${modalData.icone}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="sword, shield, wand, etc.">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Bônus/Atributos</label>
+                    <input type="text" id="modal-bonus" value="${modalData.bonus}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="+5 Força, +10 Vida, etc.">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="modal-descricao" rows="3"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
+                    <div class="flex gap-2">
+                        <button onclick="uploadImagemEquipamento()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
+                        </button>
+                        ${modalData.imagem ? `
+                            <button onclick="removerImagemEquipamento()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    ${modalData.imagem ? `
+                        <div class="mt-2">
+                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function uploadImagemEquipamento() {
+        currentUploadType = 'equipamento-imagem';
+        abrirUploadModal();
+    }
+
+    function removerImagemEquipamento() {
+        modalData.imagem = '';
+        editarEquipamento(currentEquipamentoIndex);
+    }
+
+    function criarHabilidade() {
+        // Encontrar primeiro slot vazio
+        const index = personagem.habilidades.findIndex(h => h === null);
+        if (index === -1) {
+            mostrarNotificacao('Todos os slots de habilidade estão ocupados!', 'error');
+            return;
+        }
+        
+        editarHabilidade(index);
+    }
+
+    function editarHabilidade(index) {
+        currentHabilidadeIndex = index;
+        const habilidade = personagem.habilidades[index] || {
+            nome: '',
+            tipo: 'Ativa',
+            tipoCor: 'purple',
+            icone: 'zap',
+            imagem: '',
+            nivel: 1,
+            custo: '',
+            cooldown: '',
+            descricao: ''
+        };
+        
+        modalType = 'habilidade';
+        modalData = { ...habilidade };
+        
+        document.getElementById('modal-title').textContent = habilidade.nome ? `Editar ${habilidade.nome}` : 'Nova Habilidade';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome da Habilidade</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white" onchange="atualizarCorTipo()">
+                            <option value="Ativa" ${modalData.tipo === 'Ativa' ? 'selected' : ''}>Ativa</option>
+                            <option value="Passiva" ${modalData.tipo === 'Passiva' ? 'selected' : ''}>Passiva</option>
+                            <option value="Suporte" ${modalData.tipo === 'Suporte' ? 'selected' : ''}>Suporte</option>
+                            <option value="Ofensiva" ${modalData.tipo === 'Ofensiva' ? 'selected' : ''}>Ofensiva</option>
+                            <option value="Defensiva" ${modalData.tipo === 'Defensiva' ? 'selected' : ''}>Defensiva</option>
+                            <option value="Utilitária" ${modalData.tipo === 'Utilitária' ? 'selected' : ''}>Utilitária</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Nível</label>
+                        <input type="number" id="modal-nivel" value="${modalData.nivel}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Ícone (nome do ícone Lucide)</label>
+                    <input type="text" id="modal-icone" value="${modalData.icone}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="zap, shield, flame, etc.">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Custo</label>
+                        <input type="text" id="modal-custo" value="${modalData.custo}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="10 MP, 5 SP, etc.">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Cooldown (segundos)</label>
+                        <input type="number" id="modal-cooldown" value="${modalData.cooldown}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="0">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="modal-descricao" rows="3"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
+                    <div class="flex gap-2">
+                        <button onclick="uploadImagemHabilidade()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
+                        </button>
+                        ${modalData.imagem ? `
+                            <button onclick="removerImagemHabilidade()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    ${modalData.imagem ? `
+                        <div class="mt-2">
+                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function atualizarCorTipo() {
+        const tipo = document.getElementById('modal-tipo').value;
+        const cores = {
+            'Ativa': 'purple',
+            'Passiva': 'blue',
+            'Suporte': 'green',
+            'Ofensiva': 'red',
+            'Defensiva': 'yellow',
+            'Utilitária': 'pink'
+        };
+        modalData.tipoCor = cores[tipo] || 'purple';
+    }
+
+    function uploadImagemHabilidade() {
+        currentUploadType = 'habilidade-imagem';
+        abrirUploadModal();
+    }
+
+    function removerImagemHabilidade() {
+        modalData.imagem = '';
+        editarHabilidade(currentHabilidadeIndex);
+    }
+
+    function usarItem(index) {
+        const item = personagem.inventarioRapido[index];
+        
+        if (item) {
+            mostrarNotificacao(`Usando: ${item.nome}`, 'info');
+            
+            // Reduzir quantidade se houver
+            if (item.quantidade > 1) {
+                item.quantidade--;
+                atualizarInventarioRapido();
+                salvarDados();
+            }
+        } else {
+            editarItemInventario(index);
+        }
+    }
+
+    function editarItemInventario(index) {
+        const item = personagem.inventarioRapido[index] || {
+            nome: '',
+            imagem: '',
+            quantidade: 1,
+            descricao: ''
+        };
+        
+        modalType = 'inventario';
+        modalData = { ...item, index: index };
+        
+        document.getElementById('modal-title').textContent = item.nome ? `Editar ${item.nome}` : 'Novo Item Rápido';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Item</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Quantidade</label>
+                        <input type="number" id="modal-quantidade" value="${modalData.quantidade}" min="1"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                            <option value="Poção" ${modalData.tipo === 'Poção' ? 'selected' : ''}>Poção</option>
+                            <option value="Consumível" ${modalData.tipo === 'Consumível' ? 'selected' : ''}>Consumível</option>
+                            <option value="Utilidade" ${modalData.tipo === 'Utilidade' ? 'selected' : ''}>Utilidade</option>
+                            <option value="Mágico" ${modalData.tipo === 'Mágico' ? 'selected' : ''}>Mágico</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="modal-descricao" rows="2"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
+                    <div class="flex gap-2">
+                        <button onclick="uploadImagemInventario()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
+                        </button>
+                        ${modalData.imagem ? `
+                            <button onclick="removerImagemInventario()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    ${modalData.imagem ? `
+                        <div class="mt-2">
+                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function uploadImagemInventario() {
+        currentUploadType = 'inventario-imagem';
+        abrirUploadModal();
+    }
+
+    function removerImagemInventario() {
+        modalData.imagem = '';
+        editarItemInventario(modalData.index);
+    }
+
+    function editarInventario() {
+        mostrarNotificacao('Clique em um slot para configurar', 'info');
+    }
+
+    function importarMascoteTXT() {
+        // Criar input de arquivo
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.txt';
+        
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const conteudo = event.target.result;
+                    processarMascoteTXT(conteudo);
+                } catch (error) {
+                    mostrarNotificacao('Erro ao processar arquivo TXT', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
+    function processarMascoteTXT(conteudo) {
+        try {
+            const linhas = conteudo.split('\n');
+            const mascote = {
+                nome: 'Mascote Importado',
+                tipo: 'Companheiro',
+                descricao: '',
+                importadoEm: new Date().toLocaleString('pt-BR')
+            };
+            
+            // Processar linhas do TXT
+            linhas.forEach(linha => {
+                if (linha.includes(':')) {
+                    const [chave, valor] = linha.split(':').map(s => s.trim());
+                    if (chave && valor) {
+                        const chaveLower = chave.toLowerCase();
+                        if (chaveLower.includes('nome')) mascote.nome = valor;
+                        if (chaveLower.includes('tipo')) mascote.tipo = valor;
+                        if (chaveLower.includes('nível') || chaveLower.includes('nivel')) mascote.nivel = valor;
+                        if (chaveLower.includes('habilidade')) mascote.habilidades = valor;
+                        if (chaveLower.includes('descrição') || chaveLower.includes('descricao')) mascote.descricao = valor;
+                    }
+                }
+            });
+            
+            // Se não encontrou dados estruturados, usar o conteúdo
+            if (mascote.nome === 'Mascote Importado' && linhas[0]) {
+                mascote.nome = linhas[0].trim();
+                if (linhas[1]) mascote.descricao = linhas.slice(1, 4).join(' ').trim();
+            }
+            
+            personagem.mascote = mascote;
+            atualizarMascote();
+            salvarDados();
+            
+            mostrarNotificacao(`Mascote "${mascote.nome}" importado com sucesso!`, 'success');
+        } catch (error) {
+            console.error('Erro ao processar TXT:', error);
+            mostrarNotificacao('Formato de arquivo inválido', 'error');
+        }
+    }
+
+    function editarMascote() {
+        if (!personagem.mascote) {
+            personagem.mascote = {
+                nome: 'Novo Mascote',
+                tipo: 'Companheiro',
+                descricao: '',
+                imagem: ''
+            };
+        }
+        
+        modalType = 'mascote';
+        modalData = { ...personagem.mascote };
+        
+        document.getElementById('modal-title').textContent = 'Editar Mascote';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Mascote</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                        <input type="text" id="modal-tipo" value="${modalData.tipo}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="Animal, Espírito, Construção, etc.">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Nível</label>
+                        <input type="number" id="modal-nivel" value="${modalData.nivel || 1}" min="1"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Habilidades</label>
+                    <input type="text" id="modal-habilidades" value="${modalData.habilidades || ''}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="Detecção, Ataque, Defesa, etc.">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="modal-descricao" rows="3"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
+                    <div class="flex gap-2">
+                        <button onclick="uploadImagemMascote()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
+                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
+                        </button>
+                        ${modalData.imagem ? `
+                            <button onclick="removerImagemMascote()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        ` : ''}
+                    </div>
+                    ${modalData.imagem ? `
+                        <div class="mt-2">
+                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function uploadImagemMascote() {
+        currentUploadType = 'mascote-imagem';
+        abrirUploadModal();
+    }
+
+    function removerImagemMascote() {
+        modalData.imagem = '';
+        editarMascote();
+    }
+
+    // ====================================================================
+    // SISTEMA DE UPLOAD DE IMAGENS
+    // ====================================================================
+
+    function abrirUploadModal() {
+        document.getElementById('upload-modal').classList.remove('hidden');
+        document.getElementById('image-preview').classList.add('hidden');
+        document.getElementById('file-input').value = '';
+    }
+
+    function fecharUploadModal() {
+        document.getElementById('upload-modal').classList.add('hidden');
+    }
+
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.match('image.*')) {
+            mostrarNotificacao('Por favor, selecione uma imagem', 'error');
+            return;
+        }
+        
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+            mostrarNotificacao('Imagem muito grande (máx. 5MB)', 'error');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('preview-image');
+            preview.src = e.target.result;
+            document.getElementById('image-preview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function confirmarUpload() {
+        const fileInput = document.getElementById('file-input');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            mostrarNotificacao('Nenhuma imagem selecionada', 'error');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imagemDataURL = e.target.result;
+            
+            switch (currentUploadType) {
+                case 'avatar':
+                    personagem.avatar = imagemDataURL;
+                    atualizarAvatar();
+                    break;
+                    
+                case 'equipamento-imagem':
+                    modalData.imagem = imagemDataURL;
+                    break;
+                    
+                case 'habilidade-imagem':
+                    modalData.imagem = imagemDataURL;
+                    break;
+                    
+                case 'inventario-imagem':
+                    modalData.imagem = imagemDataURL;
+                    break;
+                    
+                case 'mascote-imagem':
+                    modalData.imagem = imagemDataURL;
+                    break;
+                    
+                case 'equipamento':
+                    // Criar novo equipamento com imagem
+                    const novoEquipamento = {
+                        nome: 'Novo Equipamento',
+                        tipo: 'Arma',
+                        icone: 'sword',
+                        imagem: imagemDataURL,
+                        descricao: 'Equipamento importado',
+                        raridade: 'Comum',
+                        raridadeCor: '#8b7355'
+                    };
+                    
+                    // Encontrar slot vazio
+                    const slotVazio = personagem.equipamentos.findIndex(e => e === null);
+                    if (slotVazio !== -1) {
+                        personagem.equipamentos[slotVazio] = novoEquipamento;
+                        atualizarEquipamentos();
+                        salvarDados();
+                    }
+                    break;
+            }
+            
+            fecharUploadModal();
+            mostrarNotificacao('Imagem carregada com sucesso!', 'success');
+            
+            // Recarregar modal se necessário
+            if (currentUploadType.includes('-imagem')) {
+                if (currentUploadType === 'equipamento-imagem') {
+                    editarEquipamento(currentEquipamentoIndex);
+                } else if (currentUploadType === 'habilidade-imagem') {
+                    editarHabilidade(currentHabilidadeIndex);
+                } else if (currentUploadType === 'inventario-imagem') {
+                    editarItemInventario(modalData.index);
+                } else if (currentUploadType === 'mascote-imagem') {
+                    editarMascote();
+                }
+            }
+        };
+        
+        reader.readAsDataURL(file);
+    }
+
+    // ====================================================================
+    // SISTEMA DE MODAL
+    // ====================================================================
+
+    function salvarModal() {
+        switch (modalType) {
+            case 'status':
+                personagem.status.vida.atual = parseInt(document.getElementById('modal-vida-atual').value) || 0;
+                personagem.status.vida.max = parseInt(document.getElementById('modal-vida-max').value) || 0;
+                personagem.status.mana.atual = parseInt(document.getElementById('modal-mana-atual').value) || 0;
+                personagem.status.mana.max = parseInt(document.getElementById('modal-mana-max').value) || 0;
+                personagem.status.estamina.atual = parseInt(document.getElementById('modal-estamina-atual').value) || 0;
+                personagem.status.estamina.max = parseInt(document.getElementById('modal-estamina-max').value) || 0;
+                personagem.status.forca = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-forca').value) || 0));
+                personagem.status.destreza = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-destreza').value) || 0));
+                personagem.status.constituicao = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-constituicao').value) || 0));
+                personagem.status.inteligencia = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-inteligencia').value) || 0));
+                personagem.status.sabedoria = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-sabedoria').value) || 0));
+                personagem.status.carisma = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-carisma').value) || 0));
+                
+                // Garantir que atual não seja maior que máximo
+                personagem.status.vida.atual = Math.min(personagem.status.vida.atual, personagem.status.vida.max);
+                personagem.status.mana.atual = Math.min(personagem.status.mana.atual, personagem.status.mana.max);
+                personagem.status.estamina.atual = Math.min(personagem.status.estamina.atual, personagem.status.estamina.max);
+                break;
+                
+            case 'classe':
+                personagem.nome = document.getElementById('modal-nome').value || personagem.nome;
+                // Classe já foi selecionada via selecionarClasse()
+                break;
+                
+            case 'sorte':
+                personagem.sorte.fe = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-fe').value) || 5));
+                personagem.sorte.sorte = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-sorte').value) || 5));
+                personagem.sorte.destino = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-destino').value) || 5));
+                break;
+                
+            case 'equipamento':
+                modalData.nome = document.getElementById('modal-nome').value || 'Equipamento sem nome';
+                modalData.tipo = document.getElementById('modal-tipo').value;
+                modalData.icone = document.getElementById('modal-icone').value || 'sword';
+                modalData.bonus = document.getElementById('modal-bonus').value;
+                modalData.descricao = document.getElementById('modal-descricao').value;
+                modalData.raridade = document.getElementById('modal-raridade').value;
+                
+                // Definir cor baseada na raridade
+                const coresRaridade = {
+                    'Comum': '#8b7355',
+                    'Incomum': '#22c55e',
+                    'Raro': '#4a9eff',
+                    'Épico': '#8b5cf6',
+                    'Lendário': '#f59e0b'
+                };
+                modalData.raridadeCor = coresRaridade[modalData.raridade] || '#8b7355';
+                
+                personagem.equipamentos[currentEquipamentoIndex] = modalData;
+                break;
+                
+            case 'habilidade':
+                modalData.nome = document.getElementById('modal-nome').value || 'Habilidade sem nome';
+                modalData.tipo = document.getElementById('modal-tipo').value;
+                modalData.tipoCor = modalData.tipoCor || 'purple';
+                modalData.icone = document.getElementById('modal-icone').value || 'zap';
+                modalData.nivel = parseInt(document.getElementById('modal-nivel').value) || 1;
+                modalData.custo = document.getElementById('modal-custo').value;
+                modalData.cooldown = document.getElementById('modal-cooldown').value;
+                modalData.descricao = document.getElementById('modal-descricao').value;
+                
+                personagem.habilidades[currentHabilidadeIndex] = modalData;
+                break;
+                
+            case 'inventario':
+                modalData.nome = document.getElementById('modal-nome').value || 'Item sem nome';
+                modalData.quantidade = parseInt(document.getElementById('modal-quantidade').value) || 1;
+                modalData.tipo = document.getElementById('modal-tipo').value;
+                modalData.descricao = document.getElementById('modal-descricao').value;
+                
+                personagem.inventarioRapido[modalData.index] = modalData;
+                break;
+                
+            case 'mascote':
+                modalData.nome = document.getElementById('modal-nome').value || 'Mascote sem nome';
+                modalData.tipo = document.getElementById('modal-tipo').value;
+                modalData.nivel = parseInt(document.getElementById('modal-nivel').value) || 1;
+                modalData.habilidades = document.getElementById('modal-habilidades').value;
+                modalData.descricao = document.getElementById('modal-descricao').value;
+                
+                personagem.mascote = modalData;
+                break;
+        }
+        
+        fecharModal();
+        
+        // Atualizar interface e salvar
+        atualizarInterface();
+        salvarDados();
+        
+        mostrarNotificacao('Alterações salvas com sucesso!', 'success');
+    }
+
+    function fecharModal() {
+        document.getElementById('edit-modal').classList.add('hidden');
+        modalType = '';
+        modalData = {};
+        currentEquipamentoIndex = null;
+        currentHabilidadeIndex = null;
+    }
+
+    // ====================================================================
+    // FUNÇÕES DE EXPORTAÇÃO/IMPORTAÇÃO
+    // ====================================================================
+
+    function exportarTXT() {
+        try {
+            let texto = `GRIMÓRIO DIGITAL - PERFIL DO PERSONAGEM\n`;
+            texto += `===========================================\n\n`;
+            texto += `GERADO EM: ${new Date().toLocaleString('pt-BR')}\n\n`;
+            
+            // Informações básicas
+            texto += `INFORMAÇÕES BÁSICAS\n`;
+            texto += `-------------------\n`;
+            texto += `Nome: ${personagem.nome}\n`;
+            texto += `Classe: ${personagem.classe}\n`;
+            texto += `Nível: ${personagem.nivel}\n`;
+            texto += `Pontos Disponíveis: ${personagem.pontosDisponiveis}\n`;
+            texto += `Pontos Extras: ${personagem.pontosExtra}\n\n`;
+            
+            // Status
+            texto += `STATUS\n`;
+            texto += `------\n`;
+            texto += `Vida: ${personagem.status.vida.atual}/${personagem.status.vida.max}\n`;
+            texto += `Mana: ${personagem.status.mana.atual}/${personagem.status.mana.max}\n`;
+            texto += `Estamina: ${personagem.status.estamina.atual}/${personagem.status.estamina.max}\n\n`;
+            
+            // Atributos
+            texto += `ATRIBUTOS\n`;
+            texto += `---------\n`;
+            texto += `Força: ${personagem.status.forca}\n`;
+            texto += `Destreza: ${personagem.status.destreza}\n`;
+            texto += `Constituição: ${personagem.status.constituicao}\n`;
+            texto += `Inteligência: ${personagem.status.inteligencia}\n`;
+            texto += `Sabedoria: ${personagem.status.sabedoria}\n`;
+            texto += `Carisma: ${personagem.status.carisma}\n\n`;
+            
+            // Sorte
+            texto += `SORTE E DESTINO\n`;
+            texto += `---------------\n`;
+            texto += `Fé: ${personagem.sorte.fe}\n`;
+            texto += `Sorte: ${personagem.sorte.sorte}\n`;
+            texto += `Destino: ${personagem.sorte.destino}\n`;
+            texto += `Índice de Sorte: ${Math.round(personagem.sorte.indice)}%\n`;
+            texto += `Status: ${personagem.sorte.status}\n\n`;
+            
+            // Equipamentos
+            texto += `EQUIPAMENTOS\n`;
+            texto += `------------\n`;
+            personagem.equipamentos.forEach((eq, i) => {
+                if (eq) {
+                    texto += `${i + 1}. ${eq.nome} (${eq.tipo}) - ${eq.raridade}\n`;
+                    if (eq.bonus) texto += `   Bônus: ${eq.bonus}\n`;
+                    if (eq.descricao) texto += `   Descrição: ${eq.descricao}\n`;
+                }
+            });
+            texto += '\n';
+            
+            // Habilidades
+            texto += `HABILIDADES\n`;
+            texto += `-----------\n`;
+            personagem.habilidades.forEach((hab, i) => {
+                if (hab) {
+                    texto += `${i + 1}. ${hab.nome} (Nível ${hab.nivel}) - ${hab.tipo}\n`;
+                    if (hab.custo) texto += `   Custo: ${hab.custo}\n`;
+                    if (hab.cooldown) texto += `   Cooldown: ${hab.cooldown}s\n`;
+                    if (hab.descricao) texto += `   Descrição: ${hab.descricao}\n`;
+                }
+            });
+            texto += '\n';
+            
+            // Mascote
+            if (personagem.mascote) {
+                texto += `MASCOTE\n`;
+                texto += `-------\n`;
+                texto += `Nome: ${personagem.mascote.nome}\n`;
+                texto += `Tipo: ${personagem.mascote.tipo}\n`;
+                if (personagem.mascote.nivel) texto += `Nível: ${personagem.mascote.nivel}\n`;
+                if (personagem.mascote.habilidades) texto += `Habilidades: ${personagem.mascote.habilidades}\n`;
+                if (personagem.mascote.descricao) texto += `Descrição: ${personagem.mascote.descricao}\n`;
+                texto += '\n';
+            }
+            
+            // Criar e baixar arquivo
+            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `perfil_${personagem.nome.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            mostrarNotificacao('Perfil exportado em TXT!', 'success');
+        } catch (error) {
+            console.error('Erro ao exportar TXT:', error);
+            mostrarNotificacao('Erro ao exportar', 'error');
+        }
+    }
+
+    function exportarJSON() {
+        try {
+            const dados = {
+                ...personagem,
+                exportadoEm: new Date().toISOString(),
+                sistema: 'Grimório Digital v2.0'
+            };
+            
+            const json = JSON.stringify(dados, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `perfil_${personagem.nome.replace(/\s+/g, '_')}_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            mostrarNotificacao('Perfil exportado em JSON!', 'success');
+        } catch (error) {
+            console.error('Erro ao exportar JSON:', error);
+            mostrarNotificacao('Erro ao exportar', 'error');
+        }
+    }
+
+    function importarPerfil() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const dados = JSON.parse(event.target.result);
+                    
+                    if (dados.sistema === 'Grimório Digital v2.0') {
+                        // Remover campos de exportação
+                        delete dados.exportadoEm;
+                        delete dados.sistema;
+                        
+                        // Mesclar dados
+                        Object.assign(personagem, dados);
+                        
+                        atualizarInterface();
+                        salvarDados();
+                        
+                        mostrarNotificacao('Perfil importado com sucesso!', 'success');
+                    } else {
+                        mostrarNotificacao('Formato de arquivo inválido', 'error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao importar:', error);
+                    mostrarNotificacao('Erro ao importar perfil', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
+    function salvarPerfil() {
+        salvarDados();
+    }
+
+    // ====================================================================
+    // FUNÇÕES DE NAVEGAÇÃO
+    // ====================================================================
+
+    function carregarStatus() {
+        if (window.GrimorioSystem && GrimorioSystem.sincronizarStatus) {
+            const statusData = {
+                vida: personagem.status.vida,
+                mana: personagem.status.mana,
+                estamina: personagem.status.estamina,
+                atributos: {
+                    forca: personagem.status.forca,
+                    destreza: personagem.status.destreza,
+                    constituicao: personagem.status.constituicao,
+                    inteligencia: personagem.status.inteligencia,
+                    sabedoria: personagem.status.sabedoria,
+                    carisma: personagem.status.carisma
+                },
+                nivel: personagem.nivel,
+                experiencia: personagem.experiencia,
+                experienciaProximoNivel: personagem.experienciaProximo,
+                pontosDisponiveis: personagem.pontosDisponiveis
+            };
+            
+            GrimorioSystem.sincronizarStatus(statusData);
+            mostrarNotificacao('Status sincronizado com Grimório!', 'success');
+        }
+    }
+
+    function carregarEquipamentos() {
+        window.location.hash = '#equipamentos-container';
+        mostrarNotificacao('Navegando para equipamentos...', 'info');
+    }
+
+    function carregarHabilidades() {
+        window.location.hash = '#habilidades-container';
+        mostrarNotificacao('Navegando para habilidades...', 'info');
+    }
+
+    // ====================================================================
+    // UTILITÁRIOS
+    // ====================================================================
+
+    function atualizarTimestamp() {
+        const agora = new Date();
+        document.getElementById('last-update').textContent = 
+            `${agora.toLocaleDateString('pt-BR')} ${agora.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+        
+        document.getElementById('profile-active-indicator').classList.remove('hidden');
+    }
+
+    function mostrarNotificacao(mensagem, tipo = 'info') {
+        const notificacao = document.createElement('div');
+        notificacao.className = 'fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 animate-slide-in-right';
+        
+        const estilos = {
+            success: 'bg-green-900/80 border-green-700 text-green-300',
+            error: 'bg-red-900/80 border-red-700 text-red-300',
+            warning: 'bg-yellow-900/80 border-yellow-700 text-yellow-300',
+            info: 'bg-blue-900/80 border-blue-700 text-blue-300'
+        };
+        
+        notificacao.className += ' ' + (estilos[tipo] || estilos.info);
+        
+        const icones = {
+            success: 'check-circle',
+            error: 'alert-circle',
+            warning: 'alert-triangle',
+            info: 'info'
+        };
+        
+        notificacao.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i data-lucide="${icones[tipo] || 'info'}" class="w-5 h-5"></i>
+                <span>${mensagem}</span>
+            </div>
+        `;
+        
+        document.body.appendChild(notificacao);
+        
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+        
+        setTimeout(() => {
+            notificacao.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+            setTimeout(() => notificacao.remove(), 500);
+        }, 3000);
+    }
+
+    // ====================================================================
+    // INICIALIZAÇÃO
+    // ====================================================================
+
+    document.addEventListener('DOMContentLoaded', function() {
+        inicializar();
+        
+        // Configurar variáveis CSS para cores
+        const root = document.documentElement;
+        root.style.setProperty('--theme-red', '#dc2626');
+        root.style.setProperty('--theme-green', '#22c55e');
+        root.style.setProperty('--theme-blue', '#4a9eff');
+        root.style.setProperty('--theme-purple', '#8b5cf6');
+        root.style.setProperty('--theme-yellow', '#f59e0b');
+        root.style.setProperty('--theme-pink', '#ec4899');
+        root.style.setProperty('--theme-orange', '#ff6b35');
+        
+        console.log('Sistema de Perfil inicializado com sucesso!');
     });
     </script>
 </body>
