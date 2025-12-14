@@ -639,3 +639,92 @@ window.addEventListener('storage', function(event) {
 window.addEventListener('grimorio:dadosAtualizados', function() {
     console.log('[Grimorio] Evento de dados atualizados recebido');
 });
+
+// ============================================================
+// 11. SISTEMA DE CLASSES PERSONALIZADAS (ADICIONAR AO GRIMORIO-CORE.JS)
+// ============================================================
+
+// Adicionar estas funções ao GrimorioSystem:
+
+// Método para salvar uma classe personalizada
+GrimorioSystem.saveClass = function(classeData) {
+    try {
+        let classes = JSON.parse(localStorage.getItem('grimorio_classes_personalizadas') || '[]');
+        
+        // Verificar se já existe uma classe com este nome
+        const index = classes.findIndex(c => c.id === classeData.id || c.nome === classeData.nome);
+        
+        if (index !== -1) {
+            classes[index] = classeData; // Atualizar
+        } else {
+            classes.push(classeData); // Adicionar nova
+        }
+        
+        localStorage.setItem('grimorio_classes_personalizadas', JSON.stringify(classes));
+        console.log('[Grimorio] Classe salva:', classeData.nome);
+        return true;
+    } catch (error) {
+        console.error('[Grimorio] Erro ao salvar classe:', error);
+        return false;
+    }
+};
+
+// Método para carregar todas as classes personalizadas
+GrimorioSystem.getClasses = function() {
+    try {
+        return JSON.parse(localStorage.getItem('grimorio_classes_personalizadas') || '[]');
+    } catch (error) {
+        console.error('[Grimorio] Erro ao carregar classes:', error);
+        return [];
+    }
+};
+
+// Método para remover uma classe personalizada
+GrimorioSystem.removeClass = function(classeId) {
+    try {
+        let classes = this.getClasses();
+        const index = classes.findIndex(c => c.id === classeId);
+        
+        if (index !== -1) {
+            const classeRemovida = classes.splice(index, 1)[0];
+            localStorage.setItem('grimorio_classes_personalizadas', JSON.stringify(classes));
+            console.log('[Grimorio] Classe removida:', classeRemovida.nome);
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error('[Grimorio] Erro ao remover classe:', error);
+        return false;
+    }
+};
+
+// Método para obter os detalhes da classe atual do personagem
+GrimorioSystem.getCurrentClassDetails = function() {
+    const personagem = this.carregarPersonagem();
+    return personagem.detalhesClasse || null;
+};
+
+// Método para aplicar os bônus da classe ao personagem
+GrimorioSystem.applyClassBonuses = function(classeNome) {
+    const personagem = this.carregarPersonagem();
+    
+    if (!classeNome || classeNome === 'Não Escolhida') {
+        return personagem;
+    }
+    
+    // Verificar se é classe personalizada
+    const classes = this.getClasses();
+    const classePersonalizada = classes.find(c => c.nome === classeNome);
+    
+    if (classePersonalizada && classePersonalizada.bonusPontos) {
+        // Aplicar bônus de pontos apenas se não foi aplicado antes
+        if (!personagem.classBonusesApplied || personagem.classBonusesApplied !== classeNome) {
+            personagem.pontosDisponiveis += classePersonalizada.bonusPontos;
+            personagem.classBonusesApplied = classeNome;
+            console.log(`[Grimorio] Bônus de ${classePersonalizada.bonusPontos} pontos aplicados para ${classeNome}`);
+        }
+    }
+    
+    this.salvarPersonagem(personagem);
+    return personagem;
+};

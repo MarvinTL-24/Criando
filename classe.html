@@ -573,120 +573,210 @@
         // ====================================================================
         // SISTEMA COMPLETO DE CLASSES - CORRIGIDO PARA GRIMORIO-CORE.JS
         // ====================================================================
-        
+
         // Inicializar ícones
         if (window.lucide) {
             lucide.createIcons();
         }
-        
+
         // Variáveis do sistema
         let classeSelecionada = null;
         let tipoClasseSelecionada = null; // 'padrao' ou 'personalizada'
         let dadosClassePersonalizada = null;
-        
+        let classesSalvas = [];
+
         // Inicializar sistema
         function inicializarSistema() {
             // Verificar se grimorio-core.js está disponível
-            if (typeof Grimorio === 'undefined') {
+            if (typeof GrimorioSystem === 'undefined') {
                 console.error('grimorio-core.js não carregado!');
                 mostrarErro('Sistema de armazenamento não encontrado');
                 return;
             }
             
-            // Inicializar o Grimorio
-            Grimorio.init();
+            // Garantir que o personagem existe
+            GrimorioSystem.inicializarPersonagemPadrao();
             
             carregarClassesPersonalizadas();
             verificarClasseAtual();
         }
-        
-        function carregarClassesPersonalizadas() {
-            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
-            const classes = Grimorio.getClasses(); // Método correto do seu grimorio-core.js
-            const container = document.getElementById('container-classes-personalizadas');
-            const contador = document.getElementById('contador-classes');
-            
-            if (!classes || classes.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg col-span-3">
-                        <i data-lucide="folder-plus" class="w-12 h-12 mx-auto mb-4 text-gray-600"></i>
-                        <p class="text-gray-500 mb-2">Nenhuma classe personalizada</p>
-                        <p class="text-sm text-gray-600">Clique em "Nova Classe" para criar</p>
-                    </div>
-                `;
-                contador.textContent = '0 classes';
-                return;
-            }
-            
-            contador.textContent = `${classes.length} classe${classes.length !== 1 ? 's' : ''}`;
-            container.innerHTML = '';
-            
-            classes.forEach((classe, index) => {
-                const corElemento = {
-                    'fogo': 'red',
-                    'agua': 'blue', 
-                    'terra': 'yellow',
-                    'ar': 'cyan',
-                    'luz': 'yellow',
-                    'trevas': 'purple'
-                }[classe.elemento] || 'gray';
-                
-                container.innerHTML += `
-                    <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
-                         onclick="selecionarClassePersonalizada(${index})">
-                        <div class="flex items-start justify-between mb-4">
-                            <div class="p-3 rounded-lg bg-${corElemento}-900/20 border border-${corElemento}-800">
-                                <i data-lucide="${classe.icone || 'user'}" class="w-6 h-6 text-${corElemento}-400"></i>
-                            </div>
-                            <div class="flex flex-wrap gap-1">
-                                ${classe.funcoes ? classe.funcoes.map(f => `
-                                    <span class="classe-tag bg-${corElemento}-900/20 text-${corElemento}-400 border border-${corElemento}-800">
-                                        ${f}
-                                    </span>
-                                `).join('') : ''}
-                            </div>
-                        </div>
-                        
-                        <h3 class="font-cinzel text-xl font-bold text-white mb-2">${classe.nome}</h3>
-                        <p class="text-gray-400 text-sm mb-4">${classe.descricao || 'Classe personalizada'}</p>
-                        
-                        <div class="space-y-2">
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">Arma: ${classe.arma}</span>
-                                <i data-lucide="sword" class="w-4 h-4 text-${corElemento}-400"></i>
-                            </div>
-                            <div class="flex items-center justify-between text-sm">
-                                <span class="text-gray-400">Elemento: ${classe.elemento || 'Nenhum'}</span>
-                                <i data-lucide="${classe.elemento === 'fogo' ? 'flame' : classe.elemento === 'agua' ? 'droplets' : classe.elemento === 'terra' ? 'mountain' : classe.elemento === 'ar' ? 'wind' : classe.elemento === 'luz' ? 'sun' : 'moon'}" class="w-4 h-4 text-${corElemento}-400"></i>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-4 pt-4 border-t border-theme-border">
-                            <div class="text-xs text-gray-500">Habilidades:</div>
-                            <div class="text-xs text-gray-300 mt-1 truncate">
-                                ${classe.habilidades ? classe.habilidades.map(h => h.nome).join(', ') : 'Nenhuma'}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            if (window.lucide) {
-                lucide.createIcons();
+
+        // Funções para gerenciar classes personalizadas no localStorage
+        function salvarClassesPersonalizadas() {
+            try {
+                localStorage.setItem('grimorio_classes_personalizadas', JSON.stringify(classesSalvas));
+                console.log('[Classes] Classes salvas:', classesSalvas.length);
+                return true;
+            } catch (error) {
+                console.error('[Classes] Erro ao salvar classes:', error);
+                return false;
             }
         }
-        
+
+        function carregarClassesPersonalizadas() {
+            try {
+                const dados = localStorage.getItem('grimorio_classes_personalizadas');
+                classesSalvas = dados ? JSON.parse(dados) : [];
+                
+                const container = document.getElementById('container-classes-personalizadas');
+                const contador = document.getElementById('contador-classes');
+                
+                if (!classesSalvas || classesSalvas.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg col-span-3">
+                            <i data-lucide="folder-plus" class="w-12 h-12 mx-auto mb-4 text-gray-600"></i>
+                            <p class="text-gray-500 mb-2">Nenhuma classe personalizada</p>
+                            <p class="text-sm text-gray-600">Clique em "Nova Classe" para criar</p>
+                        </div>
+                    `;
+                    contador.textContent = '0 classes';
+                    return;
+                }
+                
+                contador.textContent = `${classesSalvas.length} classe${classesSalvas.length !== 1 ? 's' : ''}`;
+                container.innerHTML = '';
+                
+                classesSalvas.forEach((classe, index) => {
+                    const corElemento = {
+                        'fogo': 'red',
+                        'agua': 'blue', 
+                        'terra': 'yellow',
+                        'ar': 'cyan',
+                        'luz': 'yellow',
+                        'trevas': 'purple'
+                    }[classe.elemento] || 'gray';
+                    
+                    // Determinar ícone baseado no tipo de combate
+                    const icone = getIconForClass(classe.tipoCombate);
+                    
+                    container.innerHTML += `
+                        <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer group" 
+                            onclick="selecionarClassePersonalizada(${index})">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="p-3 rounded-lg bg-${corElemento}-900/20 border border-${corElemento}-800">
+                                    <i data-lucide="${icone}" class="w-6 h-6 text-${corElemento}-400"></i>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex flex-wrap gap-1">
+                                        ${classe.funcoes ? classe.funcoes.map(f => `
+                                            <span class="classe-tag bg-${corElemento}-900/20 text-${corElemento}-400 border border-${corElemento}-800">
+                                                ${f}
+                                            </span>
+                                        `).join('') : ''}
+                                    </div>
+                                    <button onclick="event.stopPropagation(); removerClassePersonalizada(${index})" 
+                                            class="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-900/30 rounded transition-opacity" 
+                                            title="Remover classe">
+                                        <i data-lucide="trash-2" class="w-4 h-4 text-red-400"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">${classe.nome}</h3>
+                            <p class="text-gray-400 text-sm mb-4">${classe.descricao || 'Classe personalizada'}</p>
+                            
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-400">Arma: ${classe.arma}</span>
+                                    <i data-lucide="${getIconForArma(classe.arma)}" class="w-4 h-4 text-${corElemento}-400"></i>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-400">Combate: ${getTipoCombateNome(classe.tipoCombate)}</span>
+                                    <i data-lucide="${icone}" class="w-4 h-4 text-${corElemento}-400"></i>
+                                </div>
+                                ${classe.elemento ? `
+                                <div class="flex items-center justify-between text-sm">
+                                    <span class="text-gray-400">Elemento: ${classe.elemento}</span>
+                                    <i data-lucide="${getIconForElemento(classe.elemento)}" class="w-4 h-4 text-${corElemento}-400"></i>
+                                </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t border-theme-border">
+                                <div class="text-xs text-gray-500">Habilidades:</div>
+                                <div class="text-xs text-gray-300 mt-1 truncate">
+                                    ${classe.habilidades ? classe.habilidades.map(h => h.nome).join(', ') : 'Nenhuma'}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+                
+                return true;
+            } catch (error) {
+                console.error('[Classes] Erro ao carregar classes:', error);
+                return false;
+            }
+        }
+
+        function getTipoCombateNome(tipo) {
+            const tipos = {
+                'corpo-a-corpo': 'Corpo a Corpo',
+                'distancia': 'À Distância',
+                'magico': 'Mágico',
+                'hibrido': 'Híbrido',
+                'suporte': 'Suporte',
+                'furtivo': 'Furtivo'
+            };
+            return tipos[tipo] || tipo;
+        }
+
+        function getIconForArma(arma) {
+            const armasIcons = {
+                'espada': 'sword',
+                'machado': 'axe',
+                'martelo': 'hammer',
+                'lança': 'spear',
+                'arco': 'bow',
+                'besta': 'target',
+                'adaga': 'dagger',
+                'cajado': 'wand',
+                'varinha': 'wand-2',
+                'orb': 'circle',
+                'escudo': 'shield',
+                'foice': 'scythe',
+                'katana': 'sword',
+                'manopla': 'hand',
+                'garra': 'claw',
+                'chicote': 'whip',
+                'pistola': 'gun',
+                'rifle': 'gun',
+                'luvas': 'hand'
+            };
+            
+            for (const [key, icon] of Object.entries(armasIcons)) {
+                if (arma.toLowerCase().includes(key)) {
+                    return icon;
+                }
+            }
+            return 'sword';
+        }
+
+        function getIconForElemento(elemento) {
+            const elementos = {
+                'fogo': 'flame',
+                'agua': 'droplets',
+                'terra': 'mountain',
+                'ar': 'wind',
+                'luz': 'sun',
+                'trevas': 'moon'
+            };
+            return elementos[elemento] || 'circle';
+        }
+
         function verificarClasseAtual() {
-            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
-            const personagem = Grimorio.getCharacter();
-            if (personagem && personagem.classe) {
+            const personagem = GrimorioSystem.carregarPersonagem();
+            if (personagem && personagem.classe && personagem.classe !== 'Não Escolhida') {
                 // Verificar se é classe personalizada
-                const classes = Grimorio.getClasses();
-                const classeEncontrada = classes.find(c => c.nome === personagem.classe);
+                const classeEncontrada = classesSalvas.find(c => c.nome === personagem.classe);
                 
                 if (classeEncontrada) {
                     // É classe personalizada
-                    const classeIndex = classes.findIndex(c => c.nome === personagem.classe);
+                    const classeIndex = classesSalvas.findIndex(c => c.nome === personagem.classe);
                     selecionarClassePersonalizada(classeIndex);
                 } else {
                     // É classe padrão
@@ -694,7 +784,7 @@
                 }
             }
         }
-        
+
         // Modal Functions
         function abrirModalNovaClasse() {
             document.getElementById('modal-nova-classe').style.display = 'flex';
@@ -702,26 +792,32 @@
                 document.querySelector('#modal-nova-classe .modal-content').classList.add('slide-in');
             }, 10);
         }
-        
+
         function fecharModal(modalId) {
             document.querySelector(`#${modalId} .modal-content`).classList.remove('slide-in');
             setTimeout(() => {
                 document.getElementById(modalId).style.display = 'none';
             }, 300);
         }
-        
+
         // Criar nova classe personalizada
         function criarNovaClasse(event) {
             event.preventDefault();
             
             // Coletar dados do formulário
-            const nome = document.getElementById('nova-classe-nome').value;
+            const nome = document.getElementById('nova-classe-nome').value.trim();
             const combate = document.getElementById('nova-classe-combate').value;
             const armaSelecionada = document.getElementById('nova-classe-arma').value;
             let arma = armaSelecionada;
             
             if (armaSelecionada === 'outra') {
-                arma = document.getElementById('arma-personalizada').value || 'Arma Personalizada';
+                arma = document.getElementById('arma-personalizada').value.trim() || 'Arma Personalizada';
+            }
+            
+            // Verificar se já existe classe com este nome
+            if (classesSalvas.some(c => c.nome.toLowerCase() === nome.toLowerCase())) {
+                mostrarErro('Já existe uma classe com este nome!');
+                return;
             }
             
             // Pacto
@@ -731,21 +827,21 @@
             // Elemento
             const elementoElement = document.querySelector('input[name="elemento"]:checked');
             const elemento = elementoElement ? elementoElement.value : null;
-            const variacaoElemento = document.getElementById('variacao-elemento').value;
+            const variacaoElemento = document.getElementById('variacao-elemento').value.trim();
             
             // Habilidades
             const habilidades = [
                 {
-                    nome: document.getElementById('habilidade1').value,
-                    custo: document.getElementById('custo-habilidade1').value || '0 MP'
+                    nome: document.getElementById('habilidade1').value.trim(),
+                    custo: document.getElementById('custo-habilidade1').value.trim() || '0 MP'
                 },
                 {
-                    nome: document.getElementById('habilidade2').value,
-                    custo: document.getElementById('custo-habilidade2').value || '0 MP'
+                    nome: document.getElementById('habilidade2').value.trim(),
+                    custo: document.getElementById('custo-habilidade2').value.trim() || '0 MP'
                 },
                 {
-                    nome: document.getElementById('habilidade3').value,
-                    custo: document.getElementById('custo-habilidade3').value || '0 MP'
+                    nome: document.getElementById('habilidade3').value.trim(),
+                    custo: document.getElementById('custo-habilidade3').value.trim() || '0 MP'
                 }
             ];
             
@@ -766,26 +862,55 @@
                 funcoes: funcoes,
                 icone: getIconForClass(combate),
                 dataCriacao: new Date().toISOString(),
-                descricao: `Classe personalizada especializada em ${combate}`
+                descricao: `Classe ${getTipoCombateNome(combate)} especializada em ${arma}`,
+                bonusPontos: 2, // +2 pontos ao escolher esta classe
+                habilidadesExclusivas: habilidades.map(h => h.nome) // 3 habilidades exclusivas
             };
             
-            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
-            // Salvar classe
-            Grimorio.saveClass(novaClasse);
+            // Adicionar à lista de classes
+            classesSalvas.push(novaClasse);
+            salvarClassesPersonalizadas();
             
             mostrarFeedbackSucesso(`Classe "${nome}" criada com sucesso!`);
             fecharModal('modal-nova-classe');
             carregarClassesPersonalizadas();
             
             // Selecionar automaticamente a nova classe
-            const classes = Grimorio.getClasses();
-            const ultimaClasseIndex = classes.length - 1;
+            const ultimaClasseIndex = classesSalvas.length - 1;
             selecionarClassePersonalizada(ultimaClasseIndex);
             
             // Resetar formulário
             document.getElementById('form-nova-classe').reset();
+            document.getElementById('arma-personalizada-container').classList.add('hidden');
         }
-        
+
+        function removerClassePersonalizada(index) {
+            if (confirm('Tem certeza que deseja remover esta classe?')) {
+                const classeRemovida = classesSalvas[index];
+                classesSalvas.splice(index, 1);
+                salvarClassesPersonalizadas();
+                
+                // Se esta classe estava selecionada no personagem, limpar
+                const personagem = GrimorioSystem.carregarPersonagem();
+                if (personagem.classe === classeRemovida.nome) {
+                    personagem.classe = 'Não Escolhida';
+                    delete personagem.detalhesClasse;
+                    GrimorioSystem.salvarPersonagem(personagem);
+                }
+                
+                carregarClassesPersonalizadas();
+                mostrarFeedbackSucesso(`Classe "${classeRemovida.nome}" removida!`);
+                
+                // Se não há mais classes selecionadas, limpar seleção
+                if (classeSelecionada === classeRemovida.nome) {
+                    classeSelecionada = null;
+                    tipoClasseSelecionada = null;
+                    dadosClassePersonalizada = null;
+                    atualizarUI();
+                }
+            }
+        }
+
         function getIconForClass(tipoCombate) {
             const icons = {
                 'corpo-a-corpo': 'sword',
@@ -797,7 +922,7 @@
             };
             return icons[tipoCombate] || 'user';
         }
-        
+
         // Selecionar classe padrão
         function selecionarClasse(nomeClasse, tipo = 'padrao', naoAtualizarUI = false) {
             classeSelecionada = nomeClasse;
@@ -810,20 +935,19 @@
             
             habilitarBotoesConfirmacao();
         }
-        
+
         // Selecionar classe personalizada
         function selecionarClassePersonalizada(index) {
-            const classes = Grimorio.getClasses();
-            if (index >= 0 && index < classes.length) {
-                classeSelecionada = classes[index].nome;
+            if (index >= 0 && index < classesSalvas.length) {
+                classeSelecionada = classesSalvas[index].nome;
                 tipoClasseSelecionada = 'personalizada';
-                dadosClassePersonalizada = classes[index];
+                dadosClassePersonalizada = classesSalvas[index];
                 
                 atualizarUI();
                 habilitarBotoesConfirmacao();
             }
         }
-        
+
         function atualizarUI() {
             // Remover seleção de todas as classes
             document.querySelectorAll('.class-card').forEach(card => {
@@ -836,12 +960,20 @@
                 if (cardSelecionado) {
                     cardSelecionado.classList.add('selected');
                 }
+            } else if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
+                // Encontrar o card da classe personalizada
+                const cards = document.querySelectorAll('#container-classes-personalizadas .class-card');
+                cards.forEach((card, index) => {
+                    if (card.querySelector('h3').textContent === dadosClassePersonalizada.nome) {
+                        card.classList.add('selected');
+                    }
+                });
             }
             
             // Atualizar painel de classe selecionada
             atualizarPainelSelecionado();
         }
-        
+
         function atualizarPainelSelecionado() {
             const container = document.getElementById('selected-class-container');
             const details = document.getElementById('class-details');
@@ -861,14 +993,12 @@
             details.classList.remove('hidden');
             
             if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                // Mostrar detalhes da classe personalizada
                 mostrarDetalhesClassePersonalizada(dadosClassePersonalizada);
             } else {
-                // Mostrar detalhes da classe padrão
                 mostrarDetalhesClassePadrao(classeSelecionada);
             }
         }
-        
+
         function mostrarDetalhesClassePersonalizada(classe) {
             const details = document.getElementById('class-details');
             const corElemento = {
@@ -895,11 +1025,25 @@
                         
                         <div class="space-y-4">
                             <div>
+                                <h4 class="font-semibold text-white mb-2">Benefícios</h4>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="p-2 bg-gradient-to-br from-${corElemento}-900/30 to-transparent rounded border border-${corElemento}-800">
+                                        <div class="text-xs text-gray-400">Bônus de Pontos</div>
+                                        <div class="font-bold text-${corElemento}-400 text-xl">+${classe.bonusPontos}</div>
+                                    </div>
+                                    <div class="p-2 bg-gradient-to-br from-${corElemento}-900/30 to-transparent rounded border border-${corElemento}-800">
+                                        <div class="text-xs text-gray-400">Habilidades</div>
+                                        <div class="font-bold text-${corElemento}-400 text-xl">${classe.habilidades.length}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
                                 <h4 class="font-semibold text-white mb-2">Especificações</h4>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div class="p-2 bg-theme-bg rounded border border-theme-border">
                                         <div class="text-xs text-gray-400">Tipo de Combate</div>
-                                        <div class="font-medium">${classe.tipoCombate}</div>
+                                        <div class="font-medium">${getTipoCombateNome(classe.tipoCombate)}</div>
                                     </div>
                                     <div class="p-2 bg-theme-bg rounded border border-theme-border">
                                         <div class="text-xs text-gray-400">Arma Principal</div>
@@ -921,11 +1065,14 @@
                             </div>
                             
                             <div>
-                                <h4 class="font-semibold text-white mb-2">Habilidades</h4>
+                                <h4 class="font-semibold text-white mb-2">Habilidades Exclusivas (3)</h4>
                                 <div class="space-y-2">
-                                    ${classe.habilidades ? classe.habilidades.map(h => `
+                                    ${classe.habilidades ? classe.habilidades.map((h, i) => `
                                         <div class="flex justify-between items-center p-2 bg-theme-bg rounded border border-theme-border">
-                                            <span>${h.nome}</span>
+                                            <div>
+                                                <span class="font-medium">${h.nome}</span>
+                                                <span class="text-xs text-gray-500 ml-2">Habilidade ${i + 1}</span>
+                                            </div>
                                             <span class="text-xs px-2 py-1 bg-${corElemento}-900/30 text-${corElemento}-400 rounded">${h.custo}</span>
                                         </div>
                                     `).join('') : ''}
@@ -944,17 +1091,28 @@
                             `).join('') : '<span class="text-gray-500">Nenhuma função definida</span>'}
                         </div>
                         
-                        <div class="p-4 rounded-lg bg-theme-bg border border-theme-border">
-                            <h5 class="font-semibold text-white mb-2">Status da Classe</h5>
-                            <p class="text-sm text-gray-400 mb-3">
-                                Esta classe personalizada será salva na sua ficha com todos os detalhes.
-                            </p>
-                            
-                            <div class="text-xs text-gray-500">
-                                <div class="flex items-center gap-1">
-                                    <i data-lucide="calendar" class="w-3 h-3"></i>
-                                    Criada em: ${new Date(classe.dataCriacao).toLocaleDateString()}
-                                </div>
+                        <div class="p-4 rounded-lg bg-gradient-to-br from-theme-bg to-${corElemento}-900/5 border border-theme-border mb-4">
+                            <h5 class="font-semibold text-white mb-2">Efeitos no Personagem</h5>
+                            <ul class="text-sm text-gray-300 space-y-2">
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4 text-${corElemento}-400"></i>
+                                    <span>+${classe.bonusPontos} pontos para distribuir livremente</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4 text-${corElemento}-400"></i>
+                                    <span>${classe.habilidades.length} habilidades exclusivas</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-4 h-4 text-${corElemento}-400"></i>
+                                    <span>Armas e estilos definidos pelo jogador</span>
+                                </li>
+                            </ul>
+                        </div>
+                        
+                        <div class="text-xs text-gray-500">
+                            <div class="flex items-center gap-1">
+                                <i data-lucide="calendar" class="w-3 h-3"></i>
+                                Criada em: ${new Date(classe.dataCriacao).toLocaleDateString()}
                             </div>
                         </div>
                     </div>
@@ -965,7 +1123,7 @@
                 lucide.createIcons();
             }
         }
-        
+
         function mostrarDetalhesClassePadrao(nomeClasse) {
             const classesInfo = {
                 'Guerreiro': {
@@ -975,7 +1133,8 @@
                     arma: 'Espada Longa',
                     elemento: 'Terra',
                     atributos: { forca: 4, destreza: 2, constituicao: 4, inteligencia: 1, sabedoria: 2, carisma: 2 },
-                    funcoes: ['Dano', 'Tanque']
+                    funcoes: ['Dano', 'Tanque'],
+                    bonusPontos: 0
                 },
                 'Mago': {
                     cor: 'blue',
@@ -984,7 +1143,8 @@
                     arma: 'Cajado',
                     elemento: 'Ar',
                     atributos: { forca: 1, destreza: 2, constituicao: 2, inteligencia: 5, sabedoria: 4, carisma: 3 },
-                    funcoes: ['Dano Mágico', 'Controle']
+                    funcoes: ['Dano Mágico', 'Controle'],
+                    bonusPontos: 0
                 },
                 'Arqueiro': {
                     cor: 'green',
@@ -993,7 +1153,8 @@
                     arma: 'Arco Longo',
                     elemento: 'Vento',
                     atributos: { forca: 2, destreza: 5, constituicao: 3, inteligencia: 3, sabedoria: 3, carisma: 2 },
-                    funcoes: ['Dano à Distância', 'Furtivo']
+                    funcoes: ['Dano à Distância', 'Furtivo'],
+                    bonusPontos: 0
                 }
             };
             
@@ -1017,6 +1178,16 @@
                         
                         <div class="space-y-4">
                             <div>
+                                <h4 class="font-semibold text-white mb-2">Bônus de Atributos</h4>
+                                ${Object.entries(info.atributos).map(([attr, valor]) => `
+                                    <div class="flex items-center justify-between py-2 border-b border-theme-border">
+                                        <span class="text-gray-400 capitalize">${attr}</span>
+                                        <span class="font-bold text-${info.cor}-400">+${valor}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <div>
                                 <h4 class="font-semibold text-white mb-2">Especificações</h4>
                                 <div class="grid grid-cols-2 gap-2">
                                     <div class="p-2 bg-theme-bg rounded border border-theme-border">
@@ -1028,16 +1199,6 @@
                                         <div class="font-medium">${info.elemento}</div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="font-semibold text-white mb-2">Bônus de Atributos</h4>
-                                ${Object.entries(info.atributos).map(([attr, valor]) => `
-                                    <div class="flex items-center justify-between py-2 border-b border-theme-border">
-                                        <span class="text-gray-400 capitalize">${attr}</span>
-                                        <span class="font-bold text-${info.cor}-400">+${valor}</span>
-                                    </div>
-                                `).join('')}
                             </div>
                         </div>
                     </div>
@@ -1052,7 +1213,7 @@
                             `).join('')}
                         </div>
                         
-                        <div class="p-4 rounded-lg bg-theme-bg border border-theme-border">
+                        <div class="p-4 rounded-lg bg-gradient-to-br from-theme-bg to-${info.cor}-900/5 border border-theme-border mb-4">
                             <h5 class="font-semibold text-white mb-2">Habilidades Padrão</h5>
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center p-2 bg-theme-bg rounded border border-theme-border">
@@ -1069,6 +1230,10 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <div class="text-sm text-gray-400">
+                            <p><i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Classes padrão não concedem bônus de pontos extras.</p>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1077,59 +1242,75 @@
                 lucide.createIcons();
             }
         }
-        
+
         function habilitarBotoesConfirmacao() {
             document.getElementById('btn-confirmar').style.opacity = '1';
             document.getElementById('btn-confirmar-final').style.opacity = '1';
             document.getElementById('btn-confirmar-final').classList.remove('cursor-not-allowed');
             document.getElementById('btn-confirmar-final').classList.add('cursor-pointer');
         }
-        
-        // Salvar classe na ficha - CORRIGIDO PARA USAR O GRIMORIO-CORE.JS
+
+        // Salvar classe na ficha - INTEGRADO COM GRIMORIO-CORE.JS
         function salvarClasseNoPersonagem() {
             if (!classeSelecionada) {
                 mostrarErro('Por favor, selecione uma classe antes de confirmar.');
                 return;
             }
             
-            // USANDO O GRIMORIO-CORE.JS CORRETAMENTE
-            const personagem = Grimorio.getCharacter();
+            const personagem = GrimorioSystem.carregarPersonagem();
             
             if (!personagem) {
                 mostrarErro('Erro ao carregar personagem. Tente recarregar a página.');
                 return;
             }
             
-            // Atualizar informações da classe no personagem
-            const personagemAtualizado = {
-                ...personagem,
-                classe: classeSelecionada
-            };
+            // Verificar se está mudando de classe
+            const mudandoClasse = personagem.classe && personagem.classe !== classeSelecionada;
             
-            // Se for classe personalizada, adicionar detalhes
+            // Atualizar informações da classe no personagem
+            personagem.classe = classeSelecionada;
+            
+            // Se for classe personalizada, adicionar detalhes e aplicar bônus
             if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                personagemAtualizado.detalhesClasse = {
+                personagem.detalhesClasse = {
                     tipoCombate: dadosClassePersonalizada.tipoCombate,
                     arma: dadosClassePersonalizada.arma,
                     pacto: dadosClassePersonalizada.pacto,
                     elemento: dadosClassePersonalizada.elemento,
                     variacaoElemento: dadosClassePersonalizada.variacaoElemento,
                     habilidades: dadosClassePersonalizada.habilidades,
-                    funcoes: dadosClassePersonalizada.funcoes
+                    funcoes: dadosClassePersonalizada.funcoes,
+                    icone: dadosClassePersonalizada.icone
                 };
+                
+                // Aplicar bônus de pontos (+2 pontos para classes personalizadas)
+                if (dadosClassePersonalizada.bonusPontos) {
+                    if (mudandoClasse) {
+                        // Se está mudando de classe, não acumula pontos
+                        personagem.pontosDisponiveis += dadosClassePersonalizada.bonusPontos;
+                        console.log(`[Classe] +${dadosClassePersonalizada.bonusPontos} pontos concedidos`);
+                    } else if (!personagem.classeAnterior) {
+                        // Se é a primeira vez escolhendo classe
+                        personagem.pontosDisponiveis += dadosClassePersonalizada.bonusPontos;
+                        console.log(`[Classe] +${dadosClassePersonalizada.bonusPontos} pontos concedidos`);
+                    }
+                }
+            } else {
+                // Para classes padrão, remover detalhes se existirem
+                delete personagem.detalhesClasse;
             }
             
             // Salvar personagem atualizado
-            Grimorio.saveCharacter(personagemAtualizado);
+            GrimorioSystem.salvarPersonagem(personagem);
             
-            mostrarFeedbackSucesso(`Classe "${classeSelecionada}" salva na ficha!`);
+            mostrarFeedbackSucesso(`Classe "${classeSelecionada}" salva na ficha! ${tipoClasseSelecionada === 'personalizada' ? '(+2 pontos adicionados)' : ''}`);
             
             // Redirecionar após breve delay
             setTimeout(() => {
                 window.location.href = 'index.html?classe=' + encodeURIComponent(classeSelecionada);
             }, 1500);
         }
-        
+
         // Feedback visual
         function mostrarFeedbackSucesso(mensagem) {
             const feedback = document.createElement('div');
@@ -1145,7 +1326,9 @@
             `;
             
             document.body.appendChild(feedback);
-            lucide.createIcons();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
             
             setTimeout(() => {
                 if (feedback.parentElement) {
@@ -1153,7 +1336,7 @@
                 }
             }, 3000);
         }
-        
+
         function mostrarErro(mensagem) {
             const feedback = document.createElement('div');
             feedback.className = 'fixed top-4 right-4 p-4 bg-red-900/20 border border-red-800 rounded-lg shadow-lg z-50 slide-in';
@@ -1168,7 +1351,9 @@
             `;
             
             document.body.appendChild(feedback);
-            lucide.createIcons();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
             
             setTimeout(() => {
                 if (feedback.parentElement) {
@@ -1176,7 +1361,7 @@
                 }
             }, 3000);
         }
-        
+
         // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             // Configurar evento para arma personalizada
