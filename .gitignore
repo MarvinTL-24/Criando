@@ -6,7 +6,19 @@ _site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
+node_modules/
+npm-debug.log*
 
+# Dependências
+node_modules/
+npm-debug.log*
+
+# Build do Tailwind
+css/output.css
+
+# Ambiente
+.env
+.DS_Store
 # Additional Ruby/bundler ignore for when you run: bundle install
 /vendor
 

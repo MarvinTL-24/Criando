@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Suas classes personalizadas */
+@layer components {
+  .character-card {
+    @apply bg-gradient-to-br from-[#1a1510] to-[#2a2318] border-2 border-[#8b7355] transition-all duration-300;
+  }
+  
+  .character-card:hover {
+    @apply border-[#d4a76a] shadow-2xl shadow-[#8b7355]/20;
+  }
+  
+  .level-badge {
+    @apply bg-gradient-to-br from-[#8b7355] to-[#d4a76a] text-white font-bold shadow-md;
+  }
+  
+  .nav-btn {
+    @apply flex items-center gap-2 px-4 py-2 border border-[#2a2a2e] bg-[#0f0f12] text-[#e8e4dc] rounded-lg text-sm transition-all duration-200;
+  }
+  
+  .nav-btn:hover {
+    @apply bg-[#1a1a1e] border-[#4a9eff];
+  }
+  
+  .stat-bar-fill {
+    @apply transition-all duration-500 ease-out;
+  }
+}
+
+/* Animações customizadas */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
