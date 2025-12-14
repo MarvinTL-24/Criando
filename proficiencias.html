@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Proficiências</title>
+    <title>Grimório Digital - Estilos de Combate</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -33,38 +31,13 @@
                             red: '#dc2626',
                             muted: '#606060',
                             blue: '#4a9eff',
-                            green: '#22c55e'
+                            green: '#22c55e',
+                            purple: '#a855f7',
+                            cyan: '#06b6d4',
+                            pink: '#ec4899',
+                            teal: '#14b8a6'
                         }
                     }
-                }
-            }
-        }
-        // Verificar se há perfil ativo
-        window.addEventListener('load', function() {
-            if (window.hasActiveProfile && window.hasActiveProfile()) {
-                const profileInfo = window.getActiveProfileInfo();
-                console.log('Trabalhando no perfil:', profileInfo.name);
-                
-                // Carregar dados específicos desta página
-                const dados = window.loadFromProfile('status'); // 'status' muda por página
-                if (dados) {
-                    preencherCampos(dados);
-                }
-            }
-        });
-
-        // Ao salvar na página
-        function salvarNaPagina() {
-            const dados = coletarDadosDaPagina();
-            
-            // Salvar localmente (compatibilidade com versão antiga)
-            localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
-            
-            // Salvar no perfil ativo (novo sistema)
-            if (window.saveToProfile) {
-                const success = window.saveToProfile('status', dados);
-                if (success) {
-                    alert('Salvo no perfil também!');
                 }
             }
         }
@@ -77,185 +50,365 @@
         .delay-1 { animation-delay: 0.1s; }
         .delay-2 { animation-delay: 0.2s; }
         .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+        .delay-5 { animation-delay: 0.5s; }
 
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .progress-fill { width: 0; transition: width 0.3s ease; }
+        .progress-fill { transition: width 0.5s ease; }
+        .skill-badge { transition: all 0.3s ease; }
+        .skill-badge:hover { transform: translateY(-2px); box-shadow: 0 0 15px currentColor; }
+        
+        .category-pill {
+            background: linear-gradient(135deg, var(--cat-color)20, transparent);
+            border: 1px solid var(--cat-color)40;
+        }
     </style>
 </head>
-<body class="min-h-screen font-sans pb-12">
+<body class="min-h-screen font-sans pb-20">
 
-    <div id="print-area">
-        
-        <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
-            <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-                <a href="index.html" class="text-theme-text hover:text-theme-orange transition-colors">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                </a>
-                <div class="h-6 w-[1px] bg-theme-border"></div>
-                <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital</span>
-            </div>
-            <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
-        </nav>
-
-        <div class="max-w-6xl mx-auto px-4 space-y-6">
-
-            <header class="flex items-center gap-4 mb-6 anim-entry">
-                <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
-                    <i data-lucide="wrench" class="w-8 h-8 text-theme-orange"></i>
-                </div>
-                <div>
-                    <h1 class="text-3xl font-cinzel font-bold text-white">Proficiências</h1>
-                    <p class="text-gray-400">Ofícios e Maestria com Armas</p>
-                </div>
-            </header>
-
-            <div class="flex flex-wrap justify-center gap-6 text-sm anim-entry mb-8">
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#606060]"></div><span class="text-[#606060]">Aprendiz (1-2)</span></div>
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#22c55e]"></div><span class="text-[#606060]">Iniciante (3-4)</span></div>
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#3b82f6]"></div><span class="text-[#606060]">Competente (5-6)</span></div>
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#f59e0b]"></div><span class="text-[#606060]">Experiente (7-8)</span></div>
-                <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-[#dc2626]"></div><span class="text-[#606060]">Mestre (9-10)</span></div>
-            </div>
-
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1" style="border-left: 3px solid #f59e0b;">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
-                    <i data-lucide="hammer" class="w-4 h-4"></i> Ofícios & Crafting
-                </h3>
-                <div id="grid-oficios" class="grid md:grid-cols-2 gap-4"></div>
-            </section>
-
-            <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2" style="border-left: 3px solid #dc2626;">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-red mb-6">
-                    <i data-lucide="swords" class="w-4 h-4"></i> Maestria com Armas
-                </h3>
-                <div id="grid-armas" class="grid md:grid-cols-2 gap-4"></div>
-            </section>
-
-            <div class="bg-theme-panel border border-theme-border p-6 rounded anim-entry delay-3">
-                <h3 class="font-cinzel text-lg text-theme-blue mb-4">Resumo de Progressão</h3>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                    <div>
-                        <p id="total-oficios" class="text-3xl font-bold text-theme-orange">0</p>
-                        <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Ofícios</p>
-                    </div>
-                    <div>
-                        <p id="total-armas" class="text-3xl font-bold text-theme-red">0</p>
-                        <p class="text-xs text-theme-muted uppercase tracking-wide">Pontos em Armas</p>
-                    </div>
-                    <div>
-                        <p id="dominio-oficios" class="text-3xl font-bold text-theme-blue">0</p>
-                        <p class="text-xs text-theme-muted uppercase tracking-wide">Ofícios Dominados</p>
-                    </div>
-                    <div>
-                        <p id="dominio-armas" class="text-3xl font-bold text-theme-green">0</p>
-                        <p class="text-xs text-theme-muted uppercase tracking-wide">Armas Dominadas</p>
-                    </div>
-                </div>
-            </div>
-
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
+            <a href="index.html" class="text-theme-text hover:text-theme-orange transition-colors">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+            </a>
+            <div class="h-6 w-[1px] bg-theme-border"></div>
+            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital</span>
         </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 space-y-8">
+
+        <header class="flex items-center gap-4 anim-entry">
+            <div class="p-3 rounded-lg bg-gradient-to-br from-purple-900/30 to-blue-900/30 border border-purple-700/30">
+                <i data-lucide="swords" class="w-10 h-10 text-purple-400"></i>
+            </div>
+            <div>
+                <h1 class="text-4xl font-cinzel font-bold text-white">Estilos de Combate</h1>
+                <p class="text-gray-400">Maestria em diferentes formas de batalha e domínios</p>
+            </div>
+        </header>
+
+        <!-- Categorias Rápidas -->
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 anim-entry delay-1">
+            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #dc2626">
+                <i data-lucide="sword" class="w-6 h-6 mx-auto mb-2" style="color: #dc2626"></i>
+                <p class="text-sm font-medium">Armas Físicas</p>
+                <p class="text-xs text-gray-500">6 habilidades</p>
+            </div>
+            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #4a9eff">
+                <i data-lucide="sparkles" class="w-6 h-6 mx-auto mb-2" style="color: #4a9eff"></i>
+                <p class="text-sm font-medium">Magias</p>
+                <p class="text-xs text-gray-500">8 escolas</p>
+            </div>
+            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #a855f7">
+                <i data-lucide="heart-handshake" class="w-6 h-6 mx-auto mb-2" style="color: #a855f7"></i>
+                <p class="text-sm font-medium">Pactos</p>
+                <p class="text-xs text-gray-500">5 tipos</p>
+            </div>
+            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #14b8a6">
+                <i data-lucide="leaf" class="w-6 h-6 mx-auto mb-2" style="color: #14b8a6"></i>
+                <p class="text-sm font-medium">Naturalismo</p>
+                <p class="text-xs text-gray-500">4 disciplinas</p>
+            </div>
+            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #f59e0b">
+                <i data-lucide="zap" class="w-6 h-6 mx-auto mb-2" style="color: #f59e0b"></i>
+                <p class="text-sm font-medium">Especiais</p>
+                <p class="text-xs text-gray-500">6 técnicas</p>
+            </div>
+        </div>
+
+        <!-- SEÇÃO 1: ARMAMENTO FÍSICO -->
+        <section class="anim-entry delay-2" style="border-left: 4px solid #dc2626;">
+            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 rounded-lg bg-red-900/30 border border-red-700/30">
+                        <i data-lucide="sword" class="w-6 h-6 text-red-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-cinzel text-2xl font-bold text-white">Armamento Físico</h2>
+                        <p class="text-gray-400 text-sm">Habilidade com armas e combate corpo a corpo</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-armas"></div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 2: ESCOLAS DE MAGIA -->
+        <section class="anim-entry delay-3" style="border-left: 4px solid #4a9eff;">
+            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 rounded-lg bg-blue-900/30 border border-blue-700/30">
+                        <i data-lucide="sparkles" class="w-6 h-6 text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-cinzel text-2xl font-bold text-white">Escolas de Magia</h2>
+                        <p class="text-gray-400 text-sm">Domínio sobre forças arcana e elementais</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="grid-magia"></div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 3: PACTO E ESPIRITUALIDADE -->
+        <section class="anim-entry delay-4" style="border-left: 4px solid #a855f7;">
+            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 rounded-lg bg-purple-900/30 border border-purple-700/30">
+                        <i data-lucide="heart-handshake" class="w-6 h-6 text-purple-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-cinzel text-2xl font-bold text-white">Pactos & Espiritualidade</h2>
+                        <p class="text-gray-400 text-sm">Acordos com entidades e ligações espirituais</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-pactos"></div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 4: DOMINAÇÃO E INVOCAÇÃO -->
+        <section class="anim-entry delay-5" style="border-left: 4px solid #14b8a6;">
+            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 rounded-lg bg-teal-900/30 border border-teal-700/30">
+                        <i data-lucide="ghost" class="w-6 h-6 text-teal-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-cinzel text-2xl font-bold text-white">Dominação & Invocação</h2>
+                        <p class="text-gray-400 text-sm">Controle sobre criaturas e seres</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4" id="grid-invocacao"></div>
+            </div>
+        </section>
+
+        <!-- SEÇÃO 5: TÉCNICAS ESPECIAIS -->
+        <section class="anim-entry" style="border-left: 4px solid #f59e0b;">
+            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 rounded-lg bg-orange-900/30 border border-orange-700/30">
+                        <i data-lucide="zap" class="w-6 h-6 text-orange-400"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-cinzel text-2xl font-bold text-white">Técnicas Especiais</h2>
+                        <p class="text-gray-400 text-sm">Habilidades únicas e raras</p>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-especiais"></div>
+            </div>
+        </section>
+
+        <!-- RESUMO FINAL -->
+        <div class="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-700/30 p-6 rounded-lg anim-entry">
+            <h3 class="font-cinzel text-xl text-white mb-6 text-center">Resumo de Maestria</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-6">
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2 text-red-400" id="total-armas">0</div>
+                    <p class="text-sm text-gray-400">Armas</p>
+                    <div class="h-1 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-red-500" style="width: 0%" id="bar-armas"></div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2 text-blue-400" id="total-magia">0</div>
+                    <p class="text-sm text-gray-400">Magias</p>
+                    <div class="h-1 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-blue-500" style="width: 0%" id="bar-magia"></div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2 text-purple-400" id="total-pactos">0</div>
+                    <p class="text-sm text-gray-400">Pactos</p>
+                    <div class="h-1 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-purple-500" style="width: 0%" id="bar-pactos"></div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2 text-teal-400" id="total-invocacao">0</div>
+                    <p class="text-sm text-gray-400">Invocação</p>
+                    <div class="h-1 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-teal-500" style="width: 0%" id="bar-invocacao"></div>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-4xl font-bold mb-2 text-orange-400" id="total-especiais">0</div>
+                    <p class="text-sm text-gray-400">Especiais</p>
+                    <div class="h-1 bg-gray-800 rounded-full mt-2 overflow-hidden">
+                        <div class="h-full bg-orange-500" style="width: 0%" id="bar-especiais"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <p class="text-gray-400 mb-2">Maestria Total</p>
+                <div class="text-5xl font-cinzel font-bold text-white" id="maestria-total">0</div>
+                <div class="h-2 bg-gray-800 rounded-full mt-4 overflow-hidden max-w-md mx-auto">
+                    <div class="h-full bg-gradient-to-r from-purple-500 to-blue-500" style="width: 0%" id="bar-total"></div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="max-w-6xl mx-auto px-4 mt-8 pb-12 flex flex-col md:flex-row justify-end gap-4 anim-entry delay-3" data-html2pdf-ignore="true">
-        
-        <button onclick="resetAll()" class="flex items-center justify-center gap-2 px-6 py-3 border border-red-900/50 text-red-500 hover:bg-red-900/20 rounded transition-colors font-cinzel text-sm">
+    <!-- BOTÕES DE AÇÃO -->
+    <div class="fixed bottom-6 right-6 flex gap-3">
+        <button onclick="resetAll()" class="flex items-center gap-2 px-5 py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-700/50 text-red-300 rounded-lg transition-all">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-            Resetar Tudo
+            Resetar
         </button>
-
-        <div class="flex-1 md:flex-none"></div> <button onclick="downloadTXT()" class="flex items-center justify-center gap-2 px-6 py-3 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
-            <i data-lucide="file-text" class="w-4 h-4"></i>
-            Baixar Dados (.txt)
+        <button onclick="downloadTXT()" class="flex items-center gap-2 px-5 py-3 bg-blue-900/30 hover:bg-blue-900/50 border border-blue-700/50 text-blue-300 rounded-lg transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            Exportar
+        </button>
+        <button onclick="saveToProfile()" class="flex items-center gap-2 px-5 py-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-700/50 text-purple-300 rounded-lg transition-all">
+            <i data-lucide="save" class="w-4 h-4"></i>
+            Salvar
         </button>
     </div>
 
     <script>
-        // Dados Iniciais (Todos Zerados)
-        let proficienciasOficio = [
-            { id: "ferreiro", label: "Ferreiro", icon: "hammer", descricao: "Forja armas e armaduras de metal", nivel: 0, maxNivel: 10 },
-            { id: "alquimia", label: "Alquimia", icon: "flask-conical", descricao: "Cria poções e elixires mágicos", nivel: 0, maxNivel: 10 },
-            { id: "culinaria", label: "Culinária", icon: "utensils", descricao: "Prepara refeições com buffs especiais", nivel: 0, maxNivel: 10 },
-            { id: "joalheria", label: "Joalheria", icon: "gem", descricao: "Cria anéis e amuletos encantados", nivel: 0, maxNivel: 10 },
-            { id: "escriba", label: "Escriba", icon: "scroll", descricao: "Copia e cria pergaminhos mágicos", nivel: 0, maxNivel: 10 },
-        ];
+        // CATEGORIAS DE PROFICIÊNCIA
+        const categorias = {
+            armas: {
+                cor: '#dc2626',
+                icone: 'sword',
+                habilidades: [
+                    { id: "espadas", label: "Espadas", descricao: "Armas de lâmina longa e curta", nivel: 0 },
+                    { id: "machados", label: "Machados", descricao: "Armas de corte pesado", nivel: 0 },
+                    { id: "arcos", label: "Arcos & Bestas", descricao: "Armas de longo alcance", nivel: 0 },
+                    { id: "lanças", label: "Lança & Estoque", descricao: "Armas de perfuração", nivel: 0 },
+                    { id: "martelos", label: "Martelos de Guerra", descricao: "Armas de impacto contundente", nivel: 0 },
+                    { id: "corpo-a-corpo", label: "Corpo a Corpo", descricao: "Luta desarmada e artes marciais", nivel: 0 }
+                ]
+            },
+            magia: {
+                cor: '#4a9eff',
+                icone: 'sparkles',
+                habilidades: [
+                    { id: "piromancia", label: "Piromancia", descricao: "Domínio sobre fogo e calor", nivel: 0 },
+                    { id: "criomancia", label: "Criomancia", descricao: "Controle de gelo e frio", nivel: 0 },
+                    { id: "eletromancia", label: "Eletromancia", descricao: "Manipulação de energia elétrica", nivel: 0 },
+                    { id: "terramancia", label: "Terramancia", descricao: "Controle sobre terra e rochas", nivel: 0 },
+                    { id: "aeromancia", label: "Aeromancia", descricao: "Domínio de ventos e tempestades", nivel: 0 },
+                    { id: "hidromancia", label: "Hidromancia", descricao: "Controle sobre água e fluidos", nivel: 0 },
+                    { id: "necromancia", label: "Necromancia", descricao: "Magia de morte e decadência", nivel: 0 },
+                    { id: "vitamancia", label: "Vitamancia", descricao: "Magia de vida e cura", nivel: 0 }
+                ]
+            },
+            pactos: {
+                cor: '#a855f7',
+                icone: 'heart-handshake',
+                habilidades: [
+                    { id: "demonico", label: "Pacto Demoníaco", descricao: "Acordo com entidades infernais", nivel: 0 },
+                    { id: "celestial", label: "Pacto Celestial", descricao: "Aliança com seres divinos", nivel: 0 },
+                    { id: "ancestral", label: "Pacto Ancestral", descricao: "Ligação com espíritos ancestrais", nivel: 0 },
+                    { id: "elemental", label: "Pacto Elemental", descricao: "Acordo com espíritos elementais", nivel: 0 },
+                    { id: "sangue", label: "Pacto de Sangue", descricao: "Juramento vinculado ao sangue", nivel: 0 },
+                    { id: "alma", label: "Vínculo de Alma", descricao: "Ligação espiritual profunda", nivel: 0 }
+                ]
+            },
+            invocacao: {
+                cor: '#14b8a6',
+                icone: 'ghost',
+                habilidades: [
+                    { id: "invocador", label: "Invocador", descricao: "Convocação de seres para batalha", nivel: 0 },
+                    { id: "domador", label: "Domador", descricao: "Controle sobre criaturas selvagens", nivel: 0 },
+                    { id: "necromante", label: "Necromante", descricao: "Levantamento e controle de mortos", nivel: 0 },
+                    { id: "golemancer", label: "Golemancer", descricao: "Criação e animação de construtos", nivel: 0 }
+                ]
+            },
+            especiais: {
+                cor: '#f59e0b',
+                icone: 'zap',
+                habilidades: [
+                    { id: "druida", label: "Druida", descricao: "Conexão com natureza e animais", nivel: 0 },
+                    { id: "bencao", label: "Abençoado", descricao: "Habilidades concedidas por divindades", nivel: 0 },
+                    { id: "maldicao", label: "Amaldiçoado", descricao: "Poderes obtidos através de maldições", nivel: 0 },
+                    { id: "psionico", label: "Psíquico", descricao: "Poderes mentais e telecinéticos", nivel: 0 },
+                    { id: "alquimista", label: "Alquimista de Batalha", descricao: "Uso de poções e elementos em combate", nivel: 0 },
+                    { id: "shadow", label: "Sombra", descricao: "Manipulação de escuridão e furtividade", nivel: 0 }
+                ]
+            }
+        };
 
-        let proficienciasArmas = [
-            { id: "espadas", label: "Espadas", icon: "swords", nivel: 0, maxNivel: 10 },
-            { id: "machados", label: "Machados", icon: "axe", nivel: 0, maxNivel: 10 },
-            { id: "arcos", label: "Arcos", icon: "crosshair", nivel: 0, maxNivel: 10 },
-            { id: "cajados", label: "Cajados", icon: "wand-2", nivel: 0, maxNivel: 10 },
-        ];
-
-        // --- Gerenciamento de Estado e Cache ---
-        function loadState() {
-            const savedOficio = localStorage.getItem('rpg_oficio');
-            const savedArmas = localStorage.getItem('rpg_armas');
-            if (savedOficio) proficienciasOficio = JSON.parse(savedOficio);
-            if (savedArmas) proficienciasArmas = JSON.parse(savedArmas);
+        // --- SISTEMA DE SALVAMENTO ---
+        function loadAll() {
+            Object.keys(categorias).forEach(cat => {
+                const saved = localStorage.getItem(`rpg_${cat}`);
+                if (saved) {
+                    categorias[cat].habilidades = JSON.parse(saved);
+                }
+            });
             renderAll();
         }
 
-        function saveState() {
-            localStorage.setItem('rpg_oficio', JSON.stringify(proficienciasOficio));
-            localStorage.setItem('rpg_armas', JSON.stringify(proficienciasArmas));
+        function saveAll() {
+            Object.keys(categorias).forEach(cat => {
+                localStorage.setItem(`rpg_${cat}`, JSON.stringify(categorias[cat].habilidades));
+            });
             renderAll();
-        }
-
-        function resetAll() {
-            if(confirm("Tem certeza que deseja zerar todas as proficiências?")) {
-                proficienciasOficio.forEach(p => p.nivel = 0);
-                proficienciasArmas.forEach(p => p.nivel = 0);
-                saveState();
-            }
-        }
-
-        // --- Lógica de Alteração de Nível ---
-        function changeLevel(type, index, delta) {
-            let arr = type === 'oficio' ? proficienciasOficio : proficienciasArmas;
-            let item = arr[index];
             
-            let novoNivel = item.nivel + delta;
-            if (novoNivel >= 0 && novoNivel <= item.maxNivel) {
-                item.nivel = novoNivel;
-                saveState();
+            // Salvar no sistema de perfil se disponível
+            if (window.saveToProfile) {
+                const allData = {};
+                Object.keys(categorias).forEach(cat => {
+                    allData[cat] = categorias[cat].habilidades;
+                });
+                window.saveToProfile('combate', allData);
             }
         }
 
-        // --- Renderização ---
-        function createCard(item, color, type, index) {
-            const percentage = (item.nivel / item.maxNivel) * 100;
+        // --- CONTROLES DE NÍVEL ---
+        function changeLevel(categoria, index, delta) {
+            const habilidade = categorias[categoria].habilidades[index];
+            const novoNivel = habilidade.nivel + delta;
             
-            // Bolinhas
-            let dotsHtml = '';
-            for(let i = 0; i < 10; i++) {
-                const isActive = i < item.nivel;
-                dotsHtml += `<div class="w-1 h-1 rounded-full ${isActive ? '' : 'bg-[#2a2a2e]'}" style="${isActive ? `background-color: ${color}` : ''}"></div>`;
+            if (novoNivel >= 0 && novoNivel <= 10) {
+                habilidade.nivel = novoNivel;
+                saveAll();
             }
+        }
 
+        // --- RENDERIZAÇÃO ---
+        function createCard(habilidade, categoria, index) {
+            const catConfig = categorias[categoria];
+            const porcentagem = (habilidade.nivel / 10) * 100;
+            
             return `
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 hover:border-opacity-50 transition-all rounded" style="border-color: ${color}40">
+                <div class="skill-badge bg-[#0a0a0c] border border-[#2a2a2e] p-4 rounded-lg hover:border-opacity-60 transition-all" style="border-color: ${catConfig.cor}40">
                     <div class="flex items-center gap-4">
-                        <div class="p-3 rounded-lg" style="background-color: ${color}15">
-                            <i data-lucide="${item.icon}" class="w-6 h-6" style="color: ${color}"></i>
+                        <div class="p-3 rounded-lg" style="background-color: ${catConfig.cor}15">
+                            <i data-lucide="${catConfig.icone}" class="w-5 h-5" style="color: ${catConfig.cor}"></i>
                         </div>
                         <div class="flex-1">
                             <div class="flex justify-between items-center mb-2">
-                                <h4 class="text-white font-medium">${item.label}</h4>
-                                
-                                <div class="flex items-center gap-3 bg-[#0f0f12] rounded px-2 py-1 border border-[#2a2a2e]">
-                                    <button onclick="changeLevel('${type}', ${index}, -1)" class="hide-on-pdf text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">-</button>
-                                    <span class="text-sm font-mono w-8 text-center" style="color: ${color}">${item.nivel}</span>
-                                    <button onclick="changeLevel('${type}', ${index}, 1)" class="hide-on-pdf text-[#606060] hover:text-white transition-colors w-6 h-6 flex items-center justify-center font-mono">+</button>
+                                <h4 class="text-white font-medium">${habilidade.label}</h4>
+                                <div class="flex items-center gap-2">
+                                    <button onclick="changeLevel('${categoria}', ${index}, -1)" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white transition-colors">-</button>
+                                    <span class="font-mono w-8 text-center" style="color: ${catConfig.cor}">${habilidade.nivel}</span>
+                                    <button onclick="changeLevel('${categoria}', ${index}, 1)" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white transition-colors">+</button>
                                 </div>
                             </div>
                             
-                            ${item.descricao ? `<p class="text-[#606060] text-xs mb-2">${item.descricao}</p>` : ''}
+                            <p class="text-gray-500 text-xs mb-3">${habilidade.descricao}</p>
                             
-                            <div class="h-2 bg-[#1a1a1e] rounded-full overflow-hidden mb-2">
-                                <div class="progress-fill h-full rounded-full" style="background-color: ${color}; box-shadow: 0 0 10px ${color}50; width: ${percentage}%"></div>
+                            <!-- Barra de Progresso -->
+                            <div class="h-2 bg-gray-900 rounded-full overflow-hidden">
+                                <div class="progress-fill h-full rounded-full" style="background: linear-gradient(90deg, ${catConfig.cor}, ${catConfig.cor}80); width: ${porcentagem}%"></div>
                             </div>
-                            <div class="flex justify-between mt-1">${dotsHtml}</div>
+                            
+                            <!-- Pontos -->
+                            <div class="flex gap-1 mt-3">
+                                ${Array.from({length: 10}).map((_, i) => `
+                                    <div class="flex-1 h-1 rounded-full ${i < habilidade.nivel ? '' : 'bg-gray-900'}" 
+                                         style="${i < habilidade.nivel ? `background-color: ${catConfig.cor}` : ''}"></div>
+                                `).join('')}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -263,137 +416,86 @@
         }
 
         function renderAll() {
-            const oficiosGrid = document.getElementById('grid-oficios');
-            const armasGrid = document.getElementById('grid-armas');
-            
-            oficiosGrid.innerHTML = proficienciasOficio.map((p, idx) => createCard(p, '#f59e0b', 'oficio', idx)).join('');
-            armasGrid.innerHTML = proficienciasArmas.map((p, idx) => createCard(p, '#dc2626', 'arma', idx)).join('');
+            // Renderizar cada categoria
+            Object.keys(categorias).forEach(cat => {
+                const grid = document.getElementById(`grid-${cat}`);
+                if (grid) {
+                    grid.innerHTML = categorias[cat].habilidades
+                        .map((h, idx) => createCard(h, cat, idx))
+                        .join('');
+                }
+            });
 
-            // Cálculos
-            const totalOficios = proficienciasOficio.reduce((acc, p) => acc + p.nivel, 0);
-            const totalArmas = proficienciasArmas.reduce((acc, p) => acc + p.nivel, 0);
-            document.getElementById('total-oficios').innerText = totalOficios;
-            document.getElementById('total-armas').innerText = totalArmas;
-            document.getElementById('dominio-oficios').innerText = proficienciasOficio.filter(p => p.nivel >= 5).length;
-            document.getElementById('dominio-armas').innerText = proficienciasArmas.filter(p => p.nivel >= 5).length;
+            // Calcular totais
+            const totais = {};
+            Object.keys(categorias).forEach(cat => {
+                totais[cat] = categorias[cat].habilidades.reduce((sum, h) => sum + h.nivel, 0);
+            });
 
-            if(window.lucide) lucide.createIcons();
+            // Atualizar displays
+            Object.keys(totais).forEach(cat => {
+                const elem = document.getElementById(`total-${cat}`);
+                const bar = document.getElementById(`bar-${cat}`);
+                if (elem) elem.textContent = totais[cat];
+                if (bar) bar.style.width = `${(totais[cat] / (categorias[cat].habilidades.length * 10)) * 100}%`;
+            });
+
+            // Total geral
+            const totalGeral = Object.values(totais).reduce((a, b) => a + b, 0);
+            document.getElementById('maestria-total').textContent = totalGeral;
+            document.getElementById('bar-total').style.width = `${(totalGeral / 280) * 100}%`;
+
+            // Atualizar ícones
+            if (window.lucide) {
+                lucide.createIcons();
+            }
         }
 
-        window.addEventListener('load', loadState);
-
-
-        // --- Exportação TXT ---
+        // --- EXPORTAÇÃO ---
         function downloadTXT() {
-            let texto = "=== FICHA DE PROFICIÊNCIAS ===\n\n";
-
-            texto += "--- OFÍCIOS & CRAFTING ---\n";
-            proficienciasOficio.forEach(p => {
-                texto += `[${p.nivel}/10] ${p.label}: ${p.descricao || ''}\n`;
+            let texto = "=== FICHA DE ESTILOS DE COMBATE ===\n\n";
+            
+            Object.keys(categorias).forEach(cat => {
+                const catNome = cat.charAt(0).toUpperCase() + cat.slice(1);
+                texto += `--- ${catNome.toUpperCase()} ---\n`;
+                
+                categorias[cat].habilidades.forEach(h => {
+                    const nivel = h.nivel;
+                    let estrelas = '';
+                    for (let i = 0; i < 10; i++) {
+                        estrelas += i < nivel ? '★' : '☆';
+                    }
+                    texto += `${estrelas} ${h.label}: ${h.descricao}\n`;
+                });
+                
+                texto += '\n';
             });
-
-            texto += "\n--- MAESTRIA COM ARMAS ---\n";
-            proficienciasArmas.forEach(p => {
-                texto += `[${p.nivel}/10] ${p.label}\n`;
-            });
-
-            const total = proficienciasOficio.reduce((a,b)=>a+b.nivel,0) + proficienciasArmas.reduce((a,b)=>a+b.nivel,0);
-            texto += `\nTOTAL DE PONTOS GASTOS: ${total}\n`;
-            texto += "\n============================\n";
-            texto += "Gerado pelo Sistema RPG";
-
-            const blob = new Blob([texto], { type: "text/plain;charset=utf-8" });
-            const link = document.createElement("a");
+            
+            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = "Proficiencias_Dados.txt";
+            link.download = 'Estilos_Combate.txt';
             link.click();
         }
-        // shared.js - Coloque em todas as páginas
-        class GrimorioSaveSystem {
-            static saveCharacter(data) {
-                localStorage.setItem('grimorio_character_data', JSON.stringify(data));
-                this.notifyUpdate('character');
-            }
-            
-            static saveMascot(data) {
-                localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
-                this.notifyUpdate('mascot');
-            }
-            
-            static saveItems(data) {
-                localStorage.setItem('grimorio_items_data', JSON.stringify(data));
-                this.notifyUpdate('items');
-            }
-            
-            static loadCharacter() {
-                const data = localStorage.getItem('grimorio_character_data');
-                return data ? JSON.parse(data) : null;
-            }
-            
-            static loadMascot() {
-                const data = localStorage.getItem('grimorio_mascot_data');
-                return data ? JSON.parse(data) : null;
-            }
-            
-            static loadItems() {
-                const data = localStorage.getItem('grimorio_items_data');
-                return data ? JSON.parse(data) : [];
-            }
-            
-            static notifyUpdate(type) {
-                // Dispara evento customizado
-                const event = new CustomEvent('grimorio-update', {
-                    detail: { type: type, timestamp: Date.now() }
+
+        // --- RESETAR TUDO ---
+        function resetAll() {
+            if (confirm('Resetar TODAS as proficiências?')) {
+                Object.keys(categorias).forEach(cat => {
+                    categorias[cat].habilidades.forEach(h => h.nivel = 0);
                 });
-                window.dispatchEvent(event);
-            }
-            
-            static exportAll() {
-                const allData = {
-                    character: this.loadCharacter(),
-                    mascot: this.loadMascot(),
-                    items: this.loadItems(),
-                    version: '2.0',
-                    exportDate: new Date().toISOString()
-                };
-                
-                return JSON.stringify(allData, null, 2);
-            }
-            
-            static importAll(jsonString) {
-                try {
-                    const data = JSON.parse(jsonString);
-                    
-                    if (data.character) {
-                        this.saveCharacter(data.character);
-                    }
-                    if (data.mascot) {
-                        this.saveMascot(data.mascot);
-                    }
-                    if (data.items) {
-                        this.saveItems(data.items);
-                    }
-                    
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao importar:', error);
-                    return false;
-                }
+                saveAll();
             }
         }
 
-        // Listener para atualizações em tempo real
-        window.addEventListener('grimorio-update', function(event) {
-            console.log('Dados atualizados:', event.detail.type);
-            // Atualiza a página atual com os novos dados
-            refreshCurrentPage();
-        });
-
-        // Função para detectar mudanças no localStorage de outras abas
-        window.addEventListener('storage', function(event) {
-            if (event.key.startsWith('grimorio_')) {
-                location.reload(); // Recarrega para mostrar dados atualizados
-            }
+        // --- INICIALIZAÇÃO ---
+        window.addEventListener('load', function() {
+            loadAll();
+            
+            // Animações de entrada
+            document.querySelectorAll('.anim-entry').forEach((el, i) => {
+                el.style.animationDelay = `${0.1 + (i * 0.1)}s`;
+            });
         });
     </script>
 </body>
