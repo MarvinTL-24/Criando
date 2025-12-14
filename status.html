@@ -766,6 +766,23 @@
                     Resetar
                 </button>
             </div>
+            <!-- APÓS os botões de Sorteio Aleatório e Resetar -->
+            <div class="text-center mt-4">
+                <div class="mb-2 text-sm" style="color: var(--text-secondary);">
+                    Pontos disponíveis para sorteio: <span id="pontos-disponiveis">0</span>
+                </div>
+                <div class="flex gap-2 justify-center">
+                    <button onclick="adicionarPontos(1)" class="btn" style="background: rgba(74, 158, 255, 0.2); color: var(--accent-blue);">
+                        <i data-lucide="plus"></i> +1 Ponto
+                    </button>
+                    <button onclick="adicionarPontos(5)" class="btn" style="background: rgba(34, 197, 94, 0.2); color: var(--accent-green);">
+                        <i data-lucide="plus"></i> +5 Pontos
+                    </button>
+                    <button onclick="adicionarPontos(10)" class="btn" style="background: rgba(139, 92, 246, 0.2); color: var(--accent-purple);">
+                        <i data-lucide="plus"></i> +10 Pontos
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- SISTEMA DE DESTINO -->
@@ -1599,7 +1616,28 @@
                 }
             }
         });
-        
+        // Função para adicionar pontos
+        function adicionarPontos(quantidade) {
+            statusData.config.pontosPorNivel += quantidade;
+            
+            // Atualizar display
+            const pontosElement = document.getElementById('pontos-disponiveis');
+            if (pontosElement) {
+                pontosElement.textContent = statusData.config.pontosPorNivel;
+            }
+            
+            mostrarNotificacao(`+${quantidade} pontos adicionados!`, 'success');
+            salvarDados();
+        }
+
+        // Função para atualizar display dos pontos
+        function atualizarDisplayPontos() {
+            const pontosElement = document.getElementById('pontos-disponiveis');
+            if (pontosElement) {
+                pontosElement.textContent = statusData.config.pontosPorNivel;
+            }
+        }
+
         // Sorte
         if (statusData.sorte.indice > 0) {
             const dadoFe = document.getElementById('dado-fe');
