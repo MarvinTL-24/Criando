@@ -103,18 +103,23 @@
         .badge-green { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
         .badge-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
         
-        /* Status Bars */
-        .status-bar {
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.1);
+        /* Seção Explicativa */
+        .feature-card {
+            background: linear-gradient(135deg, rgba(15, 15, 18, 0.8) 0%, rgba(10, 10, 12, 0.9) 100%);
+            border: 1px solid #2a2a2e;
+            transition: all 0.3s ease;
+            cursor: default;
         }
         
-        .status-fill {
-            height: 100%;
-            border-radius: 4px;
-            transition: width 0.5s ease;
+        .feature-card:hover {
+            border-color: #4a9eff;
+            transform: translateY(-3px);
+        }
+        
+        .info-section {
+            background: linear-gradient(135deg, rgba(15, 15, 18, 0.6) 0%, rgba(10, 10, 12, 0.8) 100%);
+            border: 1px solid #2a2a2e;
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
@@ -202,16 +207,16 @@
             </div>
         </div>
 
-        <!-- SEÇÃO PRINCIPAL: VISÃO GERAL DO PERSONAGEM -->
+        <!-- SEÇÃO PRINCIPAL: SEU PERSONAGEM -->
         <div class="max-w-7xl mx-auto px-4 py-8">
             <!-- Cabeçalho da Seção -->
             <div class="flex items-center justify-between mb-6 animate-slide-up">
                 <div>
                     <h2 class="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
                         <i data-lucide="user" class="w-6 h-6 text-theme-blue"></i>
-                        Visão Geral do Personagem
+                        Seu Personagem
                     </h2>
-                    <p class="text-[#a0a0a0] text-sm">Status atual e informações principais</p>
+                    <p class="text-[#a0a0a0] text-sm">Visualize e gerencie seu personagem</p>
                 </div>
                 
                 <div class="flex gap-3">
@@ -234,7 +239,7 @@
                     <div class="card-hover bg-theme-panel border border-theme-border rounded-xl p-6 h-full">
                         <div class="flex items-center gap-3 mb-6">
                             <i data-lucide="image" class="w-5 h-5 text-theme-blue"></i>
-                            <h3 class="font-cinzel text-lg font-semibold text-white">Avatar & Imagem</h3>
+                            <h3 class="font-cinzel text-lg font-semibold text-white">Avatar</h3>
                         </div>
                         
                         <div class="flex flex-col items-center">
@@ -244,139 +249,52 @@
                                 <i data-lucide="user" class="w-20 h-20 text-[#606060]" id="avatar-icon"></i>
                             </div>
                             
-                            <!-- Informações da Imagem -->
-                            <div class="text-center w-full">
-                                <div class="mb-4">
-                                    <div class="text-sm text-[#a0a0a0] mb-1">Status do Avatar</div>
-                                    <div id="avatar-status" class="badge badge-blue">Nenhuma imagem carregada</div>
-                                </div>
-                                
-                                <button onclick="window.location.href='ficha.html#avatar-section'" class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-theme-panel border-2 border-dashed border-theme-border hover:border-theme-blue hover:bg-[#1a1a1e] rounded-lg transition-all duration-300">
-                                    <i data-lucide="upload" class="w-4 h-4"></i>
-                                    <span class="text-sm font-medium">Adicionar/Editar Imagem</span>
-                                </button>
-                                
-                                <p class="text-xs text-[#606060] mt-3">
-                                    Recomendado: 400x400px, formato JPG ou PNG
-                                </p>
+                            <!-- Nome e Classe -->
+                            <div class="text-center w-full mb-4">
+                                <div id="display-nome" class="text-xl font-cinzel font-bold text-white mb-2">Carregando...</div>
+                                <div id="display-classe" class="text-sm text-theme-orange font-medium">Classe não escolhida</div>
                             </div>
+                            
+                            <p class="text-xs text-[#606060] text-center">
+                                Para alterar seu avatar, acesse a página de ficha
+                            </p>
                         </div>
                     </div>
                 </div>
                 
-                <!-- COLUNA 2: Informações Básicas -->
+                <!-- COLUNA 2: Informações e Introdução -->
                 <div class="lg:col-span-2">
-                    <div class="card-hover bg-theme-panel border border-theme-border rounded-xl p-6 h-full">
+                    <div class="card-hover info-section rounded-xl p-6 h-full">
                         <div class="flex items-center gap-3 mb-6">
                             <i data-lucide="info" class="w-5 h-5 text-theme-orange"></i>
-                            <h3 class="font-cinzel text-lg font-semibold text-white">Informações do Personagem</h3>
+                            <h3 class="font-cinzel text-lg font-semibold text-white">Bem-vindo ao Grimório Digital</h3>
                         </div>
                         
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <!-- Coluna Esquerda -->
-                            <div class="space-y-6">
-                                <!-- Nome e Título -->
-                                <div>
-                                    <label class="block text-xs uppercase tracking-widest text-[#a0a0a0] mb-2 font-cinzel">Nome do Personagem</label>
-                                    <div id="display-nome" class="text-2xl font-cinzel font-bold text-white mb-1">Carregando...</div>
-                                    <div id="display-titulo" class="text-sm text-[#a0a0a0] italic">-</div>
-                                </div>
-                                
-                                <!-- Raça e Classe -->
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-xs uppercase tracking-widest text-[#a0a0a0] mb-2 font-cinzel">Raça</label>
-                                        <div id="display-raca" class="text-lg font-bold text-white">-</div>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs uppercase tracking-widest text-[#a0a0a0] mb-2 font-cinzel">Classe</label>
-                                        <div id="display-classe" class="text-lg font-bold text-theme-orange">-</div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Nível e XP -->
-                                <div>
-                                    <label class="block text-xs uppercase tracking-widest text-[#a0a0a0] mb-2 font-cinzel">Progressão</label>
-                                    <div class="flex items-center gap-4">
-                                        <div class="level-badge text-2xl font-bold w-16 h-16 rounded-full bg-gradient-to-br from-theme-copper to-theme-gold flex items-center justify-center">
-                                            <span id="display-nivel">1</span>
-                                        </div>
-                                        <div class="flex-grow">
-                                            <div class="flex justify-between text-sm mb-1">
-                                                <span class="text-[#a0a0a0]">XP Acumulado</span>
-                                                <span id="display-xp" class="font-mono text-theme-orange">0/1000</span>
-                                            </div>
-                                            <div class="status-bar">
-                                                <div id="display-xp-bar" class="status-fill bg-gradient-to-r from-theme-orange to-orange-400" style="width: 0%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                        <div class="space-y-4">
+                            <p class="text-[#e8e4dc]">
+                                Este é o sistema completo de gerenciamento de personagens para suas aventuras RPG. 
+                                Aqui você pode criar, personalizar e acompanhar todos os aspectos do seu personagem.
+                            </p>
+                            
+                            <div class="p-4 rounded-lg bg-theme-panel/50 border border-theme-border">
+                                <h4 class="font-cinzel text-md font-semibold text-white mb-2 flex items-center gap-2">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-theme-blue"></i>
+                                    Como começar?
+                                </h4>
+                                <ol class="list-decimal pl-5 space-y-2 text-sm text-[#a0a0a0]">
+                                    <li><span class="text-white font-medium">1.</span> Crie sua ficha completa na página "Ficha"</li>
+                                    <li><span class="text-white font-medium">2.</span> Escolha uma classe na página "Classe"</li>
+                                    <li><span class="text-white font-medium">3.</span> Distribua seus pontos de atributo em "Status"</li>
+                                    <li><span class="text-white font-medium">4.</span> Explore as outras seções para completar seu personagem</li>
+                                </ol>
                             </div>
                             
-                            <!-- Coluna Direita -->
-                            <div class="space-y-6">
-                                <!-- Status Básico -->
-                                <div>
-                                    <label class="block text-xs uppercase tracking-widest text-[#a0a0a0] mb-3 font-cinzel">Status Básico</label>
-                                    <div class="space-y-3">
-                                        <!-- Vida -->
-                                        <div>
-                                            <div class="flex justify-between text-sm mb-1">
-                                                <span class="text-theme-red flex items-center gap-2">
-                                                    <i data-lucide="heart" class="w-3 h-3"></i>
-                                                    Vida
-                                                </span>
-                                                <span id="display-vida" class="font-mono">0/0</span>
-                                            </div>
-                                            <div class="status-bar">
-                                                <div id="display-vida-bar" class="status-fill bg-gradient-to-r from-red-600 to-red-400" style="width: 0%"></div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Mana -->
-                                        <div>
-                                            <div class="flex justify-between text-sm mb-1">
-                                                <span class="text-theme-blue flex items-center gap-2">
-                                                    <i data-lucide="flame" class="w-3 h-3"></i>
-                                                    Mana
-                                                </span>
-                                                <span id="display-mana" class="font-mono">0/0</span>
-                                            </div>
-                                            <div class="status-bar">
-                                                <div id="display-mana-bar" class="status-fill bg-gradient-to-r from-blue-600 to-blue-400" style="width: 0%"></div>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Estamina -->
-                                        <div>
-                                            <div class="flex justify-between text-sm mb-1">
-                                                <span class="text-theme-green flex items-center gap-2">
-                                                    <i data-lucide="wind" class="w-3 h-3"></i>
-                                                    Estamina
-                                                </span>
-                                                <span id="display-estamina" class="font-mono">0/0</span>
-                                            </div>
-                                            <div class="status-bar">
-                                                <div id="display-estamina-bar" class="status-fill bg-gradient-to-r from-green-600 to-green-400" style="width: 0%"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Pontos Disponíveis -->
-                                <div class="pt-4 border-t border-theme-border">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <div class="text-xs uppercase tracking-widest text-[#a0a0a0] font-cinzel">Pontos Disponíveis</div>
-                                            <div id="display-pontos" class="text-2xl font-bold text-theme-green">0</div>
-                                        </div>
-                                        <button onclick="window.location.href='status.html'" class="flex items-center gap-2 px-3 py-2 bg-theme-green/10 hover:bg-theme-green/20 text-theme-green rounded-lg text-sm transition-all duration-300">
-                                            <i data-lucide="plus" class="w-3 h-3"></i>
-                                            Distribuir
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="flex items-center gap-3 p-3 rounded-lg bg-theme-blue/10 border border-theme-blue/30">
+                                <i data-lucide="lightbulb" class="w-5 h-5 text-theme-blue flex-shrink-0"></i>
+                                <p class="text-sm text-[#a0a0a0]">
+                                    <span class="text-white font-medium">Dica:</span> Todas as alterações são salvas automaticamente. 
+                                    Você pode acessar seu personagem de qualquer dispositivo.
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -384,43 +302,170 @@
             </div>
         </div>
 
-        <!-- SEÇÃO: Acesso Rápido -->
+        <!-- SEÇÃO: Conheça o Sistema -->
         <div class="max-w-7xl mx-auto px-4 pb-12">
             <div class="animate-slide-up" style="animation-delay: 0.3s">
-                <h3 class="font-cinzel text-lg font-semibold text-white mb-4">Acesso Rápido</h3>
+                <div class="flex items-center gap-3 mb-6">
+                    <i data-lucide="compass" class="w-6 h-6 text-theme-purple"></i>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Conheça o Sistema</h3>
+                </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <a href="ficha.html" class="group flex flex-col items-center gap-3 p-6 bg-theme-panel border border-theme-border hover:border-theme-blue/50 transition-all duration-300 rounded-xl text-center">
-                        <div class="p-3 rounded-full bg-[#4a9eff]/10 text-theme-blue">
-                            <i data-lucide="scroll-text" class="w-6 h-6"></i>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Ficha Completa -->
+                    <div class="feature-card rounded-xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-[#4a9eff]/10">
+                                <i data-lucide="scroll-text" class="w-5 h-5 text-theme-blue"></i>
+                            </div>
+                            <h4 class="font-cinzel text-md font-semibold text-white">Ficha Completa</h4>
                         </div>
-                        <span class="font-cinzel text-sm text-white">Ficha Completa</span>
-                        <p class="text-xs text-[#a0a0a0] mt-1">História, aparência e identidade</p>
-                    </a>
+                        <p class="text-sm text-[#a0a0a0] mb-3">
+                            Defina a identidade do seu personagem: nome, história, aparência física, 
+                            personalidade e todos os detalhes que fazem dele único.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs text-[#606060]">
+                            <i data-lucide="clock" class="w-3 h-3"></i>
+                            Onde tudo começa
+                        </div>
+                    </div>
 
-                    <a href="status.html" class="group flex flex-col items-center gap-3 p-6 bg-theme-panel border border-theme-border hover:border-theme-orange/50 transition-all duration-300 rounded-xl text-center">
-                        <div class="p-3 rounded-full bg-[#ff6b35]/10 text-theme-orange">
-                            <i data-lucide="zap" class="w-6 h-6"></i>
+                    <!-- Status e Atributos -->
+                    <div class="feature-card rounded-xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-[#ff6b35]/10">
+                                <i data-lucide="zap" class="w-5 h-5 text-theme-orange"></i>
+                            </div>
+                            <h4 class="font-cinzel text-md font-semibold text-white">Status e Atributos</h4>
                         </div>
-                        <span class="font-cinzel text-sm text-white">Status</span>
-                        <p class="text-xs text-[#a0a0a0] mt-1">Atributos e cálculos</p>
-                    </a>
+                        <p class="text-sm text-[#a0a0a0] mb-3">
+                            Distribua pontos entre Força, Destreza, Inteligência e outros atributos. 
+                            Veja como seus recursos (vida, mana, estamina) são calculados automaticamente.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs text-[#606060]">
+                            <i data-lucide="activity" class="w-3 h-3"></i>
+                            Poderes e habilidades base
+                        </div>
+                    </div>
 
-                    <a href="inventario.html" class="group flex flex-col items-center gap-3 p-6 bg-theme-panel border border-theme-border hover:border-theme-blue/50 transition-all duration-300 rounded-xl text-center">
-                        <div class="p-3 rounded-full bg-[#4a9eff]/10 text-theme-blue">
-                            <i data-lucide="backpack" class="w-6 h-6"></i>
+                    <!-- Sistema de Classes -->
+                    <div class="feature-card rounded-xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-[#8b5cf6]/10">
+                                <i data-lucide="crown" class="w-5 h-5 text-theme-purple"></i>
+                            </div>
+                            <h4 class="font-cinzel text-md font-semibold text-white">Sistema de Classes</h4>
                         </div>
-                        <span class="font-cinzel text-sm text-white">Inventário</span>
-                        <p class="text-xs text-[#a0a0a0] mt-1">Itens e equipamentos</p>
-                    </a>
+                        <p class="text-sm text-[#a0a0a0] mb-3">
+                            Escolha entre classes tradicionais ou crie sua própria classe personalizada 
+                            com armas únicas, habilidades especiais e pactos exclusivos.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs text-[#606060]">
+                            <i data-lucide="swords" class="w-3 h-3"></i>
+                            +2 pontos para classes personalizadas
+                        </div>
+                    </div>
 
-                    <a href="habilidades.html" class="group flex flex-col items-center gap-3 p-6 bg-theme-panel border border-theme-border hover:border-theme-orange/50 transition-all duration-300 rounded-xl text-center">
-                        <div class="p-3 rounded-full bg-[#ff6b35]/10 text-theme-orange">
-                            <i data-lucide="sword" class="w-6 h-6"></i>
+                    <!-- Inventário -->
+                    <div class="feature-card rounded-xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-[#4a9eff]/10">
+                                <i data-lucide="backpack" class="w-5 h-5 text-theme-blue"></i>
+                            </div>
+                            <h4 class="font-cinzel text-md font-semibold text-white">Inventário</h4>
                         </div>
-                        <span class="font-cinzel text-sm text-white">Habilidades</span>
-                        <p class="text-xs text-[#a0a0a0] mt-1">Poderes e talentos</p>
-                    </a>
+                        <p class="text-sm text-[#a0a0a0] mb-3">
+                            Gerencie seus itens, equipamentos, moedas e tesouros. 
+                            Sistema completo com categorias, descrições e propriedades especiais.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs text-[#606060]">
+                            <i data-lucide="package" class="w-3 h-3"></i>
+                            Organize seus pertences
+                        </div>
+                    </div>
+
+                    <!-- Mascote -->
+                    <div class="feature-card rounded-xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-[#22c55e]/10">
+                                <i data-lucide="dog" class="w-5 h-5 text-theme-green"></i>
+                            </div>
+                            <h4 class="font-cinzel text-md font-semibold text-white">Mascote</h4>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-3">
+                            Crie um companheiro de aventuras! Defina espécie, habilidades, 
+                            personalidade e acompanhe seu crescimento ao longo da jornada.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs text-[#606060]">
+                            <i data-lucide="heart" class="w-3 h-3"></i>
+                            Seu fiel companheiro
+                        </div>
+                    </div>
+
+                    <!-- Habilidades -->
+                    <div class="feature-card rounded-xl p-6">
+                        <div class="flex items-center gap-3 mb-4">
+                            <div class="p-2 rounded-lg bg-[#ff6b35]/10">
+                                <i data-lucide="sword" class="w-5 h-5 text-theme-orange"></i>
+                            </div>
+                            <h4 class="font-cinzel text-md font-semibold text-white">Habilidades e Proficiências</h4>
+                        </div>
+                        <p class="text-sm text-[#a0a0a0] mb-3">
+                            Domine habilidades de combate, magias e técnicas especiais. 
+                            Desenvolva proficiências com diferentes tipos de armas e estilos de luta.
+                        </p>
+                        <div class="flex items-center gap-2 text-xs text-[#606060]">
+                            <i data-lucide="target" class="w-3 h-3"></i>
+                            Torne-se um especialista
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEÇÃO: Ações Rápidas -->
+        <div class="max-w-7xl mx-auto px-4 pb-12">
+            <div class="animate-slide-up" style="animation-delay: 0.5s">
+                <div class="flex items-center gap-3 mb-6">
+                    <i data-lucide="rocket" class="w-6 h-6 text-theme-orange"></i>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Pronto para Aventurar?</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Crie sua Ficha -->
+                    <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
+                        <div class="p-3 rounded-full bg-[#4a9eff]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+                            <i data-lucide="pencil" class="w-8 h-8 text-theme-blue"></i>
+                        </div>
+                        <h4 class="font-cinzel text-lg font-semibold text-white mb-3">Crie sua Ficha</h4>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Dê vida ao seu personagem com história e personalidade únicas</p>
+                        <button onclick="window.location.href='ficha.html'" class="w-full px-4 py-3 bg-theme-blue hover:bg-blue-600 rounded-lg text-white font-medium transition-all duration-300">
+                            Começar Agora
+                        </button>
+                    </div>
+
+                    <!-- Escolha sua Classe -->
+                    <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
+                        <div class="p-3 rounded-full bg-[#8b5cf6]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+                            <i data-lucide="crown" class="w-8 h-8 text-theme-purple"></i>
+                        </div>
+                        <h4 class="font-cinzel text-lg font-semibold text-white mb-3">Escolha sua Classe</h4>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Selecione uma classe padrão ou crie sua própria classe única</p>
+                        <button onclick="window.location.href='classe.html'" class="w-full px-4 py-3 bg-theme-purple hover:bg-purple-600 rounded-lg text-white font-medium transition-all duration-300">
+                            Ver Classes
+                        </button>
+                    </div>
+
+                    <!-- Veja seu Perfil -->
+                    <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
+                        <div class="p-3 rounded-full bg-[#22c55e]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
+                            <i data-lucide="user-check" class="w-8 h-8 text-theme-green"></i>
+                        </div>
+                        <h4 class="font-cinzel text-lg font-semibold text-white mb-3">Veja seu Perfil</h4>
+                        <p class="text-sm text-[#a0a0a0] mb-4">Visualize todas as informações do seu personagem em um só lugar</p>
+                        <button onclick="window.location.href='perfil.html'" class="w-full px-4 py-3 bg-theme-green hover:bg-green-600 rounded-lg text-white font-medium transition-all duration-300">
+                            Ver Perfil
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -470,62 +515,74 @@
             }
         });
 
-        // 3. CARREGAR DADOS DO PERSONAGEM (usando grimorio-core.js)
+        // 3. CARREGAR DADOS DO PERSONAGEM (apenas nome, classe e avatar)
         function carregarDadosPersonagem() {
             try {
                 // Usa o sistema centralizado
                 const personagem = GrimorioSystem.carregarPersonagem();
                 
                 if (!personagem) {
-                    mostrarMensagem('Nenhum personagem encontrado. Crie uma ficha primeiro.', 'warning');
                     return;
                 }
                 
-                // Atualizar Interface
-                atualizarInterface(personagem);
+                // Atualizar apenas nome e classe
+                document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
+                document.getElementById('display-classe').textContent = personagem.classe || 'Classe não escolhida';
                 
-                console.log('Dados carregados do GrimorioSystem:', personagem.nome);
+                // Carregar avatar
+                carregarAvatarIndex();
                 
             } catch (error) {
                 console.error('Erro ao carregar dados:', error);
-                mostrarMensagem('Erro ao carregar dados do personagem', 'error');
             }
         }
 
-        // 4. ATUALIZAR INTERFACE COM DADOS
-        function atualizarInterface(personagem) {
-            // Informações básicas
-            document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
-            document.getElementById('display-titulo').textContent = personagem.titulo || 'Aventureiro sem título';
-            document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
-            document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
-            
-            // Pontos disponíveis
-            document.getElementById('display-pontos').textContent = personagem.pontosDisponiveis || 0;
-            
-            // Avatar/Imagem
-            const avatarContainer = document.getElementById('avatar-container');
-            const avatarIcon = document.getElementById('avatar-icon');
-            const avatarStatus = document.getElementById('avatar-status');
-            
-            if (personagem.avatar && personagem.avatar.trim() !== '') {
-                // Tem imagem
-                avatarContainer.style.backgroundImage = `url('${personagem.avatar}')`;
-                avatarContainer.style.backgroundSize = 'cover';
-                avatarContainer.style.backgroundPosition = 'center';
-                avatarIcon.style.display = 'none';
-                avatarStatus.textContent = 'Imagem carregada';
-                avatarStatus.className = 'badge badge-green';
-            } else {
-                // Sem imagem
-                avatarContainer.style.backgroundImage = '';
-                avatarIcon.style.display = 'block';
-                avatarStatus.textContent = 'Nenhuma imagem';
-                avatarStatus.className = 'badge badge-blue';
+        // 4. CARREGAR AVATAR
+        function carregarAvatarIndex() {
+            try {
+                const personagem = GrimorioSystem.carregarPersonagem();
+                const avatarContainer = document.getElementById('avatar-container');
+                const avatarIcon = document.getElementById('avatar-icon');
+                
+                if (!avatarContainer) {
+                    console.error('Elemento avatar-container não encontrado');
+                    return;
+                }
+                
+                if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
+                    console.log('Carregando avatar no index:', personagem.avatar.substring(0, 50) + '...');
+                    
+                    // Tentar carregar a imagem primeiro
+                    const img = new Image();
+                    img.onload = function() {
+                        // Imagem carregada com sucesso
+                        avatarContainer.style.backgroundImage = `url('${personagem.avatar}')`;
+                        avatarContainer.style.backgroundSize = 'cover';
+                        avatarContainer.style.backgroundPosition = 'center';
+                        if (avatarIcon) avatarIcon.style.display = 'none';
+                    };
+                    
+                    img.onerror = function() {
+                        // Erro ao carregar imagem
+                        console.error('Erro ao carregar imagem do avatar');
+                        avatarContainer.style.backgroundImage = '';
+                        if (avatarIcon) avatarIcon.style.display = 'block';
+                    };
+                    
+                    img.src = personagem.avatar;
+                    
+                } else {
+                    console.log('Nenhum avatar definido no index');
+                    avatarContainer.style.backgroundImage = '';
+                    if (avatarIcon) avatarIcon.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar avatar no index:', error);
+                const avatarContainer = document.getElementById('avatar-container');
+                const avatarIcon = document.getElementById('avatar-icon');
+                if (avatarContainer) avatarContainer.style.backgroundImage = '';
+                if (avatarIcon) avatarIcon.style.display = 'block';
             }
-            
-            // Mostrar que está carregado
-            document.body.style.opacity = '1';
         }
 
         // 5. MENSAGENS DE FEEDBACK
@@ -625,105 +682,15 @@
                 border-bottom-color: #4a9eff;
             }
             
-            .level-badge {
-                background: linear-gradient(45deg, #8b7355, #d4a76a);
-                color: white;
-                font-weight: bold;
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-                box-shadow: 0 4px 12px rgba(212, 167, 106, 0.2);
+            .feature-card {
+                height: 100%;
+            }
+            
+            .feature-card:hover {
+                background: linear-gradient(135deg, rgba(15, 15, 18, 0.9) 0%, rgba(10, 10, 12, 1) 100%);
             }
         `;
         document.head.appendChild(estiloDropdown);
-        
-        // Função específica para carregar avatar no index
-        function carregarAvatarIndex() {
-            try {
-                const personagem = GrimorioSystem.carregarPersonagem();
-                const avatarContainer = document.getElementById('avatar-container');
-                const avatarIcon = document.getElementById('avatar-icon');
-                const avatarStatus = document.getElementById('avatar-status');
-                
-                if (!avatarContainer) {
-                    console.error('Elemento avatar-container não encontrado');
-                    return;
-                }
-                
-                if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
-                    console.log('Carregando avatar no index:', personagem.avatar.substring(0, 50) + '...');
-                    
-                    // Tentar carregar a imagem primeiro
-                    const img = new Image();
-                    img.onload = function() {
-                        // Imagem carregada com sucesso
-                        avatarContainer.style.backgroundImage = `url('${personagem.avatar}')`;
-                        avatarContainer.style.backgroundSize = 'cover';
-                        avatarContainer.style.backgroundPosition = 'center';
-                        if (avatarIcon) avatarIcon.style.display = 'none';
-                        if (avatarStatus) {
-                            avatarStatus.textContent = 'Imagem carregada';
-                            avatarStatus.className = 'badge badge-green';
-                        }
-                    };
-                    
-                    img.onerror = function() {
-                        // Erro ao carregar imagem
-                        console.error('Erro ao carregar imagem do avatar');
-                        avatarContainer.style.backgroundImage = '';
-                        if (avatarIcon) avatarIcon.style.display = 'block';
-                        if (avatarStatus) {
-                            avatarStatus.textContent = 'Imagem inválida';
-                            avatarStatus.className = 'badge badge-orange';
-                        }
-                    };
-                    
-                    img.src = personagem.avatar;
-                    
-                } else {
-                    console.log('Nenhum avatar definido no index');
-                    avatarContainer.style.backgroundImage = '';
-                    if (avatarIcon) avatarIcon.style.display = 'block';
-                    if (avatarStatus) {
-                        avatarStatus.textContent = 'Nenhuma imagem';
-                        avatarStatus.className = 'badge badge-blue';
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao carregar avatar no index:', error);
-                const avatarContainer = document.getElementById('avatar-container');
-                const avatarIcon = document.getElementById('avatar-icon');
-                if (avatarContainer) avatarContainer.style.backgroundImage = '';
-                if (avatarIcon) avatarIcon.style.display = 'block';
-            }
-        }
-
-        // Atualize a função atualizarInterface() no index.html:
-        function atualizarInterface(personagem) {
-            // ... código existente ...
-            
-            // Chamar função específica para avatar
-            carregarAvatarIndex();
-            
-            // ... restante do código ...
-        }
-
-        // No evento DOMContentLoaded do index.html, adicione:
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... código existente ...
-            
-            // Carregar dados após breve delay
-            setTimeout(() => {
-                carregarDadosPersonagem();
-                iniciarAtualizacaoPeriodica();
-            }, 100);
-            
-            // Ouvir eventos de atualização
-            window.addEventListener('grimorio:dadosAtualizados', function() {
-                console.log('Dados atualizados recebidos no index');
-                setTimeout(carregarDadosPersonagem, 300); // Pequeno delay para garantir sincronização
-            });
-            
-            // ... restante do código ...
-        });
     </script>
 </body>
 </html>
