@@ -913,7 +913,47 @@
     // Inicializar ícones Lucide
     lucide.createIcons();
     
-    // Dados do sistema - AGORA INTEGRADO COM GRIMORIO SYSTEM
+    // Sistema de notificações
+    function mostrarNotificacao(mensagem, tipo = 'info') {
+        const notification = document.createElement('div');
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            background: ${tipo === 'success' ? 'rgba(34, 197, 94, 0.9)' : 
+                         tipo === 'error' ? 'rgba(220, 38, 38, 0.9)' : 
+                         tipo === 'warning' ? 'rgba(245, 158, 11, 0.9)' : 
+                         'rgba(59, 130, 246, 0.9)'};
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+            z-index: 1000;
+            animation: slideIn 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        `;
+        
+        notification.innerHTML = `
+            <i data-lucide="${tipo === 'success' ? 'check-circle' : 
+                            tipo === 'error' ? 'x-circle' : 
+                            tipo === 'warning' ? 'alert-triangle' : 'info'}"></i>
+            <span>${mensagem}</span>
+        `;
+        
+        document.body.appendChild(notification);
+        lucide.createIcons();
+        
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(100%)';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    // Dados do sistema
     let statusData = {
         recursos: {
             vida: { atual: 100, max: 100 },
@@ -944,6 +984,9 @@
             rolagensMaximas: 3
         }
     };
+    
+    // Array global para armazenar as progress bars
+    let progressBars = [];
     
     // Sincronizar com Grimorio System
     function sincronizarComGrimorio() {
@@ -1013,7 +1056,7 @@
         return false;
     }
     
-    // Controles de progress bar
+    // Controles de progress bar CORRIGIDO
     class ProgressBarControl {
         constructor(element) {
             this.bar = element;
@@ -1023,25 +1066,35 @@
             this.max = parseInt(element.dataset.max) || 100;
             this.isDragging = false;
             
+            // Verificar se os elementos existem
+            if (!this.bar || !this.fill || !this.handle) {
+                console.warn('Elementos da progress bar não encontrados:', element);
+                return;
+            }
+            
             this.init();
         }
         
         init() {
-            this.bar.addEventListener('click', (e) => this.handleClick(e));
-            this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
-            document.addEventListener('mousemove', (e) => this.drag(e));
-            document.addEventListener('mouseup', () => this.stopDrag());
-            
-            // Touch events para mobile
-            this.bar.addEventListener('touchstart', (e) => this.handleClick(e.touches[0]));
-            this.handle.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]));
-            document.addEventListener('touchmove', (e) => this.drag(e.touches[0]), { passive: false });
-            document.addEventListener('touchend', () => this.stopDrag());
+            try {
+                this.bar.addEventListener('click', (e) => this.handleClick(e));
+                this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
+                document.addEventListener('mousemove', (e) => this.drag(e));
+                document.addEventListener('mouseup', () => this.stopDrag());
+                
+                // Touch events para mobile
+                this.bar.addEventListener('touchstart', (e) => this.handleClick(e.touches[0]), { passive: false });
+                this.handle.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]), { passive: false });
+                document.addEventListener('touchmove', (e) => this.drag(e.touches[0]), { passive: false });
+                document.addEventListener('touchend', () => this.stopDrag());
+            } catch (error) {
+                console.error('Erro ao inicializar progress bar:', error);
+            }
         }
         
         getCurrentValue() {
             const valueElement = document.getElementById(this.statId);
-            return parseInt(valueElement.textContent) || 0;
+            return valueElement ? parseInt(valueElement.textContent) || 0 : 0;
         }
         
         setValue(value) {
@@ -1051,7 +1104,9 @@
             this.fill.style.width = `${percentage}%`;
             
             const valueElement = document.getElementById(this.statId);
-            valueElement.textContent = clampedValue;
+            if (valueElement) {
+                valueElement.textContent = clampedValue;
+            }
             
             // Atualizar dados
             this.updateData(clampedValue);
@@ -1061,15 +1116,20 @@
             // Recursos
             if (this.statId.includes('-atual')) {
                 const resource = this.statId.split('-')[0];
-                statusData.recursos[resource].atual = value;
-                
-                // Atualizar máximo se for vida
-                if (resource === 'vida') {
-                    document.getElementById('vida-maxima').textContent = statusData.recursos.vida.max;
-                } else if (resource === 'mana') {
-                    document.getElementById('mana-maxima').textContent = statusData.recursos.mana.max;
-                } else if (resource === 'estamina') {
-                    document.getElementById('estamina-maxima').textContent = statusData.recursos.estamina.max;
+                if (statusData.recursos[resource]) {
+                    statusData.recursos[resource].atual = value;
+                    
+                    // Atualizar máximo se for vida
+                    if (resource === 'vida') {
+                        const maxElement = document.getElementById('vida-maxima');
+                        if (maxElement) maxElement.textContent = statusData.recursos.vida.max;
+                    } else if (resource === 'mana') {
+                        const maxElement = document.getElementById('mana-maxima');
+                        if (maxElement) maxElement.textContent = statusData.recursos.mana.max;
+                    } else if (resource === 'estamina') {
+                        const maxElement = document.getElementById('estamina-maxima');
+                        if (maxElement) maxElement.textContent = statusData.recursos.estamina.max;
+                    }
                 }
             }
             // Atributos
@@ -1083,30 +1143,38 @@
         }
         
         handleClick(e) {
-            if (this.isDragging) return;
+            if (this.isDragging || !this.bar) return;
             
-            const rect = this.bar.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percentage = (x / rect.width) * 100;
-            const value = Math.round((percentage / 100) * this.max);
-            
-            this.setValue(value);
+            try {
+                const rect = this.bar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = (x / rect.width) * 100;
+                const value = Math.round((percentage / 100) * this.max);
+                
+                this.setValue(value);
+            } catch (error) {
+                console.error('Erro no handleClick:', error);
+            }
         }
         
         startDrag(e) {
             this.isDragging = true;
-            e.preventDefault();
+            if (e.preventDefault) e.preventDefault();
         }
         
         drag(e) {
-            if (!this.isDragging) return;
+            if (!this.isDragging || !this.bar) return;
             
-            const rect = this.bar.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-            const value = Math.round((percentage / 100) * this.max);
-            
-            this.setValue(value);
+            try {
+                const rect = this.bar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                const value = Math.round((percentage / 100) * this.max);
+                
+                this.setValue(value);
+            } catch (error) {
+                console.error('Erro no drag:', error);
+            }
         }
         
         stopDrag() {
@@ -1114,11 +1182,25 @@
         }
     }
     
-    // Inicializar todas as progress bars
-    const progressBars = [];
-    document.querySelectorAll('.progress-bar').forEach(bar => {
-        progressBars.push(new ProgressBarControl(bar));
-    });
+    // Inicializar todas as progress bars APÓS o DOM estar pronto
+    function inicializarProgressBars() {
+        progressBars = [];
+        const bars = document.querySelectorAll('.progress-bar');
+        console.log('Encontradas', bars.length, 'progress bars');
+        
+        bars.forEach(bar => {
+            try {
+                const pb = new ProgressBarControl(bar);
+                if (pb.bar) { // Só adicionar se foi criado com sucesso
+                    progressBars.push(pb);
+                }
+            } catch (error) {
+                console.error('Erro ao criar progress bar:', error, bar);
+            }
+        });
+        
+        console.log('Progress bars inicializadas:', progressBars.length);
+    }
     
     // SISTEMA DE DESTINO
     function rolarSorte() {
@@ -1151,7 +1233,10 @@
         document.getElementById('indice-sorte').textContent = `${resultado}%`;
         
         // Barra de progresso
-        document.querySelector('.destiny-section .progress-fill').style.width = `${resultado}%`;
+        const destinyFill = document.querySelector('.destiny-section .progress-fill');
+        if (destinyFill) {
+            destinyFill.style.width = `${resultado}%`;
+        }
         
         // Status
         let status = 'Neutro';
@@ -1203,10 +1288,21 @@
                     statusData.atributos[randomAttr]++;
                     
                     // Atualizar visual
-                    const progressBar = progressBars.find(pb => pb.statId === randomAttr);
+                    const progressBar = progressBars.find(pb => pb && pb.statId === randomAttr);
                     
                     if (progressBar) {
                         progressBar.setValue(statusData.atributos[randomAttr]);
+                    } else {
+                        // Fallback: atualizar diretamente
+                        const element = document.getElementById(randomAttr);
+                        if (element) {
+                            element.textContent = statusData.atributos[randomAttr];
+                        }
+                        const barElement = document.querySelector(`[data-stat="${randomAttr}"] .progress-fill`);
+                        if (barElement) {
+                            const percentage = (statusData.atributos[randomAttr] / 100) * 100;
+                            barElement.style.width = `${percentage}%`;
+                        }
                     }
                 }
             }
@@ -1226,9 +1322,19 @@
             atributos.forEach(attr => {
                 statusData.atributos[attr] = 0;
                 
-                const progressBar = progressBars.find(pb => pb.statId === attr);
+                const progressBar = progressBars.find(pb => pb && pb.statId === attr);
                 if (progressBar) {
                     progressBar.setValue(0);
+                } else {
+                    // Fallback
+                    const element = document.getElementById(attr);
+                    if (element) {
+                        element.textContent = '0';
+                    }
+                    const barElement = document.querySelector(`[data-stat="${attr}"] .progress-fill`);
+                    if (barElement) {
+                        barElement.style.width = '0%';
+                    }
                 }
             });
             
@@ -1244,9 +1350,20 @@
             ['vida', 'mana', 'estamina'].forEach(resource => {
                 statusData.recursos[resource].atual = statusData.recursos[resource].max;
                 
-                const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
+                const progressBar = progressBars.find(pb => pb && pb.statId === `${resource}-atual`);
                 if (progressBar) {
                     progressBar.setValue(statusData.recursos[resource].atual);
+                } else {
+                    // Fallback
+                    const element = document.getElementById(`${resource}-atual`);
+                    if (element) {
+                        element.textContent = statusData.recursos[resource].atual;
+                    }
+                    const barElement = document.querySelector(`[data-stat="${resource}-atual"] .progress-fill`);
+                    if (barElement) {
+                        const percentage = (statusData.recursos[resource].atual / statusData.recursos[resource].max) * 100;
+                        barElement.style.width = `${percentage}%`;
+                    }
                 }
             });
             
@@ -1265,40 +1382,61 @@
         const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
         const percepcao = Math.floor((sabedoria * 0.8) + (inteligencia * 0.2));
         
-        document.getElementById('calc-blindagem').textContent = blindagem;
-        document.getElementById('calc-velocidade').textContent = velocidade;
-        document.getElementById('calc-iniciativa').textContent = iniciativa;
-        document.getElementById('calc-percepcao').textContent = percepcao;
+        const blindagemEl = document.getElementById('calc-blindagem');
+        const velocidadeEl = document.getElementById('calc-velocidade');
+        const iniciativaEl = document.getElementById('calc-iniciativa');
+        const percepcaoEl = document.getElementById('calc-percepcao');
+        
+        if (blindagemEl) blindagemEl.textContent = blindagem;
+        if (velocidadeEl) velocidadeEl.textContent = velocidade;
+        if (iniciativaEl) iniciativaEl.textContent = iniciativa;
+        if (percepcaoEl) percepcaoEl.textContent = percepcao;
     }
     
     // CONFIGURAÇÕES
     function abrirModal(id) {
-        document.getElementById(id).classList.add('active');
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add('active');
+        }
         
         if (id === 'modal-config') {
-            document.getElementById('config-limite-atributo').value = statusData.config.limiteAtributo;
-            document.getElementById('config-pontos-nivel').value = statusData.config.pontosPorNivel;
-            document.getElementById('config-minimo-aleatorio').value = statusData.config.minimoAleatorio;
-            document.getElementById('config-rolagens-maximas').value = statusData.config.rolagensMaximas;
+            const limiteInput = document.getElementById('config-limite-atributo');
+            const pontosInput = document.getElementById('config-pontos-nivel');
+            const minimoInput = document.getElementById('config-minimo-aleatorio');
+            const rolagensInput = document.getElementById('config-rolagens-maximas');
+            
+            if (limiteInput) limiteInput.value = statusData.config.limiteAtributo;
+            if (pontosInput) pontosInput.value = statusData.config.pontosPorNivel;
+            if (minimoInput) minimoInput.value = statusData.config.minimoAleatorio;
+            if (rolagensInput) rolagensInput.value = statusData.config.rolagensMaximas;
         }
     }
     
     function fecharModal(id) {
-        document.getElementById(id).classList.remove('active');
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('active');
+        }
     }
     
     function salvarConfiguracoes() {
-        statusData.config.limiteAtributo = parseInt(document.getElementById('config-limite-atributo').value) || 100;
-        statusData.config.pontosPorNivel = parseInt(document.getElementById('config-pontos-nivel').value) || 5;
-        statusData.config.minimoAleatorio = parseInt(document.getElementById('config-minimo-aleatorio').value) || 18;
-        statusData.config.rolagensMaximas = parseInt(document.getElementById('config-rolagens-maximas').value) || 3;
+        const limiteInput = document.getElementById('config-limite-atributo');
+        const pontosInput = document.getElementById('config-pontos-nivel');
+        const minimoInput = document.getElementById('config-minimo-aleatorio');
+        const rolagensInput = document.getElementById('config-rolagens-maximas');
+        
+        if (limiteInput) statusData.config.limiteAtributo = parseInt(limiteInput.value) || 100;
+        if (pontosInput) statusData.config.pontosPorNivel = parseInt(pontosInput.value) || 5;
+        if (minimoInput) statusData.config.minimoAleatorio = parseInt(minimoInput.value) || 18;
+        if (rolagensInput) statusData.config.rolagensMaximas = parseInt(rolagensInput.value) || 3;
         
         mostrarNotificacao('Configurações salvas!', 'success');
         salvarDados();
         fecharModal('modal-config');
     }
     
-    // EXPORTAÇÃO/IMPORTAÇÃO - AGORA INTEGRADO
+    // EXPORTAÇÃO/IMPORTAÇÃO
     function exportarDados() {
         try {
             if (window.GrimorioSystem) {
@@ -1387,8 +1525,12 @@
                     // Verificar se é arquivo de status local
                     else if (dados.recursos || dados.atributos) {
                         // Mesclar dados
-                        statusData.recursos = { ...statusData.recursos, ...dados.recursos };
-                        statusData.atributos = { ...statusData.atributos, ...dados.atributos };
+                        if (dados.recursos) {
+                            statusData.recursos = { ...statusData.recursos, ...dados.recursos };
+                        }
+                        if (dados.atributos) {
+                            statusData.atributos = { ...statusData.atributos, ...dados.atributos };
+                        }
                         
                         if (dados.sorte) statusData.sorte = { ...statusData.sorte, ...dados.sorte };
                         if (dados.config) statusData.config = { ...statusData.config, ...dados.config };
@@ -1415,44 +1557,80 @@
     function carregarDadosNaInterface() {
         // Recursos
         ['vida', 'mana', 'estamina'].forEach(resource => {
-            const value = statusData.recursos[resource].atual;
-            const max = statusData.recursos[resource].max;
+            const value = statusData.recursos[resource]?.atual || 100;
+            const max = statusData.recursos[resource]?.max || 100;
             
-            document.getElementById(`${resource}-atual`).textContent = value;
-            document.getElementById(`${resource}-maxima`).textContent = max;
+            const valueElement = document.getElementById(`${resource}-atual`);
+            const maxElement = document.getElementById(`${resource}-maxima`);
             
-            const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
+            if (valueElement) valueElement.textContent = value;
+            if (maxElement) maxElement.textContent = max;
+            
+            const progressBar = progressBars.find(pb => pb && pb.statId === `${resource}-atual`);
             if (progressBar) {
                 progressBar.setValue(value);
+            } else {
+                // Fallback
+                const barElement = document.querySelector(`[data-stat="${resource}-atual"] .progress-fill`);
+                if (barElement) {
+                    const percentage = (value / max) * 100;
+                    barElement.style.width = `${percentage}%`;
+                }
             }
         });
         
         // Atributos
         Object.keys(statusData.atributos).forEach(attr => {
-            const value = statusData.atributos[attr];
-            document.getElementById(attr).textContent = value;
+            const value = statusData.atributos[attr] || 0;
+            const element = document.getElementById(attr);
+            if (element) {
+                element.textContent = value;
+            }
             
-            const progressBar = progressBars.find(pb => pb.statId === attr);
+            const progressBar = progressBars.find(pb => pb && pb.statId === attr);
             if (progressBar) {
                 progressBar.setValue(value);
+            } else {
+                // Fallback
+                const barElement = document.querySelector(`[data-stat="${attr}"] .progress-fill`);
+                if (barElement) {
+                    const percentage = (value / 100) * 100;
+                    barElement.style.width = `${percentage}%`;
+                }
             }
         });
         
         // Sorte
         if (statusData.sorte.indice > 0) {
-            document.getElementById('dado-fe').textContent = statusData.sorte.dado1;
-            document.getElementById('dado-sorte').textContent = statusData.sorte.dado2;
-            document.getElementById('dado-destino').textContent = statusData.sorte.dado3;
-            document.getElementById('indice-sorte').textContent = `${statusData.sorte.indice}%`;
-            document.getElementById('status-sorte').textContent = statusData.sorte.status;
+            const dadoFe = document.getElementById('dado-fe');
+            const dadoSorte = document.getElementById('dado-sorte');
+            const dadoDestino = document.getElementById('dado-destino');
+            const indiceSorte = document.getElementById('indice-sorte');
+            const statusSorte = document.getElementById('status-sorte');
+            const calculoSorte = document.getElementById('calculo-sorte');
+            const rollsInfo = document.getElementById('rolls-info');
+            const destinyFill = document.querySelector('.destiny-section .progress-fill');
             
-            document.querySelector('.destiny-section .progress-fill').style.width = `${statusData.sorte.indice}%`;
-            document.getElementById('calculo-sorte').textContent = 
-                `((${statusData.sorte.dado1} + ${statusData.sorte.dado3}) × 2 - ${statusData.sorte.dado2}) ÷ 2 = ${statusData.sorte.indice}`;
+            if (dadoFe) dadoFe.textContent = statusData.sorte.dado1;
+            if (dadoSorte) dadoSorte.textContent = statusData.sorte.dado2;
+            if (dadoDestino) dadoDestino.textContent = statusData.sorte.dado3;
+            if (indiceSorte) indiceSorte.textContent = `${statusData.sorte.indice}%`;
+            if (statusSorte) statusSorte.textContent = statusData.sorte.status;
+            
+            if (destinyFill) {
+                destinyFill.style.width = `${statusData.sorte.indice}%`;
+            }
+            
+            if (calculoSorte) {
+                calculoSorte.textContent = 
+                    `((${statusData.sorte.dado1} + ${statusData.sorte.dado3}) × 2 - ${statusData.sorte.dado2}) ÷ 2 = ${statusData.sorte.indice}`;
+            }
             
             const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
-            document.getElementById('rolls-info').textContent = 
-                statusData.sorte.fixado ? 'Destino fixado' : `Rolagens restantes: ${restantes}`;
+            if (rollsInfo) {
+                rollsInfo.textContent = 
+                    statusData.sorte.fixado ? 'Destino fixado' : `Rolagens restantes: ${restantes}`;
+            }
         }
         
         updateDerivedStats();
@@ -1480,76 +1658,52 @@
         }
     }
     
-    // NOTIFICAÇÕES
-    function mostrarNotificacao(mensagem, tipo = 'info') {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            background: ${tipo === 'success' ? 'rgba(34, 197, 94, 0.9)' : 
-                         tipo === 'error' ? 'rgba(220, 38, 38, 0.9)' : 
-                         tipo === 'warning' ? 'rgba(245, 158, 11, 0.9)' : 
-                         'rgba(59, 130, 246, 0.9)'};
-            color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        `;
-        
-        notification.innerHTML = `
-            <i data-lucide="${tipo === 'success' ? 'check-circle' : 
-                            tipo === 'error' ? 'x-circle' : 
-                            tipo === 'warning' ? 'alert-triangle' : 'info'}"></i>
-            <span>${mensagem}</span>
-        `;
-        
-        document.body.appendChild(notification);
-        lucide.createIcons();
-        
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-    
     // INICIALIZAÇÃO
     document.addEventListener('DOMContentLoaded', function() {
-        // Aguardar Grimorio System carregar
+        // Inicializar progress bars imediatamente após o DOM estar pronto
         setTimeout(() => {
-            // Tentar sincronizar com Grimorio System
-            sincronizarComGrimorio();
-            carregarDados();
+            inicializarProgressBars();
             
-            // Configurar botões do navbar
-            document.getElementById('btn-exportar').addEventListener('click', exportarDados);
-            document.getElementById('btn-importar').addEventListener('click', importarDados);
-            document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
-            
-            updateDerivedStats();
-            
-            // Adicionar CSS para animação
-            if (!document.querySelector('#animations-css')) {
-                const style = document.createElement('style');
-                style.id = 'animations-css';
-                style.textContent = `
-                    @keyframes slideIn {
-                        from { transform: translateX(100%); opacity: 0; }
-                        to { transform: translateX(0); opacity: 1; }
-                    }
-                `;
-                document.head.appendChild(style);
-            }
-            
-            console.log('[Status] Sistema inicializado com integração Grimorio');
-        }, 500);
+            // Aguardar Grimorio System carregar
+            setTimeout(() => {
+                // Tentar sincronizar com Grimorio System
+                sincronizarComGrimorio();
+                carregarDados();
+                
+                // Configurar botões do navbar
+                const btnExportar = document.getElementById('btn-exportar');
+                const btnImportar = document.getElementById('btn-importar');
+                const btnConfig = document.getElementById('btn-config');
+                
+                if (btnExportar) {
+                    btnExportar.addEventListener('click', exportarDados);
+                }
+                if (btnImportar) {
+                    btnImportar.addEventListener('click', importarDados);
+                }
+                if (btnConfig) {
+                    btnConfig.addEventListener('click', () => abrirModal('modal-config'));
+                }
+                
+                updateDerivedStats();
+                
+                // Adicionar CSS para animação se não existir
+                if (!document.querySelector('#animations-css')) {
+                    const style = document.createElement('style');
+                    style.id = 'animations-css';
+                    style.textContent = `
+                        @keyframes slideIn {
+                            from { transform: translateX(100%); opacity: 0; }
+                            to { transform: translateX(0); opacity: 1; }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+                
+                console.log('[Status] Sistema inicializado com integração Grimorio');
+                console.log('Progress bars ativas:', progressBars.length);
+            }, 100);
+        }, 100);
     });
     </script>
 </body>
