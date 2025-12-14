@@ -4,18 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Sistema de Status</title>
-    <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     
-    <!-- ICONES -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <style>
-        /* ESTILOS PRINCIPAIS (mantidos do original) */
         :root {
             --bg-primary: #0a0a0c;
             --bg-panel: #0f0f12;
@@ -23,13 +20,13 @@
             --text-primary: #e8e4dc;
             --text-secondary: #a0a0a0;
             --accent-blue: #4a9eff;
-            --accent-orange: #ff6b35;
-            --accent-red: #dc2626;
+            --accent-red: #ff4757;
             --accent-green: #22c55e;
             --accent-purple: #8b5cf6;
             --accent-yellow: #f59e0b;
             --accent-pink: #ec4899;
             --accent-teal: #14b8a6;
+            --destiny-gold: #d4a76a;
         }
         
         body {
@@ -44,7 +41,7 @@
         .font-cinzel { font-family: 'Cinzel', serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         
-        /* NAVBAR SIMPLIFICADA */
+        /* NAVBAR COMPACTA */
         .navbar {
             position: sticky;
             top: 0;
@@ -52,7 +49,7 @@
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border-color);
             z-index: 100;
-            padding: 1rem 0;
+            padding: 0.75rem 0;
         }
         
         .nav-container {
@@ -63,11 +60,11 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: 0.5rem;
         }
         
         .nav-button {
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 0.75rem;
             background: var(--accent-blue);
             color: white;
             border: none;
@@ -78,66 +75,159 @@
             align-items: center;
             gap: 0.5rem;
             transition: all 0.2s;
+            font-size: 0.875rem;
         }
         
         .nav-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+        }
+        
+        /* CARD UNIFICADO */
+        .card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card:hover {
+            border-color: var(--accent-blue);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(74, 158, 255, 0.3);
         }
         
-        /* ESTILOS PARA RECURSOS */
-        .resource-card {
-            border-radius: 1rem;
-            padding: 1.5rem;
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             margin-bottom: 1rem;
         }
         
-        .card-vida {
-            border: 1px solid rgba(220, 38, 38, 0.3);
-            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
+        .card-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
-        .card-mana {
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
+        /* CONTROLES UNIFICADOS */
+        .value-control {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
         }
         
-        .card-estamina {
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05));
+        .value-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            min-width: 100px;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
         }
         
-        /* ESTILOS PARA ATRIBUTOS */
-        .attribute-card {
-            background: var(--bg-panel);
-            border: 2px solid;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
+        .btn-group {
+            display: flex;
+            gap: 0.25rem;
         }
         
-        /* ESTILOS PARA SORTE */
-        .sorte-card {
-            background: linear-gradient(135deg, rgba(26, 21, 16, 0.8), rgba(42, 35, 24, 0.8));
-            border: 1px solid #8b7355;
-            border-radius: 1rem;
-            padding: 2rem;
-        }
-        
-        .text-destiny { color: #d4a76a; }
-        .text-destiny-light { color: #f4d29a; }
-        .text-destiny-dark { color: #8b7355; }
-        
-        /* ESTILOS PARA DERIVADOS */
-        .derived-card {
-            background: var(--bg-panel);
-            border: 1px solid;
-            border-radius: 1rem;
-            padding: 1.5rem;
+        .btn-control {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: bold;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
         
-        /* MODAIS */
+        .btn-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+        
+        .btn-large {
+            width: auto;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+        }
+        
+        /* SISTEMA DE DESTINO */
+        .destiny-card {
+            background: linear-gradient(135deg, rgba(26, 21, 16, 0.9), rgba(42, 35, 24, 0.9));
+            border: 1px solid rgba(212, 167, 106, 0.3);
+            padding: 1.5rem;
+        }
+        
+        .dice-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 1.5rem 0;
+            gap: 1rem;
+        }
+        
+        .dice-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--destiny-gold);
+            text-shadow: 0 0 10px rgba(212, 167, 106, 0.3);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-purple), var(--accent-pink));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* INPUT SIMPLES */
+        input[type="number"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.1);
+        }
+        
+        /* MODAL COMPACTO */
         .modal {
             position: fixed;
             top: 0;
@@ -160,73 +250,51 @@
         .modal-content {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 1rem;
             width: 100%;
             max-width: 500px;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 2rem;
+            padding: 1.5rem;
         }
         
         /* UTILITIES */
         .grid { display: grid; }
-        .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-        .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-        .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .grid-cols-1 { grid-template-columns: 1fr; }
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
         .gap-4 { gap: 1rem; }
         .gap-6 { gap: 1.5rem; }
         .mb-4 { margin-bottom: 1rem; }
         .mb-6 { margin-bottom: 1.5rem; }
-        .mb-8 { margin-bottom: 2rem; }
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
+        .justify-center { justify-content: center; }
         .flex-col { flex-direction: column; }
         .space-y-4 > * + * { margin-top: 1rem; }
+        .text-center { text-align: center; }
+        .w-full { width: 100%; }
         
         /* RESPONSIVIDADE */
         @media (max-width: 768px) {
-            .grid-cols-2, .grid-cols-3 {
-                grid-template-columns: repeat(1, minmax(0, 1fr));
+            .grid-cols-3, .grid-cols-2 {
+                grid-template-columns: 1fr;
             }
-        }
-        
-        /* SCROLLBAR */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: var(--bg-panel);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-color);
-            border-radius: 4px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--accent-blue);
-        }
-        
-        /* INPUT STYLES */
-        input[type="number"] {
-            width: 100%;
-            padding: 0.75rem;
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            color: var(--text-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1.25rem;
-            text-align: center;
-        }
-        
-        input[type="number"]:focus {
-            outline: none;
-            border-color: var(--accent-blue);
+            
+            .dice-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .value-control {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .btn-group {
+                justify-content: center;
+            }
         }
         
         /* ANIMAÇÕES */
@@ -235,36 +303,62 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         .animate-fadeIn {
-            animation: fadeIn 0.4s ease-out;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .animate-pulse {
+            animation: pulse 0.3s ease-in-out;
+        }
+        
+        /* CORES DINÂMICAS */
+        .color-vida { color: var(--accent-red); border-color: rgba(220, 38, 38, 0.3); }
+        .color-mana { color: var(--accent-blue); border-color: rgba(59, 130, 246, 0.3); }
+        .color-estamina { color: var(--accent-green); border-color: rgba(34, 197, 94, 0.3); }
+        .color-forca { color: var(--accent-red); }
+        .color-destreza { color: var(--accent-green); }
+        .color-constituicao { color: var(--accent-yellow); }
+        .color-inteligencia { color: var(--accent-blue); }
+        .color-sabedoria { color: var(--accent-purple); }
+        .color-carisma { color: var(--accent-pink); }
+        
+        /* SCROLLBAR */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-panel);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-blue);
         }
     </style>
 </head>
 <body>
-    <!-- NAVBAR SIMPLIFICADA -->
+    <!-- NAVBAR COMPACTA -->
     <nav class="navbar">
         <div class="nav-container">
-            <div class="flex items-center gap-4">
-                <a href="index.html" style="
-                    color: var(--text-primary);
-                    text-decoration: none;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    padding: 0.5rem;
-                    border-radius: 0.5rem;
-                    transition: all 0.2s;
-                " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'" 
-                   onmouseout="this.style.backgroundColor='transparent'">
-                    <i data-lucide="arrow-left" style="width: 1.25rem; height: 1.25rem;"></i>
-                    <span class="font-cinzel" style="font-weight: 600;">Voltar</span>
+            <div class="flex items-center gap-3">
+                <a href="index.html" class="flex items-center gap-2 text-primary no-underline hover-opacity">
+                    <i data-lucide="arrow-left" style="width: 1rem; height: 1rem;"></i>
+                    <span class="font-cinzel font-600 text-sm">Voltar</span>
                 </a>
-                
-                <div style="width: 1px; height: 1.5rem; background: var(--border-color);"></div>
-                
-                <h1 class="font-cinzel" style="
-                    font-size: 1.5rem;
-                    font-weight: 700;
+                <div style="width: 1px; height: 1.25rem; background: var(--border-color);"></div>
+                <h1 class="font-cinzel text-lg" style="
                     background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
                     -webkit-background-clip: text;
                     background-clip: text;
@@ -274,19 +368,17 @@
                 </h1>
             </div>
             
-            <div style="display: flex; gap: 0.75rem;">
+            <div class="flex gap-2">
                 <button id="btn-importar" class="nav-button" style="background: var(--accent-green);">
-                    <i data-lucide="upload" style="width: 1rem; height: 1rem;"></i>
+                    <i data-lucide="upload" style="width: 0.875rem; height: 0.875rem;"></i>
                     Importar
                 </button>
-                
-                <button id="btn-exportar" class="nav-button" style="background: var(--accent-blue);">
-                    <i data-lucide="download" style="width: 1rem; height: 1rem;"></i>
+                <button id="btn-exportar" class="nav-button">
+                    <i data-lucide="download" style="width: 0.875rem; height: 0.875rem;"></i>
                     Exportar
                 </button>
-                
                 <button id="btn-config" class="nav-button" style="background: var(--accent-purple);">
-                    <i data-lucide="settings" style="width: 1rem; height: 1rem;"></i>
+                    <i data-lucide="settings" style="width: 0.875rem; height: 0.875rem;"></i>
                     Configurar
                 </button>
             </div>
@@ -294,412 +386,379 @@
     </nav>
 
     <!-- CONTEÚDO PRINCIPAL -->
-    <main style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-        <!-- SEÇÃO DE RECURSOS VITAIS -->
-        <section class="animate-fadeIn mb-8">
-            <h2 class="font-cinzel" style="
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: var(--accent-red);
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                margin-bottom: 1.5rem;
-            ">
-                <i data-lucide="heart" style="width: 1.5rem; height: 1.5rem;"></i>
+    <main style="max-width: 1200px; margin: 0 auto; padding: 1.5rem;">
+        <!-- RECURSOS VITAIS -->
+        <section class="animate-fadeIn mb-6">
+            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
+                <i data-lucide="heart" style="width: 1.25rem; height: 1.25rem; color: var(--accent-red);"></i>
                 Recursos Vitais
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- VIDA -->
-                <div class="resource-card card-vida">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="heart" style="width: 1.5rem; height: 1.5rem; color: var(--accent-red);"></i>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Template para recursos -->
+                <div class="card" data-resource="vida">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="heart" style="width: 1.25rem; height: 1.25rem; color: var(--accent-red);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-red);">Vida</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Ponto de vida atual</p>
+                                <h3 class="card-title color-vida">Vida</h3>
+                                <p class="text-secondary text-xs">Pontos atuais</p>
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div id="vida-atual" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-red);">100</div>
-                            <div style="color: var(--text-secondary); font-size: 0.875rem;">/ <span id="vida-maxima">100</span></div>
+                        <div class="text-right">
+                            <div id="vida-atual" class="font-mono text-2xl color-vida">100</div>
+                            <div class="text-secondary text-xs">/ <span id="vida-maxima">100</span></div>
                         </div>
                     </div>
                     
-                    <input type="number" id="input-vida-atual" min="0" max="9999" value="100" 
-                           class="mb-4" onchange="atualizarValor('vida-atual', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-vida" id="display-vida">100</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustValue('vida-atual', -10)" title="-10">-10</button>
+                            <button class="btn-control" onclick="adjustValue('vida-atual', -1)" title="-1">-</button>
+                            <button class="btn-control" onclick="adjustValue('vida-atual', 1)" title="+1">+</button>
+                            <button class="btn-control" onclick="adjustValue('vida-atual', 10)" title="+10">+10</button>
+                        </div>
+                    </div>
                     
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            Vida Máxima
-                        </label>
+                        <label class="block text-secondary text-xs mb-1">Vida Máxima</label>
                         <input type="number" id="input-vida-maxima" min="1" max="9999" value="100" 
-                               onchange="atualizarValor('vida-maxima', this.value)">
+                               onchange="updateMax('vida', this.value)">
                     </div>
                 </div>
                 
-                <!-- MANA -->
-                <div class="resource-card card-mana">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="flame" style="width: 1.5rem; height: 1.5rem; color: var(--accent-blue);"></i>
+                <!-- Mana -->
+                <div class="card" data-resource="mana">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="flame" style="width: 1.25rem; height: 1.25rem; color: var(--accent-blue);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-blue);">Mana</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Ponto de mana atual</p>
+                                <h3 class="card-title color-mana">Mana</h3>
+                                <p class="text-secondary text-xs">Pontos atuais</p>
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div id="mana-atual" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-blue);">100</div>
-                            <div style="color: var(--text-secondary); font-size: 0.875rem;">/ <span id="mana-maxima">100</span></div>
+                        <div class="text-right">
+                            <div id="mana-atual" class="font-mono text-2xl color-mana">100</div>
+                            <div class="text-secondary text-xs">/ <span id="mana-maxima">100</span></div>
                         </div>
                     </div>
                     
-                    <input type="number" id="input-mana-atual" min="0" max="9999" value="100" 
-                           class="mb-4" onchange="atualizarValor('mana-atual', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-mana" id="display-mana">100</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustValue('mana-atual', -10)">-10</button>
+                            <button class="btn-control" onclick="adjustValue('mana-atual', -1)">-</button>
+                            <button class="btn-control" onclick="adjustValue('mana-atual', 1)">+</button>
+                            <button class="btn-control" onclick="adjustValue('mana-atual', 10)">+10</button>
+                        </div>
+                    </div>
                     
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            Mana Máxima
-                        </label>
+                        <label class="block text-secondary text-xs mb-1">Mana Máxima</label>
                         <input type="number" id="input-mana-maxima" min="1" max="9999" value="100" 
-                               onchange="atualizarValor('mana-maxima', this.value)">
+                               onchange="updateMax('mana', this.value)">
                     </div>
                 </div>
                 
-                <!-- ESTAMINA -->
-                <div class="resource-card card-estamina">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="zap" style="width: 1.5rem; height: 1.5rem; color: var(--accent-green);"></i>
+                <!-- Estamina -->
+                <div class="card" data-resource="estamina">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="zap" style="width: 1.25rem; height: 1.25rem; color: var(--accent-green);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-green);">Estamina</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Ponto de estamina atual</p>
+                                <h3 class="card-title color-estamina">Estamina</h3>
+                                <p class="text-secondary text-xs">Pontos atuais</p>
                             </div>
                         </div>
-                        <div style="text-align: right;">
-                            <div id="estamina-atual" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-green);">100</div>
-                            <div style="color: var(--text-secondary); font-size: 0.875rem;">/ <span id="estamina-maxima">100</span></div>
+                        <div class="text-right">
+                            <div id="estamina-atual" class="font-mono text-2xl color-estamina">100</div>
+                            <div class="text-secondary text-xs">/ <span id="estamina-maxima">100</span></div>
                         </div>
                     </div>
                     
-                    <input type="number" id="input-estamina-atual" min="0" max="9999" value="100" 
-                           class="mb-4" onchange="atualizarValor('estamina-atual', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-estamina" id="display-estamina">100</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustValue('estamina-atual', -10)">-10</button>
+                            <button class="btn-control" onclick="adjustValue('estamina-atual', -1)">-</button>
+                            <button class="btn-control" onclick="adjustValue('estamina-atual', 1)">+</button>
+                            <button class="btn-control" onclick="adjustValue('estamina-atual', 10)">+10</button>
+                        </div>
+                    </div>
                     
                     <div>
-                        <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            Estamina Máxima
-                        </label>
+                        <label class="block text-secondary text-xs mb-1">Estamina Máxima</label>
                         <input type="number" id="input-estamina-maxima" min="1" max="9999" value="100" 
-                               onchange="atualizarValor('estamina-maxima', this.value)">
+                               onchange="updateMax('estamina', this.value)">
                     </div>
                 </div>
             </div>
             
-            <div class="flex justify-center mt-6">
-                <button onclick="restaurarRecursos()" style="
-                    padding: 0.75rem 1.5rem;
-                    background: var(--accent-green);
-                    color: white;
-                    border: none;
-                    border-radius: 0.75rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    transition: all 0.2s;
-                " onmouseover="this.style.transform='translateY(-2px)'" 
-                   onmouseout="this.style.transform='translateY(0)'">
-                    <i data-lucide="refresh-cw" style="width: 1.25rem; height: 1.25rem;"></i>
-                    Restaurar Todos os Recursos
+            <div class="text-center mt-4">
+                <button onclick="restaurarRecursos()" class="btn-control btn-large" style="background: var(--accent-green); color: white;">
+                    <i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i>
+                    Restaurar Recursos
                 </button>
             </div>
         </section>
 
-        <!-- SEÇÃO DE ATRIBUTOS -->
-        <section class="animate-fadeIn mb-8">
-            <h2 class="font-cinzel" style="
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: var(--accent-blue);
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                margin-bottom: 1.5rem;
-            ">
-                <i data-lucide="activity" style="width: 1.5rem; height: 1.5rem;"></i>
+        <!-- ATRIBUTOS PRIMÁRIOS -->
+        <section class="animate-fadeIn mb-6">
+            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
+                <i data-lucide="activity" style="width: 1.25rem; height: 1.25rem; color: var(--accent-blue);"></i>
                 Atributos (0-100)
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- FORÇA -->
-                <div class="attribute-card" style="border-color: rgba(220, 38, 38, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="sword" style="width: 1.5rem; height: 1.5rem; color: var(--accent-red);"></i>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Template para atributos -->
+                <div class="card" data-attribute="forca">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="sword" style="width: 1.25rem; height: 1.25rem; color: var(--accent-red);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-red);">Força</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Poder físico</p>
+                                <h3 class="card-title color-forca">Força</h3>
+                                <p class="text-secondary text-xs">Poder físico</p>
                             </div>
                         </div>
-                        <div id="forca" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-red);">0</div>
+                        <div id="forca" class="font-mono text-2xl color-forca">0</div>
                     </div>
                     
-                    <input type="number" id="input-forca" min="0" max="100" value="0" 
-                           onchange="atualizarValor('forca', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-forca" id="display-forca">0</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustAttribute('forca', -5)">-5</button>
+                            <button class="btn-control" onclick="adjustAttribute('forca', -1)">-</button>
+                            <button class="btn-control" onclick="adjustAttribute('forca', 1)">+</button>
+                            <button class="btn-control" onclick="adjustAttribute('forca', 5)">+5</button>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- DESTREZA -->
-                <div class="attribute-card" style="border-color: rgba(34, 197, 94, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="wind" style="width: 1.5rem; height: 1.5rem; color: var(--accent-green);"></i>
+                <!-- Destreza -->
+                <div class="card" data-attribute="destreza">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="wind" style="width: 1.25rem; height: 1.25rem; color: var(--accent-green);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-green);">Destreza</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Agilidade e precisão</p>
+                                <h3 class="card-title color-destreza">Destreza</h3>
+                                <p class="text-secondary text-xs">Agilidade</p>
                             </div>
                         </div>
-                        <div id="destreza" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-green);">0</div>
+                        <div id="destreza" class="font-mono text-2xl color-destreza">0</div>
                     </div>
                     
-                    <input type="number" id="input-destreza" min="0" max="100" value="0" 
-                           onchange="atualizarValor('destreza', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-destreza" id="display-destreza">0</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustAttribute('destreza', -5)">-5</button>
+                            <button class="btn-control" onclick="adjustAttribute('destreza', -1)">-</button>
+                            <button class="btn-control" onclick="adjustAttribute('destreza', 1)">+</button>
+                            <button class="btn-control" onclick="adjustAttribute('destreza', 5)">+5</button>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- CONSTITUIÇÃO -->
-                <div class="attribute-card" style="border-color: rgba(245, 158, 11, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(245, 158, 11, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="shield" style="width: 1.5rem; height: 1.5rem; color: var(--accent-yellow);"></i>
+                <!-- Constituição -->
+                <div class="card" data-attribute="constituicao">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(245, 158, 11, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="shield" style="width: 1.25rem; height: 1.25rem; color: var(--accent-yellow);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-yellow);">Constituição</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Resistência e saúde</p>
+                                <h3 class="card-title color-constituicao">Constituição</h3>
+                                <p class="text-secondary text-xs">Resistência</p>
                             </div>
                         </div>
-                        <div id="constituicao" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-yellow);">0</div>
+                        <div id="constituicao" class="font-mono text-2xl color-constituicao">0</div>
                     </div>
                     
-                    <input type="number" id="input-constituicao" min="0" max="100" value="0" 
-                           onchange="atualizarValor('constituicao', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-constituicao" id="display-constituicao">0</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustAttribute('constituicao', -5)">-5</button>
+                            <button class="btn-control" onclick="adjustAttribute('constituicao', -1)">-</button>
+                            <button class="btn-control" onclick="adjustAttribute('constituicao', 1)">+</button>
+                            <button class="btn-control" onclick="adjustAttribute('constituicao', 5)">+5</button>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- INTELIGÊNCIA -->
-                <div class="attribute-card" style="border-color: rgba(59, 130, 246, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="brain" style="width: 1.5rem; height: 1.5rem; color: var(--accent-blue);"></i>
+                <!-- Inteligência -->
+                <div class="card" data-attribute="inteligencia">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="brain" style="width: 1.25rem; height: 1.25rem; color: var(--accent-blue);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-blue);">Inteligência</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Conhecimento e magia</p>
+                                <h3 class="card-title color-inteligencia">Inteligência</h3>
+                                <p class="text-secondary text-xs">Conhecimento</p>
                             </div>
                         </div>
-                        <div id="inteligencia" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-blue);">0</div>
+                        <div id="inteligencia" class="font-mono text-2xl color-inteligencia">0</div>
                     </div>
                     
-                    <input type="number" id="input-inteligencia" min="0" max="100" value="0" 
-                           onchange="atualizarValor('inteligencia', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-inteligencia" id="display-inteligencia">0</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustAttribute('inteligencia', -5)">-5</button>
+                            <button class="btn-control" onclick="adjustAttribute('inteligencia', -1)">-</button>
+                            <button class="btn-control" onclick="adjustAttribute('inteligencia', 1)">+</button>
+                            <button class="btn-control" onclick="adjustAttribute('inteligencia', 5)">+5</button>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- SABEDORIA -->
-                <div class="attribute-card" style="border-color: rgba(139, 92, 246, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(139, 92, 246, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="eye" style="width: 1.5rem; height: 1.5rem; color: var(--accent-purple);"></i>
+                <!-- Sabedoria -->
+                <div class="card" data-attribute="sabedoria">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(139, 92, 246, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="eye" style="width: 1.25rem; height: 1.25rem; color: var(--accent-purple);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-purple);">Sabedoria</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Percepção e intuição</p>
+                                <h3 class="card-title color-sabedoria">Sabedoria</h3>
+                                <p class="text-secondary text-xs">Percepção</p>
                             </div>
                         </div>
-                        <div id="sabedoria" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-purple);">0</div>
+                        <div id="sabedoria" class="font-mono text-2xl color-sabedoria">0</div>
                     </div>
                     
-                    <input type="number" id="input-sabedoria" min="0" max="100" value="0" 
-                           onchange="atualizarValor('sabedoria', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-sabedoria" id="display-sabedoria">0</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustAttribute('sabedoria', -5)">-5</button>
+                            <button class="btn-control" onclick="adjustAttribute('sabedoria', -1)">-</button>
+                            <button class="btn-control" onclick="adjustAttribute('sabedoria', 1)">+</button>
+                            <button class="btn-control" onclick="adjustAttribute('sabedoria', 5)">+5</button>
+                        </div>
+                    </div>
                 </div>
                 
-                <!-- CARISMA -->
-                <div class="attribute-card" style="border-color: rgba(236, 72, 153, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(236, 72, 153, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="sparkles" style="width: 1.5rem; height: 1.5rem; color: var(--accent-pink);"></i>
+                <!-- Carisma -->
+                <div class="card" data-attribute="carisma">
+                    <div class="card-header">
+                        <div class="flex items-center gap-2">
+                            <div style="width: 2.5rem; height: 2.5rem; background: rgba(236, 72, 153, 0.2); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="sparkles" style="width: 1.25rem; height: 1.25rem; color: var(--accent-pink);"></i>
                             </div>
                             <div>
-                                <h3 style="font-weight: 600; color: var(--accent-pink);">Carisma</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Persuasão e liderança</p>
+                                <h3 class="card-title color-carisma">Carisma</h3>
+                                <p class="text-secondary text-xs">Persuasão</p>
                             </div>
                         </div>
-                        <div id="carisma" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-pink);">0</div>
+                        <div id="carisma" class="font-mono text-2xl color-carisma">0</div>
                     </div>
                     
-                    <input type="number" id="input-carisma" min="0" max="100" value="0" 
-                           onchange="atualizarValor('carisma', this.value)">
+                    <div class="value-control">
+                        <div class="value-display color-carisma" id="display-carisma">0</div>
+                        <div class="btn-group">
+                            <button class="btn-control" onclick="adjustAttribute('carisma', -5)">-5</button>
+                            <button class="btn-control" onclick="adjustAttribute('carisma', -1)">-</button>
+                            <button class="btn-control" onclick="adjustAttribute('carisma', 1)">+</button>
+                            <button class="btn-control" onclick="adjustAttribute('carisma', 5)">+5</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             
-            <div class="flex justify-center gap-4 mt-6">
-                <button onclick="distribuirAleatorio()" style="
-                    padding: 0.75rem 1.5rem;
-                    background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
-                    color: white;
-                    border: none;
-                    border-radius: 0.75rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    transition: all 0.2s;
-                " onmouseover="this.style.transform='translateY(-2px)'" 
-                   onmouseout="this.style.transform='translateY(0)'">
-                    <i data-lucide="dice-5" style="width: 1.25rem; height: 1.25rem;"></i>
-                    Distribuição Aleatória
+            <div class="flex justify-center gap-3 mt-4">
+                <button onclick="distribuirAleatorio()" class="btn-control btn-large" style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white;">
+                    <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
+                    Sorteio Aleatório
                 </button>
-                
-                <button onclick="resetarAtributos()" style="
-                    padding: 0.75rem 1.5rem;
-                    background: linear-gradient(135deg, var(--accent-red), #ef4444);
-                    color: white;
-                    border: none;
-                    border-radius: 0.75rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    transition: all 0.2s;
-                " onmouseover="this.style.transform='translateY(-2px)'" 
-                   onmouseout="this.style.transform='translateY(0)'">
-                    <i data-lucide="trash-2" style="width: 1.25rem; height: 1.25rem;"></i>
-                    Resetar Atributos
+                <button onclick="resetarAtributos()" class="btn-control btn-large" style="background: var(--accent-red); color: white;">
+                    <i data-lucide="trash-2" style="width: 1rem; height: 1rem;"></i>
+                    Resetar
                 </button>
             </div>
         </section>
 
-        <!-- SEÇÃO DE SORTE/DESTINO -->
-        <section class="animate-fadeIn mb-8">
-            <h2 class="font-cinzel" style="
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: #d4a76a;
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                margin-bottom: 1.5rem;
-            ">
-                <i data-lucide="clover" style="width: 1.5rem; height: 1.5rem;"></i>
+        <!-- SISTEMA DE DESTINO -->
+        <section class="animate-fadeIn mb-6">
+            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
+                <i data-lucide="clover" style="width: 1.25rem; height: 1.25rem; color: var(--destiny-gold);"></i>
                 Sistema de Destino
             </h2>
             
-            <div class="sorte-card">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- DADOS DE SORTE -->
+            <div class="destiny-card">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Rolagem -->
                     <div class="flex-col space-y-4">
-                        <h3 style="font-weight: 600; color: #f4d29a; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="dice-5" style="width: 1.25rem; height: 1.25rem;"></i>
+                        <h3 class="text-lg font-600 flex items-center gap-2" style="color: #f4d29a;">
+                            <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
                             Rolagem do Destino
                         </h3>
                         
-                        <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="dice-container">
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-white mb-2" id="dado-fe">0</div>
-                                <div class="text-sm text-destiny-dark">Fé</div>
+                                <div class="dice-value" id="dado-fe">0</div>
+                                <div class="text-sm text-secondary mt-1">Fé</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-white mb-2" id="dado-sorte">0</div>
-                                <div class="text-sm text-destiny-dark">Sorte</div>
+                                <div class="dice-value" id="dado-sorte">0</div>
+                                <div class="text-sm text-secondary mt-1">Sorte</div>
                             </div>
                             <div class="text-center">
-                                <div class="text-3xl font-bold text-white mb-2" id="dado-destino">0</div>
-                                <div class="text-sm text-destiny-dark">Destino</div>
+                                <div class="dice-value" id="dado-destino">0</div>
+                                <div class="text-sm text-secondary mt-1">Destino</div>
                             </div>
                         </div>
                         
-                        <div class="text-center mb-6">
-                            <div class="text-4xl font-bold font-mono text-destiny" id="indice-sorte">--</div>
-                            <div class="text-sm text-destiny-dark mt-2" id="calculo-sorte">
+                        <div class="text-center">
+                            <div id="indice-sorte" class="font-mono text-3xl mb-2" style="color: var(--destiny-gold);">--</div>
+                            <div class="text-sm text-secondary" id="calculo-sorte">
                                 Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2
                             </div>
                         </div>
                         
-                        <div class="flex gap-3">
-                            <button onclick="rolarSorte()" style="
-                                flex: 1;
-                                padding: 0.75rem;
-                                background: linear-gradient(135deg, #1a1510, #2a2318);
-                                color: #d4a76a;
-                                border: 1px solid #8b7355;
-                                border-radius: 0.5rem;
-                                font-weight: 600;
-                                cursor: pointer;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                                transition: all 0.2s;
-                            " onmouseover="this.style.backgroundColor='#2a2318'; this.style.borderColor='#d4a76a';" 
-                               onmouseout="this.style.backgroundColor='linear-gradient(135deg, #1a1510, #2a2318)'; this.style.borderColor='#8b7355';">
+                        <div class="flex gap-2">
+                            <button onclick="rolarSorte()" class="btn-control btn-large flex-1" style="background: rgba(26, 21, 16, 0.5); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
                                 <i data-lucide="dice-5" style="width: 1rem; height: 1rem;"></i>
                                 Rolar Destino
                             </button>
-                            
-                            <button onclick="fixarSorte()" style="
-                                flex: 1;
-                                padding: 0.75rem;
-                                background: linear-gradient(135deg, #1a1510, #2a2318);
-                                color: #d4a76a;
-                                border: 1px solid #8b7355;
-                                border-radius: 0.5rem;
-                                font-weight: 600;
-                                cursor: pointer;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                                transition: all 0.2s;
-                            " onmouseover="this.style.backgroundColor='#2a2318'; this.style.borderColor='#d4a76a';" 
-                               onmouseout="this.style.backgroundColor='linear-gradient(135deg, #1a1510, #2a2318)'; this.style.borderColor='#8b7355';">
+                            <button onclick="fixarSorte()" class="btn-control btn-large flex-1" style="background: rgba(26, 21, 16, 0.5); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
                                 <i data-lucide="lock" style="width: 1rem; height: 1rem;"></i>
-                                Fixar Destino
+                                Fixar
                             </button>
                         </div>
                     </div>
                     
-                    <!-- ÍNDICE DE SORTE -->
+                    <!-- Status -->
                     <div class="flex-col space-y-4">
-                        <h3 style="font-weight: 600; color: #f4d29a; display: flex; align-items: center; gap: 0.5rem;">
-                            <i data-lucide="sparkles" style="width: 1.25rem; height: 1.25rem;"></i>
+                        <h3 class="text-lg font-600 flex items-center gap-2" style="color: #f4d29a;">
+                            <i data-lucide="sparkles" style="width: 1rem; height: 1rem;"></i>
                             Status do Destino
                         </h3>
                         
-                        <div style="background: rgba(26, 21, 16, 0.5); border: 1px solid #8b7355; border-radius: 0.75rem; padding: 1.5rem;">
+                        <div style="background: rgba(26, 21, 16, 0.5); border: 1px solid rgba(212, 167, 106, 0.3); border-radius: 0.75rem; padding: 1.5rem;">
                             <div class="text-center mb-4">
-                                <div class="text-5xl font-bold font-mono text-destiny mb-2" id="display-sorte">--</div>
-                                <div class="h-2 bg-destiny-1 rounded-full overflow-hidden mb-3">
-                                    <div id="sorte-bar" class="h-full bg-gradient-to-r from-purple-600 to-pink-600" style="width: 0%"></div>
+                                <div id="display-sorte" class="font-mono text-4xl mb-3" style="color: var(--destiny-gold);">--</div>
+                                <div class="progress-bar">
+                                    <div id="sorte-bar" class="progress-fill" style="width: 0%"></div>
                                 </div>
                             </div>
                             
                             <div class="text-center">
-                                <div class="text-sm text-destiny-dark mb-2">Status:</div>
-                                <div id="status-sorte" class="text-lg font-bold text-destiny">Não definido</div>
+                                <div class="text-sm text-secondary mb-1">Status:</div>
+                                <div id="status-sorte" class="text-lg font-600" style="color: var(--destiny-gold);">
+                                    Não definido
+                                </div>
+                                <div class="text-xs text-secondary mt-2" id="rolls-info">
+                                    Rolagens restantes: ilimitadas
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -707,197 +766,72 @@
             </div>
         </section>
 
-        <!-- SEÇÃO DE ESTATÍSTICAS AVANÇADAS -->
-        <section class="animate-fadeIn mb-8">
-            <h2 class="font-cinzel" style="
-                font-size: 1.75rem;
-                font-weight: 700;
-                color: var(--accent-purple);
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                margin-bottom: 1.5rem;
-            ">
-                <i data-lucide="layers" style="width: 1.5rem; height: 1.5rem;"></i>
+        <!-- ESTATÍSTICAS AVANÇADAS (TEXTUAL) -->
+        <section class="animate-fadeIn">
+            <h2 class="font-cinzel text-xl mb-4 flex items-center gap-2">
+                <i data-lucide="layers" style="width: 1.25rem; height: 1.25rem; color: var(--accent-purple);"></i>
                 Estatísticas Avançadas
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- BLINDAGEM -->
-                <div class="derived-card" style="border-color: rgba(220, 38, 38, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(220, 38, 38, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="shield" style="width: 1.5rem; height: 1.5rem; color: var(--accent-red);"></i>
-                            </div>
-                            <div>
-                                <h3 style="font-weight: 600; color: var(--accent-red);">Blindagem</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Defesa adicional</p>
-                            </div>
-                        </div>
-                        <div id="blindagem" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-red);">0</div>
-                    </div>
-                    
-                    <input type="number" id="input-blindagem" min="0" max="999" value="0" 
-                           onchange="atualizarValor('blindagem', this.value)">
+            <div class="card">
+                <div id="derived-stats" class="space-y-3 font-mono text-sm">
+                    <!-- As estatísticas derivadas serão calculadas aqui -->
+                    <div>Blindagem: <span id="calc-blindagem" style="color: var(--accent-blue);">0</span></div>
+                    <div>Velocidade: <span id="calc-velocidade" style="color: var(--accent-green);">0</span></div>
+                    <div>Iniciativa: <span id="calc-iniciativa" style="color: var(--accent-yellow);">0</span></div>
+                    <div>Percepção: <span id="calc-percepcao" style="color: var(--accent-purple);">0</span></div>
                 </div>
-                
-                <!-- VELOCIDADE -->
-                <div class="derived-card" style="border-color: rgba(34, 197, 94, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(34, 197, 94, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="wind" style="width: 1.5rem; height: 1.5rem; color: var(--accent-green);"></i>
-                            </div>
-                            <div>
-                                <h3 style="font-weight: 600; color: var(--accent-green);">Velocidade</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Movimento por turno</p>
-                            </div>
-                        </div>
-                        <div id="velocidade" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-green);">0</div>
-                    </div>
-                    
-                    <input type="number" id="input-velocidade" min="0" max="999" value="0" 
-                           onchange="atualizarValor('velocidade', this.value)">
-                </div>
-                
-                <!-- INICIATIVA -->
-                <div class="derived-card" style="border-color: rgba(59, 130, 246, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="zap" style="width: 1.5rem; height: 1.5rem; color: var(--accent-blue);"></i>
-                            </div>
-                            <div>
-                                <h3 style="font-weight: 600; color: var(--accent-blue);">Iniciativa</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Ordem de combate</p>
-                            </div>
-                        </div>
-                        <div id="iniciativa" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-blue);">0</div>
-                    </div>
-                    
-                    <input type="number" id="input-iniciativa" min="0" max="999" value="0" 
-                           onchange="atualizarValor('iniciativa', this.value)">
-                </div>
-                
-                <!-- PERCEPÇÃO -->
-                <div class="derived-card" style="border-color: rgba(139, 92, 246, 0.3);">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-3">
-                            <div style="width: 3rem; height: 3rem; background: rgba(139, 92, 246, 0.2); border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
-                                <i data-lucide="eye" style="width: 1.5rem; height: 1.5rem; color: var(--accent-purple);"></i>
-                            </div>
-                            <div>
-                                <h3 style="font-weight: 600; color: var(--accent-purple);">Percepção</h3>
-                                <p style="color: var(--text-secondary); font-size: 0.875rem;">Detecção e percepção</p>
-                            </div>
-                        </div>
-                        <div id="percepcao" class="font-mono" style="font-size: 2.5rem; font-weight: 700; color: var(--accent-purple);">0</div>
-                    </div>
-                    
-                    <input type="number" id="input-percepcao" min="0" max="999" value="0" 
-                           onchange="atualizarValor('percepcao', this.value)">
+                <div class="text-xs text-secondary mt-3">
+                    *Calculadas automaticamente com base nos atributos
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- RODAPÉ -->
-    <footer style="
-        border-top: 1px solid var(--border-color);
-        padding: 2rem 1rem;
-        text-align: center;
-        color: var(--text-secondary);
-        font-size: 0.875rem;
-    ">
+    <footer class="border-t border-border-color py-4 text-center text-secondary text-sm mt-6">
         <p>Sistema de Status - Grimório Digital v3.0</p>
     </footer>
 
-    <!-- MODAL DE CONFIGURAÇÕES (Simplificado) -->
+    <!-- MODAL DE CONFIGURAÇÕES -->
     <div id="modal-config" class="modal">
         <div class="modal-content">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="font-cinzel" style="font-size: 1.5rem; font-weight: 700; color: var(--accent-blue);">
-                    <i data-lucide="settings" style="width: 1.25rem; height: 1.25rem; vertical-align: middle; margin-right: 0.5rem;"></i>
-                    Configurações do Sistema
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-cinzel text-lg" style="color: var(--accent-blue);">
+                    <i data-lucide="settings" style="width: 1rem; height: 1rem; vertical-align: middle; margin-right: 0.5rem;"></i>
+                    Configurações
                 </h3>
-                <button onclick="fecharModal('modal-config')" style="
-                    background: none;
-                    border: none;
-                    color: var(--text-secondary);
-                    cursor: pointer;
-                    padding: 0.5rem;
-                    border-radius: 0.5rem;
-                    transition: all 0.2s;
-                " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)'; this.style.color='var(--text-primary)'" 
-                   onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--text-secondary)'">
-                    <i data-lucide="x" style="width: 1.25rem; height: 1.25rem;"></i>
+                <button onclick="fecharModal('modal-config')" class="btn-control">
+                    <i data-lucide="x" style="width: 1rem; height: 1rem;"></i>
                 </button>
             </div>
             
             <div class="space-y-4">
-                <!-- LIMITE POR ATRIBUTO -->
                 <div>
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">
-                        Limite Máximo por Atributo
-                    </label>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="config-limite-atributo" min="10" max="1000" value="100" style="flex: 1;">
-                        <span style="color: var(--text-secondary);">pontos</span>
-                    </div>
+                    <label class="block text-secondary text-sm mb-2">Limite por Atributo</label>
+                    <input type="number" id="config-limite-atributo" min="10" max="1000" value="100" class="w-full">
                 </div>
                 
-                <!-- PONTOS POR NÍVEL -->
                 <div>
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">
-                        Pontos por Nível
-                    </label>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="config-pontos-nivel" min="0" max="100" value="5" style="flex: 1;">
-                        <span style="color: var(--text-secondary);">pontos</span>
-                    </div>
+                    <label class="block text-secondary text-sm mb-2">Pontos por Nível</label>
+                    <input type="number" id="config-pontos-nivel" min="0" max="100" value="5" class="w-full">
                 </div>
                 
-                <!-- MÍNIMO PARA ALEATÓRIO -->
                 <div>
-                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">
-                        Mínimo para Distribuição Aleatória
-                    </label>
-                    <div class="flex items-center gap-2">
-                        <input type="number" id="config-minimo-aleatorio" min="0" max="1000" value="18" style="flex: 1;">
-                        <span style="color: var(--text-secondary);">pontos</span>
-                    </div>
+                    <label class="block text-secondary text-sm mb-2">Mínimo para Sorteio Aleatório</label>
+                    <input type="number" id="config-minimo-aleatorio" min="0" max="1000" value="18" class="w-full">
+                </div>
+                
+                <div>
+                    <label class="block text-secondary text-sm mb-2">Rolagens Máximas de Destino</label>
+                    <input type="number" id="config-rolagens-maximas" min="1" max="10" value="3" class="w-full">
                 </div>
             </div>
             
-            <div class="flex gap-4 mt-6">
-                <button onclick="fecharModal('modal-config')" style="
-                    flex: 1;
-                    padding: 1rem;
-                    background: rgba(255, 255, 255, 0.05);
-                    color: var(--text-primary);
-                    border: 1px solid var(--border-color);
-                    border-radius: 0.75rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                ">
+            <div class="flex gap-3 mt-6">
+                <button onclick="fecharModal('modal-config')" class="btn-control btn-large flex-1" style="background: rgba(255, 255, 255, 0.05);">
                     Cancelar
                 </button>
-                
-                <button onclick="salvarConfiguracoes()" style="
-                    flex: 1;
-                    padding: 1rem;
-                    background: linear-gradient(135deg, var(--accent-green), #10b981);
-                    color: white;
-                    border: none;
-                    border-radius: 0.75rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 0.5rem;
-                ">
+                <button onclick="salvarConfiguracoes()" class="btn-control btn-large flex-1" style="background: var(--accent-green); color: white;">
                     <i data-lucide="save" style="width: 1rem; height: 1rem;"></i>
                     Salvar
                 </button>
@@ -906,16 +840,8 @@
     </div>
 
     <script>
-    // ====================================================================
-    // SISTEMA DE STATUS SIMPLIFICADO
-    // ====================================================================
+    lucide.createIcons();
     
-    // Inicializar ícones
-    if (window.lucide) {
-        lucide.createIcons();
-    }
-    
-    // Dados do sistema
     let statusData = {
         recursos: {
             vida: { atual: 100, max: 100 },
@@ -935,208 +861,238 @@
             dado2: 0,
             dado3: 0,
             indice: 0,
-            status: 'Não definido'
-        },
-        estatisticas: {
-            blindagem: 0,
-            velocidade: 0,
-            iniciativa: 0,
-            percepcao: 0
+            status: 'Não definido',
+            rolagens: 0,
+            fixado: false
         },
         config: {
             limiteAtributo: 100,
             pontosPorNivel: 5,
-            minimoAleatorio: 18
+            minimoAleatorio: 18,
+            rolagensMaximas: 3
         }
     };
     
-    let sorteFixada = false;
-    
-    // Funções básicas de atualização
-    function atualizarValor(id, valor) {
-        const elemento = document.getElementById(id);
-        if (elemento) {
-            elemento.textContent = valor;
-        }
+    // FUNÇÕES DE CONTROLE
+    function adjustValue(resource, amount) {
+        const current = statusData.recursos[resource].atual;
+        const max = statusData.recursos[resource].max;
+        const newValue = Math.max(0, Math.min(max, current + amount));
         
-        // Atualizar dados na memória
-        if (id.includes('-atual') || id.includes('-maxima')) {
-            const [tipo, subtipo] = id.split('-');
-            if (tipo === 'vida' || tipo === 'mana' || tipo === 'estamina') {
-                if (subtipo === 'atual') {
-                    statusData.recursos[tipo].atual = parseInt(valor);
-                } else if (subtipo === 'maxima') {
-                    statusData.recursos[tipo].max = parseInt(valor);
-                }
-            }
-        } else if (statusData.atributos[id] !== undefined) {
-            statusData.atributos[id] = parseInt(valor);
-        } else if (statusData.estatisticas[id] !== undefined) {
-            statusData.estatisticas[id] = parseInt(valor);
-        }
-        
+        statusData.recursos[resource].atual = newValue;
+        updateDisplay(`${resource}-atual`, newValue);
+        updateDisplay(`display-${resource}`, newValue);
         salvarDados();
+        updateDerivedStats();
     }
     
-    // Sistema de Sorte
+    function adjustAttribute(attribute, amount) {
+        const current = statusData.atributos[attribute];
+        const max = statusData.config.limiteAtributo;
+        const newValue = Math.max(0, Math.min(max, current + amount));
+        
+        statusData.atributos[attribute] = newValue;
+        updateDisplay(attribute, newValue);
+        updateDisplay(`display-${attribute}`, newValue);
+        salvarDados();
+        updateDerivedStats();
+    }
+    
+    function updateMax(resource, value) {
+        const max = parseInt(value) || 0;
+        const atual = statusData.recursos[resource].atual;
+        
+        if (max > 0) {
+            statusData.recursos[resource].max = max;
+            statusData.recursos[resource].atual = Math.min(atual, max);
+            
+            updateDisplay(`${resource}-maxima`, max);
+            updateDisplay(`${resource}-atual`, statusData.recursos[resource].atual);
+            updateDisplay(`display-${resource}`, statusData.recursos[resource].atual);
+            salvarDados();
+        }
+    }
+    
+    function updateDisplay(id, value) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = value;
+            element.classList.add('animate-pulse');
+            setTimeout(() => element.classList.remove('animate-pulse'), 300);
+        }
+    }
+    
+    // SISTEMA DE DESTINO
     function rolarSorte() {
-        if (sorteFixada) {
-            if (!confirm("O destino está fixado! Deseja rolar novamente?")) return;
-            sorteFixada = false;
+        if (statusData.sorte.fixado) {
+            mostrarNotificacao('Destino já foi fixado!', 'warning');
+            return;
+        }
+        
+        if (statusData.sorte.rolagens >= statusData.config.rolagensMaximas) {
+            mostrarNotificacao(`Máximo de ${statusData.config.rolagensMaximas} rolagens atingido!`, 'warning');
+            return;
         }
         
         const dado1 = Math.floor(Math.random() * 100) + 1;
         const dado2 = Math.floor(Math.random() * 100) + 1;
         const dado3 = Math.floor(Math.random() * 100) + 1;
         
-        // Atualizar display
-        document.getElementById('dado-fe').textContent = dado1;
-        document.getElementById('dado-sorte').textContent = dado2;
-        document.getElementById('dado-destino').textContent = dado3;
+        const resultado = Math.max(1, Math.min(100, Math.round(((dado1 + dado3) * 2 - dado2) / 2)));
         
-        // Calcular sorte
-        const resultadoBruto = ((dado1 + dado3) * 2 - dado2) / 2;
-        const resultadoFinal = Math.max(1, Math.min(100, Math.round(resultadoBruto)));
-        
-        // Atualizar dados
         statusData.sorte.dado1 = dado1;
         statusData.sorte.dado2 = dado2;
         statusData.sorte.dado3 = dado3;
-        statusData.sorte.indice = resultadoFinal;
+        statusData.sorte.indice = resultado;
+        statusData.sorte.rolagens++;
         
         // Atualizar display
-        document.getElementById('indice-sorte').textContent = `${resultadoFinal}%`;
-        document.getElementById('display-sorte').textContent = `${resultadoFinal}%`;
-        document.getElementById('sorte-bar').style.width = `${resultadoFinal}%`;
+        updateDisplay('dado-fe', dado1);
+        updateDisplay('dado-sorte', dado2);
+        updateDisplay('dado-destino', dado3);
+        updateDisplay('indice-sorte', `${resultado}%`);
+        updateDisplay('display-sorte', `${resultado}%`);
         
-        // Determinar status
+        // Barra de progresso
+        document.getElementById('sorte-bar').style.width = `${resultado}%`;
+        
+        // Status
         let status = 'Neutro';
-        if (resultadoFinal > 70) status = 'Sorte Excelente';
-        else if (resultadoFinal > 55) status = 'Sortudo';
-        else if (resultadoFinal < 30) status = 'Azarado';
-        else if (resultadoFinal < 45) status = 'Muito Azarado';
+        if (resultado > 70) status = 'Sorte Excelente';
+        else if (resultado > 55) status = 'Sortudo';
+        else if (resultado < 30) status = 'Azarado';
+        else if (resultado < 45) status = 'Muito Azarado';
         
-        document.getElementById('status-sorte').textContent = status;
         statusData.sorte.status = status;
+        updateDisplay('status-sorte', status);
         
         // Fórmula
         document.getElementById('calculo-sorte').textContent = 
-            `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${resultadoFinal}`;
+            `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${resultado}`;
         
-        mostrarNotificacao(`🎲 Destino rolado: ${resultadoFinal}%`, 'success');
+        // Rolagens restantes
+        const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
+        document.getElementById('rolls-info').textContent = 
+            `Rolagens restantes: ${restantes}`;
+        
+        mostrarNotificacao(`Destino: ${resultado}% (${restantes} rolagens restantes)`, 'success');
         salvarDados();
     }
     
     function fixarSorte() {
-        sorteFixada = true;
-        mostrarNotificacao(`Destino fixado em ${statusData.sorte.indice}%!`, 'success');
-    }
-    
-    // Funções de utilidade
-    function restaurarRecursos() {
-        if (confirm('Restaurar todos os recursos ao máximo?')) {
-            statusData.recursos.vida.atual = statusData.recursos.vida.max;
-            statusData.recursos.mana.atual = statusData.recursos.mana.max;
-            statusData.recursos.estamina.atual = statusData.recursos.estamina.max;
-            
-            document.getElementById('vida-atual').textContent = statusData.recursos.vida.atual;
-            document.getElementById('mana-atual').textContent = statusData.recursos.mana.atual;
-            document.getElementById('estamina-atual').textContent = statusData.recursos.estamina.atual;
-            
-            document.getElementById('input-vida-atual').value = statusData.recursos.vida.atual;
-            document.getElementById('input-mana-atual').value = statusData.recursos.mana.atual;
-            document.getElementById('input-estamina-atual').value = statusData.recursos.estamina.atual;
-            
-            mostrarNotificacao('Recursos restaurados!', 'success');
-            salvarDados();
+        if (statusData.sorte.indice === 0) {
+            mostrarNotificacao('Role o destino primeiro!', 'warning');
+            return;
         }
+        
+        statusData.sorte.fixado = true;
+        mostrarNotificacao(`Destino fixado em ${statusData.sorte.indice}%!`, 'success');
+        document.getElementById('rolls-info').textContent = 'Destino fixado';
+        salvarDados();
     }
     
+    // SORTEIO ALEATÓRIO DE ATRIBUTOS
     function distribuirAleatorio() {
-        if (confirm('Distribuir pontos aleatoriamente entre atributos?')) {
-            const atributos = Object.keys(statusData.atributos);
-            const totalAtual = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
+        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
+        const totalAtual = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
+        
+        if (totalAtual >= statusData.config.minimoAleatorio) {
+            // Calcular pontos para distribuir
+            const pontos = Math.floor(statusData.config.pontosPorNivel * 0.6);
             
-            if (totalAtual >= statusData.config.minimoAleatorio) {
-                // Distribuir 10 pontos aleatoriamente
-                for (let i = 0; i < 10; i++) {
-                    const attrAleatorio = atributos[Math.floor(Math.random() * atributos.length)];
-                    if (statusData.atributos[attrAleatorio] < statusData.config.limiteAtributo) {
-                        statusData.atributos[attrAleatorio]++;
-                    }
+            for (let i = 0; i < pontos; i++) {
+                const randomAttr = atributos[Math.floor(Math.random() * atributos.length)];
+                if (statusData.atributos[randomAttr] < statusData.config.limiteAtributo) {
+                    adjustAttribute(randomAttr, 1);
                 }
-                
-                // Atualizar interface
-                Object.keys(statusData.atributos).forEach(attr => {
-                    document.getElementById(attr).textContent = statusData.atributos[attr];
-                    document.getElementById(`input-${attr}`).value = statusData.atributos[attr];
-                });
-                
-                mostrarNotificacao('10 pontos distribuídos aleatoriamente!', 'success');
-                salvarDados();
-            } else {
-                mostrarNotificacao(`Necessário mínimo de ${statusData.config.minimoAleatorio} pontos totais`, 'warning');
             }
+            
+            mostrarNotificacao(`${pontos} pontos distribuídos aleatoriamente!`, 'success');
+        } else {
+            mostrarNotificacao(`Mínimo de ${statusData.config.minimoAleatorio} pontos necessários`, 'warning');
         }
     }
     
     function resetarAtributos() {
         if (confirm('Resetar todos os atributos para 0?')) {
-            Object.keys(statusData.atributos).forEach(attr => {
+            const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
+            atributos.forEach(attr => {
                 statusData.atributos[attr] = 0;
-                document.getElementById(attr).textContent = '0';
-                document.getElementById(`input-${attr}`).value = '0';
+                updateDisplay(attr, 0);
+                updateDisplay(`display-${attr}`, 0);
             });
-            
             mostrarNotificacao('Atributos resetados!', 'info');
+            salvarDados();
+            updateDerivedStats();
+        }
+    }
+    
+    function restaurarRecursos() {
+        if (confirm('Restaurar todos os recursos?')) {
+            ['vida', 'mana', 'estamina'].forEach(resource => {
+                statusData.recursos[resource].atual = statusData.recursos[resource].max;
+                updateDisplay(`${resource}-atual`, statusData.recursos[resource].atual);
+                updateDisplay(`display-${resource}`, statusData.recursos[resource].atual);
+            });
+            mostrarNotificacao('Recursos restaurados!', 'success');
             salvarDados();
         }
     }
     
-    // Sistema de Configurações
-    function abrirModal(id) {
-        const modal = document.getElementById(id);
-        modal.classList.add('active');
+    // ESTATÍSTICAS DERIVADAS (CÁLCULO AUTOMÁTICO)
+    function updateDerivedStats() {
+        const { forca, destreza, constituicao, inteligencia, sabedoria } = statusData.atributos;
         
-        // Carregar valores atuais
+        // Cálculos baseados nos atributos
+        const blindagem = Math.floor((constituicao * 0.7) + (forca * 0.3));
+        const velocidade = Math.floor((destreza * 0.6) + (constituicao * 0.4));
+        const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
+        const percepcao = Math.floor((sabedoria * 0.8) + (inteligencia * 0.2));
+        
+        // Atualizar display
+        updateDisplay('calc-blindagem', blindagem);
+        updateDisplay('calc-velocidade', velocidade);
+        updateDisplay('calc-iniciativa', iniciativa);
+        updateDisplay('calc-percepcao', percepcao);
+    }
+    
+    // CONFIGURAÇÕES
+    function abrirModal(id) {
+        document.getElementById(id).classList.add('active');
+        
         if (id === 'modal-config') {
             document.getElementById('config-limite-atributo').value = statusData.config.limiteAtributo;
             document.getElementById('config-pontos-nivel').value = statusData.config.pontosPorNivel;
             document.getElementById('config-minimo-aleatorio').value = statusData.config.minimoAleatorio;
+            document.getElementById('config-rolagens-maximas').value = statusData.config.rolagensMaximas;
         }
     }
     
     function fecharModal(id) {
-        const modal = document.getElementById(id);
-        modal.classList.remove('active');
+        document.getElementById(id).classList.remove('active');
     }
     
     function salvarConfiguracoes() {
-        statusData.config.limiteAtributo = parseInt(document.getElementById('config-limite-atributo').value);
-        statusData.config.pontosPorNivel = parseInt(document.getElementById('config-pontos-nivel').value);
-        statusData.config.minimoAleatorio = parseInt(document.getElementById('config-minimo-aleatorio').value);
-        
-        // Atualizar limites dos inputs
-        Object.keys(statusData.atributos).forEach(attr => {
-            document.getElementById(`input-${attr}`).max = statusData.config.limiteAtributo;
-        });
+        statusData.config.limiteAtributo = parseInt(document.getElementById('config-limite-atributo').value) || 100;
+        statusData.config.pontosPorNivel = parseInt(document.getElementById('config-pontos-nivel').value) || 5;
+        statusData.config.minimoAleatorio = parseInt(document.getElementById('config-minimo-aleatorio').value) || 18;
+        statusData.config.rolagensMaximas = parseInt(document.getElementById('config-rolagens-maximas').value) || 3;
         
         mostrarNotificacao('Configurações salvas!', 'success');
         salvarDados();
         fecharModal('modal-config');
     }
     
-    // Sistema de Importação/Exportação
+    // EXPORTAÇÃO/IMPORTAÇÃO
     function exportarDados() {
         try {
-            const dadosExportacao = {
+            const dados = {
                 ...statusData,
                 exportadoEm: new Date().toISOString(),
-                versao: '1.0'
+                versao: '3.0'
             };
             
-            const json = JSON.stringify(dadosExportacao, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
+            const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
@@ -1147,10 +1103,9 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            mostrarNotificacao('Dados exportados com sucesso!', 'success');
+            mostrarNotificacao('Dados exportados!', 'success');
         } catch (error) {
-            console.error('Erro ao exportar:', error);
-            mostrarNotificacao('Erro ao exportar dados', 'error');
+            mostrarNotificacao('Erro ao exportar', 'error');
         }
     }
     
@@ -1159,33 +1114,30 @@
         input.type = 'file';
         input.accept = '.json';
         
-        input.onchange = function(event) {
-            const file = event.target.files[0];
+        input.onchange = function(e) {
+            const file = e.target.files[0];
             if (!file) return;
             
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const dadosImportados = JSON.parse(e.target.result);
+                    const dados = JSON.parse(e.target.result);
                     
-                    // Validar estrutura básica
-                    if (!dadosImportados.recursos || !dadosImportados.atributos) {
-                        throw new Error('Formato de arquivo inválido');
+                    if (!dados.recursos || !dados.atributos) {
+                        throw new Error('Formato inválido');
                     }
                     
                     // Mesclar dados
-                    statusData = {
-                        ...statusData,
-                        ...dadosImportados
-                    };
+                    statusData.recursos = { ...statusData.recursos, ...dados.recursos };
+                    statusData.atributos = { ...statusData.atributos, ...dados.atributos };
                     
-                    // Atualizar interface
+                    if (dados.sorte) statusData.sorte = { ...statusData.sorte, ...dados.sorte };
+                    if (dados.config) statusData.config = { ...statusData.config, ...dados.config };
+                    
                     carregarDadosNaInterface();
-                    
-                    mostrarNotificacao('Dados importados com sucesso!', 'success');
+                    mostrarNotificacao('Dados importados!', 'success');
                 } catch (error) {
-                    console.error('Erro ao importar:', error);
-                    mostrarNotificacao('Erro ao importar dados', 'error');
+                    mostrarNotificacao('Arquivo inválido', 'error');
                 }
             };
             
@@ -1197,108 +1149,96 @@
     
     function carregarDadosNaInterface() {
         // Recursos
-        document.getElementById('vida-atual').textContent = statusData.recursos.vida.atual;
-        document.getElementById('vida-maxima').textContent = statusData.recursos.vida.max;
-        document.getElementById('mana-atual').textContent = statusData.recursos.mana.atual;
-        document.getElementById('mana-maxima').textContent = statusData.recursos.mana.max;
-        document.getElementById('estamina-atual').textContent = statusData.recursos.estamina.atual;
-        document.getElementById('estamina-maxima').textContent = statusData.recursos.estamina.max;
-        
-        document.getElementById('input-vida-atual').value = statusData.recursos.vida.atual;
-        document.getElementById('input-vida-maxima').value = statusData.recursos.vida.max;
-        document.getElementById('input-mana-atual').value = statusData.recursos.mana.atual;
-        document.getElementById('input-mana-maxima').value = statusData.recursos.mana.max;
-        document.getElementById('input-estamina-atual').value = statusData.recursos.estamina.atual;
-        document.getElementById('input-estamina-maxima').value = statusData.recursos.estamina.max;
+        ['vida', 'mana', 'estamina'].forEach(resource => {
+            updateDisplay(`${resource}-atual`, statusData.recursos[resource].atual);
+            updateDisplay(`${resource}-maxima`, statusData.recursos[resource].max);
+            updateDisplay(`display-${resource}`, statusData.recursos[resource].atual);
+            document.getElementById(`input-${resource}-maxima`).value = statusData.recursos[resource].max;
+        });
         
         // Atributos
         Object.keys(statusData.atributos).forEach(attr => {
-            document.getElementById(attr).textContent = statusData.atributos[attr];
-            document.getElementById(`input-${attr}`).value = statusData.atributos[attr];
-        });
-        
-        // Estatísticas
-        Object.keys(statusData.estatisticas).forEach(stat => {
-            document.getElementById(stat).textContent = statusData.estatisticas[stat];
-            document.getElementById(`input-${stat}`).value = statusData.estatisticas[stat];
+            updateDisplay(attr, statusData.atributos[attr]);
+            updateDisplay(`display-${attr}`, statusData.atributos[attr]);
         });
         
         // Sorte
         if (statusData.sorte.indice > 0) {
-            document.getElementById('dado-fe').textContent = statusData.sorte.dado1;
-            document.getElementById('dado-sorte').textContent = statusData.sorte.dado2;
-            document.getElementById('dado-destino').textContent = statusData.sorte.dado3;
-            document.getElementById('indice-sorte').textContent = `${statusData.sorte.indice}%`;
-            document.getElementById('display-sorte').textContent = `${statusData.sorte.indice}%`;
-            document.getElementById('sorte-bar').style.width = `${statusData.sorte.indice}%`;
-            document.getElementById('status-sorte').textContent = statusData.sorte.status;
+            updateDisplay('dado-fe', statusData.sorte.dado1);
+            updateDisplay('dado-sorte', statusData.sorte.dado2);
+            updateDisplay('dado-destino', statusData.sorte.dado3);
+            updateDisplay('indice-sorte', `${statusData.sorte.indice}%`);
+            updateDisplay('display-sorte', `${statusData.sorte.indice}%`);
+            updateDisplay('status-sorte', statusData.sorte.status);
             
+            document.getElementById('sorte-bar').style.width = `${statusData.sorte.indice}%`;
             document.getElementById('calculo-sorte').textContent = 
                 `((${statusData.sorte.dado1} + ${statusData.sorte.dado3}) × 2 - ${statusData.sorte.dado2}) ÷ 2 = ${statusData.sorte.indice}`;
+            
+            const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
+            document.getElementById('rolls-info').textContent = 
+                statusData.sorte.fixado ? 'Destino fixado' : `Rolagens restantes: ${restantes}`;
         }
+        
+        updateDerivedStats();
     }
     
-    // Sistema de persistência
+    // PERSISTÊNCIA
     function salvarDados() {
         try {
-            localStorage.setItem('grimorio_status_data', JSON.stringify(statusData));
+            localStorage.setItem('grimorio_status', JSON.stringify(statusData));
         } catch (error) {
-            console.error('Erro ao salvar dados:', error);
+            console.error('Erro ao salvar:', error);
         }
     }
     
     function carregarDados() {
         try {
-            const dadosSalvos = localStorage.getItem('grimorio_status_data');
-            if (dadosSalvos) {
-                const dados = JSON.parse(dadosSalvos);
-                statusData = { ...statusData, ...dados };
+            const dados = localStorage.getItem('grimorio_status');
+            if (dados) {
+                const parsed = JSON.parse(dados);
+                statusData = { ...statusData, ...parsed };
                 carregarDadosNaInterface();
             }
         } catch (error) {
-            console.error('Erro ao carregar dados:', error);
+            console.error('Erro ao carregar:', error);
         }
     }
     
-    // Notificações
+    // NOTIFICAÇÕES
     function mostrarNotificacao(mensagem, tipo = 'info') {
-        // Criar elemento de notificação
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
             background: ${tipo === 'success' ? 'rgba(34, 197, 94, 0.9)' : 
                          tipo === 'error' ? 'rgba(220, 38, 38, 0.9)' : 
                          tipo === 'warning' ? 'rgba(245, 158, 11, 0.9)' : 
                          'rgba(59, 130, 246, 0.9)'};
             color: white;
             font-weight: 600;
+            font-size: 0.875rem;
             z-index: 1000;
-            animation: slideInRight 0.3s ease-out;
+            animation: fadeIn 0.3s ease-out;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-            backdrop-filter: blur(10px);
         `;
         
         notification.innerHTML = `
             <i data-lucide="${tipo === 'success' ? 'check-circle' : 
                             tipo === 'error' ? 'x-circle' : 
                             tipo === 'warning' ? 'alert-triangle' : 'info'}" 
-               style="width: 1.25rem; height: 1.25rem;"></i>
+               style="width: 1rem; height: 1rem;"></i>
             <span>${mensagem}</span>
         `;
         
         document.body.appendChild(notification);
+        lucide.createIcons();
         
-        if (window.lucide) {
-            lucide.createIcons();
-        }
-        
-        // Remover após 3 segundos
         setTimeout(() => {
             notification.style.opacity = '0';
             notification.style.transform = 'translateX(100%)';
@@ -1306,22 +1246,21 @@
         }, 3000);
     }
     
-    // Inicialização
+    // INICIALIZAÇÃO
     document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar ícones
-        if (window.lucide) {
-            lucide.createIcons();
-        }
-        
-        // Carregar dados salvos
         carregarDados();
         
-        // Configurar botões
         document.getElementById('btn-exportar').addEventListener('click', exportarDados);
         document.getElementById('btn-importar').addEventListener('click', importarDados);
         document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
         
-        console.log('Sistema de Status inicializado');
+        updateDerivedStats();
+        
+        // Atualizar estatísticas sempre que um atributo mudar
+        document.querySelectorAll('[data-attribute]').forEach(card => {
+            const observer = new MutationObserver(updateDerivedStats);
+            observer.observe(card.querySelector('.font-mono'), { characterData: true, subtree: true });
+        });
     });
     </script>
 </body>
