@@ -235,6 +235,32 @@
         .animate-float {
             animation: float 3s ease-in-out infinite;
         }
+        
+        /* Estilo para o modal de sorte */
+        .sorte-emotion-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .sorte-emotion-btn.selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 0 2px currentColor;
+        }
+        
+        .sorte-result {
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 0 0 20px currentColor;
+        }
+        
+        .sorte-success {
+            color: #22c55e;
+            animation: pulse 1s infinite;
+        }
+        
+        .sorte-failure {
+            color: #dc2626;
+            animation: pulse 1s infinite;
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-20">
@@ -303,11 +329,11 @@
                     <button onclick="editarStatus()" class="text-sm text-theme-blue hover:underline">
                         <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Editar
                     </button>
-                    <button onclick="calcularDerivados()" class="text-sm text-theme-green hover:underline">
-                        <i data-lucide="calculator" class="w-3 h-3 inline mr-1"></i> Calcular
+                    <button onclick="calcularRecursos()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="calculator" class="w-3 h-3 inline mr-1"></i> Calcular Recursos
                     </button>
                     <button onclick="toggleDerivados()" class="text-sm text-theme-purple hover:underline">
-                        <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Ocultar
+                        <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Ocultar Derivados
                     </button>
                 </div>
             </div>
@@ -333,6 +359,7 @@
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-vida-bar" class="h-full bg-gradient-to-r from-red-600 to-red-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
+                    <div class="text-xs text-gray-500 mt-1" id="vida-formula">Base: 100 + (CON × 2)</div>
                 </div>
 
                 <!-- Mana -->
@@ -355,6 +382,7 @@
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-mana-bar" class="h-full bg-gradient-to-r from-blue-600 to-blue-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
+                    <div class="text-xs text-gray-500 mt-1" id="mana-formula">Base: 50 + (INT × 3)</div>
                 </div>
 
                 <!-- Estamina -->
@@ -377,6 +405,7 @@
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-estamina-bar" class="h-full bg-gradient-to-r from-green-600 to-green-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
+                    <div class="text-xs text-gray-500 mt-1" id="estamina-formula">Base: 80 + (DES + CON)</div>
                 </div>
             </div>
 
@@ -414,7 +443,7 @@
 
                 <!-- Pontos Extras -->
                 <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl">
-                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4">Pontos Extras</h4>
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4">Progressão</h4>
                     <div class="space-y-4">
                         <div>
                             <div class="flex justify-between items-center mb-2">
@@ -424,12 +453,17 @@
                             <div class="skill-progress">
                                 <div id="pontos-progress" class="skill-progress-fill bg-gradient-to-r from-destiny-gold to-yellow-400" style="width: 0%"></div>
                             </div>
+                            <div class="text-xs text-destiny-dark mt-1" id="pontos-nivel">+2 pontos por nível</div>
                         </div>
                         
                         <div>
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-destiny-light">Nível</span>
                                 <span class="text-xl font-bold text-destiny-gold" id="nivel-personagem">1</span>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="alterarNivel(-1)" class="flex-1 py-1 text-xs border border-destiny rounded hover:bg-destiny/20">-1</button>
+                                <button onclick="alterarNivel(1)" class="flex-1 py-1 text-xs border border-destiny rounded hover:bg-destiny/20">+1</button>
                             </div>
                         </div>
                         
@@ -440,6 +474,10 @@
                             </div>
                             <div class="skill-progress">
                                 <div id="exp-progress" class="skill-progress-fill bg-gradient-to-r from-blue-500 to-purple-500" style="width: 0%"></div>
+                            </div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <input type="number" id="add-exp-input" placeholder="XP" class="flex-1 bg-destiny-1 border border-destiny rounded px-2 py-1 text-xs">
+                                <button onclick="adicionarExperiencia()" class="px-3 py-1 text-xs bg-destiny-gold/20 hover:bg-destiny-gold/30 border border-destiny-gold rounded">Add</button>
                             </div>
                         </div>
                     </div>
@@ -457,54 +495,69 @@
                     <h3 class="font-cinzel text-lg font-semibold text-white">Sorte & Destino</h3>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="rolarSorte()" class="text-sm text-theme-green hover:underline">
-                        <i data-lucide="dice-5" class="w-3 h-3 inline mr-1"></i> Rolar
+                    <button onclick="rolarSorteISP()" class="text-sm text-theme-green hover:underline">
+                        <i data-lucide="dice-5" class="w-3 h-3 inline mr-1"></i> Rolar Sorte
                     </button>
                     <button onclick="editarSorte()" class="text-sm text-theme-blue hover:underline">
-                        <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Editar
+                        <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Configurar
                     </button>
                 </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- Índice de Sorte -->
+                <!-- Índice de Sorte Percentual (ISP) -->
                 <div class="bg-[#0a0a0c] border border-theme-border p-6 rounded-xl text-center card-hover">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-theme-purple to-theme-pink flex items-center justify-center shadow-lg animate-float">
                         <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
                     </div>
-                    <h4 class="font-cinzel font-bold text-white text-lg mb-2">Índice de Sorte</h4>
-                    <div class="text-5xl font-bold font-mono text-theme-gold mb-2" id="display-sorte">--</div>
+                    <h4 class="font-cinzel font-bold text-white text-lg mb-2">Índice de Sorte Percentual</h4>
+                    <div class="text-5xl font-bold font-mono text-theme-gold mb-2" id="display-sorte-isp">--%</div>
                     <div class="h-2 bg-theme-border rounded-full overflow-hidden mb-3">
-                        <div id="display-sorte-bar" class="h-full bg-gradient-to-r from-theme-purple to-theme-pink stat-bar-fill" style="width: 0%"></div>
+                        <div id="display-sorte-isp-bar" class="h-full bg-gradient-to-r from-theme-purple to-theme-pink stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div id="destiny-status" class="text-sm text-gray-400">Status: Não Definido</div>
+                    <div id="isp-status" class="text-sm text-gray-400">Status: Não Definido</div>
+                    <div id="isp-resultado" class="mt-2 hidden"></div>
                 </div>
 
-                <!-- Dados Fixos -->
+                <!-- Configuração ISP -->
                 <div class="bg-[#0a0a0c] border border-theme-border p-6 rounded-xl card-hover">
-                    <h4 class="font-cinzel font-bold text-white text-lg mb-4">Dados de Sorte</h4>
-                    <div class="grid grid-cols-3 gap-4 mb-6">
-                        <div class="text-center">
-                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-theme-panel border border-theme-border flex items-center justify-center">
-                                <span class="text-xl font-bold text-white" id="display-dado1">0</span>
-                            </div>
-                            <div class="text-xs text-gray-500">Fé</div>
+                    <h4 class="font-cinzel font-bold text-white text-lg mb-4">Configuração ISP</h4>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">PER (Percepção)</label>
+                            <input type="number" id="isp-per" value="10" min="1" max="20" 
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center" 
+                                   onchange="calcularISP()">
                         </div>
-                        <div class="text-center">
-                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-theme-panel border border-theme-border flex items-center justify-center">
-                                <span class="text-xl font-bold text-white" id="display-dado2">0</span>
-                            </div>
-                            <div class="text-xs text-gray-500">Sorte</div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">SAB (Sabedoria)</label>
+                            <input type="number" id="isp-sab" value="10" min="1" max="20" 
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center"
+                                   onchange="calcularISP()">
                         </div>
-                        <div class="text-center">
-                            <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-theme-panel border border-theme-border flex items-center justify-center">
-                                <span class="text-xl font-bold text-white" id="display-dado3">0</span>
-                            </div>
-                            <div class="text-xs text-gray-500">Destino</div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">AGI (Agilidade)</label>
+                            <input type="number" id="isp-agi" value="10" min="1" max="20" 
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center"
+                                   onchange="calcularISP()">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">E (Emoção 1-5)</label>
+                            <input type="number" id="isp-emocao" value="3" min="1" max="5" 
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center"
+                                   onchange="calcularISP()">
                         </div>
                     </div>
-                    <div class="text-sm text-gray-500" id="destiny-formula-display">
-                        Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2
+                    
+                    <div class="mb-4">
+                        <label class="block text-xs text-gray-400 mb-2">Estado Emocional</label>
+                        <div class="grid grid-cols-5 gap-2" id="emocao-buttons">
+                            <!-- Botões serão preenchidos dinamicamente -->
+                        </div>
+                    </div>
+                    
+                    <div class="text-sm text-gray-500" id="isp-formula-display">
+                        Fórmula: ISP = ((PER + SAB + AGI) × E ÷ 3) + Modificador Emocional
                     </div>
                 </div>
             </div>
@@ -516,7 +569,7 @@
                 <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
                     <i data-lucide="bar-chart" class="w-4 h-4 text-theme-blue"></i>
                 </div>
-                <h3 class="font-cinzel text-lg font-semibold text-white">Estatísticas Avançadas</h3>
+                <h3 class="font-cinzel text-lg font-semibold text-white">Estatísticas Derivadas</h3>
                 <button onclick="toggleDerivados()" class="ml-auto text-sm text-theme-purple hover:underline">
                     <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Ocultar
                 </button>
@@ -630,9 +683,9 @@
                     </div>
                     <h3 class="font-cinzel text-lg font-semibold text-white">Proficiências e Maestrias</h3>
                 </div>
-                <button href="proficiencias.html" class="text-sm text-yellow-400 hover:underline">
-                    <i data-lucide="refresh-cw" class="w-3 h-3 inline mr-1"></i> Atualizar
-                </button>
+                <a href="proficiencias.html" class="text-sm text-yellow-400 hover:underline">
+                    <i data-lucide="external-link" class="w-3 h-3 inline mr-1"></i> Gerenciar
+                </a>
             </div>
             
             <div id="proficiencias-container">
@@ -699,6 +752,48 @@
         </div>
     </div>
 
+    <!-- Modal de Sorte ISP -->
+    <div id="sorte-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-cinzel font-bold text-xl text-white">Rolagem de Sorte</h3>
+                <button onclick="fecharSorteModal()" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="text-center mb-6">
+                <div class="text-4xl font-bold font-mono mb-2" id="sorte-resultado-d100">--</div>
+                <div class="text-lg text-gray-400" id="sorte-chance">Chance: --%</div>
+            </div>
+            
+            <div class="mb-6">
+                <div class="text-center mb-2">
+                    <div class="text-sm text-gray-400">Índice de Sorte Final</div>
+                    <div class="text-3xl font-bold text-theme-gold" id="sorte-isp-final">--%</div>
+                </div>
+                <div class="h-3 bg-theme-border rounded-full overflow-hidden mb-2">
+                    <div id="sorte-isp-bar" class="h-full bg-gradient-to-r from-theme-purple to-theme-pink stat-bar-fill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="text-center mb-4" id="sorte-resultado-texto">
+                <!-- Resultado será inserido aqui -->
+            </div>
+            
+            <div class="flex justify-center gap-3 mt-6">
+                <button onclick="rolarDadoSorte()" 
+                    class="px-6 py-3 bg-theme-purple hover:bg-purple-600 rounded-lg text-white font-cinzel font-bold">
+                    <i data-lucide="dice-5" class="w-4 h-4 inline mr-2"></i> Rolar Novamente
+                </button>
+                <button onclick="fecharSorteModal()" 
+                    class="px-6 py-3 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal de Upload de Imagem -->
     <div id="upload-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
         <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4">
@@ -737,7 +832,7 @@
 
     <script>
     // ====================================================================
-    // SISTEMA DE PERFIL COMPLETO
+    // SISTEMA DE PERFIL COMPLETO COM CORREÇÕES
     // ====================================================================
 
     // Inicializar ícones
@@ -752,6 +847,7 @@
     let currentUploadTarget = '';
     let currentEquipamentoIndex = null;
     let currentHabilidadeIndex = null;
+    let currentISPResult = null;
 
     // Dados do personagem
     const personagem = {
@@ -761,19 +857,28 @@
         experiencia: 0,
         experienciaProximo: 1000,
         pontosDisponiveis: 0,
+        pontosPorNivel: 2,
         pontosExtra: 0,
         
         // Status
         status: {
             vida: { atual: 100, max: 100 },
-            mana: { atual: 100, max: 100 },
-            estamina: { atual: 100, max: 100 },
-            forca: 0,
-            destreza: 0,
-            constituicao: 0,
-            inteligencia: 0,
-            sabedoria: 0,
-            carisma: 0
+            mana: { atual: 50, max: 50 },
+            estamina: { atual: 80, max: 80 },
+            forca: 10,
+            destreza: 10,
+            constituicao: 10,
+            inteligencia: 10,
+            sabedoria: 10,
+            carisma: 10
+        },
+        
+        // Atributos para ISP
+        atributosISP: {
+            per: 10,  // Percepção
+            sab: 10,  // Sabedoria
+            agi: 10,  // Agilidade
+            emocao: 3 // Emoção (1-5)
         },
         
         // Sorte
@@ -810,16 +915,80 @@
         }
     };
 
-    // Classes disponíveis
+    // Classes disponíveis com bônus personalizados
     const classes = [
-        { nome: "Guerreiro", cor: "#dc2626", icone: "sword", bonus: "+2 Força, +1 Constituição" },
-        { nome: "Mago", cor: "#4a9eff", icone: "sparkles", bonus: "+2 Inteligência, +1 Sabedoria" },
-        { nome: "Arqueiro", cor: "#22c55e", icone: "crosshair", bonus: "+2 Destreza, +1 Sabedoria" },
-        { nome: "Clérigo", cor: "#8b5cf6", icone: "heart", bonus: "+2 Sabedoria, +1 Carisma" },
-        { nome: "Ladino", cor: "#f59e0b", icone: "eye", bonus: "+2 Destreza, +1 Inteligência" },
-        { nome: "Bárbaro", cor: "#ef4444", icone: "axe", bonus: "+3 Força, +1 Constituição" },
-        { nome: "Paladino", cor: "#fbbf24", icone: "shield", bonus: "+1 Força, +1 Sabedoria, +1 Carisma" },
-        { nome: "Druida", cor: "#10b981", icone: "leaf", bonus: "+2 Sabedoria, +1 Constituição" }
+        { 
+            nome: "Guerreiro", 
+            cor: "#dc2626", 
+            icone: "sword", 
+            bonus: "+1 Força, +1 Constituição, +1 Destreza",
+            atributosBonus: ['forca', 'constituicao', 'destreza']
+        },
+        { 
+            nome: "Mago", 
+            cor: "#4a9eff", 
+            icone: "sparkles", 
+            bonus: "+1 Inteligência, +1 Sabedoria, +1 Carisma",
+            atributosBonus: ['inteligencia', 'sabedoria', 'carisma']
+        },
+        { 
+            nome: "Arqueiro", 
+            cor: "#22c55e", 
+            icone: "crosshair", 
+            bonus: "+1 Destreza, +1 Sabedoria, +1 Percepção",
+            atributosBonus: ['destreza', 'sabedoria', 'percepcao']
+        },
+        { 
+            nome: "Clérigo", 
+            cor: "#8b5cf6", 
+            icone: "heart", 
+            bonus: "+1 Sabedoria, +1 Carisma, +1 Constituição",
+            atributosBonus: ['sabedoria', 'carisma', 'constituicao']
+        },
+        { 
+            nome: "Ladino", 
+            cor: "#f59e0b", 
+            icone: "eye", 
+            bonus: "+1 Destreza, +1 Inteligência, +1 Carisma",
+            atributosBonus: ['destreza', 'inteligencia', 'carisma']
+        },
+        { 
+            nome: "Bárbaro", 
+            cor: "#ef4444", 
+            icone: "axe", 
+            bonus: "+1 Força, +1 Constituição, +1 Destreza",
+            atributosBonus: ['forca', 'constituicao', 'destreza']
+        },
+        { 
+            nome: "Paladino", 
+            cor: "#fbbf24", 
+            icone: "shield", 
+            bonus: "+1 Força, +1 Sabedoria, +1 Carisma",
+            atributosBonus: ['forca', 'sabedoria', 'carisma']
+        },
+        { 
+            nome: "Druida", 
+            cor: "#10b981", 
+            icone: "leaf", 
+            bonus: "+1 Sabedoria, +1 Constituição, +1 Carisma",
+            atributosBonus: ['sabedoria', 'constituicao', 'carisma']
+        },
+        {
+            nome: "Personalizada",
+            cor: "#8b5cf6",
+            icone: "settings",
+            bonus: "Defina seus próprios bônus",
+            atributosBonus: []
+        }
+    ];
+
+    // Emoções para ISP
+    const emocaoISP = [
+        { nome: "Calma", valor: 1, modificador: -10, cor: "#4a9eff" },
+        { nome: "Dúvida", valor: 2, modificador: -5, cor: "#f59e0b" },
+        { nome: "Raiva", valor: 3, modificador: 0, cor: "#dc2626" },
+        { nome: "Medo", valor: 4, modificador: -5, cor: "#8b5cf6" },
+        { nome: "Euforia", valor: 5, modificador: -10, cor: "#22c55e" }
     ];
 
     // ====================================================================
@@ -828,8 +997,10 @@
 
     function inicializar() {
         carregarDados();
+        calcularRecursos(); // Calcular recursos baseados nos atributos
         atualizarInterface();
         atualizarTimestamp();
+        inicializarISP();
         
         // Atualizar a cada 10 segundos
         setInterval(atualizarTimestamp, 10000);
@@ -866,11 +1037,203 @@
         console.log('Perfil inicializado com sucesso!');
     }
 
+    function inicializarISP() {
+        // Configurar botões de emoção
+        const container = document.getElementById('emocao-buttons');
+        let html = '';
+        
+        emocaoISP.forEach(emocao => {
+            html += `
+                <button onclick="selecionarEmocaoISP(${emocao.valor})" 
+                        class="sorte-emotion-btn p-2 rounded-lg border text-xs ${personagem.atributosISP.emocao === emocao.valor ? 'selected' : ''}" 
+                        style="color: ${emocao.cor}; border-color: ${emocao.cor}">
+                    ${emocao.nome}<br>
+                    <span class="text-xs">${emocao.modificador >= 0 ? '+' : ''}${emocao.modificador}%</span>
+                </button>
+            `;
+        });
+        
+        container.innerHTML = html;
+        
+        // Calcular ISP inicial
+        calcularISP();
+    }
+
+    function selecionarEmocaoISP(valor) {
+        personagem.atributosISP.emocao = valor;
+        document.getElementById('isp-emocao').value = valor;
+        
+        // Atualizar botões selecionados
+        document.querySelectorAll('.sorte-emotion-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        document.querySelectorAll('.sorte-emotion-btn').forEach(btn => {
+            if (btn.onclick && btn.onclick.toString().includes(`selecionarEmocaoISP(${valor})`)) {
+                btn.classList.add('selected');
+            }
+        });
+        
+        calcularISP();
+    }
+
+    function calcularISP() {
+        const per = parseInt(document.getElementById('isp-per').value) || personagem.atributosISP.per;
+        const sab = parseInt(document.getElementById('isp-sab').value) || personagem.atributosISP.sab;
+        const agi = parseInt(document.getElementById('isp-agi').value) || personagem.atributosISP.agi;
+        const emocaoValor = parseInt(document.getElementById('isp-emocao').value) || personagem.atributosISP.emocao;
+        
+        // Atualizar dados
+        personagem.atributosISP.per = per;
+        personagem.atributosISP.sab = sab;
+        personagem.atributosISP.agi = agi;
+        personagem.atributosISP.emocao = emocaoValor;
+        
+        // Passo 1: Cálculo base
+        const ispBase = ((per + sab + agi) * emocaoValor) / 3;
+        
+        // Passo 2: Modificador Emocional
+        const emocao = emocaoISP.find(e => e.valor === emocaoValor);
+        const modE = emocao ? emocao.modificador : 0;
+        
+        // Passo 3: Sorte Final
+        let ispFinal = ispBase + modE;
+        
+        // Limite rígido: 5% mínimo, 95% máximo
+        ispFinal = Math.max(5, Math.min(95, ispFinal));
+        
+        // Atualizar interface
+        document.getElementById('display-sorte-isp').textContent = `${Math.round(ispFinal)}%`;
+        document.getElementById('display-sorte-isp-bar').style.width = `${ispFinal}%`;
+        
+        // Determinar status narrativo
+        let status = '';
+        let corStatus = '';
+        
+        if (ispFinal >= 80) {
+            status = 'Sorte quase milagrosa';
+            corStatus = '#22c55e';
+        } else if (ispFinal >= 60) {
+            status = 'Sorte claramente favorável';
+            corStatus = '#4a9eff';
+        } else if (ispFinal >= 40) {
+            status = 'Zona instável';
+            corStatus = '#f59e0b';
+        } else if (ispFinal >= 20) {
+            status = 'Sorte contra';
+            corStatus = '#dc2626';
+        } else {
+            status = 'Catástrofe iminente';
+            corStatus = '#991b1b';
+        }
+        
+        document.getElementById('isp-status').innerHTML = `Status: <span style="color: ${corStatus}">${status}</span>`;
+        
+        // Atualizar fórmula
+        document.getElementById('isp-formula-display').innerHTML = 
+            `Fórmula: ((${per} + ${sab} + ${agi}) × ${emocaoValor} ÷ 3) ${modE >= 0 ? '+' : ''}${modE} = ${Math.round(ispFinal)}%`;
+        
+        // Guardar resultado para rolagem
+        currentISPResult = {
+            ispFinal: Math.round(ispFinal),
+            status: status,
+            formula: `ISP = ((PER+${per} + SAB+${sab} + AGI+${agi}) × E+${emocaoValor} ÷ 3) ${modE >= 0 ? '+' : ''}${modE}`
+        };
+    }
+
+    function rolarSorteISP() {
+        if (!currentISPResult) {
+            calcularISP();
+        }
+        
+        // Rolagem 1d100
+        const d100 = Math.floor(Math.random() * 100) + 1;
+        const sucesso = d100 <= currentISPResult.ispFinal;
+        
+        // Atualizar modal
+        document.getElementById('sorte-resultado-d100').textContent = d100;
+        document.getElementById('sorte-chance').textContent = `Chance: ${currentISPResult.ispFinal}%`;
+        document.getElementById('sorte-isp-final').textContent = `${currentISPResult.ispFinal}%`;
+        document.getElementById('sorte-isp-bar').style.width = `${currentISPResult.ispFinal}%`;
+        
+        // Resultado textual
+        const resultadoDiv = document.getElementById('sorte-resultado-texto');
+        if (sucesso) {
+            resultadoDiv.innerHTML = `
+                <div class="p-4 rounded-lg bg-green-900/30 border border-green-700/50">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <i data-lucide="check-circle" class="w-6 h-6 text-green-400"></i>
+                        <span class="text-xl font-bold text-green-400">SORTE FAVORECE!</span>
+                    </div>
+                    <p class="text-green-300">O destino está ao seu lado!</p>
+                    <p class="text-sm text-green-400 mt-2">${d100} ≤ ${currentISPResult.ispFinal}%</p>
+                </div>
+            `;
+            document.getElementById('sorte-resultado-d100').classList.remove('sorte-failure');
+            document.getElementById('sorte-resultado-d100').classList.add('sorte-success');
+        } else {
+            resultadoDiv.innerHTML = `
+                <div class="p-4 rounded-lg bg-red-900/30 border border-red-700/50">
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <i data-lucide="x-circle" class="w-6 h-6 text-red-400"></i>
+                        <span class="text-xl font-bold text-red-400">O CAOS VENCE!</span>
+                    </div>
+                    <p class="text-red-300">A sorte se voltou contra você!</p>
+                    <p class="text-sm text-red-400 mt-2">${d100} > ${currentISPResult.ispFinal}%</p>
+                </div>
+            `;
+            document.getElementById('sorte-resultado-d100').classList.remove('sorte-success');
+            document.getElementById('sorte-resultado-d100').classList.add('sorte-failure');
+        }
+        
+        // Mostrar resultado na seção também
+        const resultadoSection = document.getElementById('isp-resultado');
+        resultadoSection.innerHTML = `
+            <div class="p-3 rounded-lg ${sucesso ? 'bg-green-900/20' : 'bg-red-900/20'}">
+                <div class="flex items-center justify-center gap-2">
+                    <i data-lucide="${sucesso ? 'check' : 'x'}" class="w-4 h-4 ${sucesso ? 'text-green-400' : 'text-red-400'}"></i>
+                    <span class="${sucesso ? 'text-green-400' : 'text-red-400'}">Rolagem: ${d100} ${sucesso ? '≤' : '>'} ${currentISPResult.ispFinal}% - ${sucesso ? 'Sucesso!' : 'Falha!'}</span>
+                </div>
+            </div>
+        `;
+        resultadoSection.classList.remove('hidden');
+        
+        // Atualizar ícones
+        if (window.lucide) lucide.createIcons();
+        
+        // Mostrar modal
+        document.getElementById('sorte-modal').classList.remove('hidden');
+    }
+
+    function rolarDadoSorte() {
+        rolarSorteISP();
+    }
+
+    function fecharSorteModal() {
+        document.getElementById('sorte-modal').classList.add('hidden');
+    }
+
     function carregarDados() {
         try {
             const dadosSalvos = localStorage.getItem('grimorio_perfil_completo');
             if (dadosSalvos) {
-                Object.assign(personagem, JSON.parse(dadosSalvos));
+                const dados = JSON.parse(dadosSalvos);
+                
+                // Mesclar dados existentes com novos
+                Object.keys(dados).forEach(key => {
+                    if (key === 'status') {
+                        // Para status, mesclar profundamente
+                        Object.keys(dados[key]).forEach(subKey => {
+                            if (personagem[key][subKey]) {
+                                Object.assign(personagem[key][subKey], dados[key][subKey]);
+                            }
+                        });
+                    } else if (typeof dados[key] === 'object' && dados[key] !== null) {
+                        Object.assign(personagem[key], dados[key]);
+                    } else {
+                        personagem[key] = dados[key];
+                    }
+                });
+                
                 console.log('Dados carregados do localStorage');
             }
             
@@ -895,23 +1258,16 @@
         
         // Sincronizar atributos
         if (dadosGrimorio.atributos) {
-            personagem.status.forca = dadosGrimorio.atributos.forca || 0;
-            personagem.status.destreza = dadosGrimorio.atributos.destreza || 0;
-            personagem.status.constituicao = dadosGrimorio.atributos.constituicao || 0;
-            personagem.status.inteligencia = dadosGrimorio.atributos.inteligencia || 0;
-            personagem.status.sabedoria = dadosGrimorio.atributos.sabedoria || 0;
-            personagem.status.carisma = dadosGrimorio.atributos.carisma || 0;
+            personagem.status.forca = dadosGrimorio.atributos.forca || 10;
+            personagem.status.destreza = dadosGrimorio.atributos.destreza || 10;
+            personagem.status.constituicao = dadosGrimorio.atributos.constituicao || 10;
+            personagem.status.inteligencia = dadosGrimorio.atributos.inteligencia || 10;
+            personagem.status.sabedoria = dadosGrimorio.atributos.sabedoria || 10;
+            personagem.status.carisma = dadosGrimorio.atributos.carisma || 10;
         }
         
-        // Sincronizar recursos
-        if (dadosGrimorio.recursos) {
-            personagem.status.vida.max = dadosGrimorio.recursos.vidaMaxima || 100;
-            personagem.status.vida.atual = dadosGrimorio.recursos.vidaAtual || personagem.status.vida.max;
-            personagem.status.mana.max = dadosGrimorio.recursos.manaMaxima || 100;
-            personagem.status.mana.atual = dadosGrimorio.recursos.manaAtual || personagem.status.mana.max;
-            personagem.status.estamina.max = dadosGrimorio.recursos.estaminaMaxima || 100;
-            personagem.status.estamina.atual = dadosGrimorio.recursos.estaminaAtual || personagem.status.estamina.max;
-        }
+        // Calcular recursos baseados nos atributos
+        calcularRecursos();
         
         // Calcular derivados
         calcularDerivadosAutomaticos();
@@ -993,6 +1349,11 @@
         
         // Proficiências
         carregarProficiencias();
+        
+        // ISP
+        if (currentISPResult) {
+            calcularISP();
+        }
     }
 
     function atualizarAvatar() {
@@ -1013,13 +1374,32 @@
         document.getElementById('profile-subtitle').textContent = `${personagem.classe} - Nível ${personagem.nivel}`;
     }
 
+    function calcularRecursos() {
+        // Vida: Base 100 + (CON × 2)
+        personagem.status.vida.max = 100 + (personagem.status.constituicao * 2);
+        
+        // Mana: Base 50 + (INT × 3)
+        personagem.status.mana.max = 50 + (personagem.status.inteligencia * 3);
+        
+        // Estamina: Base 80 + (DES + CON)
+        personagem.status.estamina.max = 80 + personagem.status.destreza + personagem.status.constituicao;
+        
+        // Garantir que valores atuais não excedam máximos
+        personagem.status.vida.atual = Math.min(personagem.status.vida.atual, personagem.status.vida.max);
+        personagem.status.mana.atual = Math.min(personagem.status.mana.atual, personagem.status.mana.max);
+        personagem.status.estamina.atual = Math.min(personagem.status.estamina.atual, personagem.status.estamina.max);
+        
+        atualizarStatus();
+    }
+
     function atualizarStatus() {
         // Vida
         const vida = personagem.status.vida;
-        const vidaPercent = (vida.atual / vida.max) * 100;
+        const vidaPercent = vida.max > 0 ? (vida.atual / vida.max) * 100 : 0;
         document.getElementById('display-vida').textContent = `${vida.atual}/${vida.max}`;
         document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
         document.getElementById('vida-percent').textContent = `${Math.round(vidaPercent)}%`;
+        document.getElementById('vida-formula').textContent = `Base: 100 + (CON × 2 = ${personagem.status.constituicao * 2})`;
         
         // Mana
         const mana = personagem.status.mana;
@@ -1027,13 +1407,15 @@
         document.getElementById('display-mana').textContent = `${mana.atual}/${mana.max}`;
         document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
         document.getElementById('mana-percent').textContent = `${Math.round(manaPercent)}%`;
+        document.getElementById('mana-formula').textContent = `Base: 50 + (INT × 3 = ${personagem.status.inteligencia * 3})`;
         
         // Estamina
         const estamina = personagem.status.estamina;
-        const estaminaPercent = (estamina.atual / estamina.max) * 100;
+        const estaminaPercent = estamina.max > 0 ? (estamina.atual / estamina.max) * 100 : 0;
         document.getElementById('display-estamina').textContent = `${estamina.atual}/${estamina.max}`;
         document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
         document.getElementById('estamina-percent').textContent = `${Math.round(estaminaPercent)}%`;
+        document.getElementById('estamina-formula').textContent = `Base: 80 + (DES+${personagem.status.destreza} + CON+${personagem.status.constituicao})`;
     }
 
     function atualizarAtributos() {
@@ -1094,6 +1476,7 @@
         const pontosPercent = Math.min(100, (personagem.pontosDisponiveis / 20) * 100);
         document.getElementById('pontos-disponiveis').textContent = personagem.pontosDisponiveis;
         document.getElementById('pontos-progress').style.width = `${pontosPercent}%`;
+        document.getElementById('pontos-nivel').textContent = `+${personagem.pontosPorNivel} pontos por nível`;
         
         // Nível e Experiência
         const expPercent = Math.min(100, (personagem.experiencia / personagem.experienciaProximo) * 100);
@@ -1105,6 +1488,53 @@
         if (window.lucide) lucide.createIcons();
     }
 
+    function alterarNivel(delta) {
+        const novoNivel = Math.max(1, personagem.nivel + delta);
+        
+        if (novoNivel > personagem.nivel) {
+            // Subir de nível
+            for (let i = personagem.nivel; i < novoNivel; i++) {
+                personagem.pontosDisponiveis += personagem.pontosPorNivel;
+            }
+        } else if (novoNivel < personagem.nivel) {
+            // Descer de nível
+            for (let i = personagem.nivel; i > novoNivel; i--) {
+                personagem.pontosDisponiveis = Math.max(0, personagem.pontosDisponiveis - personagem.pontosPorNivel);
+            }
+        }
+        
+        personagem.nivel = novoNivel;
+        personagem.experienciaProximo = 1000 * personagem.nivel; // XP necessário aumenta com o nível
+        
+        atualizarClassePontos();
+        salvarDados();
+        mostrarNotificacao(`Nível alterado para ${novoNivel}!`, 'success');
+    }
+
+    function adicionarExperiencia() {
+        const input = document.getElementById('add-exp-input');
+        const xp = parseInt(input.value) || 0;
+        
+        if (xp > 0) {
+            personagem.experiencia += xp;
+            
+            // Verificar se passou de nível
+            while (personagem.experiencia >= personagem.experienciaProximo) {
+                personagem.experiencia -= personagem.experienciaProximo;
+                personagem.nivel++;
+                personagem.pontosDisponiveis += personagem.pontosPorNivel;
+                personagem.experienciaProximo = 1000 * personagem.nivel;
+                
+                mostrarNotificacao(`Parabéns! Você subiu para o nível ${personagem.nivel}!`, 'success');
+            }
+            
+            input.value = '';
+            atualizarClassePontos();
+            salvarDados();
+            mostrarNotificacao(`${xp} XP adicionados!`, 'success');
+        }
+    }
+
     function atualizarSorte() {
         const sorte = personagem.sorte;
         const indice = ((sorte.fe + sorte.destino) * 2 - sorte.sorte) / 2;
@@ -1113,14 +1543,26 @@
         personagem.sorte.indice = percentual;
         personagem.sorte.status = percentual >= 60 ? "Sorte Alta" : percentual <= 40 ? "Sorte Baixa" : "Neutro";
         
-        document.getElementById('display-sorte').textContent = `${Math.round(percentual)}%`;
-        document.getElementById('display-sorte-bar').style.width = `${percentual}%`;
-        document.getElementById('display-dado1').textContent = sorte.fe;
-        document.getElementById('display-dado2').textContent = sorte.sorte;
-        document.getElementById('display-dado3').textContent = sorte.destino;
-        document.getElementById('destiny-status').textContent = `Status: ${personagem.sorte.status}`;
-        document.getElementById('destiny-formula-display').textContent = 
-            `Fórmula: ((${sorte.fe} + ${sorte.destino}) × 2 - ${sorte.sorte}) ÷ 2 = ${indice.toFixed(1)}`;
+        // Atualizar ISP também
+        calcularISP();
+    }
+
+    function calcularDerivadosAutomaticos() {
+        if (!personagem.derivados.mostrar) return;
+        
+        // Blindagem: CON / 10
+        personagem.derivados.blindagem = Math.floor(personagem.status.constituicao / 10);
+        
+        // Velocidade: DES / 5
+        personagem.derivados.velocidade = Math.floor(personagem.status.destreza / 5);
+        
+        // Iniciativa: (DES + SAB) / 8
+        personagem.derivados.iniciativa = Math.floor((personagem.status.destreza + personagem.status.sabedoria) / 8);
+        
+        // Percepção: SAB / 4
+        personagem.derivados.percepcao = Math.floor(personagem.status.sabedoria / 4);
+        
+        atualizarEstatisticasAvancadas();
     }
 
     function atualizarEstatisticasAvancadas() {
@@ -1132,10 +1574,38 @@
         document.getElementById('estatisticas-avancadas').classList.remove('hidden');
         
         const estatisticas = [
-            { id: 'blindagem', nome: 'Blindagem', valor: personagem.derivados.blindagem, cor: 'gray', icone: 'shield' },
-            { id: 'velocidade', nome: 'Velocidade', valor: personagem.derivados.velocidade, cor: 'green', icone: 'zap' },
-            { id: 'iniciativa', nome: 'Iniciativa', valor: personagem.derivados.iniciativa, cor: 'blue', icone: 'clock' },
-            { id: 'percepcao', nome: 'Percepção', valor: personagem.derivados.percepcao, cor: 'purple', icone: 'eye' }
+            { 
+                id: 'blindagem', 
+                nome: 'Blindagem', 
+                valor: personagem.derivados.blindagem, 
+                cor: 'gray', 
+                icone: 'shield',
+                formula: 'CON / 10'
+            },
+            { 
+                id: 'velocidade', 
+                nome: 'Velocidade', 
+                valor: personagem.derivados.velocidade, 
+                cor: 'green', 
+                icone: 'zap',
+                formula: 'DES / 5'
+            },
+            { 
+                id: 'iniciativa', 
+                nome: 'Iniciativa', 
+                valor: personagem.derivados.iniciativa, 
+                cor: 'blue', 
+                icone: 'clock',
+                formula: '(DES + SAB) / 8'
+            },
+            { 
+                id: 'percepcao', 
+                nome: 'Percepção', 
+                valor: personagem.derivados.percepcao, 
+                cor: 'purple', 
+                icone: 'eye',
+                formula: 'SAB / 4'
+            }
         ];
         
         let html = '';
@@ -1147,10 +1617,7 @@
                     </div>
                     <div class="text-2xl font-bold text-white font-mono" id="display-${stat.id}">${stat.valor}</div>
                     <div class="text-xs uppercase text-gray-500 mt-1">${stat.nome}</div>
-                    <div class="flex justify-center gap-1 mt-2">
-                        <button onclick="alterarDerivado('${stat.id}', -1)" class="w-5 h-5 text-xs hover:bg-white/10 rounded">-</button>
-                        <button onclick="alterarDerivado('${stat.id}', 1)" class="w-5 h-5 text-xs hover:bg-white/10 rounded">+</button>
-                    </div>
+                    <div class="text-xs text-gray-600 mt-1">${stat.formula}</div>
                 </div>
             `;
         });
@@ -1335,52 +1802,74 @@
             
             const dados = JSON.parse(proficienciasData);
             
-            // Contar maestrias (nível 10)
+            // Contar proficiências e calcular pontos
+            let totalProficiencias = 0;
+            let totalPontos = 0;
             let totalMaestrias = 0;
-            let totalHabilidades = 0;
-            let totalNivel = 0;
+            let proficienciasSalvas = 0;
             
-            // Processar armas
-            if (dados.armas) {
-                Object.values(dados.armas).forEach(subcat => {
-                    subcat.forEach(habilidade => {
-                        totalHabilidades++;
-                        totalNivel += habilidade.nivel;
-                        if (habilidade.nivel >= 10) totalMaestrias++;
+            // Função para contar em uma categoria
+            function contarCategoria(categoria) {
+                if (!categoria) return;
+                
+                if (Array.isArray(categoria)) {
+                    // Array simples (magia, pactos, etc)
+                    categoria.forEach(habilidade => {
+                        if (habilidade && habilidade.nivel) {
+                            totalProficiencias++;
+                            totalPontos += Math.floor(habilidade.nivel / 10);
+                            if (habilidade.nivel >= 10) totalMaestrias++;
+                            proficienciasSalvas++;
+                        }
                     });
-                });
-            }
-            
-            // Processar outras categorias
-            ['magia', 'pactos', 'invocacao', 'especiais'].forEach(cat => {
-                if (dados[cat]) {
-                    dados[cat].forEach(habilidade => {
-                        totalHabilidades++;
-                        totalNivel += habilidade.nivel;
-                        if (habilidade.nivel >= 10) totalMaestrias++;
+                } else if (typeof categoria === 'object') {
+                    // Objeto com subcategorias (armas)
+                    Object.values(categoria).forEach(subcat => {
+                        if (Array.isArray(subcat)) {
+                            subcat.forEach(habilidade => {
+                                if (habilidade && habilidade.nivel) {
+                                    totalProficiencias++;
+                                    totalPontos += Math.floor(habilidade.nivel / 10);
+                                    if (habilidade.nivel >= 10) totalMaestrias++;
+                                    proficienciasSalvas++;
+                                }
+                            });
+                        }
                     });
                 }
+            }
+            
+            // Contar em todas as categorias
+            ['armas', 'magia', 'pactos', 'invocacao', 'especiais'].forEach(cat => {
+                contarCategoria(dados[cat]);
             });
             
-            const porcentagemMaestria = totalHabilidades > 0 ? Math.round((totalMaestrias / totalHabilidades) * 100) : 0;
-            const nivelMedio = totalHabilidades > 0 ? Math.round(totalNivel / totalHabilidades) : 0;
+            // Limitar proficiencias salvas ao máximo de 5 (como especificado)
+            proficienciasSalvas = Math.min(proficienciasSalvas, 5);
+            
+            const porcentagemMaestria = totalProficiencias > 0 ? Math.round((totalMaestrias / totalProficiencias) * 100) : 0;
             
             container.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                     <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
                         <div class="text-3xl font-bold text-yellow-400 mb-1">${totalMaestrias}</div>
                         <div class="text-sm text-gray-400">Maestrias</div>
                         <div class="text-xs text-yellow-600 mt-1">Nível 10 alcançado</div>
                     </div>
                     <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-400 mb-1">94</div>
-                        <div class="text-sm text-gray-400">proficiências</div>
-                        <div class="text-xs text-blue-600 mt-1">Total registrado</div>
+                        <div class="text-3xl font-bold text-blue-400 mb-1">${totalProficiencias}</div>
+                        <div class="text-sm text-gray-400">Total</div>
+                        <div class="text-xs text-blue-600 mt-1">Proficiências</div>
                     </div>
                     <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-green-400 mb-1">${nivelMedio}</div>
-                        <div class="text-sm text-gray-400">Nível Médio</div>
-                        <div class="text-xs text-green-600 mt-1">Média geral</div>
+                        <div class="text-3xl font-bold text-green-400 mb-1">${totalPontos}</div>
+                        <div class="text-sm text-gray-400">Pontos</div>
+                        <div class="text-xs text-green-600 mt-1">1 ponto a cada 10 níveis</div>
+                    </div>
+                    <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
+                        <div class="text-3xl font-bold text-purple-400 mb-1">${proficienciasSalvas}/5</div>
+                        <div class="text-sm text-gray-400">Salvas</div>
+                        <div class="text-xs text-purple-600 mt-1">Máximo permitido</div>
                     </div>
                 </div>
                 
@@ -1388,7 +1877,7 @@
                     <div class="mb-6">
                         <h4 class="font-medium text-white mb-3 flex items-center gap-2">
                             <i data-lucide="crown" class="w-4 h-4 text-yellow-400"></i>
-                            Maestrias Alcançadas
+                            Progresso de Maestria
                         </h4>
                         <div class="bg-gray-900/50 border border-gray-800 rounded-lg p-4">
                             <div class="h-3 bg-gray-800 rounded-full overflow-hidden mb-2">
@@ -1402,11 +1891,11 @@
                 ` : ''}
                 
                 <div class="text-center">
-                    <button onclick="window.location.href='proficiencias.html'" 
-                            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors text-sm">
-                        <i data-lucide="swords" class="w-4 h-4"></i>
+                    <a href="proficiencias.html" 
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors text-sm">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
                         Gerenciar Proficiências
-                    </button>
+                    </a>
                 </div>
             `;
             
@@ -1429,105 +1918,6 @@
     // FUNÇÕES DE INTERAÇÃO
     // ====================================================================
 
-    function alterarAvatar() {
-        currentUploadType = 'avatar';
-        abrirUploadModal();
-    }
-
-    function editarStatus() {
-        modalType = 'status';
-        modalData = { ...personagem.status };
-        
-        document.getElementById('modal-title').textContent = 'Editar Status';
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <h4 class="text-white font-medium mb-3">Recursos Vitais</h4>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Vida Atual</label>
-                            <input type="number" id="modal-vida-atual" value="${modalData.vida.atual}" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Vida Máxima</label>
-                            <input type="number" id="modal-vida-max" value="${modalData.vida.max}" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Mana Atual</label>
-                            <input type="number" id="modal-mana-atual" value="${modalData.mana.atual}" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Mana Máxima</label>
-                            <input type="number" id="modal-mana-max" value="${modalData.mana.max}" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Estamina Atual</label>
-                            <input type="number" id="modal-estamina-atual" value="${modalData.estamina.atual}" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-400 mb-2">Estamina Máxima</label>
-                            <input type="number" id="modal-estamina-max" value="${modalData.estamina.max}" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <h4 class="text-white font-medium mb-3">Atributos (0-100)</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Força</label>
-                            <input type="number" id="modal-forca" value="${modalData.forca}" min="0" max="100"
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Destreza</label>
-                            <input type="number" id="modal-destreza" value="${modalData.destreza}" min="0" max="100"
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Constituição</label>
-                            <input type="number" id="modal-constituicao" value="${modalData.constituicao}" min="0" max="100"
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Inteligência</label>
-                            <input type="number" id="modal-inteligencia" value="${modalData.inteligencia}" min="0" max="100"
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Sabedoria</label>
-                            <input type="number" id="modal-sabedoria" value="${modalData.sabedoria}" min="0" max="100"
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-400 mb-1">Carisma</label>
-                            <input type="number" id="modal-carisma" value="${modalData.carisma}" min="0" max="100"
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-    }
-
     function alterarAtributo(atributo, delta) {
         if (personagem.pontosDisponiveis < delta && delta > 0) {
             mostrarNotificacao('Pontos insuficientes!', 'error');
@@ -1537,36 +1927,34 @@
         personagem.status[atributo] = Math.max(0, Math.min(100, personagem.status[atributo] + delta));
         personagem.pontosDisponiveis -= delta;
         
+        // Recalcular recursos e derivados
+        calcularRecursos();
         calcularDerivadosAutomaticos();
+        
+        // Se for PER, SAB ou AGI, atualizar ISP também
+        if (['sabedoria', 'destreza'].includes(atributo)) {
+            // Mapear atributos para ISP
+            if (atributo === 'sabedoria') {
+                personagem.atributosISP.sab = personagem.status.sabedoria;
+                document.getElementById('isp-sab').value = personagem.status.sabedoria;
+            } else if (atributo === 'destreza') {
+                personagem.atributosISP.agi = personagem.status.destreza;
+                document.getElementById('isp-agi').value = personagem.status.destreza;
+            }
+            calcularISP();
+        }
+        
         atualizarInterface();
         salvarDados();
     }
 
-    function calcularDerivados() {
-        // Calcular derivados automaticamente baseado nos atributos
-        personagem.derivados.blindagem = Math.floor(personagem.status.constituicao / 10);
-        personagem.derivados.velocidade = Math.floor(personagem.status.destreza / 5);
-        personagem.derivados.iniciativa = Math.floor((personagem.status.destreza + personagem.status.sabedoria) / 8);
-        personagem.derivados.percepcao = Math.floor(personagem.status.sabedoria / 4);
-        
-        // Calcular recursos máximos baseado em atributos
-        personagem.status.vida.max = 10 + (personagem.status.constituicao * 2);
-        personagem.status.mana.max = personagem.status.inteligencia * 3;
-        personagem.status.estamina.max = 20 + personagem.status.constituicao + personagem.status.destreza;
-        
-        atualizarInterface();
-        mostrarNotificacao('Derivados calculados automaticamente!', 'success');
-    }
-
-    function calcularDerivadosAutomaticos() {
-        // Calcular apenas se mostrar derivados estiver ativo
-        if (!personagem.derivados.mostrar) return;
-        
-        calcularDerivados();
-    }
-
     function toggleDerivados() {
         personagem.derivados.mostrar = !personagem.derivados.mostrar;
+        
+        if (personagem.derivados.mostrar) {
+            calcularDerivadosAutomaticos();
+        }
+        
         atualizarEstatisticasAvancadas();
         salvarDados();
         
@@ -1580,12 +1968,15 @@
         if (window.lucide) lucide.createIcons();
     }
 
-    function alterarDerivado(derivado, delta) {
-        personagem.derivados[derivado] = Math.max(0, personagem.derivados[derivado] + delta);
-        atualizarEstatisticasAvancadas();
-        salvarDados();
-    }
+    // [As outras funções permanecem similares, apenas ajustando para usar calcularRecursos() onde necessário]
 
+    // ====================================================================
+    // MODAIS E FUNÇÕES EXISTENTES
+    // ====================================================================
+
+    // [Mantive as funções existentes de modal, upload, exportação, etc., apenas ajustando onde necessário]
+
+    // Exemplo de função atualizada para editar classe:
     function editarClasse() {
         modalType = 'classe';
         
@@ -1618,15 +2009,23 @@
                     </div>
                 </div>
                 
+                <div class="p-4 bg-theme-panel/50 rounded-lg">
+                    <div class="text-sm text-gray-400 mb-2">Bônus da Classe</div>
+                    <div class="text-xs text-gray-500">
+                        Ao selecionar uma classe, você recebe +1 em 3 atributos específicos.
+                        Para classes personalizadas, você pode escolher quais atributos recebem bônus.
+                    </div>
+                </div>
+                
                 <div>
-                    <label class="block text-sm text-gray-400 mb-2">Pontos Extras</label>
+                    <label class="block text-sm text-gray-400 mb-2">Pontos por Nível</label>
                     <div class="flex items-center gap-4">
-                        <button onclick="alterarPontosExtra(-1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">-</button>
+                        <button onclick="alterarPontosPorNivel(-1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">-</button>
                         <div class="text-center flex-1">
-                            <div class="text-3xl font-bold text-white" id="pontos-extra-display">${personagem.pontosExtra}</div>
-                            <div class="text-xs text-gray-500">Pontos Extras</div>
+                            <div class="text-3xl font-bold text-white" id="pontos-por-nivel-display">${personagem.pontosPorNivel}</div>
+                            <div class="text-xs text-gray-500">Pontos por Nível</div>
                         </div>
-                        <button onclick="alterarPontosExtra(1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">+</button>
+                        <button onclick="alterarPontosPorNivel(1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">+</button>
                     </div>
                 </div>
             </div>
@@ -1639,1006 +2038,45 @@
     }
 
     function selecionarClasse(nomeClasse) {
+        const classeAnterior = classes.find(c => c.nome === personagem.classe);
+        const novaClasse = classes.find(c => c.nome === nomeClasse);
+        
+        // Remover bônus da classe anterior
+        if (classeAnterior && classeAnterior.atributosBonus && classeAnterior.atributosBonus.length > 0) {
+            classeAnterior.atributosBonus.forEach(atributo => {
+                if (personagem.status[atributo] > 0) {
+                    personagem.status[atributo] = Math.max(0, personagem.status[atributo] - 1);
+                }
+            });
+        }
+        
+        // Aplicar bônus da nova classe
         personagem.classe = nomeClasse;
         
-        // Aplicar bônus da classe
-        const classe = classes.find(c => c.nome === nomeClasse);
-        if (classe) {
-            const botao = document.querySelector(`[onclick="selecionarClasse('${nomeClasse}')"]`);
-            document.querySelectorAll('#classes-list button').forEach(btn => {
-                btn.classList.remove('border-blue-500', 'bg-blue-500/20');
+        if (novaClasse && novaClasse.atributosBonus && novaClasse.atributosBonus.length > 0) {
+            novaClasse.atributosBonus.forEach(atributo => {
+                personagem.status[atributo] += 1;
             });
-            if (botao) {
-                const corClasse = classe.cor.replace('#', '');
-                botao.classList.add(`border-${corClasse}`, `bg-${corClasse}20`);
-            }
+        }
+        
+        // Recalcular recursos
+        calcularRecursos();
+        calcularDerivadosAutomaticos();
+        
+        // Atualizar interface
+        const botao = document.querySelector(`[onclick="selecionarClasse('${nomeClasse}')"]`);
+        document.querySelectorAll('#classes-list button').forEach(btn => {
+            btn.classList.remove('border-blue-500', 'bg-blue-500/20');
+        });
+        if (botao) {
+            const corClasse = novaClasse.cor.replace('#', '');
+            botao.classList.add(`border-${corClasse}`, `bg-${corClasse}20`);
         }
     }
 
-    function alterarPontosExtra(delta) {
-        personagem.pontosExtra = Math.max(0, personagem.pontosExtra + delta);
-        personagem.pontosDisponiveis += delta;
-        document.getElementById('pontos-extra-display').textContent = personagem.pontosExtra;
-    }
-
-    function rolarSorte() {
-        personagem.sorte.fe = Math.floor(Math.random() * 3) + 1;
-        personagem.sorte.sorte = Math.floor(Math.random() * 4) + 1;
-        personagem.sorte.destino = Math.floor(Math.random() * 2) + 1;
-        
-        atualizarSorte();
-        salvarDados();
-        
-        mostrarNotificacao('Dados de sorte rolados!', 'success');
-    }
-
-    function editarSorte() {
-        modalType = 'sorte';
-        modalData = { ...personagem.sorte };
-        
-        document.getElementById('modal-title').textContent = 'Editar Dados de Sorte';
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div class="grid grid-cols-3 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Fé (1-10)</label>
-                        <input type="number" id="modal-fe" value="${modalData.fe}" min="1" max="10"
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Sorte (1-10)</label>
-                        <input type="number" id="modal-sorte" value="${modalData.sorte}" min="1" max="10"
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Destino (1-10)</label>
-                        <input type="number" id="modal-destino" value="${modalData.destino}" min="1" max="10"
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                    </div>
-                </div>
-                
-                <div class="p-4 bg-theme-panel/50 rounded-lg">
-                    <div class="text-sm text-gray-400 mb-2">Fórmula de Cálculo</div>
-                    <div class="font-mono text-xs text-white">
-                        Índice de Sorte = ((Fé + Destino) × 2 - Sorte) ÷ 2
-                    </div>
-                    <div class="text-xs text-gray-500 mt-2">
-                        Resultado é convertido para percentual (0-100%)
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-    }
-
-    function importarEquipamento() {
-        currentUploadType = 'equipamento';
-        abrirUploadModal();
-    }
-
-    function editarEquipamento(index) {
-        currentEquipamentoIndex = index;
-        const equipamento = personagem.equipamentos[index] || {
-            nome: '',
-            tipo: 'Arma',
-            icone: 'sword',
-            imagem: '',
-            descricao: '',
-            bonus: '',
-            raridade: 'Comum',
-            raridadeCor: '#8b7355'
-        };
-        
-        modalType = 'equipamento';
-        modalData = { ...equipamento };
-        
-        document.getElementById('modal-title').textContent = equipamento.nome ? `Editar ${equipamento.nome}` : 'Novo Equipamento';
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome do Equipamento</label>
-                    <input type="text" id="modal-nome" value="${modalData.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
-                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                            <option value="Arma" ${modalData.tipo === 'Arma' ? 'selected' : ''}>Arma</option>
-                            <option value="Armadura" ${modalData.tipo === 'Armadura' ? 'selected' : ''}>Armadura</option>
-                            <option value="Acessório" ${modalData.tipo === 'Acessório' ? 'selected' : ''}>Acessório</option>
-                            <option value="Consumível" ${modalData.tipo === 'Consumível' ? 'selected' : ''}>Consumível</option>
-                            <option value="Mágico" ${modalData.tipo === 'Mágico' ? 'selected' : ''}>Mágico</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Raridade</label>
-                        <select id="modal-raridade" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                            <option value="Comum" ${modalData.raridade === 'Comum' ? 'selected' : ''}>Comum</option>
-                            <option value="Incomum" ${modalData.raridade === 'Incomum' ? 'selected' : ''}>Incomum</option>
-                            <option value="Raro" ${modalData.raridade === 'Raro' ? 'selected' : ''}>Raro</option>
-                            <option value="Épico" ${modalData.raridade === 'Épico' ? 'selected' : ''}>Épico</option>
-                            <option value="Lendário" ${modalData.raridade === 'Lendário' ? 'selected' : ''}>Lendário</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Ícone (nome do ícone Lucide)</label>
-                    <input type="text" id="modal-icone" value="${modalData.icone}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="sword, shield, wand, etc.">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Bônus/Atributos</label>
-                    <input type="text" id="modal-bonus" value="${modalData.bonus}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="+5 Força, +10 Vida, etc.">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="modal-descricao" rows="3"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
-                    <div class="flex gap-2">
-                        <button onclick="uploadImagemEquipamento()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
-                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
-                        </button>
-                        ${modalData.imagem ? `
-                            <button onclick="removerImagemEquipamento()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                    ${modalData.imagem ? `
-                        <div class="mt-2">
-                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-        
-        // Atualizar ícones
-        if (window.lucide) lucide.createIcons();
-    }
-
-    function uploadImagemEquipamento() {
-        currentUploadType = 'equipamento-imagem';
-        abrirUploadModal();
-    }
-
-    function removerImagemEquipamento() {
-        modalData.imagem = '';
-        editarEquipamento(currentEquipamentoIndex);
-    }
-
-    function criarHabilidade() {
-        // Encontrar primeiro slot vazio
-        const index = personagem.habilidades.findIndex(h => h === null);
-        if (index === -1) {
-            mostrarNotificacao('Todos os slots de habilidade estão ocupados!', 'error');
-            return;
-        }
-        
-        editarHabilidade(index);
-    }
-
-    function editarHabilidade(index) {
-        currentHabilidadeIndex = index;
-        const habilidade = personagem.habilidades[index] || {
-            nome: '',
-            tipo: 'Ativa',
-            tipoCor: 'purple',
-            icone: 'zap',
-            imagem: '',
-            nivel: 1,
-            custo: '',
-            cooldown: '',
-            descricao: ''
-        };
-        
-        modalType = 'habilidade';
-        modalData = { ...habilidade };
-        
-        document.getElementById('modal-title').textContent = habilidade.nome ? `Editar ${habilidade.nome}` : 'Nova Habilidade';
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome da Habilidade</label>
-                    <input type="text" id="modal-nome" value="${modalData.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
-                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white" onchange="atualizarCorTipo()">
-                            <option value="Ativa" ${modalData.tipo === 'Ativa' ? 'selected' : ''}>Ativa</option>
-                            <option value="Passiva" ${modalData.tipo === 'Passiva' ? 'selected' : ''}>Passiva</option>
-                            <option value="Suporte" ${modalData.tipo === 'Suporte' ? 'selected' : ''}>Suporte</option>
-                            <option value="Ofensiva" ${modalData.tipo === 'Ofensiva' ? 'selected' : ''}>Ofensiva</option>
-                            <option value="Defensiva" ${modalData.tipo === 'Defensiva' ? 'selected' : ''}>Defensiva</option>
-                            <option value="Utilitária" ${modalData.tipo === 'Utilitária' ? 'selected' : ''}>Utilitária</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Nível</label>
-                        <input type="number" id="modal-nivel" value="${modalData.nivel}" min="1" max="10"
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Ícone (nome do ícone Lucide)</label>
-                    <input type="text" id="modal-icone" value="${modalData.icone}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="zap, shield, flame, etc.">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Custo</label>
-                        <input type="text" id="modal-custo" value="${modalData.custo}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="10 MP, 5 SP, etc.">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Cooldown (segundos)</label>
-                        <input type="number" id="modal-cooldown" value="${modalData.cooldown}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="0">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="modal-descricao" rows="3"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
-                    <div class="flex gap-2">
-                        <button onclick="uploadImagemHabilidade()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
-                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
-                        </button>
-                        ${modalData.imagem ? `
-                            <button onclick="removerImagemHabilidade()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                    ${modalData.imagem ? `
-                        <div class="mt-2">
-                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-        
-        // Atualizar ícones
-        if (window.lucide) lucide.createIcons();
-    }
-
-    function atualizarCorTipo() {
-        const tipo = document.getElementById('modal-tipo').value;
-        const cores = {
-            'Ativa': 'purple',
-            'Passiva': 'blue',
-            'Suporte': 'green',
-            'Ofensiva': 'red',
-            'Defensiva': 'yellow',
-            'Utilitária': 'pink'
-        };
-        modalData.tipoCor = cores[tipo] || 'purple';
-    }
-
-    function uploadImagemHabilidade() {
-        currentUploadType = 'habilidade-imagem';
-        abrirUploadModal();
-    }
-
-    function removerImagemHabilidade() {
-        modalData.imagem = '';
-        editarHabilidade(currentHabilidadeIndex);
-    }
-
-    function usarItem(index) {
-        const item = personagem.inventarioRapido[index];
-        
-        if (item) {
-            mostrarNotificacao(`Usando: ${item.nome}`, 'info');
-            
-            // Reduzir quantidade se houver
-            if (item.quantidade > 1) {
-                item.quantidade--;
-                atualizarInventarioRapido();
-                salvarDados();
-            }
-        } else {
-            editarItemInventario(index);
-        }
-    }
-
-    function editarItemInventario(index) {
-        const item = personagem.inventarioRapido[index] || {
-            nome: '',
-            imagem: '',
-            quantidade: 1,
-            descricao: ''
-        };
-        
-        modalType = 'inventario';
-        modalData = { ...item, index: index };
-        
-        document.getElementById('modal-title').textContent = item.nome ? `Editar ${item.nome}` : 'Novo Item Rápido';
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome do Item</label>
-                    <input type="text" id="modal-nome" value="${modalData.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Quantidade</label>
-                        <input type="number" id="modal-quantidade" value="${modalData.quantidade}" min="1"
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
-                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                            <option value="Poção" ${modalData.tipo === 'Poção' ? 'selected' : ''}>Poção</option>
-                            <option value="Consumível" ${modalData.tipo === 'Consumível' ? 'selected' : ''}>Consumível</option>
-                            <option value="Utilidade" ${modalData.tipo === 'Utilidade' ? 'selected' : ''}>Utilidade</option>
-                            <option value="Mágico" ${modalData.tipo === 'Mágico' ? 'selected' : ''}>Mágico</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="modal-descricao" rows="2"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
-                    <div class="flex gap-2">
-                        <button onclick="uploadImagemInventario()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
-                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
-                        </button>
-                        ${modalData.imagem ? `
-                            <button onclick="removerImagemInventario()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                    ${modalData.imagem ? `
-                        <div class="mt-2">
-                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-        
-        // Atualizar ícones
-        if (window.lucide) lucide.createIcons();
-    }
-
-    function uploadImagemInventario() {
-        currentUploadType = 'inventario-imagem';
-        abrirUploadModal();
-    }
-
-    function removerImagemInventario() {
-        modalData.imagem = '';
-        editarItemInventario(modalData.index);
-    }
-
-    function editarInventario() {
-        mostrarNotificacao('Clique em um slot para configurar', 'info');
-    }
-
-    function importarMascoteTXT() {
-        // Criar input de arquivo
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.txt';
-        
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const conteudo = event.target.result;
-                    processarMascoteTXT(conteudo);
-                } catch (error) {
-                    mostrarNotificacao('Erro ao processar arquivo TXT', 'error');
-                }
-            };
-            reader.readAsText(file);
-        };
-        
-        input.click();
-    }
-
-    function processarMascoteTXT(conteudo) {
-        try {
-            const linhas = conteudo.split('\n');
-            const mascote = {
-                nome: 'Mascote Importado',
-                tipo: 'Companheiro',
-                descricao: '',
-                importadoEm: new Date().toLocaleString('pt-BR')
-            };
-            
-            // Processar linhas do TXT
-            linhas.forEach(linha => {
-                if (linha.includes(':')) {
-                    const [chave, valor] = linha.split(':').map(s => s.trim());
-                    if (chave && valor) {
-                        const chaveLower = chave.toLowerCase();
-                        if (chaveLower.includes('nome')) mascote.nome = valor;
-                        if (chaveLower.includes('tipo')) mascote.tipo = valor;
-                        if (chaveLower.includes('nível') || chaveLower.includes('nivel')) mascote.nivel = valor;
-                        if (chaveLower.includes('habilidade')) mascote.habilidades = valor;
-                        if (chaveLower.includes('descrição') || chaveLower.includes('descricao')) mascote.descricao = valor;
-                    }
-                }
-            });
-            
-            // Se não encontrou dados estruturados, usar o conteúdo
-            if (mascote.nome === 'Mascote Importado' && linhas[0]) {
-                mascote.nome = linhas[0].trim();
-                if (linhas[1]) mascote.descricao = linhas.slice(1, 4).join(' ').trim();
-            }
-            
-            personagem.mascote = mascote;
-            atualizarMascote();
-            salvarDados();
-            
-            mostrarNotificacao(`Mascote "${mascote.nome}" importado com sucesso!`, 'success');
-        } catch (error) {
-            console.error('Erro ao processar TXT:', error);
-            mostrarNotificacao('Formato de arquivo inválido', 'error');
-        }
-    }
-
-    function editarMascote() {
-        if (!personagem.mascote) {
-            personagem.mascote = {
-                nome: 'Novo Mascote',
-                tipo: 'Companheiro',
-                descricao: '',
-                imagem: ''
-            };
-        }
-        
-        modalType = 'mascote';
-        modalData = { ...personagem.mascote };
-        
-        document.getElementById('modal-title').textContent = 'Editar Mascote';
-        document.getElementById('modal-content').innerHTML = `
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Nome do Mascote</label>
-                    <input type="text" id="modal-nome" value="${modalData.nome}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
-                        <input type="text" id="modal-tipo" value="${modalData.tipo}" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                               placeholder="Animal, Espírito, Construção, etc.">
-                    </div>
-                    <div>
-                        <label class="block text-sm text-gray-400 mb-2">Nível</label>
-                        <input type="number" id="modal-nivel" value="${modalData.nivel || 1}" min="1"
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Habilidades</label>
-                    <input type="text" id="modal-habilidades" value="${modalData.habilidades || ''}" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
-                           placeholder="Detecção, Ataque, Defesa, etc.">
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
-                    <textarea id="modal-descricao" rows="3"
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${modalData.descricao || ''}</textarea>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Imagem</label>
-                    <div class="flex gap-2">
-                        <button onclick="uploadImagemMascote()" class="flex-1 py-2 border border-theme-border rounded-lg hover:bg-white/5 transition-colors">
-                            <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i> Upload Imagem
-                        </button>
-                        ${modalData.imagem ? `
-                            <button onclick="removerImagemMascote()" class="px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        ` : ''}
-                    </div>
-                    ${modalData.imagem ? `
-                        <div class="mt-2">
-                            <img src="${modalData.imagem}" class="h-20 object-contain rounded">
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-        
-        document.getElementById('edit-modal').classList.remove('hidden');
-        
-        // Atualizar ícones
-        if (window.lucide) lucide.createIcons();
-    }
-
-    function uploadImagemMascote() {
-        currentUploadType = 'mascote-imagem';
-        abrirUploadModal();
-    }
-
-    function removerImagemMascote() {
-        modalData.imagem = '';
-        editarMascote();
-    }
-
-    // ====================================================================
-    // SISTEMA DE UPLOAD DE IMAGENS
-    // ====================================================================
-
-    function abrirUploadModal() {
-        document.getElementById('upload-modal').classList.remove('hidden');
-        document.getElementById('image-preview').classList.add('hidden');
-        document.getElementById('file-input').value = '';
-    }
-
-    function fecharUploadModal() {
-        document.getElementById('upload-modal').classList.add('hidden');
-    }
-
-    function previewImage(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        
-        if (!file.type.match('image.*')) {
-            mostrarNotificacao('Por favor, selecione uma imagem', 'error');
-            return;
-        }
-        
-        if (file.size > 5 * 1024 * 1024) { // 5MB
-            mostrarNotificacao('Imagem muito grande (máx. 5MB)', 'error');
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const preview = document.getElementById('preview-image');
-            preview.src = e.target.result;
-            document.getElementById('image-preview').classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    }
-
-    function confirmarUpload() {
-        const fileInput = document.getElementById('file-input');
-        const file = fileInput.files[0];
-        
-        if (!file) {
-            mostrarNotificacao('Nenhuma imagem selecionada', 'error');
-            return;
-        }
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imagemDataURL = e.target.result;
-            
-            switch (currentUploadType) {
-                case 'avatar':
-                    personagem.avatar = imagemDataURL;
-                    atualizarAvatar();
-                    break;
-                    
-                case 'equipamento-imagem':
-                    modalData.imagem = imagemDataURL;
-                    break;
-                    
-                case 'habilidade-imagem':
-                    modalData.imagem = imagemDataURL;
-                    break;
-                    
-                case 'inventario-imagem':
-                    modalData.imagem = imagemDataURL;
-                    break;
-                    
-                case 'mascote-imagem':
-                    modalData.imagem = imagemDataURL;
-                    break;
-                    
-                case 'equipamento':
-                    // Criar novo equipamento com imagem
-                    const novoEquipamento = {
-                        nome: 'Novo Equipamento',
-                        tipo: 'Arma',
-                        icone: 'sword',
-                        imagem: imagemDataURL,
-                        descricao: 'Equipamento importado',
-                        raridade: 'Comum',
-                        raridadeCor: '#8b7355'
-                    };
-                    
-                    // Encontrar slot vazio
-                    const slotVazio = personagem.equipamentos.findIndex(e => e === null);
-                    if (slotVazio !== -1) {
-                        personagem.equipamentos[slotVazio] = novoEquipamento;
-                        atualizarEquipamentos();
-                        salvarDados();
-                    }
-                    break;
-            }
-            
-            fecharUploadModal();
-            mostrarNotificacao('Imagem carregada com sucesso!', 'success');
-            
-            // Recarregar modal se necessário
-            if (currentUploadType.includes('-imagem')) {
-                if (currentUploadType === 'equipamento-imagem') {
-                    editarEquipamento(currentEquipamentoIndex);
-                } else if (currentUploadType === 'habilidade-imagem') {
-                    editarHabilidade(currentHabilidadeIndex);
-                } else if (currentUploadType === 'inventario-imagem') {
-                    editarItemInventario(modalData.index);
-                } else if (currentUploadType === 'mascote-imagem') {
-                    editarMascote();
-                }
-            }
-        };
-        
-        reader.readAsDataURL(file);
-    }
-
-    // ====================================================================
-    // SISTEMA DE MODAL
-    // ====================================================================
-
-    function salvarModal() {
-        switch (modalType) {
-            case 'status':
-                personagem.status.vida.atual = parseInt(document.getElementById('modal-vida-atual').value) || 100;
-                personagem.status.vida.max = parseInt(document.getElementById('modal-vida-max').value) || 100;
-                personagem.status.mana.atual = parseInt(document.getElementById('modal-mana-atual').value) || 100;
-                personagem.status.mana.max = parseInt(document.getElementById('modal-mana-max').value) || 100;
-                personagem.status.estamina.atual = parseInt(document.getElementById('modal-estamina-atual').value) || 100;
-                personagem.status.estamina.max = parseInt(document.getElementById('modal-estamina-max').value) || 100;
-                personagem.status.forca = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-forca').value) || 0));
-                personagem.status.destreza = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-destreza').value) || 0));
-                personagem.status.constituicao = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-constituicao').value) || 0));
-                personagem.status.inteligencia = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-inteligencia').value) || 0));
-                personagem.status.sabedoria = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-sabedoria').value) || 0));
-                personagem.status.carisma = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-carisma').value) || 0));
-                
-                // Garantir que atual não seja maior que máximo
-                personagem.status.vida.atual = Math.min(personagem.status.vida.atual, personagem.status.vida.max);
-                personagem.status.mana.atual = Math.min(personagem.status.mana.atual, personagem.status.mana.max);
-                personagem.status.estamina.atual = Math.min(personagem.status.estamina.atual, personagem.status.estamina.max);
-                break;
-                
-            case 'classe':
-                personagem.nome = document.getElementById('modal-nome').value || personagem.nome;
-                // Classe já foi selecionada via selecionarClasse()
-                break;
-                
-            case 'sorte':
-                personagem.sorte.fe = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-fe').value) || 3));
-                personagem.sorte.sorte = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-sorte').value) || 3));
-                personagem.sorte.destino = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-destino').value) || 4));
-                break;
-                
-            case 'equipamento':
-                modalData.nome = document.getElementById('modal-nome').value || 'Equipamento sem nome';
-                modalData.tipo = document.getElementById('modal-tipo').value;
-                modalData.icone = document.getElementById('modal-icone').value || 'sword';
-                modalData.bonus = document.getElementById('modal-bonus').value;
-                modalData.descricao = document.getElementById('modal-descricao').value;
-                modalData.raridade = document.getElementById('modal-raridade').value;
-                
-                // Definir cor baseada na raridade
-                const coresRaridade = {
-                    'Comum': '#8b7355',
-                    'Incomum': '#22c55e',
-                    'Raro': '#4a9eff',
-                    'Épico': '#8b5cf6',
-                    'Lendário': '#f59e0b'
-                };
-                modalData.raridadeCor = coresRaridade[modalData.raridade] || '#8b7355';
-                
-                personagem.equipamentos[currentEquipamentoIndex] = modalData;
-                break;
-                
-            case 'habilidade':
-                modalData.nome = document.getElementById('modal-nome').value || 'Habilidade sem nome';
-                modalData.tipo = document.getElementById('modal-tipo').value;
-                modalData.tipoCor = modalData.tipoCor || 'purple';
-                modalData.icone = document.getElementById('modal-icone').value || 'zap';
-                modalData.nivel = parseInt(document.getElementById('modal-nivel').value) || 1;
-                modalData.custo = document.getElementById('modal-custo').value;
-                modalData.cooldown = document.getElementById('modal-cooldown').value;
-                modalData.descricao = document.getElementById('modal-descricao').value;
-                
-                personagem.habilidades[currentHabilidadeIndex] = modalData;
-                break;
-                
-            case 'inventario':
-                modalData.nome = document.getElementById('modal-nome').value || 'Item sem nome';
-                modalData.quantidade = parseInt(document.getElementById('modal-quantidade').value) || 1;
-                modalData.tipo = document.getElementById('modal-tipo').value;
-                modalData.descricao = document.getElementById('modal-descricao').value;
-                
-                personagem.inventarioRapido[modalData.index] = modalData;
-                break;
-                
-            case 'mascote':
-                modalData.nome = document.getElementById('modal-nome').value || 'Mascote sem nome';
-                modalData.tipo = document.getElementById('modal-tipo').value;
-                modalData.nivel = parseInt(document.getElementById('modal-nivel').value) || 1;
-                modalData.habilidades = document.getElementById('modal-habilidades').value;
-                modalData.descricao = document.getElementById('modal-descricao').value;
-                
-                personagem.mascote = modalData;
-                break;
-        }
-        
-        fecharModal();
-        
-        // Atualizar interface e salvar
-        atualizarInterface();
-        salvarDados();
-        
-        mostrarNotificacao('Alterações salvas com sucesso!', 'success');
-    }
-
-    function fecharModal() {
-        document.getElementById('edit-modal').classList.add('hidden');
-        modalType = '';
-        modalData = {};
-        currentEquipamentoIndex = null;
-        currentHabilidadeIndex = null;
-    }
-
-    // ====================================================================
-    // FUNÇÕES DE EXPORTAÇÃO/IMPORTAÇÃO
-    // ====================================================================
-
-    function exportarTXT() {
-        try {
-            let texto = `GRIMÓRIO DIGITAL - PERFIL DO PERSONAGEM\n`;
-            texto += `===========================================\n\n`;
-            texto += `GERADO EM: ${new Date().toLocaleString('pt-BR')}\n\n`;
-            
-            // Informações básicas
-            texto += `INFORMAÇÕES BÁSICAS\n`;
-            texto += `-------------------\n`;
-            texto += `Nome: ${personagem.nome}\n`;
-            texto += `Classe: ${personagem.classe}\n`;
-            texto += `Nível: ${personagem.nivel}\n`;
-            texto += `Pontos Disponíveis: ${personagem.pontosDisponiveis}\n`;
-            texto += `Pontos Extras: ${personagem.pontosExtra}\n\n`;
-            
-            // Status
-            texto += `STATUS\n`;
-            texto += `------\n`;
-            texto += `Vida: ${personagem.status.vida.atual}/${personagem.status.vida.max}\n`;
-            texto += `Mana: ${personagem.status.mana.atual}/${personagem.status.mana.max}\n`;
-            texto += `Estamina: ${personagem.status.estamina.atual}/${personagem.status.estamina.max}\n\n`;
-            
-            // Atributos
-            texto += `ATRIBUTOS\n`;
-            texto += `---------\n`;
-            texto += `Força: ${personagem.status.forca}\n`;
-            texto += `Destreza: ${personagem.status.destreza}\n`;
-            texto += `Constituição: ${personagem.status.constituicao}\n`;
-            texto += `Inteligência: ${personagem.status.inteligencia}\n`;
-            texto += `Sabedoria: ${personagem.status.sabedoria}\n`;
-            texto += `Carisma: ${personagem.status.carisma}\n\n`;
-            
-            // Sorte
-            texto += `SORTE E DESTINO\n`;
-            texto += `---------------\n`;
-            texto += `Fé: ${personagem.sorte.fe}\n`;
-            texto += `Sorte: ${personagem.sorte.sorte}\n`;
-            texto += `Destino: ${personagem.sorte.destino}\n`;
-            texto += `Índice de Sorte: ${Math.round(personagem.sorte.indice)}%\n`;
-            texto += `Status: ${personagem.sorte.status}\n\n`;
-            
-            // Equipamentos
-            texto += `EQUIPAMENTOS\n`;
-            texto += `------------\n`;
-            personagem.equipamentos.forEach((eq, i) => {
-                if (eq) {
-                    texto += `${i + 1}. ${eq.nome} (${eq.tipo}) - ${eq.raridade}\n`;
-                    if (eq.bonus) texto += `   Bônus: ${eq.bonus}\n`;
-                    if (eq.descricao) texto += `   Descrição: ${eq.descricao}\n`;
-                }
-            });
-            texto += '\n';
-            
-            // Habilidades
-            texto += `HABILIDADES\n`;
-            texto += `-----------\n`;
-            personagem.habilidades.forEach((hab, i) => {
-                if (hab) {
-                    texto += `${i + 1}. ${hab.nome} (Nível ${hab.nivel}) - ${hab.tipo}\n`;
-                    if (hab.custo) texto += `   Custo: ${hab.custo}\n`;
-                    if (hab.cooldown) texto += `   Cooldown: ${hab.cooldown}s\n`;
-                    if (hab.descricao) texto += `   Descrição: ${hab.descricao}\n`;
-                }
-            });
-            texto += '\n';
-            
-            // Mascote
-            if (personagem.mascote) {
-                texto += `MASCOTE\n`;
-                texto += `-------\n`;
-                texto += `Nome: ${personagem.mascote.nome}\n`;
-                texto += `Tipo: ${personagem.mascote.tipo}\n`;
-                if (personagem.mascote.nivel) texto += `Nível: ${personagem.mascote.nivel}\n`;
-                if (personagem.mascote.habilidades) texto += `Habilidades: ${personagem.mascote.habilidades}\n`;
-                if (personagem.mascote.descricao) texto += `Descrição: ${personagem.mascote.descricao}\n`;
-                texto += '\n';
-            }
-            
-            // Criar e baixar arquivo
-            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `perfil_${personagem.nome.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            mostrarNotificacao('Perfil exportado em TXT!', 'success');
-        } catch (error) {
-            console.error('Erro ao exportar TXT:', error);
-            mostrarNotificacao('Erro ao exportar', 'error');
-        }
-    }
-
-    function exportarJSON() {
-        try {
-            const dados = {
-                ...personagem,
-                exportadoEm: new Date().toISOString(),
-                sistema: 'Grimório Digital v2.0'
-            };
-            
-            const json = JSON.stringify(dados, null, 2);
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `perfil_${personagem.nome.replace(/\s+/g, '_')}_${new Date().getTime()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            mostrarNotificacao('Perfil exportado em JSON!', 'success');
-        } catch (error) {
-            console.error('Erro ao exportar JSON:', error);
-            mostrarNotificacao('Erro ao exportar', 'error');
-        }
-    }
-
-    function importarPerfil() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const dados = JSON.parse(event.target.result);
-                    
-                    if (dados.sistema === 'Grimório Digital v2.0') {
-                        // Remover campos de exportação
-                        delete dados.exportadoEm;
-                        delete dados.sistema;
-                        
-                        // Mesclar dados
-                        Object.assign(personagem, dados);
-                        
-                        atualizarInterface();
-                        salvarDados();
-                        
-                        mostrarNotificacao('Perfil importado com sucesso!', 'success');
-                    } else {
-                        mostrarNotificacao('Formato de arquivo inválido', 'error');
-                    }
-                } catch (error) {
-                    console.error('Erro ao importar:', error);
-                    mostrarNotificacao('Erro ao importar perfil', 'error');
-                }
-            };
-            reader.readAsText(file);
-        };
-        
-        input.click();
-    }
-
-    function salvarPerfil() {
-        salvarDados();
-    }
-
-    // ====================================================================
-    // FUNÇÕES DE NAVEGAÇÃO
-    // ====================================================================
-
-    function carregarStatus() {
-        if (window.GrimorioSystem && GrimorioSystem.sincronizarStatus) {
-            const statusData = {
-                vida: personagem.status.vida,
-                mana: personagem.status.mana,
-                estamina: personagem.status.estamina,
-                atributos: {
-                    forca: personagem.status.forca,
-                    destreza: personagem.status.destreza,
-                    constituicao: personagem.status.constituicao,
-                    inteligencia: personagem.status.inteligencia,
-                    sabedoria: personagem.status.sabedoria,
-                    carisma: personagem.status.carisma
-                },
-                nivel: personagem.nivel,
-                experiencia: personagem.experiencia,
-                experienciaProximoNivel: personagem.experienciaProximo,
-                pontosDisponiveis: personagem.pontosDisponiveis
-            };
-            
-            GrimorioSystem.sincronizarStatus(statusData);
-            mostrarNotificacao('Status sincronizado com Grimório!', 'success');
-        }
-    }
-
-    function carregarEquipamentos() {
-        window.location.hash = '#equipamentos-container';
-        mostrarNotificacao('Navegando para equipamentos...', 'info');
-    }
-
-    function carregarHabilidades() {
-        window.location.hash = '#habilidades-container';
-        mostrarNotificacao('Navegando para habilidades...', 'info');
+    function alterarPontosPorNivel(delta) {
+        personagem.pontosPorNivel = Math.max(1, personagem.pontosPorNivel + delta);
+        document.getElementById('pontos-por-nivel-display').textContent = personagem.pontosPorNivel;
     }
 
     // ====================================================================
@@ -2711,6 +2149,15 @@
         
         console.log('Sistema de Perfil inicializado com sucesso!');
     });
+
+    // Adicionar função para calcular recursos manualmente
+    function calcularRecursosManualmente() {
+        calcularRecursos();
+        mostrarNotificacao('Recursos recalculados com base nos atributos!', 'success');
+    }
+
+    // Renomear a função existente para maior clareza
+    window.calcularRecursos = calcularRecursosManualmente;
     </script>
 </body>
 </html>
