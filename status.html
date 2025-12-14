@@ -48,7 +48,7 @@
             font-weight: 600;
         }
         
-        /* NAVBAR CORRIGIDA */
+        /* NAVBAR */
         .navbar {
             background: var(--bg-panel);
             border-bottom: 1px solid var(--border-color);
@@ -305,7 +305,7 @@
             margin-bottom: 0.5rem;
         }
         
-        /* ESTATÍSTICAS DERIVADAS (TEXTUAL) */
+        /* ESTATÍSTICAS DERIVADAS */
         .derived-stats {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
@@ -324,6 +324,34 @@
         
         .derived-item:last-child {
             border-bottom: none;
+        }
+        
+        /* CONTROLES DE PONTOS */
+        .points-controls {
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .points-display {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .points-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            min-width: 100px;
+            text-align: center;
         }
         
         /* MODAL */
@@ -353,6 +381,64 @@
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
         }
         
         /* UTILITIES */
@@ -361,6 +447,7 @@
         .justify-between { justify-content: space-between; }
         .gap-2 { gap: 0.5rem; }
         .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
         .mb-4 { margin-bottom: 1rem; }
         .mb-6 { margin-bottom: 1.5rem; }
         .mt-4 { margin-top: 1rem; }
@@ -368,6 +455,7 @@
         .w-full { width: 100%; }
         .text-center { text-align: center; }
         .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
         
         /* BOTÕES */
         .btn {
@@ -380,6 +468,7 @@
             align-items: center;
             gap: 0.5rem;
             transition: all 0.2s;
+            font-size: 0.875rem;
         }
         
         .btn-primary {
@@ -397,9 +486,19 @@
             color: white;
         }
         
+        .btn-warning {
+            background: var(--accent-yellow);
+            color: white;
+        }
+        
         .btn:hover {
             transform: translateY(-1px);
             filter: brightness(110%);
+        }
+        
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
         }
         
         /* CORES DOS ATRIBUTOS */
@@ -453,11 +552,34 @@
             .nav-button i {
                 margin-right: 0;
             }
+            
+            .points-controls .flex {
+                flex-direction: column;
+            }
+        }
+        
+        /* ANIMAÇÕES */
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
         }
     </style>
 </head>
 <body>
-    <!-- NAVBAR CORRIGIDA -->
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="flex items-center gap-3">
@@ -487,6 +609,34 @@
 
     <!-- CONTEÚDO PRINCIPAL -->
     <div class="container">
+        <!-- CONTROLE DE PONTOS -->
+        <section class="mb-6 points-controls">
+            <h2 class="section-title">
+                <i data-lucide="coins"></i>
+                Controle de Pontos
+            </h2>
+            
+            <div class="points-display">
+                <span>Pontos Disponíveis:</span>
+                <div class="points-value" id="pontos-disponiveis">0</div>
+            </div>
+            
+            <div class="flex gap-2 justify-center flex-wrap" ,style="align = center">
+                <button onclick="adicionarPontos(1)" class="btn btn-sm" style="background: rgba(74, 158, 255, 0.2); color: var(--accent-blue);">
+                    <i data-lucide="plus"></i> +1
+                </button>
+                <button onclick="adicionarPontos(5)" class="btn btn-sm" style="background: rgba(34, 197, 94, 0.2); color: var(--accent-green);">
+                    <i data-lucide="plus"></i> +5
+                </button>
+                <button onclick="adicionarPontos(10)" class="btn btn-sm" style="background: rgba(139, 92, 246, 0.2); color: var(--accent-purple);">
+                    <i data-lucide="plus"></i> +10
+                </button>
+                <button onclick="resetarPontos()" class="btn btn-sm btn-danger">
+                    <i data-lucide="trash-2"></i> Zerar
+                </button>
+            </div>
+        </section>
+
         <!-- RECURSOS VITAIS -->
         <section class="mb-6">
             <h2 class="section-title">
@@ -510,7 +660,7 @@
                     <div class="stat-value color-vida" id="vida-atual">100</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="vida-atual" data-max="200">
+                        <div class="progress-bar" data-stat="vida-atual" data-max="100">
                             <div class="progress-fill bg-vida" style="width: 50%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -537,7 +687,7 @@
                     <div class="stat-value color-mana" id="mana-atual">100</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="mana-atual" data-max="200">
+                        <div class="progress-bar" data-stat="mana-atual" data-max="100">
                             <div class="progress-fill bg-mana" style="width: 50%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -564,7 +714,7 @@
                     <div class="stat-value color-estamina" id="estamina-atual">100</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="estamina-atual" data-max="200">
+                        <div class="progress-bar" data-stat="estamina-atual" data-max="100">
                             <div class="progress-fill bg-estamina" style="width: 50%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -756,32 +906,19 @@
                 </div>
             </div>
             
-            <div class="flex justify-center gap-3 mt-4">
+            <div class="flex justify-center gap-3 mt-4 flex-wrap">
                 <button onclick="distribuirAleatorio()" class="btn btn-primary">
                     <i data-lucide="dice-5"></i>
                     Sorteio Aleatório
+                </button>
+                <button onclick="distribuirAleatorioMinimo()" class="btn btn-warning">
+                    <i data-lucide="dice-6"></i>
+                    Distribuir Mínimo
                 </button>
                 <button onclick="resetarAtributos()" class="btn btn-danger">
                     <i data-lucide="trash-2"></i>
                     Resetar
                 </button>
-            </div>
-            <!-- APÓS os botões de Sorteio Aleatório e Resetar -->
-            <div class="text-center mt-4">
-                <div class="mb-2 text-sm" style="color: var(--text-secondary);">
-                    Pontos disponíveis para sorteio: <span id="pontos-disponiveis">0</span>
-                </div>
-                <div class="flex gap-2 justify-center">
-                    <button onclick="adicionarPontos(1)" class="btn" style="background: rgba(74, 158, 255, 0.2); color: var(--accent-blue);">
-                        <i data-lucide="plus"></i> +1 Ponto
-                    </button>
-                    <button onclick="adicionarPontos(5)" class="btn" style="background: rgba(34, 197, 94, 0.2); color: var(--accent-green);">
-                        <i data-lucide="plus"></i> +5 Pontos
-                    </button>
-                    <button onclick="adicionarPontos(10)" class="btn" style="background: rgba(139, 92, 246, 0.2); color: var(--accent-purple);">
-                        <i data-lucide="plus"></i> +10 Pontos
-                    </button>
-                </div>
             </div>
         </section>
 
@@ -811,7 +948,7 @@
                 <div class="destiny-result">
                     <div class="destiny-percentage" id="indice-sorte">--</div>
                     <div class="text-sm" id="calculo-sorte">
-                        ((Fé + Destino) × 2 - Sorte) ÷ 2
+                        ((Fé × 0.7 + Destino × 0.5) - Sorte) × 0.8
                     </div>
                 </div>
                 
@@ -867,6 +1004,18 @@
                     <span>Percepção:</span>
                     <span style="color: var(--accent-purple);" id="calc-percepcao">0</span>
                 </div>
+                <div class="derived-item">
+                    <span>Pontos de Vida Máx:</span>
+                    <span style="color: var(--accent-red);" id="calc-vida-max">100</span>
+                </div>
+                <div class="derived-item">
+                    <span>Pontos de Mana Máx:</span>
+                    <span style="color: var(--accent-blue);" id="calc-mana-max">100</span>
+                </div>
+                <div class="derived-item">
+                    <span>Pontos Estamina Máx:</span>
+                    <span style="color: var(--accent-green);" id="calc-estamina-max">100</span>
+                </div>
                 <div class="text-sm mt-4" style="color: var(--text-secondary);">
                     *Calculadas automaticamente com base nos atributos
                 </div>
@@ -882,35 +1031,50 @@
     <!-- MODAL DE CONFIGURAÇÕES -->
     <div id="modal-config" class="modal">
         <div class="modal-content">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="font-cinzel" style="color: var(--accent-blue);">
+            <div class="modal-header">
+                <h3 class="modal-title">
                     <i data-lucide="settings"></i>
-                    Configurações
+                    Configurações do Sistema
                 </h3>
-                <button onclick="fecharModal('modal-config')" class="btn" style="background: rgba(255,255,255,0.1);">
+                <button onclick="fecharModal('modal-config')" class="modal-close">
                     <i data-lucide="x"></i>
                 </button>
             </div>
             
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm mb-2">Limite por Atributo</label>
-                    <input type="number" id="config-limite-atributo" class="w-full p-2 rounded" value="100" min="10" max="500">
+                <div class="form-group">
+                    <label class="form-label">Limite Máximo por Atributo</label>
+                    <input type="number" id="config-limite-atributo" class="form-input" value="100" min="10" max="500">
                 </div>
                 
-                <div>
-                    <label class="block text-sm mb-2">Pontos por Nível</label>
-                    <input type="number" id="config-pontos-nivel" class="w-full p-2 rounded" value="5" min="0" max="50">
+                <div class="form-group">
+                    <label class="form-label">Pontos Ganhos por Nível</label>
+                    <input type="number" id="config-pontos-nivel" class="form-input" value="2" min="0" max="1000">
                 </div>
                 
-                <div>
-                    <label class="block text-sm mb-2">Mínimo para Sorteio</label>
-                    <input type="number" id="config-minimo-aleatorio" class="w-full p-2 rounded" value="18" min="0" max="200">
+                <div class="form-group">
+                    <label class="form-label">Mínimo para Sorteio Aleatório</label>
+                    <input type="number" id="config-minimo-aleatorio" class="form-input" value="10" min="0" max="200">
                 </div>
                 
-                <div>
-                    <label class="block text-sm mb-2">Rolagens de Destino</label>
-                    <input type="number" id="config-rolagens-maximas" class="w-full p-2 rounded" value="3" min="1" max="10">
+                <div class="form-group">
+                    <label class="form-label">Mínimo para Distribuição</label>
+                    <input type="number" id="config-minimo-distribuicao" class="form-input" value="10" min="0" max="50">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Rolagens de Destino Máximas</label>
+                    <input type="number" id="config-rolagens-maximas" class="form-input" value="5" min="1" max="10">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Dificuldade do Destino</label>
+                    <select style="color: var(--accent-black);"   id="config-dificuldade-destino" class="form-input">
+                        <option value="1">Fácil</option>
+                        <option value="2" selected>Normal</option>
+                        <option value="3">Difícil</option>
+                        <option value="4">Muito Difícil</option>
+                    </select>
                 </div>
             </div>
             
@@ -920,7 +1084,131 @@
                 </button>
                 <button onclick="salvarConfiguracoes()" class="btn btn-success w-full">
                     <i data-lucide="save"></i>
-                    Salvar
+                    Salvar Configurações
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE EXPORTAÇÃO -->
+    <div id="modal-export" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i data-lucide="download"></i>
+                    Exportar Dados
+                </h3>
+                <button onclick="fecharModal('modal-export')" class="modal-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label">Formato de Exportação</label>
+                    <select id="export-format" class="form-input">
+                        <option value="json">JSON (Completo)</option>
+                        <option value="txt">Texto (Simplificado)</option>
+                        <option value="csv">CSV (Planilha)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">O que exportar</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="export-status" checked class="rounded">
+                            <span class="text-sm">Status Atual</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="export-grimorio" checked class="rounded">
+                            <span class="text-sm">Dados do Grimorio</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="export-config" checked class="rounded">
+                            <span class="text-sm">Configurações</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="export-preview" class="form-group">
+                    <label class="form-label">Pré-visualização</label>
+                    <textarea id="export-content" class="form-input" rows="8" readonly style="font-family: monospace; font-size: 0.75rem; resize: none;"></textarea>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="fecharModal('modal-export')" class="btn w-full" style="background: rgba(255,255,255,0.1);">
+                    Cancelar
+                </button>
+                <button onclick="executarExportacao()" class="btn btn-success w-full">
+                    <i data-lucide="download"></i>
+                    Exportar Arquivo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE IMPORTAÇÃO -->
+    <div id="modal-import" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i data-lucide="upload"></i>
+                    Importar Dados
+                </h3>
+                <button onclick="fecharModal('modal-import')" class="modal-close">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="form-group">
+                    <label class="form-label">Selecionar Arquivo</label>
+                    <input type="file" id="import-file" class="form-input" accept=".json,.txt,.csv">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tipo de Arquivo</label>
+                    <select id="import-type" class="form-input">
+                        <option value="auto">Detectar Automaticamente</option>
+                        <option value="json">JSON (Grimorio)</option>
+                        <option value="txt">Texto (Status)</option>
+                        <option value="csv">CSV (Planilha)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">O que importar</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="import-status" checked class="rounded">
+                            <span class="text-sm">Status Atual</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="import-grimorio" checked class="rounded">
+                            <span class="text-sm">Dados do Grimorio</span>
+                        </label>
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="import-config" class="rounded">
+                            <span class="text-sm">Configurações</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div id="import-preview" class="form-group" style="display: none;">
+                    <label class="form-label">Pré-visualização</label>
+                    <textarea id="import-content" class="form-input" rows="6" readonly style="font-family: monospace; font-size: 0.75rem; resize: none;"></textarea>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="fecharModal('modal-import')" class="btn w-full" style="background: rgba(255,255,255,0.1);">
+                    Cancelar
+                </button>
+                <button onclick="executarImportacao()" class="btn btn-success w-full">
+                    <i data-lucide="upload"></i>
+                    Importar Dados
                 </button>
             </div>
         </div>
@@ -931,7 +1219,7 @@
     lucide.createIcons();
     
     // Sistema de notificações
-    function mostrarNotificacao(mensagem, tipo = 'info') {
+    function mostrarNotificacao(mensagem, tipo = 'info', duracao = 3000) {
         const notification = document.createElement('div');
         notification.style.cssText = `
             position: fixed;
@@ -951,6 +1239,7 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         `;
         
         notification.innerHTML = `
@@ -966,8 +1255,11 @@
         setTimeout(() => {
             notification.style.opacity = '0';
             notification.style.transform = 'translateX(100%)';
+            notification.style.transition = 'opacity 0.3s, transform 0.3s';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, duracao);
+        
+        return notification;
     }
     
     // Dados do sistema
@@ -994,16 +1286,841 @@
             rolagens: 0,
             fixado: false
         },
+        pontos: {
+            disponiveis: 0,
+            gastos: 0,
+            totalGanhos: 0
+        },
         config: {
             limiteAtributo: 100,
-            pontosPorNivel: 5,
-            minimoAleatorio: 18,
-            rolagensMaximas: 3
+            pontosPorNivel: 2,
+            minimoAleatorio: 10,
+            minimoDistribuicao: 10,
+            rolagensMaximas: 5,
+            dificuldadeDestino: 2
         }
     };
     
-    // Array global para armazenar as progress bars
     let progressBars = [];
+    
+    // Controles de progress bar
+    class ProgressBarControl {
+        constructor(element) {
+            this.bar = element;
+            this.fill = element.querySelector('.progress-fill');
+            this.handle = element.querySelector('.progress-handle');
+            this.statId = element.dataset.stat;
+            this.max = parseInt(element.dataset.max) || 100;
+            this.isDragging = false;
+            
+            if (!this.bar || !this.fill || !this.handle) {
+                console.warn('Elementos da progress bar não encontrados:', element);
+                return;
+            }
+            
+            this.init();
+        }
+        
+        init() {
+            try {
+                this.bar.addEventListener('click', (e) => this.handleClick(e));
+                this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
+                document.addEventListener('mousemove', (e) => this.drag(e));
+                document.addEventListener('mouseup', () => this.stopDrag());
+                
+                // Touch events para mobile
+                this.bar.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.handleClick(e.touches[0]);
+                }, { passive: false });
+                
+                this.handle.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.startDrag(e.touches[0]);
+                }, { passive: false });
+                
+                document.addEventListener('touchmove', (e) => {
+                    if (this.isDragging) {
+                        e.preventDefault();
+                        this.drag(e.touches[0]);
+                    }
+                }, { passive: false });
+                
+                document.addEventListener('touchend', () => this.stopDrag());
+            } catch (error) {
+                console.error('Erro ao inicializar progress bar:', error);
+            }
+        }
+        
+        getCurrentValue() {
+            const valueElement = document.getElementById(this.statId);
+            return valueElement ? parseInt(valueElement.textContent) || 0 : 0;
+        }
+        
+        setValue(value, skipSave = false) {
+            const clampedValue = Math.max(0, Math.min(this.max, value));
+            const percentage = (clampedValue / this.max) * 100;
+            
+            this.fill.style.width = `${percentage}%`;
+            
+            const valueElement = document.getElementById(this.statId);
+            if (valueElement) {
+                valueElement.textContent = clampedValue;
+            }
+            
+            // Atualizar dados
+            this.updateData(clampedValue, skipSave);
+            
+            return clampedValue;
+        }
+        
+        updateData(value, skipSave = false) {
+            // Recursos
+            if (this.statId.includes('-atual')) {
+                const resource = this.statId.split('-')[0];
+                if (statusData.recursos[resource]) {
+                    statusData.recursos[resource].atual = value;
+                    
+                    // Atualizar máximo se necessário
+                    const maxElement = document.getElementById(`${resource}-maxima`);
+                    if (maxElement && statusData.recursos[resource].max) {
+                        maxElement.textContent = statusData.recursos[resource].max;
+                    }
+                }
+            }
+            // Atributos
+            else if (statusData.atributos[this.statId] !== undefined) {
+                statusData.atributos[this.statId] = value;
+            }
+            
+            if (!skipSave) {
+                salvarDados();
+                updateDerivedStats();
+                salvarNoGrimorio();
+            }
+        }
+        
+        handleClick(e) {
+            if (this.isDragging) return;
+            
+            try {
+                const rect = this.bar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                const value = Math.round((percentage / 100) * this.max);
+                
+                this.setValue(value);
+            } catch (error) {
+                console.error('Erro no handleClick:', error);
+            }
+        }
+        
+        startDrag(e) {
+            this.isDragging = true;
+            e.preventDefault();
+        }
+        
+        drag(e) {
+            if (!this.isDragging) return;
+            
+            try {
+                const rect = this.bar.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+                const value = Math.round((percentage / 100) * this.max);
+                
+                this.setValue(value);
+            } catch (error) {
+                console.error('Erro no drag:', error);
+            }
+        }
+        
+        stopDrag() {
+            this.isDragging = false;
+        }
+    }
+    
+    // Inicializar todas as progress bars
+    function inicializarProgressBars() {
+        progressBars = [];
+        const bars = document.querySelectorAll('.progress-bar');
+        
+        bars.forEach(bar => {
+            try {
+                const pb = new ProgressBarControl(bar);
+                if (pb.bar) {
+                    progressBars.push(pb);
+                }
+            } catch (error) {
+                console.error('Erro ao criar progress bar:', error);
+            }
+        });
+    }
+    
+    // SISTEMA DE DESTINO MELHORADO
+    function rolarSorte() {
+        if (statusData.sorte.fixado) {
+            mostrarNotificacao('Destino já foi fixado!', 'warning');
+            return;
+        }
+        
+        if (statusData.sorte.rolagens >= statusData.config.rolagensMaximas) {
+            mostrarNotificacao(`Máximo de ${statusData.config.rolagensMaximas} rolagens atingido!`, 'warning');
+            return;
+        }
+        
+        // Sistema mais difícil
+        const dificuldade = statusData.config.dificuldadeDestino;
+        const base = 100;
+        const divisor = 1 + (dificuldade * 0.5); // Aumenta a dificuldade
+        
+        const dado1 = Math.floor(Math.random() * base) + 1;
+        const dado2 = Math.floor(Math.random() * base) + 1;
+        const dado3 = Math.floor(Math.random() * base) + 1;
+        
+        // Fórmula mais complexa e difícil
+        const resultado = Math.max(1, Math.min(100, Math.round(
+            ((dado1 * 0.7 + dado3 * 0.5) - dado2) * 0.8 / divisor
+        )));
+        
+        statusData.sorte.dado1 = dado1;
+        statusData.sorte.dado2 = dado2;
+        statusData.sorte.dado3 = dado3;
+        statusData.sorte.indice = resultado;
+        statusData.sorte.rolagens++;
+        
+        // Atualizar display
+        document.getElementById('dado-fe').textContent = dado1;
+        document.getElementById('dado-sorte').textContent = dado2;
+        document.getElementById('dado-destino').textContent = dado3;
+        document.getElementById('indice-sorte').textContent = `${resultado}%`;
+        
+        // Barra de progresso
+        const destinyFill = document.querySelector('.destiny-section .progress-fill');
+        if (destinyFill) {
+            destinyFill.style.width = `${resultado}%`;
+        }
+        
+        // Status
+        let status = 'Neutro';
+        let statusColor = 'var(--destiny-gold)';
+        
+        if (resultado > 80) {
+            status = 'SORTE LENDÁRIA';
+            statusColor = '#FFD700';
+        } else if (resultado > 65) {
+            status = 'Sorte Excelente';
+            statusColor = '#22c55e';
+        } else if (resultado > 55) {
+            status = 'Sortudo';
+            statusColor = '#4a9eff';
+        } else if (resultado < 20) {
+            status = 'AZAR EXTREMO';
+            statusColor = '#ff4757';
+        } else if (resultado < 35) {
+            status = 'Azar Crítico';
+            statusColor = '#f59e0b';
+        } else if (resultado < 45) {
+            status = 'Azarado';
+            statusColor = '#a0a0a0';
+        }
+        
+        statusData.sorte.status = status;
+        const statusElement = document.getElementById('status-sorte');
+        if (statusElement) {
+            statusElement.textContent = status;
+            statusElement.style.color = statusColor;
+        }
+        
+        // Fórmula
+        const formula = document.getElementById('calculo-sorte');
+        if (formula) {
+            formula.textContent = 
+                `((${dado1} × 0.7 + ${dado3} × 0.5) - ${dado2}) × 0.8 ÷ ${divisor} = ${resultado}`;
+        }
+        
+        // Rolagens restantes
+        const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
+        const rollsInfo = document.getElementById('rolls-info');
+        if (rollsInfo) {
+            rollsInfo.textContent = 
+                `Rolagens restantes: ${restantes}`;
+        }
+        
+        mostrarNotificacao(`Destino: ${resultado}% (${status})`, resultado > 50 ? 'success' : 'warning');
+        salvarDados();
+    }
+    
+    function fixarSorte() {
+        if (statusData.sorte.indice === 0) {
+            mostrarNotificacao('Role o destino primeiro!', 'warning');
+            return;
+        }
+        
+        statusData.sorte.fixado = true;
+        mostrarNotificacao(`Destino fixado em ${statusData.sorte.indice}%!`, 'success');
+        document.getElementById('rolls-info').textContent = 'Destino fixado - Imutável';
+        salvarDados();
+    }
+    
+    // SORTEIO ALEATÓRIO MELHORADO
+    function distribuirAleatorio() {
+        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
+        const totalAtual = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
+        
+        if (totalAtual >= statusData.config.minimoAleatorio) {
+            // Distribuir pontos baseados nos pontos disponíveis
+            const pontos = Math.min(statusData.pontos.disponiveis, statusData.config.pontosPorNivel);
+            
+            if (pontos <= 0) {
+                mostrarNotificacao('Sem pontos disponíveis para distribuir!', 'warning');
+                return;
+            }
+            
+            for (let i = 0; i < pontos; i++) {
+                // Distribuição mais inteligente - atributos mais baixos têm mais chance
+                const weights = atributos.map(attr => {
+                    const valor = statusData.atributos[attr];
+                    const peso = Math.max(1, (statusData.config.limiteAtributo - valor) * 2);
+                    return peso;
+                });
+                
+                const totalWeight = weights.reduce((a, b) => a + b, 0);
+                let random = Math.random() * totalWeight;
+                
+                let chosenAttr = atributos[0];
+                for (let j = 0; j < weights.length; j++) {
+                    random -= weights[j];
+                    if (random <= 0) {
+                        chosenAttr = atributos[j];
+                        break;
+                    }
+                }
+                
+                if (statusData.atributos[chosenAttr] < statusData.config.limiteAtributo) {
+                    statusData.atributos[chosenAttr]++;
+                    
+                    // Atualizar visual
+                    const progressBar = progressBars.find(pb => pb.statId === chosenAttr);
+                    if (progressBar) {
+                        progressBar.setValue(statusData.atributos[chosenAttr]);
+                    } else {
+                        // Fallback
+                        const element = document.getElementById(chosenAttr);
+                        if (element) element.textContent = statusData.atributos[chosenAttr];
+                    }
+                }
+                
+                // Gastar ponto
+                if (statusData.pontos.disponiveis > 0) {
+                    statusData.pontos.disponiveis--;
+                    statusData.pontos.gastos++;
+                }
+            }
+            
+            atualizarDisplayPontos();
+            mostrarNotificacao(`${pontos} pontos distribuídos aleatoriamente!`, 'success');
+            salvarDados();
+            updateDerivedStats();
+            salvarNoGrimorio();
+        } else {
+            mostrarNotificacao(`Mínimo de ${statusData.config.minimoAleatorio} pontos totais necessários`, 'warning');
+        }
+    }
+    
+    // NOVA FUNÇÃO: Distribuir pontos mínimos
+    function distribuirAleatorioMinimo() {
+        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
+        const minimo = statusData.config.minimoDistribuicao;
+        
+        // Verificar se já tem pontos suficientes
+        let precisamosDistribuir = false;
+        for (const attr of atributos) {
+            if (statusData.atributos[attr] < minimo) {
+                precisamosDistribuir = true;
+                break;
+            }
+        }
+        
+        if (!precisamosDistribuir) {
+            mostrarNotificacao('Todos atributos já atingiram o mínimo!', 'info');
+            return;
+        }
+        
+        // Calcular pontos necessários
+        let pontosNecessarios = 0;
+        for (const attr of atributos) {
+            if (statusData.atributos[attr] < minimo) {
+                pontosNecessarios += minimo - statusData.atributos[attr];
+            }
+        }
+        
+        // Verificar se tem pontos suficientes
+        if (statusData.pontos.disponiveis < pontosNecessarios) {
+            mostrarNotificacao(`Precisa de ${pontosNecessarios} pontos para atingir o mínimo!`, 'warning');
+            return;
+        }
+        
+        // Distribuir até atingir o mínimo
+        for (const attr of atributos) {
+            while (statusData.atributos[attr] < minimo && statusData.pontos.disponiveis > 0) {
+                statusData.atributos[attr]++;
+                statusData.pontos.disponiveis--;
+                statusData.pontos.gastos++;
+                
+                // Atualizar visual
+                const progressBar = progressBars.find(pb => pb.statId === attr);
+                if (progressBar) {
+                    progressBar.setValue(statusData.atributos[attr]);
+                } else {
+                    const element = document.getElementById(attr);
+                    if (element) element.textContent = statusData.atributos[attr];
+                }
+            }
+        }
+        
+        atualizarDisplayPontos();
+        mostrarNotificacao(`Distribuído até mínimo ${minimo} em todos atributos!`, 'success');
+        salvarDados();
+        updateDerivedStats();
+        salvarNoGrimorio();
+    }
+    
+    function resetarAtributos() {
+        if (confirm('Resetar todos os atributos para 0? Pontos serão devolvidos.')) {
+            const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
+            let pontosDevolvidos = 0;
+            
+            atributos.forEach(attr => {
+                pontosDevolvidos += statusData.atributos[attr];
+                statusData.atributos[attr] = 0;
+                
+                const progressBar = progressBars.find(pb => pb.statId === attr);
+                if (progressBar) {
+                    progressBar.setValue(0);
+                } else {
+                    const element = document.getElementById(attr);
+                    if (element) element.textContent = '0';
+                }
+            });
+            
+            // Devolver pontos
+            statusData.pontos.disponiveis += pontosDevolvidos;
+            statusData.pontos.gastos -= pontosDevolvidos;
+            atualizarDisplayPontos();
+            
+            mostrarNotificacao(`Atributos resetados! ${pontosDevolvidos} pontos devolvidos.`, 'info');
+            salvarDados();
+            updateDerivedStats();
+            salvarNoGrimorio();
+        }
+    }
+    
+    function restaurarRecursos() {
+        if (confirm('Restaurar todos os recursos?')) {
+            ['vida', 'mana', 'estamina'].forEach(resource => {
+                statusData.recursos[resource].atual = statusData.recursos[resource].max;
+                
+                const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
+                if (progressBar) {
+                    progressBar.setValue(statusData.recursos[resource].atual);
+                } else {
+                    const element = document.getElementById(`${resource}-atual`);
+                    if (element) element.textContent = statusData.recursos[resource].atual;
+                }
+            });
+            
+            mostrarNotificacao('Recursos restaurados!', 'success');
+            salvarDados();
+            salvarNoGrimorio();
+        }
+    }
+    
+    // SISTEMA DE PONTOS
+    function adicionarPontos(quantidade) {
+        statusData.pontos.disponiveis += quantidade;
+        statusData.pontos.totalGanhos += quantidade;
+        
+        atualizarDisplayPontos();
+        mostrarNotificacao(`+${quantidade} pontos adicionados! Total: ${statusData.pontos.disponiveis}`, 'success');
+        salvarDados();
+    }
+    
+    function resetarPontos() {
+        if (confirm('Zerar todos os pontos? Isso resetará o histórico.')) {
+            statusData.pontos.disponiveis = 0;
+            statusData.pontos.gastos = 0;
+            statusData.pontos.totalGanhos = 0;
+            
+            atualizarDisplayPontos();
+            mostrarNotificacao('Pontos zerados!', 'info');
+            salvarDados();
+        }
+    }
+    
+    function atualizarDisplayPontos() {
+        const pontosElement = document.getElementById('pontos-disponiveis');
+        if (pontosElement) {
+            pontosElement.textContent = statusData.pontos.disponiveis;
+        }
+    }
+    
+    // ESTATÍSTICAS DERIVADAS MELHORADAS
+    function updateDerivedStats() {
+        const { forca, destreza, constituicao, inteligencia, sabedoria } = statusData.atributos;
+        
+        // Cálculos mais interessantes
+        const blindagem = Math.floor((constituicao * 0.7) + (forca * 0.3));
+        const velocidade = Math.floor((destreza * 0.6) + (constituicao * 0.4));
+        const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
+        const percepcao = Math.floor((sabedoria * 0.8) + (inteligencia * 0.2));
+        
+        // Baseado nas fórmulas do Grimorio
+        const vidaMax = Math.max(10, constituicao * 5);
+        const manaMax = inteligencia * 2;
+        const estaminaMax = Math.max(20, (constituicao + destreza) * 2);
+        
+        // Atualizar elementos
+        const elements = {
+            'calc-blindagem': blindagem,
+            'calc-velocidade': velocidade,
+            'calc-iniciativa': iniciativa,
+            'calc-percepcao': percepcao,
+            'calc-vida-max': vidaMax,
+            'calc-mana-max': manaMax,
+            'calc-estamina-max': estaminaMax
+        };
+        
+        Object.entries(elements).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.textContent = value;
+            }
+        });
+    }
+    
+    // SISTEMA DE IMPORTAÇÃO/EXPORTAÇÃO
+    function abrirModalExport() {
+        atualizarPreviewExport();
+        document.getElementById('modal-export').classList.add('active');
+    }
+    
+    function atualizarPreviewExport() {
+        const format = document.getElementById('export-format').value;
+        const exportContent = document.getElementById('export-content');
+        
+        const dados = {
+            statusData: statusData,
+            grimorioData: window.GrimorioSystem ? GrimorioSystem.carregarPersonagem() : null,
+            config: statusData.config,
+            exportadoEm: new Date().toISOString(),
+            versao: '3.0-grimorio'
+        };
+        
+        let preview = '';
+        
+        switch(format) {
+            case 'json':
+                preview = JSON.stringify(dados, null, 2);
+                break;
+            case 'txt':
+                preview = `=== GRIMÓRIO DIGITAL - STATUS ===
+Data: ${new Date().toLocaleString()}
+
+ATRIBUTOS:
+Força: ${statusData.atributos.forca}
+Destreza: ${statusData.atributos.destreza}
+Constituição: ${statusData.atributos.constituicao}
+Inteligência: ${statusData.atributos.inteligencia}
+Sabedoria: ${statusData.atributos.sabedoria}
+Carisma: ${statusData.atributos.carisma}
+
+RECURSOS:
+Vida: ${statusData.recursos.vida.atual}/${statusData.recursos.vida.max}
+Mana: ${statusData.recursos.mana.atual}/${statusData.recursos.mana.max}
+Estamina: ${statusData.recursos.estamina.atual}/${statusData.recursos.estamina.max}
+
+DESTINO:
+Índice: ${statusData.sorte.indice}%
+Fé: ${statusData.sorte.dado1} | Sorte: ${statusData.sorte.dado2} | Destino: ${statusData.sorte.dado3}
+Status: ${statusData.sorte.status}
+
+PONTOS:
+Disponíveis: ${statusData.pontos.disponiveis}
+Gastos: ${statusData.pontos.gastos}
+Total Ganhos: ${statusData.pontos.totalGanhos}`;
+                break;
+            case 'csv':
+                preview = `Atributo,Valor,Máximo
+Força,${statusData.atributos.forca},100
+Destreza,${statusData.atributos.destreza},100
+Constituição,${statusData.atributos.constituicao},100
+Inteligência,${statusData.atributos.inteligencia},100
+Sabedoria,${statusData.atributos.sabedoria},100
+Carisma,${statusData.atributos.carisma},100
+Vida,${statusData.recursos.vida.atual},${statusData.recursos.vida.max}
+Mana,${statusData.recursos.mana.atual},${statusData.recursos.mana.max}
+Estamina,${statusData.recursos.estamina.atual},${statusData.recursos.estamina.max}
+Destino,${statusData.sorte.indice},100`;
+                break;
+        }
+        
+        exportContent.value = preview;
+    }
+    
+    function executarExportacao() {
+        const format = document.getElementById('export-format').value;
+        const exportStatus = document.getElementById('export-status').checked;
+        const exportGrimorio = document.getElementById('export-grimorio').checked;
+        const exportConfig = document.getElementById('export-config').checked;
+        
+        let dados = {};
+        
+        if (exportStatus) {
+            dados.statusData = statusData;
+        }
+        
+        if (exportGrimorio && window.GrimorioSystem) {
+            dados.grimorioData = GrimorioSystem.carregarPersonagem();
+        }
+        
+        if (exportConfig) {
+            dados.config = statusData.config;
+        }
+        
+        dados.exportadoEm = new Date().toISOString();
+        dados.versao = '3.0-grimorio';
+        
+        let conteudo, tipo, extensao;
+        
+        switch(format) {
+            case 'json':
+                conteudo = JSON.stringify(dados, null, 2);
+                tipo = 'application/json';
+                extensao = 'json';
+                break;
+            case 'txt':
+                conteudo = `=== GRIMÓRIO DIGITAL - STATUS ===
+Data: ${new Date().toLocaleString()}
+
+ATRIBUTOS:
+Força: ${statusData.atributos.forca}
+Destreza: ${statusData.atributos.destreza}
+Constituição: ${statusData.atributos.constituicao}
+Inteligência: ${statusData.atributos.inteligencia}
+Sabedoria: ${statusData.atributos.sabedoria}
+Carisma: ${statusData.atributos.carisma}
+
+RECURSOS:
+Vida: ${statusData.recursos.vida.atual}/${statusData.recursos.vida.max}
+Mana: ${statusData.recursos.mana.atual}/${statusData.recursos.mana.max}
+Estamina: ${statusData.recursos.estamina.atual}/${statusData.recursos.estamina.max}
+
+DESTINO:
+Índice: ${statusData.sorte.indice}%
+Status: ${statusData.sorte.status}
+
+PONTOS:
+Disponíveis: ${statusData.pontos.disponiveis}
+Gastos: ${statusData.pontos.gastos}`;
+                tipo = 'text/plain';
+                extensao = 'txt';
+                break;
+            case 'csv':
+                conteudo = `Atributo,Valor,Máximo
+Força,${statusData.atributos.forca},100
+Destreza,${statusData.atributos.destreza},100
+Constituição,${statusData.atributos.constituicao},100
+Inteligência,${statusData.atributos.inteligencia},100
+Sabedoria,${statusData.atributos.sabedoria},100
+Carisma,${statusData.atributos.carisma},100
+Vida,${statusData.recursos.vida.atual},${statusData.recursos.vida.max}
+Mana,${statusData.recursos.mana.atual},${statusData.recursos.mana.max}
+Estamina,${statusData.recursos.estamina.atual},${statusData.recursos.estamina.max}
+Destino,${statusData.sorte.indice},100`;
+                tipo = 'text/csv';
+                extensao = 'csv';
+                break;
+        }
+        
+        const blob = new Blob([conteudo], { type: tipo });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `grimorio_status_${new Date().getTime()}.${extensao}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        mostrarNotificacao(`Arquivo exportado em formato ${format.toUpperCase()}!`, 'success');
+        fecharModal('modal-export');
+    }
+    
+    function abrirModalImport() {
+        document.getElementById('modal-import').classList.add('active');
+    }
+    
+    function executarImportacao() {
+        const fileInput = document.getElementById('import-file');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            mostrarNotificacao('Selecione um arquivo para importar!', 'warning');
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            try {
+                const conteudo = e.target.result;
+                const tipo = document.getElementById('import-type').value;
+                const importStatus = document.getElementById('import-status').checked;
+                const importGrimorio = document.getElementById('import-grimorio').checked;
+                const importConfig = document.getElementById('import-config').checked;
+                
+                let dados = {};
+                
+                // Detectar tipo automaticamente
+                if (tipo === 'auto') {
+                    if (conteudo.trim().startsWith('{')) {
+                        dados = JSON.parse(conteudo);
+                    } else if (conteudo.includes('Atributo,Valor')) {
+                        // CSV
+                        const linhas = conteudo.trim().split('\n');
+                        const cabecalho = linhas[0].split(',');
+                        for (let i = 1; i < linhas.length; i++) {
+                            const valores = linhas[i].split(',');
+                            // Implementar parse CSV se necessário
+                        }
+                    } else {
+                        // TXT
+                        dados = parseTxt(conteudo);
+                    }
+                } else if (tipo === 'json') {
+                    dados = JSON.parse(conteudo);
+                } else if (tipo === 'txt') {
+                    dados = parseTxt(conteudo);
+                } else if (tipo === 'csv') {
+                    dados = parseCsv(conteudo);
+                }
+                
+                // Aplicar dados
+                if (importStatus && dados.statusData) {
+                    statusData = { ...statusData, ...dados.statusData };
+                }
+                
+                if (importGrimorio && dados.grimorioData && window.GrimorioSystem) {
+                    GrimorioSystem.salvarPersonagem(dados.grimorioData);
+                }
+                
+                if (importConfig && dados.config) {
+                    statusData.config = { ...statusData.config, ...dados.config };
+                }
+                
+                carregarDadosNaInterface();
+                salvarDados();
+                mostrarNotificacao('Dados importados com sucesso!', 'success');
+                fecharModal('modal-import');
+                
+            } catch (error) {
+                mostrarNotificacao(`Erro na importação: ${error.message}`, 'error');
+                console.error('Erro na importação:', error);
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+    
+    function parseTxt(conteudo) {
+        const dados = {
+            statusData: {
+                atributos: {},
+                recursos: {},
+                sorte: {},
+                pontos: {}
+            }
+        };
+        
+        const linhas = conteudo.split('\n');
+        let secaoAtual = '';
+        
+        for (const linha of linhas) {
+            if (linha.includes('===')) continue;
+            if (linha.trim() === '') continue;
+            
+            if (linha.includes('ATRIBUTOS:')) {
+                secaoAtual = 'atributos';
+                continue;
+            } else if (linha.includes('RECURSOS:')) {
+                secaoAtual = 'recursos';
+                continue;
+            } else if (linha.includes('DESTINO:')) {
+                secaoAtual = 'destino';
+                continue;
+            } else if (linha.includes('PONTOS:')) {
+                secaoAtual = 'pontos';
+                continue;
+            }
+            
+            if (secaoAtual === 'atributos' && linha.includes(':')) {
+                const [nome, valor] = linha.split(':').map(s => s.trim());
+                const nomeLower = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                
+                if (nomeLower.includes('forca')) dados.statusData.atributos.forca = parseInt(valor) || 0;
+                else if (nomeLower.includes('destreza')) dados.statusData.atributos.destreza = parseInt(valor) || 0;
+                else if (nomeLower.includes('constituicao') || nomeLower.includes('constituição')) dados.statusData.atributos.constituicao = parseInt(valor) || 0;
+                else if (nomeLower.includes('inteligencia') || nomeLower.includes('inteligência')) dados.statusData.atributos.inteligencia = parseInt(valor) || 0;
+                else if (nomeLower.includes('sabedoria')) dados.statusData.atributos.sabedoria = parseInt(valor) || 0;
+                else if (nomeLower.includes('carisma')) dados.statusData.atributos.carisma = parseInt(valor) || 0;
+            }
+        }
+        
+        return dados;
+    }
+    
+    function parseCsv(conteudo) {
+        // Implementação básica de CSV
+        return {};
+    }
+    
+    // CONFIGURAÇÕES
+    function abrirModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add('active');
+        }
+        
+        if (id === 'modal-config') {
+            document.getElementById('config-limite-atributo').value = statusData.config.limiteAtributo;
+            document.getElementById('config-pontos-nivel').value = statusData.config.pontosPorNivel;
+            document.getElementById('config-minimo-aleatorio').value = statusData.config.minimoAleatorio;
+            document.getElementById('config-minimo-distribuicao').value = statusData.config.minimoDistribuicao;
+            document.getElementById('config-rolagens-maximas').value = statusData.config.rolagensMaximas;
+            document.getElementById('config-dificuldade-destino').value = statusData.config.dificuldadeDestino;
+        }
+    }
+    
+    function fecharModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('active');
+        }
+    }
+    
+    function salvarConfiguracoes() {
+        statusData.config.limiteAtributo = parseInt(document.getElementById('config-limite-atributo').value) || 100;
+        statusData.config.pontosPorNivel = parseInt(document.getElementById('config-pontos-nivel').value) || 2;
+        statusData.config.minimoAleatorio = parseInt(document.getElementById('config-minimo-aleatorio').value) || 10;
+        statusData.config.minimoDistribuicao = parseInt(document.getElementById('config-minimo-distribuicao').value) || 10;
+        statusData.config.rolagensMaximas = parseInt(document.getElementById('config-rolagens-maximas').value) || 5;
+        statusData.config.dificuldadeDestino = parseInt(document.getElementById('config-dificuldade-destino').value) || 2;
+        
+        mostrarNotificacao('Configurações salvas!', 'success');
+        salvarDados();
+        fecharModal('modal-config');
+    }
     
     // Sincronizar com Grimorio System
     function sincronizarComGrimorio() {
@@ -1037,7 +2154,6 @@
         return false;
     }
     
-    // Salvar no Grimorio System
     function salvarNoGrimorio() {
         if (window.GrimorioSystem) {
             try {
@@ -1059,9 +2175,6 @@
                 personagem.recursos.estaminaAtual = statusData.recursos.estamina.atual;
                 personagem.recursos.estaminaMaxima = statusData.recursos.estamina.max;
                 
-                // Calcular recursos automáticos
-                GrimorioSystem.calcularRecursosAutomaticos(personagem);
-                
                 GrimorioSystem.salvarPersonagem(personagem);
                 console.log('[Status] Dados salvos no Grimorio System');
                 return true;
@@ -1071,504 +2184,6 @@
             }
         }
         return false;
-    }
-    
-    // Controles de progress bar CORRIGIDO
-    class ProgressBarControl {
-        constructor(element) {
-            this.bar = element;
-            this.fill = element.querySelector('.progress-fill');
-            this.handle = element.querySelector('.progress-handle');
-            this.statId = element.dataset.stat;
-            this.max = parseInt(element.dataset.max) || 100;
-            this.isDragging = false;
-            
-            // Verificar se os elementos existem
-            if (!this.bar || !this.fill || !this.handle) {
-                console.warn('Elementos da progress bar não encontrados:', element);
-                return;
-            }
-            
-            this.init();
-        }
-        
-        init() {
-            try {
-                this.bar.addEventListener('click', (e) => this.handleClick(e));
-                this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
-                document.addEventListener('mousemove', (e) => this.drag(e));
-                document.addEventListener('mouseup', () => this.stopDrag());
-                
-                // Touch events para mobile
-                this.bar.addEventListener('touchstart', (e) => this.handleClick(e.touches[0]), { passive: false });
-                this.handle.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]), { passive: false });
-                document.addEventListener('touchmove', (e) => this.drag(e.touches[0]), { passive: false });
-                document.addEventListener('touchend', () => this.stopDrag());
-            } catch (error) {
-                console.error('Erro ao inicializar progress bar:', error);
-            }
-        }
-        
-        getCurrentValue() {
-            const valueElement = document.getElementById(this.statId);
-            return valueElement ? parseInt(valueElement.textContent) || 0 : 0;
-        }
-        
-        setValue(value) {
-            const clampedValue = Math.max(0, Math.min(this.max, value));
-            const percentage = (clampedValue / this.max) * 100;
-            
-            this.fill.style.width = `${percentage}%`;
-            
-            const valueElement = document.getElementById(this.statId);
-            if (valueElement) {
-                valueElement.textContent = clampedValue;
-            }
-            
-            // Atualizar dados
-            this.updateData(clampedValue);
-        }
-        
-        updateData(value) {
-            // Recursos
-            if (this.statId.includes('-atual')) {
-                const resource = this.statId.split('-')[0];
-                if (statusData.recursos[resource]) {
-                    statusData.recursos[resource].atual = value;
-                    
-                    // Atualizar máximo se for vida
-                    if (resource === 'vida') {
-                        const maxElement = document.getElementById('vida-maxima');
-                        if (maxElement) maxElement.textContent = statusData.recursos.vida.max;
-                    } else if (resource === 'mana') {
-                        const maxElement = document.getElementById('mana-maxima');
-                        if (maxElement) maxElement.textContent = statusData.recursos.mana.max;
-                    } else if (resource === 'estamina') {
-                        const maxElement = document.getElementById('estamina-maxima');
-                        if (maxElement) maxElement.textContent = statusData.recursos.estamina.max;
-                    }
-                }
-            }
-            // Atributos
-            else if (statusData.atributos[this.statId] !== undefined) {
-                statusData.atributos[this.statId] = value;
-            }
-            
-            salvarDados();
-            updateDerivedStats();
-            salvarNoGrimorio();
-        }
-        
-        handleClick(e) {
-            if (this.isDragging || !this.bar) return;
-            
-            try {
-                const rect = this.bar.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = (x / rect.width) * 100;
-                const value = Math.round((percentage / 100) * this.max);
-                
-                this.setValue(value);
-            } catch (error) {
-                console.error('Erro no handleClick:', error);
-            }
-        }
-        
-        startDrag(e) {
-            this.isDragging = true;
-            if (e.preventDefault) e.preventDefault();
-        }
-        
-        drag(e) {
-            if (!this.isDragging || !this.bar) return;
-            
-            try {
-                const rect = this.bar.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                const value = Math.round((percentage / 100) * this.max);
-                
-                this.setValue(value);
-            } catch (error) {
-                console.error('Erro no drag:', error);
-            }
-        }
-        
-        stopDrag() {
-            this.isDragging = false;
-        }
-    }
-    
-    // Inicializar todas as progress bars APÓS o DOM estar pronto
-    function inicializarProgressBars() {
-        progressBars = [];
-        const bars = document.querySelectorAll('.progress-bar');
-        console.log('Encontradas', bars.length, 'progress bars');
-        
-        bars.forEach(bar => {
-            try {
-                const pb = new ProgressBarControl(bar);
-                if (pb.bar) { // Só adicionar se foi criado com sucesso
-                    progressBars.push(pb);
-                }
-            } catch (error) {
-                console.error('Erro ao criar progress bar:', error, bar);
-            }
-        });
-        
-        console.log('Progress bars inicializadas:', progressBars.length);
-    }
-    
-    // SISTEMA DE DESTINO
-    function rolarSorte() {
-        if (statusData.sorte.fixado) {
-            mostrarNotificacao('Destino já foi fixado!', 'warning');
-            return;
-        }
-        
-        if (statusData.sorte.rolagens >= statusData.config.rolagensMaximas) {
-            mostrarNotificacao(`Máximo de ${statusData.config.rolagensMaximas} rolagens atingido!`, 'warning');
-            return;
-        }
-        
-        const dado1 = Math.floor(Math.random() * 100) + 1;
-        const dado2 = Math.floor(Math.random() * 100) + 1;
-        const dado3 = Math.floor(Math.random() * 100) + 1;
-        
-        const resultado = Math.max(1, Math.min(100, Math.round(((dado1 + dado3) * 2 - dado2) / 2)));
-        
-        statusData.sorte.dado1 = dado1;
-        statusData.sorte.dado2 = dado2;
-        statusData.sorte.dado3 = dado3;
-        statusData.sorte.indice = resultado;
-        statusData.sorte.rolagens++;
-        
-        // Atualizar display
-        document.getElementById('dado-fe').textContent = dado1;
-        document.getElementById('dado-sorte').textContent = dado2;
-        document.getElementById('dado-destino').textContent = dado3;
-        document.getElementById('indice-sorte').textContent = `${resultado}%`;
-        
-        // Barra de progresso
-        const destinyFill = document.querySelector('.destiny-section .progress-fill');
-        if (destinyFill) {
-            destinyFill.style.width = `${resultado}%`;
-        }
-        
-        // Status
-        let status = 'Neutro';
-        if (resultado > 70) status = 'Sorte Excelente';
-        else if (resultado > 55) status = 'Sortudo';
-        else if (resultado < 30) status = 'Azarado';
-        else if (resultado < 45) status = 'Muito Azarado';
-        
-        statusData.sorte.status = status;
-        document.getElementById('status-sorte').textContent = status;
-        
-        // Fórmula
-        document.getElementById('calculo-sorte').textContent = 
-            `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${resultado}`;
-        
-        // Rolagens restantes
-        const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
-        document.getElementById('rolls-info').textContent = 
-            `Rolagens restantes: ${restantes}`;
-        
-        mostrarNotificacao(`Destino: ${resultado}%`, 'success');
-        salvarDados();
-    }
-    
-    function fixarSorte() {
-        if (statusData.sorte.indice === 0) {
-            mostrarNotificacao('Role o destino primeiro!', 'warning');
-            return;
-        }
-        
-        statusData.sorte.fixado = true;
-        mostrarNotificacao(`Destino fixado em ${statusData.sorte.indice}%!`, 'success');
-        document.getElementById('rolls-info').textContent = 'Destino fixado';
-        salvarDados();
-    }
-    
-    // SORTEIO ALEATÓRIO
-    function distribuirAleatorio() {
-        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
-        const totalAtual = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
-        
-        if (totalAtual >= statusData.config.minimoAleatorio) {
-            // Distribuir pontos baseados na configuração
-            const pontos = Math.max(1, Math.floor(statusData.config.pontosPorNivel * 0.8));
-            
-            for (let i = 0; i < pontos; i++) {
-                const randomAttr = atributos[Math.floor(Math.random() * atributos.length)];
-                if (statusData.atributos[randomAttr] < statusData.config.limiteAtributo) {
-                    statusData.atributos[randomAttr]++;
-                    
-                    // Atualizar visual
-                    const progressBar = progressBars.find(pb => pb && pb.statId === randomAttr);
-                    
-                    if (progressBar) {
-                        progressBar.setValue(statusData.atributos[randomAttr]);
-                    } else {
-                        // Fallback: atualizar diretamente
-                        const element = document.getElementById(randomAttr);
-                        if (element) {
-                            element.textContent = statusData.atributos[randomAttr];
-                        }
-                        const barElement = document.querySelector(`[data-stat="${randomAttr}"] .progress-fill`);
-                        if (barElement) {
-                            const percentage = (statusData.atributos[randomAttr] / 100) * 100;
-                            barElement.style.width = `${percentage}%`;
-                        }
-                    }
-                }
-            }
-            
-            mostrarNotificacao(`${pontos} pontos distribuídos!`, 'success');
-            salvarDados();
-            updateDerivedStats();
-            salvarNoGrimorio();
-        } else {
-            mostrarNotificacao(`Mínimo de ${statusData.config.minimoAleatorio} pontos necessários`, 'warning');
-        }
-    }
-    
-    function resetarAtributos() {
-        if (confirm('Resetar todos os atributos para 0?')) {
-            const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
-            atributos.forEach(attr => {
-                statusData.atributos[attr] = 0;
-                
-                const progressBar = progressBars.find(pb => pb && pb.statId === attr);
-                if (progressBar) {
-                    progressBar.setValue(0);
-                } else {
-                    // Fallback
-                    const element = document.getElementById(attr);
-                    if (element) {
-                        element.textContent = '0';
-                    }
-                    const barElement = document.querySelector(`[data-stat="${attr}"] .progress-fill`);
-                    if (barElement) {
-                        barElement.style.width = '0%';
-                    }
-                }
-            });
-            
-            mostrarNotificacao('Atributos resetados!', 'info');
-            salvarDados();
-            updateDerivedStats();
-            salvarNoGrimorio();
-        }
-    }
-    
-    function restaurarRecursos() {
-        if (confirm('Restaurar todos os recursos?')) {
-            ['vida', 'mana', 'estamina'].forEach(resource => {
-                statusData.recursos[resource].atual = statusData.recursos[resource].max;
-                
-                const progressBar = progressBars.find(pb => pb && pb.statId === `${resource}-atual`);
-                if (progressBar) {
-                    progressBar.setValue(statusData.recursos[resource].atual);
-                } else {
-                    // Fallback
-                    const element = document.getElementById(`${resource}-atual`);
-                    if (element) {
-                        element.textContent = statusData.recursos[resource].atual;
-                    }
-                    const barElement = document.querySelector(`[data-stat="${resource}-atual"] .progress-fill`);
-                    if (barElement) {
-                        const percentage = (statusData.recursos[resource].atual / statusData.recursos[resource].max) * 100;
-                        barElement.style.width = `${percentage}%`;
-                    }
-                }
-            });
-            
-            mostrarNotificacao('Recursos restaurados!', 'success');
-            salvarDados();
-            salvarNoGrimorio();
-        }
-    }
-    
-    // ESTATÍSTICAS DERIVADAS
-    function updateDerivedStats() {
-        const { forca, destreza, constituicao, inteligencia, sabedoria } = statusData.atributos;
-        
-        const blindagem = Math.floor((constituicao * 0.7) + (forca * 0.3));
-        const velocidade = Math.floor((destreza * 0.6) + (constituicao * 0.4));
-        const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
-        const percepcao = Math.floor((sabedoria * 0.8) + (inteligencia * 0.2));
-        
-        const blindagemEl = document.getElementById('calc-blindagem');
-        const velocidadeEl = document.getElementById('calc-velocidade');
-        const iniciativaEl = document.getElementById('calc-iniciativa');
-        const percepcaoEl = document.getElementById('calc-percepcao');
-        
-        if (blindagemEl) blindagemEl.textContent = blindagem;
-        if (velocidadeEl) velocidadeEl.textContent = velocidade;
-        if (iniciativaEl) iniciativaEl.textContent = iniciativa;
-        if (percepcaoEl) percepcaoEl.textContent = percepcao;
-    }
-    
-    // CONFIGURAÇÕES
-    function abrirModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) {
-            modal.classList.add('active');
-        }
-        
-        if (id === 'modal-config') {
-            const limiteInput = document.getElementById('config-limite-atributo');
-            const pontosInput = document.getElementById('config-pontos-nivel');
-            const minimoInput = document.getElementById('config-minimo-aleatorio');
-            const rolagensInput = document.getElementById('config-rolagens-maximas');
-            
-            if (limiteInput) limiteInput.value = statusData.config.limiteAtributo;
-            if (pontosInput) pontosInput.value = statusData.config.pontosPorNivel;
-            if (minimoInput) minimoInput.value = statusData.config.minimoAleatorio;
-            if (rolagensInput) rolagensInput.value = statusData.config.rolagensMaximas;
-        }
-    }
-    
-    function fecharModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    }
-    
-    function salvarConfiguracoes() {
-        const limiteInput = document.getElementById('config-limite-atributo');
-        const pontosInput = document.getElementById('config-pontos-nivel');
-        const minimoInput = document.getElementById('config-minimo-aleatorio');
-        const rolagensInput = document.getElementById('config-rolagens-maximas');
-        
-        if (limiteInput) statusData.config.limiteAtributo = parseInt(limiteInput.value) || 100;
-        if (pontosInput) statusData.config.pontosPorNivel = parseInt(pontosInput.value) || 5;
-        if (minimoInput) statusData.config.minimoAleatorio = parseInt(minimoInput.value) || 18;
-        if (rolagensInput) statusData.config.rolagensMaximas = parseInt(rolagensInput.value) || 3;
-        
-        mostrarNotificacao('Configurações salvas!', 'success');
-        salvarDados();
-        fecharModal('modal-config');
-    }
-    
-    // EXPORTAÇÃO/IMPORTAÇÃO
-    function exportarDados() {
-        try {
-            if (window.GrimorioSystem) {
-                const dadosGrimorio = GrimorioSystem.exportarPersonagem();
-                const dadosCompletos = {
-                    statusData: statusData,
-                    grimorioData: JSON.parse(dadosGrimorio),
-                    exportadoEm: new Date().toISOString(),
-                    versao: '3.0-integrada'
-                };
-                
-                const blob = new Blob([JSON.stringify(dadosCompletos, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `grimorio_status_${new Date().getTime()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                mostrarNotificacao('Dados exportados (integrado)!', 'success');
-                return;
-            }
-            
-            // Fallback para exportação local
-            const dados = {
-                ...statusData,
-                exportadoEm: new Date().toISOString(),
-                versao: '3.0'
-            };
-            
-            const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `status_${new Date().getTime()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            mostrarNotificacao('Dados exportados!', 'success');
-        } catch (error) {
-            mostrarNotificacao('Erro ao exportar: ' + error.message, 'error');
-        }
-    }
-    
-    function importarDados() {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = '.json';
-        
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const dados = JSON.parse(e.target.result);
-                    
-                    // Verificar se é arquivo integrado
-                    if (dados.grimorioData && dados.statusData) {
-                        // Importar dados do Grimorio System
-                        if (window.GrimorioSystem && dados.grimorioData.personagem) {
-                            GrimorioSystem.salvarPersonagem(dados.grimorioData.personagem);
-                        }
-                        
-                        // Importar dados de status
-                        if (dados.statusData) {
-                            statusData = { ...statusData, ...dados.statusData };
-                        }
-                        
-                        mostrarNotificacao('Dados integrados importados!', 'success');
-                    }
-                    // Verificar se é arquivo do Grimorio System
-                    else if (dados.personagem && dados.sistema === 'Grimório Digital v2.0') {
-                        if (window.GrimorioSystem) {
-                            GrimorioSystem.salvarPersonagem(dados.personagem);
-                            mostrarNotificacao('Personagem do Grimorio importado!', 'success');
-                        }
-                    }
-                    // Verificar se é arquivo de status local
-                    else if (dados.recursos || dados.atributos) {
-                        // Mesclar dados
-                        if (dados.recursos) {
-                            statusData.recursos = { ...statusData.recursos, ...dados.recursos };
-                        }
-                        if (dados.atributos) {
-                            statusData.atributos = { ...statusData.atributos, ...dados.atributos };
-                        }
-                        
-                        if (dados.sorte) statusData.sorte = { ...statusData.sorte, ...dados.sorte };
-                        if (dados.config) statusData.config = { ...statusData.config, ...dados.config };
-                        
-                        mostrarNotificacao('Dados de status importados!', 'success');
-                    } else {
-                        throw new Error('Formato de arquivo não reconhecido');
-                    }
-                    
-                    carregarDadosNaInterface();
-                    salvarDados();
-                    
-                } catch (error) {
-                    mostrarNotificacao('Erro na importação: ' + error.message, 'error');
-                }
-            };
-            
-            reader.readAsText(file);
-        };
-        
-        input.click();
     }
     
     function carregarDadosNaInterface() {
@@ -1583,16 +2198,9 @@
             if (valueElement) valueElement.textContent = value;
             if (maxElement) maxElement.textContent = max;
             
-            const progressBar = progressBars.find(pb => pb && pb.statId === `${resource}-atual`);
+            const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
             if (progressBar) {
-                progressBar.setValue(value);
-            } else {
-                // Fallback
-                const barElement = document.querySelector(`[data-stat="${resource}-atual"] .progress-fill`);
-                if (barElement) {
-                    const percentage = (value / max) * 100;
-                    barElement.style.width = `${percentage}%`;
-                }
+                progressBar.setValue(value, true);
             }
         });
         
@@ -1604,73 +2212,32 @@
                 element.textContent = value;
             }
             
-            const progressBar = progressBars.find(pb => pb && pb.statId === attr);
+            const progressBar = progressBars.find(pb => pb.statId === attr);
             if (progressBar) {
-                progressBar.setValue(value);
-            } else {
-                // Fallback
-                const barElement = document.querySelector(`[data-stat="${attr}"] .progress-fill`);
-                if (barElement) {
-                    const percentage = (value / 100) * 100;
-                    barElement.style.width = `${percentage}%`;
-                }
+                progressBar.setValue(value, true);
             }
         });
-        // Função para adicionar pontos
-        function adicionarPontos(quantidade) {
-            statusData.config.pontosPorNivel += quantidade;
-            
-            // Atualizar display
-            const pontosElement = document.getElementById('pontos-disponiveis');
-            if (pontosElement) {
-                pontosElement.textContent = statusData.config.pontosPorNivel;
-            }
-            
-            mostrarNotificacao(`+${quantidade} pontos adicionados!`, 'success');
-            salvarDados();
-        }
-
-        // Função para atualizar display dos pontos
-        function atualizarDisplayPontos() {
-            const pontosElement = document.getElementById('pontos-disponiveis');
-            if (pontosElement) {
-                pontosElement.textContent = statusData.config.pontosPorNivel;
-            }
-        }
-
+        
         // Sorte
         if (statusData.sorte.indice > 0) {
-            const dadoFe = document.getElementById('dado-fe');
-            const dadoSorte = document.getElementById('dado-sorte');
-            const dadoDestino = document.getElementById('dado-destino');
-            const indiceSorte = document.getElementById('indice-sorte');
-            const statusSorte = document.getElementById('status-sorte');
-            const calculoSorte = document.getElementById('calculo-sorte');
-            const rollsInfo = document.getElementById('rolls-info');
+            document.getElementById('dado-fe').textContent = statusData.sorte.dado1;
+            document.getElementById('dado-sorte').textContent = statusData.sorte.dado2;
+            document.getElementById('dado-destino').textContent = statusData.sorte.dado3;
+            document.getElementById('indice-sorte').textContent = `${statusData.sorte.indice}%`;
+            document.getElementById('status-sorte').textContent = statusData.sorte.status;
+            
             const destinyFill = document.querySelector('.destiny-section .progress-fill');
-            
-            if (dadoFe) dadoFe.textContent = statusData.sorte.dado1;
-            if (dadoSorte) dadoSorte.textContent = statusData.sorte.dado2;
-            if (dadoDestino) dadoDestino.textContent = statusData.sorte.dado3;
-            if (indiceSorte) indiceSorte.textContent = `${statusData.sorte.indice}%`;
-            if (statusSorte) statusSorte.textContent = statusData.sorte.status;
-            
             if (destinyFill) {
                 destinyFill.style.width = `${statusData.sorte.indice}%`;
             }
             
-            if (calculoSorte) {
-                calculoSorte.textContent = 
-                    `((${statusData.sorte.dado1} + ${statusData.sorte.dado3}) × 2 - ${statusData.sorte.dado2}) ÷ 2 = ${statusData.sorte.indice}`;
-            }
-            
             const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
-            if (rollsInfo) {
-                rollsInfo.textContent = 
-                    statusData.sorte.fixado ? 'Destino fixado' : `Rolagens restantes: ${restantes}`;
-            }
+            document.getElementById('rolls-info').textContent = 
+                statusData.sorte.fixado ? 'Destino fixado' : `Rolagens restantes: ${restantes}`;
         }
         
+        // Pontos
+        atualizarDisplayPontos();
         updateDerivedStats();
     }
     
@@ -1698,50 +2265,44 @@
     
     // INICIALIZAÇÃO
     document.addEventListener('DOMContentLoaded', function() {
-        // Inicializar progress bars imediatamente após o DOM estar pronto
+        // Inicializar ícones
+        lucide.createIcons();
+        
+        // Configurar botões
+        document.getElementById('btn-exportar').addEventListener('click', abrirModalExport);
+        document.getElementById('btn-importar').addEventListener('click', abrirModalImport);
+        document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
+        
+        // Configurar listeners para export
+        document.getElementById('export-format').addEventListener('change', atualizarPreviewExport);
+        
+        // Inicializar progress bars
         setTimeout(() => {
             inicializarProgressBars();
             
-            // Aguardar Grimorio System carregar
+            // Carregar dados
             setTimeout(() => {
-                // Tentar sincronizar com Grimorio System
                 sincronizarComGrimorio();
                 carregarDados();
                 
-                // Configurar botões do navbar
-                const btnExportar = document.getElementById('btn-exportar');
-                const btnImportar = document.getElementById('btn-importar');
-                const btnConfig = document.getElementById('btn-config');
+                // Atualizar eventos de input para export preview
+                document.getElementById('export-status').addEventListener('change', atualizarPreviewExport);
+                document.getElementById('export-grimorio').addEventListener('change', atualizarPreviewExport);
+                document.getElementById('export-config').addEventListener('change', atualizarPreviewExport);
                 
-                if (btnExportar) {
-                    btnExportar.addEventListener('click', exportarDados);
-                }
-                if (btnImportar) {
-                    btnImportar.addEventListener('click', importarDados);
-                }
-                if (btnConfig) {
-                    btnConfig.addEventListener('click', () => abrirModal('modal-config'));
-                }
-                
-                updateDerivedStats();
-                
-                // Adicionar CSS para animação se não existir
-                if (!document.querySelector('#animations-css')) {
-                    const style = document.createElement('style');
-                    style.id = 'animations-css';
-                    style.textContent = `
-                        @keyframes slideIn {
-                            from { transform: translateX(100%); opacity: 0; }
-                            to { transform: translateX(0); opacity: 1; }
-                        }
-                    `;
-                    document.head.appendChild(style);
-                }
-                
-                console.log('[Status] Sistema inicializado com integração Grimorio');
-                console.log('Progress bars ativas:', progressBars.length);
+                console.log('[Status] Sistema inicializado com sucesso!');
+                mostrarNotificacao('Sistema de Status carregado!', 'success', 2000);
             }, 100);
         }, 100);
+    });
+    
+    // Fechar modal com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            fecharModal('modal-config');
+            fecharModal('modal-export');
+            fecharModal('modal-import');
+        }
     });
     </script>
 </body>
