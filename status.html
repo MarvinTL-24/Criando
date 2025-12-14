@@ -3904,7 +3904,7 @@
         window.dadosSorte = dadosSorte;
         window.sorteFixada = sorteFixada;
 
-        // INICIALIZAÇÃO PRINCIPAL
+        // No final do status.html, atualize o evento DOMContentLoaded:
         document.addEventListener('DOMContentLoaded', function() {
             try {
                 console.log('DOM carregado - Inicializando sistemas...');
@@ -3928,8 +3928,8 @@
                 setupEventListeners();
                 configurarEventosSorte();
                 
-                // INICIALIZAR INTEGRAÇÃO COM GRIMÓRIO
-                initIntegration();
+                // INICIALIZAR INTEGRAÇÃO COM PERFIL
+                inicializarIntegracaoPerfil();
                 
                 console.log('Todos os sistemas inicializados com sucesso');
                 

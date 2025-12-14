@@ -471,3 +471,85 @@ document.addEventListener('DOMContentLoaded', function() {
     window.Grimorio = GrimorioSystem;
 });
 
+// Adicione esta função ao GrimorioSystem em grimorio-core.js
+
+GrimorioSystem.sincronizarStatus = function(statusData) {
+    try {
+        const personagem = this.carregarPersonagem();
+        
+        if (!personagem) {
+            console.error('Nenhum personagem encontrado para sincronização');
+            return false;
+        }
+        
+        // Converter atributos de 0-100 para 0-30 (D&D)
+        const escala = 30;
+        if (statusData.atributos) {
+            Object.keys(statusData.atributos).forEach(attr => {
+                if (personagem.atributos[attr] !== undefined) {
+                    const valorConvertido = Math.round((statusData.atributos[attr] / 100) * escala);
+                    personagem.atributos[attr] = valorConvertido;
+                }
+            });
+        }
+        
+        // Sincronizar nível e XP
+        if (statusData.nivel) {
+            personagem.nivel = statusData.nivel;
+        }
+        
+        if (statusData.experiencia !== undefined) {
+            personagem.experiencia = statusData.experiencia;
+        }
+        
+        if (statusData.experienciaProximoNivel) {
+            personagem.experienciaProximoNivel = statusData.experienciaProximoNivel;
+        }
+        
+        // Sincronizar pontos
+        if (statusData.pontosDisponiveis !== undefined) {
+            personagem.pontosDisponiveis = statusData.pontosDisponiveis;
+        }
+        
+        // Calcular recursos baseados nos atributos
+        const calcularRecursos = () => {
+            const attrs = personagem.atributos;
+            
+            // Vida: Constituição × 5
+            personagem.recursos.vidaMaxima = (attrs.constituicao || 0) * 5;
+            personagem.recursos.vidaAtual = Math.min(
+                personagem.recursos.vidaAtual || personagem.recursos.vidaMaxima,
+                personagem.recursos.vidaMaxima
+            );
+            
+            // Mana: Inteligência × 2
+            personagem.recursos.manaMaxima = (attrs.inteligencia || 0) * 2;
+            personagem.recursos.manaAtual = Math.min(
+                personagem.recursos.manaAtual || personagem.recursos.manaMaxima,
+                personagem.recursos.manaMaxima
+            );
+            
+            // Estamina: (Constituição + Destreza) × 2
+            personagem.recursos.estaminaMaxima = ((attrs.constituicao || 0) + (attrs.destreza || 0)) * 2;
+            personagem.recursos.estaminaAtual = Math.min(
+                personagem.recursos.estaminaAtual || personagem.recursos.estaminaMaxima,
+                personagem.recursos.estaminaMaxima
+            );
+        };
+        
+        calcularRecursos();
+        
+        // Salvar personagem atualizado
+        this.salvarPersonagem(personagem);
+        
+        // Disparar evento de atualização
+        window.dispatchEvent(new CustomEvent('grimorio:personagemAtualizado'));
+        
+        console.log('Status sincronizado com sucesso');
+        return true;
+        
+    } catch (error) {
+        console.error('Erro ao sincronizar status:', error);
+        return false;
+    }
+};
