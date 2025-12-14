@@ -384,75 +384,6 @@
             </div>
         </div>
 
-        <!-- SEÇÃO: Atributos Principais -->
-        <div class="max-w-7xl mx-auto px-4 pb-8">
-            <div class="card-hover bg-theme-panel border border-theme-border rounded-xl p-6 animate-slide-up" style="animation-delay: 0.2s">
-                <div class="flex items-center gap-3 mb-6">
-                    <i data-lucide="activity" class="w-5 h-5 text-theme-blue"></i>
-                    <h3 class="font-cinzel text-lg font-semibold text-white">Atributos Principais</h3>
-                    <div class="ml-auto text-sm text-[#a0a0a0]">
-                        Total: <span id="total-atributos" class="text-theme-blue font-bold">0</span> pontos
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <!-- Força -->
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-red/50 transition-colors duration-300">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-red/10 flex items-center justify-center">
-                            <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
-                        </div>
-                        <label class="text-xs uppercase text-[#a0a0a0] font-cinzel">Força</label>
-                        <div class="text-2xl font-bold font-mono text-theme-red mt-2" id="display-forca">0</div>
-                    </div>
-
-                    <!-- Destreza -->
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-green/50 transition-colors duration-300">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-green/10 flex items-center justify-center">
-                            <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
-                        </div>
-                        <label class="text-xs uppercase text-[#a0a0a0] font-cinzel">Destreza</label>
-                        <div class="text-2xl font-bold font-mono text-theme-green mt-2" id="display-destreza">0</div>
-                    </div>
-
-                    <!-- Constituição -->
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-yellow/50 transition-colors duration-300">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-yellow/10 flex items-center justify-center">
-                            <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
-                        </div>
-                        <label class="text-xs uppercase text-[#a0a0a0] font-cinzel">Constituição</label>
-                        <div class="text-2xl font-bold font-mono text-theme-yellow mt-2" id="display-constituicao">0</div>
-                    </div>
-
-                    <!-- Inteligência -->
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-blue/50 transition-colors duration-300">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-blue/10 flex items-center justify-center">
-                            <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
-                        </div>
-                        <label class="text-xs uppercase text-[#a0a0a0] font-cinzel">Inteligência</label>
-                        <div class="text-2xl font-bold font-mono text-theme-blue mt-2" id="display-inteligencia">0</div>
-                    </div>
-
-                    <!-- Sabedoria -->
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-purple/50 transition-colors duration-300">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-purple/10 flex items-center justify-center">
-                            <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
-                        </div>
-                        <label class="text-xs uppercase text-[#a0a0a0] font-cinzel">Sabedoria</label>
-                        <div class="text-2xl font-bold font-mono text-theme-purple mt-2" id="display-sabedoria">0</div>
-                    </div>
-
-                    <!-- Carisma -->
-                    <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-pink/50 transition-colors duration-300">
-                        <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-pink/10 flex items-center justify-center">
-                            <i data-lucide="sparkles" class="w-5 h-5 text-theme-pink"></i>
-                        </div>
-                        <label class="text-xs uppercase text-[#a0a0a0] font-cinzel">Carisma</label>
-                        <div class="text-2xl font-bold font-mono text-theme-pink mt-2" id="display-carisma">0</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- SEÇÃO: Acesso Rápido -->
         <div class="max-w-7xl mx-auto px-4 pb-12">
             <div class="animate-slide-up" style="animation-delay: 0.3s">
@@ -568,45 +499,6 @@
             document.getElementById('display-titulo').textContent = personagem.titulo || 'Aventureiro sem título';
             document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
             document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
-            
-            // Atributos
-            const attrs = personagem.atributos || {};
-            document.getElementById('display-forca').textContent = attrs.forca || 0;
-            document.getElementById('display-destreza').textContent = attrs.destreza || 0;
-            document.getElementById('display-constituicao').textContent = attrs.constituicao || 0;
-            document.getElementById('display-inteligencia').textContent = attrs.inteligencia || 0;
-            document.getElementById('display-sabedoria').textContent = attrs.sabedoria || 0;
-            document.getElementById('display-carisma').textContent = attrs.carisma || 0;
-            
-            // Calcular total de atributos
-            const totalAtributos = Object.values(attrs).reduce((sum, val) => sum + val, 0);
-            document.getElementById('total-atributos').textContent = totalAtributos;
-            
-            // Nível e XP
-            document.getElementById('display-nivel').textContent = personagem.nivel || 1;
-            document.getElementById('display-xp').textContent = 
-                `${personagem.experiencia || 0}/${personagem.experienciaProximoNivel || 1000}`;
-            
-            const xpPercent = personagem.experienciaProximoNivel > 0 ? 
-                ((personagem.experiencia || 0) / personagem.experienciaProximoNivel) * 100 : 0;
-            document.getElementById('display-xp-bar').style.width = `${xpPercent}%`;
-            
-            // Recursos
-            const recursos = personagem.recursos || {};
-            document.getElementById('display-vida').textContent = 
-                `${recursos.vidaAtual || 0}/${recursos.vidaMaxima || 10}`;
-            document.getElementById('display-mana').textContent = 
-                `${recursos.manaAtual || 0}/${recursos.manaMaxima || 0}`;
-            document.getElementById('display-estamina').textContent = 
-                `${recursos.estaminaAtual || 0}/${recursos.estaminaMaxima || 20}`;
-            
-            // Barras de recursos
-            document.getElementById('display-vida-bar').style.width = 
-                recursos.vidaMaxima > 0 ? `${(recursos.vidaAtual / recursos.vidaMaxima) * 100}%` : '0%';
-            document.getElementById('display-mana-bar').style.width = 
-                recursos.manaMaxima > 0 ? `${(recursos.manaAtual / recursos.manaMaxima) * 100}%` : '0%';
-            document.getElementById('display-estamina-bar').style.width = 
-                recursos.estaminaMaxima > 0 ? `${(recursos.estaminaAtual / recursos.estaminaMaxima) * 100}%` : '0%';
             
             // Pontos disponíveis
             document.getElementById('display-pontos').textContent = personagem.pontosDisponiveis || 0;
