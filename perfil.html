@@ -322,11 +322,11 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-red">Vida</span>
-                                <div class="text-xs text-gray-500" id="vida-percent">0%</div>
+                                <div class="text-xs text-gray-500" id="vida-percent">100%</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="font-mono text-xl font-bold text-white" id="display-vida">0/0</span>
+                            <span class="font-mono text-xl font-bold text-white" id="display-vida">100/100</span>
                             <div class="text-xs text-gray-500">HP</div>
                         </div>
                     </div>
@@ -344,11 +344,11 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-blue">Mana</span>
-                                <div class="text-xs text-gray-500" id="mana-percent">0%</div>
+                                <div class="text-xs text-gray-500" id="mana-percent">100%</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="font-mono text-xl font-bold text-white" id="display-mana">0/0</span>
+                            <span class="font-mono text-xl font-bold text-white" id="display-mana">100/100</span>
                             <div class="text-xs text-gray-500">MP</div>
                         </div>
                     </div>
@@ -366,11 +366,11 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-green">Estamina</span>
-                                <div class="text-xs text-gray-500" id="estamina-percent">0%</div>
+                                <div class="text-xs text-gray-500" id="estamina-percent">100%</div>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="font-mono text-xl font-bold text-white" id="display-estamina">0/0</span>
+                            <span class="font-mono text-xl font-bold text-white" id="display-estamina">100/100</span>
                             <div class="text-xs text-gray-500">SP</div>
                         </div>
                     </div>
@@ -765,9 +765,9 @@
         
         // Status
         status: {
-            vida: { atual: 10, max: 10 },
-            mana: { atual: 0, max: 0 },
-            estamina: { atual: 20, max: 20 },
+            vida: { atual: 100, max: 100 },
+            mana: { atual: 100, max: 100 },
+            estamina: { atual: 100, max: 100 },
             forca: 0,
             destreza: 0,
             constituicao: 0,
@@ -778,9 +778,9 @@
         
         // Sorte
         sorte: {
-            fe: 5,
+            fe: 4,
             sorte: 5,
-            destino: 5,
+            destino: 2,
             indice: 50,
             status: "Neutro"
         },
@@ -905,11 +905,11 @@
         
         // Sincronizar recursos
         if (dadosGrimorio.recursos) {
-            personagem.status.vida.max = dadosGrimorio.recursos.vidaMaxima || 10;
+            personagem.status.vida.max = dadosGrimorio.recursos.vidaMaxima || 100;
             personagem.status.vida.atual = dadosGrimorio.recursos.vidaAtual || personagem.status.vida.max;
-            personagem.status.mana.max = dadosGrimorio.recursos.manaMaxima || 0;
+            personagem.status.mana.max = dadosGrimorio.recursos.manaMaxima || 100;
             personagem.status.mana.atual = dadosGrimorio.recursos.manaAtual || personagem.status.mana.max;
-            personagem.status.estamina.max = dadosGrimorio.recursos.estaminaMaxima || 20;
+            personagem.status.estamina.max = dadosGrimorio.recursos.estaminaMaxima || 100;
             personagem.status.estamina.atual = dadosGrimorio.recursos.estaminaAtual || personagem.status.estamina.max;
         }
         
@@ -1662,9 +1662,9 @@
     }
 
     function rolarSorte() {
-        personagem.sorte.fe = Math.floor(Math.random() * 10) + 1;
-        personagem.sorte.sorte = Math.floor(Math.random() * 10) + 1;
-        personagem.sorte.destino = Math.floor(Math.random() * 10) + 1;
+        personagem.sorte.fe = Math.floor(Math.random() * 0.5) + 1;
+        personagem.sorte.sorte = Math.floor(Math.random() * 0.4) + 1;
+        personagem.sorte.destino = Math.floor(Math.random() * 0.2) + 1;
         
         atualizarSorte();
         salvarDados();
@@ -2331,12 +2331,12 @@
     function salvarModal() {
         switch (modalType) {
             case 'status':
-                personagem.status.vida.atual = parseInt(document.getElementById('modal-vida-atual').value) || 0;
-                personagem.status.vida.max = parseInt(document.getElementById('modal-vida-max').value) || 0;
-                personagem.status.mana.atual = parseInt(document.getElementById('modal-mana-atual').value) || 0;
-                personagem.status.mana.max = parseInt(document.getElementById('modal-mana-max').value) || 0;
-                personagem.status.estamina.atual = parseInt(document.getElementById('modal-estamina-atual').value) || 0;
-                personagem.status.estamina.max = parseInt(document.getElementById('modal-estamina-max').value) || 0;
+                personagem.status.vida.atual = parseInt(document.getElementById('modal-vida-atual').value) || 100;
+                personagem.status.vida.max = parseInt(document.getElementById('modal-vida-max').value) || 100;
+                personagem.status.mana.atual = parseInt(document.getElementById('modal-mana-atual').value) || 100;
+                personagem.status.mana.max = parseInt(document.getElementById('modal-mana-max').value) || 100;
+                personagem.status.estamina.atual = parseInt(document.getElementById('modal-estamina-atual').value) || 100;
+                personagem.status.estamina.max = parseInt(document.getElementById('modal-estamina-max').value) || 100;
                 personagem.status.forca = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-forca').value) || 0));
                 personagem.status.destreza = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-destreza').value) || 0));
                 personagem.status.constituicao = Math.max(0, Math.min(100, parseInt(document.getElementById('modal-constituicao').value) || 0));
@@ -2356,9 +2356,9 @@
                 break;
                 
             case 'sorte':
-                personagem.sorte.fe = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-fe').value) || 5));
-                personagem.sorte.sorte = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-sorte').value) || 5));
-                personagem.sorte.destino = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-destino').value) || 5));
+                personagem.sorte.fe = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-fe').value) || 3));
+                personagem.sorte.sorte = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-sorte').value) || 3));
+                personagem.sorte.destino = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-destino').value) || 4));
                 break;
                 
             case 'equipamento':
