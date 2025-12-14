@@ -9,61 +9,21 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <script src="js/grimorio-core.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
+    <!-- Substitua o CDN por uma versão local ou use o PostCSS -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            blue: '#4a9eff',
-                            orange: '#ff6b35',
-                            red: '#dc2626',
-                            green: '#22c55e',
-                            purple: '#8b5cf6',
-                            yellow: '#f59e0b',
-                            pink: '#ec4899',
-                            gold: '#d4a76a',
-                            copper: '#8b7355'
-                        }
-                    },
-                    animation: {
-                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
-                        'slide-in-right': 'slideInRight 0.3s ease-out',
-                        'pulse': 'pulse 2s infinite',
-                    },
-                    keyframes: {
-                        fadeInUp: {
-                            'from': { opacity: '0', transform: 'translateY(20px)' },
-                            'to': { opacity: '1', transform: 'translateY(0)' }
-                        },
-                        slideInRight: {
-                            'from': { transform: 'translateX(100%)', opacity: '0' },
-                            'to': { transform: 'translateX(0)', opacity: '1' }
-                        },
-                        pulse: {
-                            '0%, 100%': { opacity: '1' },
-                            '50%': { opacity: '0.5' }
-                        }
-                    }
-                }
-            }
+        // Carregar Tailwind de forma alternativa
+        if (!window.tailwindLoaded) {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.tailwindcss.com/3.4.0';
+            document.head.appendChild(script);
+            window.tailwindLoaded = true;
         }
     </script>
+    
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <style>
+        /* Seu CSS existente aqui... */
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
         input[type=number]::-webkit-inner-spin-button, 
@@ -260,6 +220,26 @@
         .sorte-failure {
             color: #dc2626;
             animation: pulse 1s infinite;
+        }
+
+        /* Estilos de navegação */
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2a2a2e;
+            border-radius: 0.5rem;
+            background: #0f0f12;
+            color: #e8e4dc;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: #1a1a1e;
+            border-color: #4a9eff;
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -526,25 +506,25 @@
                         <div>
                             <label class="block text-xs text-gray-400 mb-1">PER (Percepção)</label>
                             <input type="number" id="isp-per" value="10" min="1" max="20" 
-                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center" 
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-destiny-gold text-center" 
                                    onchange="calcularISP()">
                         </div>
                         <div>
                             <label class="block text-xs text-gray-400 mb-1">SAB (Sabedoria)</label>
                             <input type="number" id="isp-sab" value="10" min="1" max="20" 
-                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center"
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-destiny-gold text-center"
                                    onchange="calcularISP()">
                         </div>
                         <div>
                             <label class="block text-xs text-gray-400 mb-1">AGI (Agilidade)</label>
                             <input type="number" id="isp-agi" value="10" min="1" max="20" 
-                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center"
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-destiny-gold text-center"
                                    onchange="calcularISP()">
                         </div>
                         <div>
                             <label class="block text-xs text-gray-400 mb-1">E (Emoção 1-5)</label>
                             <input type="number" id="isp-emocao" value="3" min="1" max="5" 
-                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-white text-center"
+                                   class="w-full bg-theme-panel border border-theme-border rounded px-3 py-2 text-destiny-gold text-center"
                                    onchange="calcularISP()">
                         </div>
                     </div>
@@ -570,9 +550,6 @@
                     <i data-lucide="bar-chart" class="w-4 h-4 text-theme-blue"></i>
                 </div>
                 <h3 class="font-cinzel text-lg font-semibold text-white">Estatísticas Derivadas</h3>
-                <button onclick="toggleDerivados()" class="ml-auto text-sm text-theme-purple hover:underline">
-                    <i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Ocultar
-                </button>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -832,7 +809,7 @@
 
     <script>
     // ====================================================================
-    // SISTEMA DE PERFIL COMPLETO COM CORREÇÕES
+    // SISTEMA DE PERFIL COMPLETO - VERSÃO CORRIGIDA
     // ====================================================================
 
     // Inicializar ícones
@@ -863,14 +840,14 @@
         // Status
         status: {
             vida: { atual: 100, max: 100 },
-            mana: { atual: 50, max: 50 },
-            estamina: { atual: 80, max: 80 },
-            forca: 10,
-            destreza: 10,
-            constituicao: 10,
-            inteligencia: 10,
-            sabedoria: 10,
-            carisma: 10
+            mana: { atual: 100, max: 100 },
+            estamina: { atual: 100, max: 100 },
+            forca: 0,
+            destreza: 0,
+            constituicao: 0,
+            inteligencia: 0,
+            sabedoria: 0,
+            carisma: 0
         },
         
         // Atributos para ISP
@@ -997,7 +974,7 @@
 
     function inicializar() {
         carregarDados();
-        calcularRecursos(); // Calcular recursos baseados nos atributos
+        calcularRecursosBase(); // Calcular recursos baseados nos atributos
         atualizarInterface();
         atualizarTimestamp();
         inicializarISP();
@@ -1007,32 +984,6 @@
         
         // Inicializar eventos de upload
         document.getElementById('file-input').addEventListener('change', previewImage);
-        
-        // Aplicar estilos aos botões de navegação
-        const estilo = `
-            .nav-btn {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.5rem 1rem;
-                border: 1px solid #2a2a2e;
-                border-radius: 0.5rem;
-                background: #0f0f12;
-                color: #e8e4dc;
-                font-size: 0.875rem;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-            .nav-btn:hover {
-                background: #1a1a1e;
-                border-color: #4a9eff;
-                transform: translateY(-1px);
-            }
-        `;
-        
-        const styleSheet = document.createElement('style');
-        styleSheet.textContent = estilo;
-        document.head.appendChild(styleSheet);
         
         console.log('Perfil inicializado com sucesso!');
     }
@@ -1236,75 +1187,37 @@
                 
                 console.log('Dados carregados do localStorage');
             }
-            
-            // Sincronizar com GrimorioSystem se disponível
-            if (window.GrimorioSystem && GrimorioSystem.carregarPersonagem) {
-                const dadosGrimorio = GrimorioSystem.carregarPersonagem();
-                if (dadosGrimorio) {
-                    sincronizarComGrimorio(dadosGrimorio);
-                }
-            }
         } catch (error) {
             console.error('Erro ao carregar dados:', error);
         }
     }
 
-    function sincronizarComGrimorio(dadosGrimorio) {
-        // Sincronizar dados básicos
-        personagem.nome = dadosGrimorio.nome || personagem.nome;
-        personagem.classe = dadosGrimorio.classe || personagem.classe;
-        personagem.nivel = dadosGrimorio.nivel || personagem.nivel;
-        personagem.pontosDisponiveis = dadosGrimorio.pontosDisponiveis || personagem.pontosDisponiveis;
+    function calcularRecursosBase() {
+        // Vida: Base 100 + (CON × 2)
+        personagem.status.vida.max = 100 + (personagem.status.constituicao * 2);
         
-        // Sincronizar atributos
-        if (dadosGrimorio.atributos) {
-            personagem.status.forca = dadosGrimorio.atributos.forca || 10;
-            personagem.status.destreza = dadosGrimorio.atributos.destreza || 10;
-            personagem.status.constituicao = dadosGrimorio.atributos.constituicao || 10;
-            personagem.status.inteligencia = dadosGrimorio.atributos.inteligencia || 10;
-            personagem.status.sabedoria = dadosGrimorio.atributos.sabedoria || 10;
-            personagem.status.carisma = dadosGrimorio.atributos.carisma || 10;
-        }
+        // Mana: Base 50 + (INT × 3)
+        personagem.status.mana.max = 50 + (personagem.status.inteligencia * 3);
         
-        // Calcular recursos baseados nos atributos
-        calcularRecursos();
+        // Estamina: Base 80 + (DES + CON)
+        personagem.status.estamina.max = 80 + personagem.status.destreza + personagem.status.constituicao;
         
-        // Calcular derivados
-        calcularDerivadosAutomaticos();
+        // Garantir que valores atuais não excedam máximos
+        personagem.status.vida.atual = Math.min(personagem.status.vida.atual, personagem.status.vida.max);
+        personagem.status.mana.atual = Math.min(personagem.status.mana.atual, personagem.status.mana.max);
+        personagem.status.estamina.atual = Math.min(personagem.status.estamina.atual, personagem.status.estamina.max);
+    }
+
+    function calcularRecursos() {
+        calcularRecursosBase();
+        atualizarStatus();
+        mostrarNotificacao('Recursos recalculados!', 'success');
     }
 
     function salvarDados() {
         try {
             localStorage.setItem('grimorio_perfil_completo', JSON.stringify(personagem));
             console.log('Dados salvos no localStorage');
-            
-            // Sincronizar com GrimorioSystem
-            if (window.GrimorioSystem && GrimorioSystem.salvarPersonagem) {
-                const dadosParaGrimorio = {
-                    nome: personagem.nome,
-                    classe: personagem.classe,
-                    nivel: personagem.nivel,
-                    pontosDisponiveis: personagem.pontosDisponiveis,
-                    atributos: {
-                        forca: personagem.status.forca,
-                        destreza: personagem.status.destreza,
-                        constituicao: personagem.status.constituicao,
-                        inteligencia: personagem.status.inteligencia,
-                        sabedoria: personagem.status.sabedoria,
-                        carisma: personagem.status.carisma
-                    },
-                    recursos: {
-                        vidaMaxima: personagem.status.vida.max,
-                        vidaAtual: personagem.status.vida.atual,
-                        manaMaxima: personagem.status.mana.max,
-                        manaAtual: personagem.status.mana.atual,
-                        estaminaMaxima: personagem.status.estamina.max,
-                        estaminaAtual: personagem.status.estamina.atual
-                    }
-                };
-                GrimorioSystem.salvarPersonagem(dadosParaGrimorio);
-            }
-            
             mostrarNotificacao('Perfil salvo com sucesso!', 'success');
         } catch (error) {
             console.error('Erro ao salvar dados:', error);
@@ -1374,28 +1287,10 @@
         document.getElementById('profile-subtitle').textContent = `${personagem.classe} - Nível ${personagem.nivel}`;
     }
 
-    function calcularRecursos() {
-        // Vida: Base 100 + (CON × 2)
-        personagem.status.vida.max = 100 + (personagem.status.constituicao * 2);
-        
-        // Mana: Base 50 + (INT × 3)
-        personagem.status.mana.max = 50 + (personagem.status.inteligencia * 3);
-        
-        // Estamina: Base 80 + (DES + CON)
-        personagem.status.estamina.max = 80 + personagem.status.destreza + personagem.status.constituicao;
-        
-        // Garantir que valores atuais não excedam máximos
-        personagem.status.vida.atual = Math.min(personagem.status.vida.atual, personagem.status.vida.max);
-        personagem.status.mana.atual = Math.min(personagem.status.mana.atual, personagem.status.mana.max);
-        personagem.status.estamina.atual = Math.min(personagem.status.estamina.atual, personagem.status.estamina.max);
-        
-        atualizarStatus();
-    }
-
     function atualizarStatus() {
         // Vida
         const vida = personagem.status.vida;
-        const vidaPercent = vida.max > 0 ? (vida.atual / vida.max) * 100 : 0;
+        const vidaPercent = vida.max > 0 ? (vida.atual / vida.max) * 100 : 100;
         document.getElementById('display-vida').textContent = `${vida.atual}/${vida.max}`;
         document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
         document.getElementById('vida-percent').textContent = `${Math.round(vidaPercent)}%`;
@@ -1403,7 +1298,7 @@
         
         // Mana
         const mana = personagem.status.mana;
-        const manaPercent = mana.max > 0 ? (mana.atual / mana.max) * 100 : 0;
+        const manaPercent = mana.max > 0 ? (mana.atual / mana.max) * 100 : 100;
         document.getElementById('display-mana').textContent = `${mana.atual}/${mana.max}`;
         document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
         document.getElementById('mana-percent').textContent = `${Math.round(manaPercent)}%`;
@@ -1411,7 +1306,7 @@
         
         // Estamina
         const estamina = personagem.status.estamina;
-        const estaminaPercent = estamina.max > 0 ? (estamina.atual / estamina.max) * 100 : 0;
+        const estaminaPercent = estamina.max > 0 ? (estamina.atual / estamina.max) * 100 : 100;
         document.getElementById('display-estamina').textContent = `${estamina.atual}/${estamina.max}`;
         document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
         document.getElementById('estamina-percent').textContent = `${Math.round(estaminaPercent)}%`;
@@ -1443,6 +1338,23 @@
         });
         
         document.getElementById('atributos-container').innerHTML = html;
+    }
+
+    function alterarAtributo(atributo, delta) {
+        if (personagem.pontosDisponiveis < delta && delta > 0) {
+            mostrarNotificacao('Pontos insuficientes!', 'error');
+            return;
+        }
+        
+        personagem.status[atributo] = Math.max(0, Math.min(100, personagem.status[atributo] + delta));
+        personagem.pontosDisponiveis -= delta;
+        
+        // Recalcular recursos e derivados
+        calcularRecursosBase();
+        calcularDerivadosAutomaticos();
+        
+        atualizarInterface();
+        salvarDados();
     }
 
     function atualizarClassePontos() {
@@ -1504,7 +1416,7 @@
         }
         
         personagem.nivel = novoNivel;
-        personagem.experienciaProximo = 1000 * personagem.nivel; // XP necessário aumenta com o nível
+        personagem.experienciaProximo = 1000 * personagem.nivel;
         
         atualizarClassePontos();
         salvarDados();
@@ -1542,9 +1454,6 @@
         
         personagem.sorte.indice = percentual;
         personagem.sorte.status = percentual >= 60 ? "Sorte Alta" : percentual <= 40 ? "Sorte Baixa" : "Neutro";
-        
-        // Atualizar ISP também
-        calcularISP();
     }
 
     function calcularDerivadosAutomaticos() {
@@ -1784,7 +1693,7 @@
         if (window.lucide) lucide.createIcons();
     }
 
-    async function carregarProficiencias() {
+    function carregarProficiencias() {
         const container = document.getElementById('proficiencias-container');
         
         try {
@@ -1802,7 +1711,6 @@
             
             const dados = JSON.parse(proficienciasData);
             
-            // Contar proficiências e calcular pontos
             let totalProficiencias = 0;
             let totalPontos = 0;
             let totalMaestrias = 0;
@@ -1813,7 +1721,6 @@
                 if (!categoria) return;
                 
                 if (Array.isArray(categoria)) {
-                    // Array simples (magia, pactos, etc)
                     categoria.forEach(habilidade => {
                         if (habilidade && habilidade.nivel) {
                             totalProficiencias++;
@@ -1823,7 +1730,6 @@
                         }
                     });
                 } else if (typeof categoria === 'object') {
-                    // Objeto com subcategorias (armas)
                     Object.values(categoria).forEach(subcat => {
                         if (Array.isArray(subcat)) {
                             subcat.forEach(habilidade => {
@@ -1844,7 +1750,7 @@
                 contarCategoria(dados[cat]);
             });
             
-            // Limitar proficiencias salvas ao máximo de 5 (como especificado)
+            // Limitar proficiencias salvas ao máximo de 5
             proficienciasSalvas = Math.min(proficienciasSalvas, 5);
             
             const porcentagemMaestria = totalProficiencias > 0 ? Math.round((totalMaestrias / totalProficiencias) * 100) : 0;
@@ -1915,68 +1821,72 @@
     }
 
     // ====================================================================
-    // FUNÇÕES DE INTERAÇÃO
+    // FUNÇÕES DE INTERAÇÃO BÁSICAS
     // ====================================================================
 
-    function alterarAtributo(atributo, delta) {
-        if (personagem.pontosDisponiveis < delta && delta > 0) {
-            mostrarNotificacao('Pontos insuficientes!', 'error');
-            return;
-        }
-        
-        personagem.status[atributo] = Math.max(0, Math.min(100, personagem.status[atributo] + delta));
-        personagem.pontosDisponiveis -= delta;
-        
-        // Recalcular recursos e derivados
-        calcularRecursos();
-        calcularDerivadosAutomaticos();
-        
-        // Se for PER, SAB ou AGI, atualizar ISP também
-        if (['sabedoria', 'destreza'].includes(atributo)) {
-            // Mapear atributos para ISP
-            if (atributo === 'sabedoria') {
-                personagem.atributosISP.sab = personagem.status.sabedoria;
-                document.getElementById('isp-sab').value = personagem.status.sabedoria;
-            } else if (atributo === 'destreza') {
-                personagem.atributosISP.agi = personagem.status.destreza;
-                document.getElementById('isp-agi').value = personagem.status.destreza;
-            }
-            calcularISP();
-        }
-        
-        atualizarInterface();
-        salvarDados();
+    function alterarAvatar() {
+        currentUploadType = 'avatar';
+        abrirUploadModal();
     }
 
-    function toggleDerivados() {
-        personagem.derivados.mostrar = !personagem.derivados.mostrar;
+    function editarStatus() {
+        modalType = 'status';
+        modalData = { ...personagem.status };
         
-        if (personagem.derivados.mostrar) {
-            calcularDerivadosAutomaticos();
-        }
+        document.getElementById('modal-title').textContent = 'Editar Status';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <h4 class="text-white font-medium mb-3">Recursos Vitais</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Vida Atual</label>
+                            <input type="number" id="modal-vida-atual" value="${modalData.vida.atual}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Vida Máxima</label>
+                            <input type="number" id="modal-vida-max" value="${modalData.vida.max}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Mana Atual</label>
+                            <input type="number" id="modal-mana-atual" value="${modalData.mana.atual}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Mana Máxima</label>
+                            <input type="number" id="modal-mana-max" value="${modalData.mana.max}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Estamina Atual</label>
+                            <input type="number" id="modal-estamina-atual" value="${modalData.estamina.atual}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Estamina Máxima</label>
+                            <input type="number" id="modal-estamina-max" value="${modalData.estamina.max}" 
+                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
         
-        atualizarEstatisticasAvancadas();
-        salvarDados();
-        
-        const botao = document.querySelector('#estatisticas-avancadas button');
-        if (botao) {
-            botao.innerHTML = personagem.derivados.mostrar ? 
-                '<i data-lucide="eye-off" class="w-3 h-3 inline mr-1"></i> Ocultar' :
-                '<i data-lucide="eye" class="w-3 h-3 inline mr-1"></i> Mostrar';
-        }
-        
-        if (window.lucide) lucide.createIcons();
+        document.getElementById('edit-modal').classList.remove('hidden');
     }
 
-    // [As outras funções permanecem similares, apenas ajustando para usar calcularRecursos() onde necessário]
-
-    // ====================================================================
-    // MODAIS E FUNÇÕES EXISTENTES
-    // ====================================================================
-
-    // [Mantive as funções existentes de modal, upload, exportação, etc., apenas ajustando onde necessário]
-
-    // Exemplo de função atualizada para editar classe:
     function editarClasse() {
         modalType = 'classe';
         
@@ -1994,7 +1904,7 @@
                     <div class="grid grid-cols-2 gap-3" id="classes-list">
                         ${classes.map(classe => `
                             <button onclick="selecionarClasse('${classe.nome}')" 
-                                    class="p-3 rounded-lg border text-left transition-all ${personagem.classe === classe.nome ? 'border-' + classe.cor.replace('#', '') + ' bg-' + classe.cor.replace('#', '') + '20' : 'border-theme-border hover:border-' + classe.cor.replace('#', '')}">
+                                    class="p-3 rounded-lg border text-left transition-all ${personagem.classe === classe.nome ? 'border-blue-500 bg-blue-500/20' : 'border-theme-border hover:border-blue-500'}">
                                 <div class="flex items-center gap-3">
                                     <div class="p-2 rounded" style="background-color: ${classe.cor}20">
                                         <i data-lucide="${classe.icone}" class="w-4 h-4" style="color: ${classe.cor}"></i>
@@ -2006,26 +1916,6 @@
                                 </div>
                             </button>
                         `).join('')}
-                    </div>
-                </div>
-                
-                <div class="p-4 bg-theme-panel/50 rounded-lg">
-                    <div class="text-sm text-gray-400 mb-2">Bônus da Classe</div>
-                    <div class="text-xs text-gray-500">
-                        Ao selecionar uma classe, você recebe +1 em 3 atributos específicos.
-                        Para classes personalizadas, você pode escolher quais atributos recebem bônus.
-                    </div>
-                </div>
-                
-                <div>
-                    <label class="block text-sm text-gray-400 mb-2">Pontos por Nível</label>
-                    <div class="flex items-center gap-4">
-                        <button onclick="alterarPontosPorNivel(-1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">-</button>
-                        <div class="text-center flex-1">
-                            <div class="text-3xl font-bold text-white" id="pontos-por-nivel-display">${personagem.pontosPorNivel}</div>
-                            <div class="text-xs text-gray-500">Pontos por Nível</div>
-                        </div>
-                        <button onclick="alterarPontosPorNivel(1)" class="w-10 h-10 rounded-full bg-theme-panel border border-theme-border flex items-center justify-center hover:bg-white/5">+</button>
                     </div>
                 </div>
             </div>
@@ -2060,7 +1950,7 @@
         }
         
         // Recalcular recursos
-        calcularRecursos();
+        calcularRecursosBase();
         calcularDerivadosAutomaticos();
         
         // Atualizar interface
@@ -2069,14 +1959,453 @@
             btn.classList.remove('border-blue-500', 'bg-blue-500/20');
         });
         if (botao) {
-            const corClasse = novaClasse.cor.replace('#', '');
-            botao.classList.add(`border-${corClasse}`, `bg-${corClasse}20`);
+            botao.classList.add('border-blue-500', 'bg-blue-500/20');
         }
     }
 
-    function alterarPontosPorNivel(delta) {
-        personagem.pontosPorNivel = Math.max(1, personagem.pontosPorNivel + delta);
-        document.getElementById('pontos-por-nivel-display').textContent = personagem.pontosPorNivel;
+    function editarSorte() {
+        modalType = 'sorte';
+        modalData = { ...personagem.sorte };
+        
+        document.getElementById('modal-title').textContent = 'Editar Dados de Sorte';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div class="grid grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Fé (1-10)</label>
+                        <input type="number" id="modal-fe" value="${modalData.fe}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Sorte (1-10)</label>
+                        <input type="number" id="modal-sorte" value="${modalData.sorte}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Destino (1-10)</label>
+                        <input type="number" id="modal-destino" value="${modalData.destino}" min="1" max="10"
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function editarEquipamento(index) {
+        currentEquipamentoIndex = index;
+        const equipamento = personagem.equipamentos[index] || {
+            nome: '',
+            tipo: 'Arma',
+            icone: 'sword',
+            imagem: '',
+            descricao: '',
+            bonus: '',
+            raridade: 'Comum',
+            raridadeCor: '#8b7355'
+        };
+        
+        modalType = 'equipamento';
+        modalData = { ...equipamento };
+        
+        document.getElementById('modal-title').textContent = equipamento.nome ? `Editar ${equipamento.nome}` : 'Novo Equipamento';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Equipamento</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                        <select id="modal-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                            <option value="Arma" ${modalData.tipo === 'Arma' ? 'selected' : ''}>Arma</option>
+                            <option value="Armadura" ${modalData.tipo === 'Armadura' ? 'selected' : ''}>Armadura</option>
+                            <option value="Acessório" ${modalData.tipo === 'Acessório' ? 'selected' : ''}>Acessório</option>
+                            <option value="Consumível" ${modalData.tipo === 'Consumível' ? 'selected' : ''}>Consumível</option>
+                            <option value="Mágico" ${modalData.tipo === 'Mágico' ? 'selected' : ''}>Mágico</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Raridade</label>
+                        <select id="modal-raridade" class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                            <option value="Comum" ${modalData.raridade === 'Comum' ? 'selected' : ''}>Comum</option>
+                            <option value="Incomum" ${modalData.raridade === 'Incomum' ? 'selected' : ''}>Incomum</option>
+                            <option value="Raro" ${modalData.raridade === 'Raro' ? 'selected' : ''}>Raro</option>
+                            <option value="Épico" ${modalData.raridade === 'Épico' ? 'selected' : ''}>Épico</option>
+                            <option value="Lendário" ${modalData.raridade === 'Lendário' ? 'selected' : ''}>Lendário</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function editarHabilidade(index) {
+        currentHabilidadeIndex = index;
+        const habilidade = personagem.habilidades[index] || {
+            nome: '',
+            tipo: 'Ativa',
+            tipoCor: 'purple',
+            icone: 'zap',
+            imagem: '',
+            nivel: 1,
+            custo: '',
+            cooldown: '',
+            descricao: ''
+        };
+        
+        modalType = 'habilidade';
+        modalData = { ...habilidade };
+        
+        document.getElementById('modal-title').textContent = habilidade.nome ? `Editar ${habilidade.nome}` : 'Nova Habilidade';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome da Habilidade</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function criarHabilidade() {
+        const index = personagem.habilidades.findIndex(h => h === null);
+        if (index === -1) {
+            mostrarNotificacao('Todos os slots de habilidade estão ocupados!', 'error');
+            return;
+        }
+        
+        editarHabilidade(index);
+    }
+
+    function usarItem(index) {
+        const item = personagem.inventarioRapido[index];
+        
+        if (item) {
+            mostrarNotificacao(`Usando: ${item.nome}`, 'info');
+        } else {
+            mostrarNotificacao('Slot vazio', 'info');
+        }
+    }
+
+    function editarInventario() {
+        mostrarNotificacao('Clique em um slot para configurar', 'info');
+    }
+
+    function importarEquipamento() {
+        mostrarNotificacao('Função de importação em desenvolvimento', 'info');
+    }
+
+    function importarMascoteTXT() {
+        mostrarNotificacao('Função de importação TXT em desenvolvimento', 'info');
+    }
+
+    function editarMascote() {
+        if (!personagem.mascote) {
+            personagem.mascote = {
+                nome: 'Novo Mascote',
+                tipo: 'Companheiro',
+                descricao: '',
+                imagem: ''
+            };
+        }
+        
+        modalType = 'mascote';
+        modalData = { ...personagem.mascote };
+        
+        document.getElementById('modal-title').textContent = 'Editar Mascote';
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Mascote</label>
+                    <input type="text" id="modal-nome" value="${modalData.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    // ====================================================================
+    // SISTEMA DE MODAL
+    // ====================================================================
+
+    function salvarModal() {
+        switch (modalType) {
+            case 'status':
+                personagem.status.vida.atual = parseInt(document.getElementById('modal-vida-atual').value) || 100;
+                personagem.status.vida.max = parseInt(document.getElementById('modal-vida-max').value) || 100;
+                personagem.status.mana.atual = parseInt(document.getElementById('modal-mana-atual').value) || 100;
+                personagem.status.mana.max = parseInt(document.getElementById('modal-mana-max').value) || 100;
+                personagem.status.estamina.atual = parseInt(document.getElementById('modal-estamina-atual').value) || 100;
+                personagem.status.estamina.max = parseInt(document.getElementById('modal-estamina-max').value) || 100;
+                break;
+                
+            case 'classe':
+                personagem.nome = document.getElementById('modal-nome').value || personagem.nome;
+                break;
+                
+            case 'sorte':
+                personagem.sorte.fe = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-fe').value) || 3));
+                personagem.sorte.sorte = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-sorte').value) || 3));
+                personagem.sorte.destino = Math.max(1, Math.min(10, parseInt(document.getElementById('modal-destino').value) || 4));
+                break;
+                
+            case 'equipamento':
+                modalData.nome = document.getElementById('modal-nome').value || 'Equipamento sem nome';
+                modalData.tipo = document.getElementById('modal-tipo').value;
+                modalData.raridade = document.getElementById('modal-raridade').value;
+                
+                const coresRaridade = {
+                    'Comum': '#8b7355',
+                    'Incomum': '#22c55e',
+                    'Raro': '#4a9eff',
+                    'Épico': '#8b5cf6',
+                    'Lendário': '#f59e0b'
+                };
+                modalData.raridadeCor = coresRaridade[modalData.raridade] || '#8b7355';
+                
+                personagem.equipamentos[currentEquipamentoIndex] = modalData;
+                break;
+                
+            case 'habilidade':
+                modalData.nome = document.getElementById('modal-nome').value || 'Habilidade sem nome';
+                personagem.habilidades[currentHabilidadeIndex] = modalData;
+                break;
+                
+            case 'mascote':
+                modalData.nome = document.getElementById('modal-nome').value || 'Mascote sem nome';
+                personagem.mascote = modalData;
+                break;
+        }
+        
+        fecharModal();
+        
+        // Atualizar interface e salvar
+        atualizarInterface();
+        salvarDados();
+        
+        mostrarNotificacao('Alterações salvas com sucesso!', 'success');
+    }
+
+    function fecharModal() {
+        document.getElementById('edit-modal').classList.add('hidden');
+        modalType = '';
+        modalData = {};
+        currentEquipamentoIndex = null;
+        currentHabilidadeIndex = null;
+    }
+
+    // ====================================================================
+    // SISTEMA DE UPLOAD
+    // ====================================================================
+
+    function abrirUploadModal() {
+        document.getElementById('upload-modal').classList.remove('hidden');
+        document.getElementById('image-preview').classList.add('hidden');
+        document.getElementById('file-input').value = '';
+    }
+
+    function fecharUploadModal() {
+        document.getElementById('upload-modal').classList.add('hidden');
+    }
+
+    function previewImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        if (!file.type.match('image.*')) {
+            mostrarNotificacao('Por favor, selecione uma imagem', 'error');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const preview = document.getElementById('preview-image');
+            preview.src = e.target.result;
+            document.getElementById('image-preview').classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function confirmarUpload() {
+        const fileInput = document.getElementById('file-input');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+            mostrarNotificacao('Nenhuma imagem selecionada', 'error');
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imagemDataURL = e.target.result;
+            
+            if (currentUploadType === 'avatar') {
+                personagem.avatar = imagemDataURL;
+                atualizarAvatar();
+                salvarDados();
+                mostrarNotificacao('Avatar atualizado com sucesso!', 'success');
+            }
+            
+            fecharUploadModal();
+        };
+        
+        reader.readAsDataURL(file);
+    }
+
+    // ====================================================================
+    // FUNÇÕES DE EXPORTAÇÃO/IMPORTAÇÃO
+    // ====================================================================
+
+    function exportarTXT() {
+        try {
+            let texto = `GRIMÓRIO DIGITAL - PERFIL DO PERSONAGEM\n`;
+            texto += `===========================================\n\n`;
+            texto += `GERADO EM: ${new Date().toLocaleString('pt-BR')}\n\n`;
+            
+            texto += `INFORMAÇÕES BÁSICAS\n`;
+            texto += `-------------------\n`;
+            texto += `Nome: ${personagem.nome}\n`;
+            texto += `Classe: ${personagem.classe}\n`;
+            texto += `Nível: ${personagem.nivel}\n\n`;
+            
+            // Status
+            texto += `STATUS\n`;
+            texto += `------\n`;
+            texto += `Vida: ${personagem.status.vida.atual}/${personagem.status.vida.max}\n`;
+            texto += `Mana: ${personagem.status.mana.atual}/${personagem.status.mana.max}\n`;
+            texto += `Estamina: ${personagem.status.estamina.atual}/${personagem.status.estamina.max}\n\n`;
+            
+            // Atributos
+            texto += `ATRIBUTOS\n`;
+            texto += `---------\n`;
+            texto += `Força: ${personagem.status.forca}\n`;
+            texto += `Destreza: ${personagem.status.destreza}\n`;
+            texto += `Constituição: ${personagem.status.constituicao}\n`;
+            texto += `Inteligência: ${personagem.status.inteligencia}\n`;
+            texto += `Sabedoria: ${personagem.status.sabedoria}\n`;
+            texto += `Carisma: ${personagem.status.carisma}\n\n`;
+            
+            // Sorte
+            texto += `SORTE ISP\n`;
+            texto += `---------\n`;
+            texto += `ISP: ${currentISPResult ? currentISPResult.ispFinal + '%' : 'Não calculado'}\n`;
+            texto += `PER: ${personagem.atributosISP.per}\n`;
+            texto += `SAB: ${personagem.atributosISP.sab}\n`;
+            texto += `AGI: ${personagem.atributosISP.agi}\n`;
+            texto += `Emoção: ${personagem.atributosISP.emocao}\n\n`;
+            
+            // Criar e baixar arquivo
+            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `perfil_${personagem.nome.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            mostrarNotificacao('Perfil exportado em TXT!', 'success');
+        } catch (error) {
+            console.error('Erro ao exportar TXT:', error);
+            mostrarNotificacao('Erro ao exportar', 'error');
+        }
+    }
+
+    function exportarJSON() {
+        try {
+            const dados = {
+                ...personagem,
+                exportadoEm: new Date().toISOString(),
+                sistema: 'Grimório Digital v2.0'
+            };
+            
+            const json = JSON.stringify(dados, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `perfil_${personagem.nome.replace(/\s+/g, '_')}_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            mostrarNotificacao('Perfil exportado em JSON!', 'success');
+        } catch (error) {
+            console.error('Erro ao exportar JSON:', error);
+            mostrarNotificacao('Erro ao exportar', 'error');
+        }
+    }
+
+    function importarPerfil() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        
+        input.onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const dados = JSON.parse(event.target.result);
+                    
+                    // Mesclar dados
+                    Object.keys(dados).forEach(key => {
+                        if (key !== 'exportadoEm' && key !== 'sistema') {
+                            personagem[key] = dados[key];
+                        }
+                    });
+                    
+                    atualizarInterface();
+                    salvarDados();
+                    
+                    mostrarNotificacao('Perfil importado com sucesso!', 'success');
+                } catch (error) {
+                    console.error('Erro ao importar:', error);
+                    mostrarNotificacao('Erro ao importar perfil', 'error');
+                }
+            };
+            reader.readAsText(file);
+        };
+        
+        input.click();
+    }
+
+    function salvarPerfil() {
+        salvarDados();
+    }
+
+    // ====================================================================
+    // FUNÇÕES DE NAVEGAÇÃO
+    // ====================================================================
+
+    function carregarStatus() {
+        mostrarNotificacao('Status carregado', 'info');
+    }
+
+    function carregarEquipamentos() {
+        window.location.hash = '#equipamentos-container';
+        mostrarNotificacao('Navegando para equipamentos...', 'info');
+    }
+
+    function carregarHabilidades() {
+        window.location.hash = '#habilidades-container';
+        mostrarNotificacao('Navegando para habilidades...', 'info');
     }
 
     // ====================================================================
@@ -2137,27 +2466,8 @@
     document.addEventListener('DOMContentLoaded', function() {
         inicializar();
         
-        // Configurar variáveis CSS para cores
-        const root = document.documentElement;
-        root.style.setProperty('--theme-red', '#dc2626');
-        root.style.setProperty('--theme-green', '#22c55e');
-        root.style.setProperty('--theme-blue', '#4a9eff');
-        root.style.setProperty('--theme-purple', '#8b5cf6');
-        root.style.setProperty('--theme-yellow', '#f59e0b');
-        root.style.setProperty('--theme-pink', '#ec4899');
-        root.style.setProperty('--theme-orange', '#ff6b35');
-        
         console.log('Sistema de Perfil inicializado com sucesso!');
     });
-
-    // Adicionar função para calcular recursos manualmente
-    function calcularRecursosManualmente() {
-        calcularRecursos();
-        mostrarNotificacao('Recursos recalculados com base nos atributos!', 'success');
-    }
-
-    // Renomear a função existente para maior clareza
-    window.calcularRecursos = calcularRecursosManualmente;
     </script>
 </body>
 </html>
