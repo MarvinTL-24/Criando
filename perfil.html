@@ -731,22 +731,29 @@
                 const personagem = GrimorioSystem.carregarPersonagem();
                 
                 if (!personagem) {
-                    mostrarErro('Nenhum personagem encontrado. Crie uma ficha primeiro.');
+                    mostrarErro('Nenhum personagem encontrado no Grimorio. Crie uma ficha primeiro.');
                     return;
                 }
                 
                 console.log('Personagem carregado:', personagem.nome);
                 
-                // Atualizar todos os campos da interface
+                // Verificar se é o personagem padrão
+                if (personagem.nome === 'Novo Aventureiro') {
+                    mostrarErro('Personagem não configurado. Preencha a ficha primeiro.');
+                    document.getElementById('warning-modal').classList.remove('hidden');
+                    return;
+                }
+                
+                // Atualizar interface com dados
                 atualizarInterface(personagem);
                 
             } catch (error) {
                 console.error('Erro ao carregar perfil:', error);
-                mostrarErro('Erro ao carregar dados do personagem');
+                mostrarErro('Erro ao carregar dados do personagem: ' + error.message);
             }
         }
-        
-        // 3. Atualizar interface com dados do personagem
+
+        // Atualize a função atualizarInterface() para garantir que o avatar apareça:
         function atualizarInterface(personagem) {
             console.log('Atualizando interface com dados:', personagem);
             
@@ -758,16 +765,28 @@
             document.getElementById('profile-classe').textContent = personagem.classe || 'Não Escolhida';
             document.getElementById('profile-nivel').textContent = `Nível ${personagem.nivel || 1}`;
             
-            // Avatar/Imagem
+            // Avatar/Imagem - CORRIGIDO
             const avatarDisplay = document.getElementById('avatar-display');
             const avatarIcon = document.getElementById('avatar-icon');
             
-            if (personagem.avatar && personagem.avatar.trim() !== '') {
-                avatarDisplay.style.backgroundImage = `url('${personagem.avatar}')`;
-                avatarDisplay.style.backgroundSize = 'cover';
-                avatarDisplay.style.backgroundPosition = 'center';
-                avatarIcon.style.display = 'none';
+            if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
+                console.log('Tentando carregar avatar:', personagem.avatar.substring(0, 50) + '...');
+                
+                // Usar try/catch para lidar com URLs inválidas
+                try {
+                    avatarDisplay.style.backgroundImage = `url('${personagem.avatar}')`;
+                    avatarDisplay.style.backgroundSize = 'cover';
+                    avatarDisplay.style.backgroundPosition = 'center';
+                    avatarIcon.style.display = 'none';
+                    
+                    console.log('Avatar carregado com sucesso');
+                } catch (error) {
+                    console.error('Erro ao aplicar avatar:', error);
+                    avatarDisplay.style.backgroundImage = '';
+                    avatarIcon.style.display = 'block';
+                }
             } else {
+                console.log('Nenhum avatar definido');
                 avatarDisplay.style.backgroundImage = '';
                 avatarIcon.style.display = 'block';
             }
@@ -806,16 +825,16 @@
             // Recursos
             const recursos = personagem.recursos || {};
             document.getElementById('display-vida').textContent = 
-                `${recursos.vidaAtual || 0}/${recursos.vidaMaxima || 10}`;
+                `${recursos.vidaAtual || 0}/${recursos.vidaMaxima || 100}`;
             document.getElementById('display-mana').textContent = 
-                `${recursos.manaAtual || 0}/${recursos.manaMaxima || 0}`;
+                `${recursos.manaAtual || 0}/${recursos.manaMaxima || 100}`;
             document.getElementById('display-estamina').textContent = 
-                `${recursos.estaminaAtual || 0}/${recursos.estaminaMaxima || 20}`;
+                `${recursos.estaminaAtual || 0}/${recursos.estaminaMaxima || 100}`;
             
             // Bases dos recursos
-            document.getElementById('display-vida-base').textContent = recursos.vidaMaxima || 10;
-            document.getElementById('display-mana-base').textContent = recursos.manaMaxima || 0;
-            document.getElementById('display-estamina-base').textContent = recursos.estaminaMaxima || 20;
+            document.getElementById('display-vida-base').textContent = recursos.vidaMaxima || 100;
+            document.getElementById('display-mana-base').textContent = recursos.manaMaxima || 100;
+            document.getElementById('display-estamina-base').textContent = recursos.estaminaMaxima || 100;
             
             // Barras de recursos
             const vidaPercent = recursos.vidaMaxima > 0 ? ((recursos.vidaAtual || 0) / recursos.vidaMaxima) * 100 : 0;

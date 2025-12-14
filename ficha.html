@@ -524,52 +524,189 @@
             }
         }
 
-        // 4. FUNÇÃO PRINCIPAL DE SALVAMENTO
+        // FUNÇÃO PRINCIPAL DE SALVAMENTO - VERSÃO CORRIGIDA
         function salvarEAplicar() {
-            const perfilAtivo = getActiveProfile();
-            
-            if (!perfilAtivo) {
-                showFeedback('❌ Erro', 'Nenhum perfil ativo encontrado!', 'error');
-                return;
+            try {
+                // Coletar todos os dados
+                const dadosFicha = coletarTodosDados();
+                
+                // Validar campos obrigatórios
+                if (!dadosFicha.nome || dadosFicha.nome.trim() === '') {
+                    showFeedback('⚠️ Atenção', 'O nome do personagem é obrigatório!', 'warning');
+                    document.getElementById('inp-nome').focus();
+                    return;
+                }
+                
+                // 1. Salvar no GrimorioSystem
+                const dadosParaGrimorio = {
+                    nome: dadosFicha.nome,
+                    titulo: dadosFicha.titulo || '',
+                    raca: dadosFicha.raca || '',
+                    classe: dadosFicha.classe || 'Escolha livre',
+                    nivel: dadosFicha.nivel || 1,
+                    idade: dadosFicha.idade || '',
+                    altura: dadosFicha.altura || '',
+                    peso: dadosFicha.peso || '',
+                    origem: dadosFicha.origem || ''
+                };
+                
+                GrimorioSystem.salvarDadosBasicos(dadosParaGrimorio);
+                
+                // 2. Salvar avatar se houver
+                if (currentAvatar) {
+                    GrimorioSystem.salvarAvatar(currentAvatar);
+                }
+                
+                // 3. Salvar dados da ficha completa em localStorage separado
+                localStorage.setItem('grimorio_ficha_completa', JSON.stringify(dadosFicha));
+                
+                // 4. Marcar como salvo
+                hasUnsavedChanges = false;
+                
+                // 5. Feedback
+                showFeedback('✅ Sucesso!', 'Ficha salva em todos os sistemas!', 'success');
+                
+                // 6. Forçar atualização das outras páginas
+                window.dispatchEvent(new CustomEvent('grimorio:dadosAtualizados'));
+                
+                // 7. Redirecionar para o perfil (opcional)
+                setTimeout(() => {
+                    if (confirm('Deseja ver seu perfil atualizado?')) {
+                        window.location.href = 'perfil.html';
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                console.error('Erro ao salvar:', error);
+                showFeedback('❌ Erro', 'Ocorreu um erro ao salvar: ' + error.message, 'error');
             }
-            
-            // Coletar todos os dados
-            const dadosFicha = coletarTodosDados();
-            
-            // Validar campos obrigatórios
-            if (!dadosFicha.nome || dadosFicha.nome.trim() === '') {
-                showFeedback('⚠️ Atenção', 'O nome do personagem é obrigatório!', 'warning');
-                document.getElementById('inp-nome').focus();
-                return;
+        }
+
+        // Atualize a função coletarTodosDados() para incluir todos os campos:
+        function coletarTodosDados() {
+            return {
+                // Identidade
+                nome: document.getElementById('inp-nome').value.trim(),
+                titulo: document.getElementById('inp-titulo').value.trim(),
+                nivel: parseInt(document.getElementById('inp-nivel').value) || 1,
+                idade: document.getElementById('inp-idade').value.trim(),
+                altura: document.getElementById('inp-altura').value.trim(),
+                peso: document.getElementById('inp-peso').value.trim(),
+                raca: document.getElementById('inp-raca').value.trim(),
+                classe: document.getElementById('inp-classe').value.trim(),
+                origem: document.getElementById('inp-origem')?.value.trim() || '',
+                
+                // Aparência
+                cabeca: document.getElementById('inp-cabeca').value.trim(),
+                torso: document.getElementById('inp-torso').value.trim(),
+                bracos: document.getElementById('inp-bracos').value.trim(),
+                pernas: document.getElementById('inp-pernas').value.trim(),
+                
+                // História
+                historia: document.getElementById('inp-historia').value.trim(),
+                motivacoes: document.getElementById('inp-motivacoes').value.trim(),
+                medos: document.getElementById('inp-medos').value.trim(),
+                
+                // Personalidade
+                personalidade: document.getElementById('inp-personalidade').value.trim(),
+                ideais: document.getElementById('inp-ideais').value.trim(),
+                defeitos: document.getElementById('inp-defeitos').value.trim(),
+                habitos: document.getElementById('inp-habitos').value.trim(),
+                
+                // Relações
+                aliados: document.getElementById('inp-aliados').value.trim(),
+                inimigos: document.getElementById('inp-inimigos').value.trim(),
+                
+                // Avatar
+                avatar: currentAvatar || '',
+                
+                // Metadados
+                dataSalvamento: new Date().toISOString(),
+                versao: '2.0'
+            };
+        }
+
+        // Adicione esta função para carregar avatar da ficha
+        function carregarAvatarDoGrimorio() {
+            try {
+                const personagem = GrimorioSystem.carregarPersonagem();
+                
+                if (personagem.avatar && personagem.avatar.trim() !== '') {
+                    currentAvatar = personagem.avatar;
+                    
+                    const container = document.getElementById('avatar-container');
+                    if (container) {
+                        container.style.backgroundImage = `url('${personagem.avatar}')`;
+                        container.style.backgroundSize = 'cover';
+                        container.style.backgroundPosition = 'center';
+                        
+                        const placeholder = container.querySelector('.avatar-placeholder');
+                        if (placeholder) {
+                            placeholder.style.opacity = '0';
+                        }
+                        
+                        console.log('Avatar carregado do Grimorio');
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar avatar:', error);
             }
-            
-            // Atualizar perfil ativo
-            perfilAtivo.ficha = dadosFicha;
-            
-            // Atualizar informações básicas para o Hub
-            perfilAtivo.nome = dadosFicha.nome;
-            perfilAtivo.titulo = dadosFicha.titulo || '';
-            perfilAtivo.classe = dadosFicha.classe || 'Escolha livre';
-            perfilAtivo.raca = dadosFicha.raca || '';
-            perfilAtivo.nivel = dadosFicha.nivel || 1;
-            perfilAtivo.avatar = currentAvatar || perfilAtivo.avatar;
-            perfilAtivo.ultimaAtualizacao = new Date().toISOString();
-            
-            // Salvar no localStorage
-            localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(perfilAtivo));
-            
-            // Marcar como salvo
-            hasUnsavedChanges = false;
-            
-            // Feedback
-            showFeedback('✅ Sucesso!', 'Ficha salva no perfil ativo!', 'success');
-            
-            // Atualizar display
-            atualizarInfoPerfil(perfilAtivo);
-            
-            // Forçar atualização do Hub
-            if (window.parent && window.parent.carregarPerfilAtivo) {
-                window.parent.carregarPerfilAtivo();
+        }
+
+        // Atualize a função inicializarFicha():
+        function inicializarFicha() {
+            try {
+                // 1. Inicializar Lucide
+                if (window.lucide) {
+                    lucide.createIcons();
+                }
+                
+                // 2. Carregar dados do GrimorioSystem
+                const personagem = GrimorioSystem.carregarPersonagem();
+                
+                if (!personagem) {
+                    showFeedback('⚠️ Sistema não inicializado', 'O sistema será iniciado automaticamente', 'warning');
+                    GrimorioSystem.inicializarPersonagemPadrao();
+                }
+                
+                // 3. Carregar avatar
+                carregarAvatarDoGrimorio();
+                
+                // 4. Carregar dados básicos nos campos
+                if (personagem.nome !== 'Novo Aventureiro') {
+                    // Identidade
+                    document.getElementById('inp-nome').value = personagem.nome || '';
+                    document.getElementById('inp-titulo').value = personagem.titulo || '';
+                    document.getElementById('inp-nivel').value = personagem.nivel || 1;
+                    document.getElementById('inp-idade').value = personagem.idade || '';
+                    document.getElementById('inp-altura').value = personagem.altura || '';
+                    document.getElementById('inp-peso').value = personagem.peso || '';
+                    document.getElementById('inp-raca').value = personagem.raca || '';
+                    document.getElementById('inp-classe').value = personagem.classe || '';
+                    
+                    // Se houver dados de ficha completa, carregar
+                    const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
+                    if (fichaCompleta) {
+                        try {
+                            const dados = JSON.parse(fichaCompleta);
+                            carregarDadosFicha(dados);
+                        } catch (e) {
+                            console.error('Erro ao carregar ficha completa:', e);
+                        }
+                    }
+                }
+                
+                // 5. Atualizar info do perfil
+                atualizarInfoPerfil(personagem);
+                
+                // 6. Configurar autosave
+                configurarAutoSave();
+                
+                console.log('Ficha inicializada com sucesso');
+                
+            } catch (error) {
+                console.error('Erro ao inicializar ficha:', error);
+                showFeedback('❌ Erro', 'Falha na inicialização: ' + error.message, 'error');
             }
         }
 

@@ -742,6 +742,96 @@
             }
         `;
         document.head.appendChild(estiloDropdown);
+        
+        // Função específica para carregar avatar no index
+        function carregarAvatarIndex() {
+            try {
+                const personagem = GrimorioSystem.carregarPersonagem();
+                const avatarContainer = document.getElementById('avatar-container');
+                const avatarIcon = document.getElementById('avatar-icon');
+                const avatarStatus = document.getElementById('avatar-status');
+                
+                if (!avatarContainer) {
+                    console.error('Elemento avatar-container não encontrado');
+                    return;
+                }
+                
+                if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
+                    console.log('Carregando avatar no index:', personagem.avatar.substring(0, 50) + '...');
+                    
+                    // Tentar carregar a imagem primeiro
+                    const img = new Image();
+                    img.onload = function() {
+                        // Imagem carregada com sucesso
+                        avatarContainer.style.backgroundImage = `url('${personagem.avatar}')`;
+                        avatarContainer.style.backgroundSize = 'cover';
+                        avatarContainer.style.backgroundPosition = 'center';
+                        if (avatarIcon) avatarIcon.style.display = 'none';
+                        if (avatarStatus) {
+                            avatarStatus.textContent = 'Imagem carregada';
+                            avatarStatus.className = 'badge badge-green';
+                        }
+                    };
+                    
+                    img.onerror = function() {
+                        // Erro ao carregar imagem
+                        console.error('Erro ao carregar imagem do avatar');
+                        avatarContainer.style.backgroundImage = '';
+                        if (avatarIcon) avatarIcon.style.display = 'block';
+                        if (avatarStatus) {
+                            avatarStatus.textContent = 'Imagem inválida';
+                            avatarStatus.className = 'badge badge-orange';
+                        }
+                    };
+                    
+                    img.src = personagem.avatar;
+                    
+                } else {
+                    console.log('Nenhum avatar definido no index');
+                    avatarContainer.style.backgroundImage = '';
+                    if (avatarIcon) avatarIcon.style.display = 'block';
+                    if (avatarStatus) {
+                        avatarStatus.textContent = 'Nenhuma imagem';
+                        avatarStatus.className = 'badge badge-blue';
+                    }
+                }
+            } catch (error) {
+                console.error('Erro ao carregar avatar no index:', error);
+                const avatarContainer = document.getElementById('avatar-container');
+                const avatarIcon = document.getElementById('avatar-icon');
+                if (avatarContainer) avatarContainer.style.backgroundImage = '';
+                if (avatarIcon) avatarIcon.style.display = 'block';
+            }
+        }
+
+        // Atualize a função atualizarInterface() no index.html:
+        function atualizarInterface(personagem) {
+            // ... código existente ...
+            
+            // Chamar função específica para avatar
+            carregarAvatarIndex();
+            
+            // ... restante do código ...
+        }
+
+        // No evento DOMContentLoaded do index.html, adicione:
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... código existente ...
+            
+            // Carregar dados após breve delay
+            setTimeout(() => {
+                carregarDadosPersonagem();
+                iniciarAtualizacaoPeriodica();
+            }, 100);
+            
+            // Ouvir eventos de atualização
+            window.addEventListener('grimorio:dadosAtualizados', function() {
+                console.log('Dados atualizados recebidos no index');
+                setTimeout(carregarDadosPersonagem, 300); // Pequeno delay para garantir sincronização
+            });
+            
+            // ... restante do código ...
+        });
     </script>
 </body>
 </html>

@@ -6,6 +6,8 @@
 const GRIMORIO_STORAGE_KEY = 'grimorio_personagem_ativo';
 
 class GrimorioSystem {
+
+    
     // ============================================================
     // 1. GESTÃO DO PERSONAGEM PRINCIPAL
     // ============================================================
@@ -553,3 +555,74 @@ GrimorioSystem.sincronizarStatus = function(statusData) {
         return false;
     }
 };
+    // ============================================================
+    // SISTEMA DE SINCRONIZAÇÃO DE IMAGENS E DADOS
+    // ============================================================
+
+    // Função para salvar avatar da ficha
+    GrimorioSystem.salvarAvatar = function(avatarDataURL) {
+        try {
+            const personagem = this.carregarPersonagem();
+            personagem.avatar = avatarDataURL;
+            this.salvarPersonagem(personagem);
+            return true;
+        } catch (error) {
+            console.error('[Grimorio] Erro ao salvar avatar:', error);
+            return false;
+        }
+    };
+
+    // Função para salvar dados básicos da ficha
+    GrimorioSystem.salvarDadosBasicos = function(dados) {
+        try {
+            const personagem = this.carregarPersonagem();
+            
+            // Dados básicos
+            personagem.nome = dados.nome || personagem.nome;
+            personagem.titulo = dados.titulo || personagem.titulo;
+            personagem.raca = dados.raca || personagem.raca;
+            personagem.classe = dados.classe || personagem.classe;
+            personagem.nivel = parseInt(dados.nivel) || personagem.nivel;
+            personagem.idade = dados.idade || personagem.idade;
+            personagem.altura = dados.altura || personagem.altura;
+            personagem.peso = dados.peso || personagem.peso;
+            personagem.origem = dados.origem || personagem.origem;
+            
+            // Atributos (se vierem da ficha)
+            if (dados.atributos) {
+                personagem.atributos = dados.atributos;
+            }
+            
+            // Recursos (se vierem da ficha)
+            if (dados.recursos) {
+                personagem.recursos = dados.recursos;
+            }
+            
+            // XP e progressão
+            if (dados.experiencia !== undefined) {
+                personagem.experiencia = dados.experiencia;
+            }
+            
+            if (dados.experienciaProximoNivel) {
+                personagem.experienciaProximoNivel = dados.experienciaProximoNivel;
+            }
+            
+            this.salvarPersonagem(personagem);
+            return true;
+            
+        } catch (error) {
+            console.error('[Grimorio] Erro ao salvar dados básicos:', error);
+            return false;
+        }
+    };
+
+    // Função para carregar dados no perfil
+    GrimorioSystem.carregarParaPerfil = function() {
+        return this.carregarPersonagem();
+    };
+
+    /// Função para verificar se há dados
+    GrimorioSystem.temDados = function() {
+        const personagem = this.carregarPersonagem();
+        return personagem && personagem.nome !== 'Novo Aventureiro';
+    };
