@@ -1330,7 +1330,6 @@
         },
         config: {
             limiteAtributo: 100,
-            rolagensMaximas: 5
         }
     };
     
@@ -1496,11 +1495,7 @@
             mostrarNotificacao('Destino já foi fixado!', 'warning');
             return;
         }
-        
-        if (statusData.sorte.rolagens >= statusData.config.rolagensMaximas) {
-            mostrarNotificacao(`Máximo de ${statusData.config.rolagensMaximas} rolagens atingido!`, 'warning');
-            return;
-        }
+
         
         // Sistema mais difícil
         const dado1 = Math.floor(Math.random() * 100) + 1;
