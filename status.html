@@ -48,7 +48,7 @@
             font-weight: 600;
         }
         
-        /* NAVBAR SIMPLES */
+        /* NAVBAR CORRIGIDA */
         .navbar {
             background: var(--bg-panel);
             border-bottom: 1px solid var(--border-color);
@@ -67,9 +67,41 @@
             justify-content: space-between;
         }
         
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+        
+        .back-button {
+            padding: 0.5rem 0.75rem;
+            background: rgba(74, 158, 255, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .back-button:hover {
+            background: rgba(74, 158, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
         .nav-button {
             padding: 0.5rem 0.75rem;
-            background: var(--accent-blue);
             color: white;
             border: none;
             border-radius: 0.5rem;
@@ -79,11 +111,24 @@
             align-items: center;
             gap: 0.5rem;
             font-size: 0.875rem;
-            transition: transform 0.2s;
+            transition: all 0.2s;
         }
         
         .nav-button:hover {
             transform: translateY(-1px);
+            filter: brightness(110%);
+        }
+        
+        .nav-button-import {
+            background: var(--accent-green);
+        }
+        
+        .nav-button-export {
+            background: var(--accent-blue);
+        }
+        
+        .nav-button-config {
+            background: var(--accent-purple);
         }
         
         /* LAYOUT PRINCIPAL */
@@ -391,33 +436,50 @@
             .dice-container {
                 grid-template-columns: 1fr;
             }
+            
+            .nav-buttons {
+                gap: 0.25rem;
+            }
+            
+            .nav-button {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.75rem;
+            }
+            
+            .nav-button span {
+                display: none;
+            }
+            
+            .nav-button i {
+                margin-right: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- NAVBAR -->
+    <!-- NAVBAR CORRIGIDA -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="flex items-center gap-3">
-                <a href="index.html" class="flex items-center gap-2 no-underline hover-opacity">
+                <a href="index.html" class="back-button">
                     <i data-lucide="arrow-left"></i>
                     <span class="font-cinzel">Voltar</span>
                 </a>
                 <h1 class="font-cinzel" style="color: var(--accent-blue);">Sistema de Status</h1>
             </div>
             
-            <div class="flex gap-2">
-                <button id="btn-importar" class="nav-button" style="background: var(--accent-green);">
+            <div class="nav-buttons">
+                <button id="btn-importar" class="nav-button nav-button-import">
                     <i data-lucide="upload"></i>
-                    Importar
+                    <span>Importar</span>
                 </button>
-                <button id="btn-exportar" class="nav-button">
+                <button id="btn-exportar" class="nav-button nav-button-export">
                     <i data-lucide="download"></i>
-                    Exportar
+                    <span>Exportar</span>
                 </button>
-                <button id="btn-config" class="nav-button" style="background: var(--accent-purple);">
+                <button id="btn-config" class="nav-button nav-button-config">
                     <i data-lucide="settings"></i>
-                    Configurar
+                    <span>Configurar</span>
                 </button>
             </div>
         </div>
@@ -797,7 +859,7 @@
 
     <!-- RODAPÉ -->
     <footer class="border-t border-border-color py-4 text-center text-sm" style="color: var(--text-secondary);">
-        Sistema de Status - Grimório Digital v3.0
+        Sistema de Status - Grimório Digital v3.0 | Integrado com Core System
     </footer>
 
     <!-- MODAL DE CONFIGURAÇÕES -->
@@ -848,9 +910,10 @@
     </div>
 
     <script>
+    // Inicializar ícones Lucide
     lucide.createIcons();
     
-    // Dados do sistema
+    // Dados do sistema - AGORA INTEGRADO COM GRIMORIO SYSTEM
     let statusData = {
         recursos: {
             vida: { atual: 100, max: 100 },
@@ -881,6 +944,74 @@
             rolagensMaximas: 3
         }
     };
+    
+    // Sincronizar com Grimorio System
+    function sincronizarComGrimorio() {
+        if (window.GrimorioSystem) {
+            try {
+                const personagem = GrimorioSystem.carregarPersonagem();
+                
+                // Converter atributos de 0-30 para 0-100
+                Object.keys(personagem.atributos).forEach(attr => {
+                    if (statusData.atributos[attr] !== undefined) {
+                        const valorConvertido = Math.round((personagem.atributos[attr] / 30) * 100);
+                        statusData.atributos[attr] = Math.min(100, Math.max(0, valorConvertido));
+                    }
+                });
+                
+                // Sincronizar recursos
+                statusData.recursos.vida.atual = personagem.recursos.vidaAtual || 100;
+                statusData.recursos.vida.max = personagem.recursos.vidaMaxima || 100;
+                statusData.recursos.mana.atual = personagem.recursos.manaAtual || 100;
+                statusData.recursos.mana.max = personagem.recursos.manaMaxima || 100;
+                statusData.recursos.estamina.atual = personagem.recursos.estaminaAtual || 100;
+                statusData.recursos.estamina.max = personagem.recursos.estaminaMaxima || 100;
+                
+                console.log('[Status] Dados sincronizados com Grimorio System');
+                return true;
+            } catch (error) {
+                console.error('[Status] Erro ao sincronizar com Grimorio:', error);
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    // Salvar no Grimorio System
+    function salvarNoGrimorio() {
+        if (window.GrimorioSystem) {
+            try {
+                const personagem = GrimorioSystem.carregarPersonagem();
+                
+                // Converter atributos de 0-100 para 0-30
+                Object.keys(statusData.atributos).forEach(attr => {
+                    if (personagem.atributos[attr] !== undefined) {
+                        const valorConvertido = Math.round((statusData.atributos[attr] / 100) * 30);
+                        personagem.atributos[attr] = Math.min(30, Math.max(0, valorConvertido));
+                    }
+                });
+                
+                // Sincronizar recursos
+                personagem.recursos.vidaAtual = statusData.recursos.vida.atual;
+                personagem.recursos.vidaMaxima = statusData.recursos.vida.max;
+                personagem.recursos.manaAtual = statusData.recursos.mana.atual;
+                personagem.recursos.manaMaxima = statusData.recursos.mana.max;
+                personagem.recursos.estaminaAtual = statusData.recursos.estamina.atual;
+                personagem.recursos.estaminaMaxima = statusData.recursos.estamina.max;
+                
+                // Calcular recursos automáticos
+                GrimorioSystem.calcularRecursosAutomaticos(personagem);
+                
+                GrimorioSystem.salvarPersonagem(personagem);
+                console.log('[Status] Dados salvos no Grimorio System');
+                return true;
+            } catch (error) {
+                console.error('[Status] Erro ao salvar no Grimorio:', error);
+                return false;
+            }
+        }
+        return false;
+    }
     
     // Controles de progress bar
     class ProgressBarControl {
@@ -948,6 +1079,7 @@
             
             salvarDados();
             updateDerivedStats();
+            salvarNoGrimorio();
         }
         
         handleClick(e) {
@@ -1071,8 +1203,6 @@
                     statusData.atributos[randomAttr]++;
                     
                     // Atualizar visual
-                    const element = document.getElementById(randomAttr);
-                    const bar = document.querySelector(`[data-stat="${randomAttr}"]`);
                     const progressBar = progressBars.find(pb => pb.statId === randomAttr);
                     
                     if (progressBar) {
@@ -1084,6 +1214,7 @@
             mostrarNotificacao(`${pontos} pontos distribuídos!`, 'success');
             salvarDados();
             updateDerivedStats();
+            salvarNoGrimorio();
         } else {
             mostrarNotificacao(`Mínimo de ${statusData.config.minimoAleatorio} pontos necessários`, 'warning');
         }
@@ -1104,6 +1235,7 @@
             mostrarNotificacao('Atributos resetados!', 'info');
             salvarDados();
             updateDerivedStats();
+            salvarNoGrimorio();
         }
     }
     
@@ -1120,6 +1252,7 @@
             
             mostrarNotificacao('Recursos restaurados!', 'success');
             salvarDados();
+            salvarNoGrimorio();
         }
     }
     
@@ -1165,9 +1298,34 @@
         fecharModal('modal-config');
     }
     
-    // EXPORTAÇÃO/IMPORTAÇÃO
+    // EXPORTAÇÃO/IMPORTAÇÃO - AGORA INTEGRADO
     function exportarDados() {
         try {
+            if (window.GrimorioSystem) {
+                const dadosGrimorio = GrimorioSystem.exportarPersonagem();
+                const dadosCompletos = {
+                    statusData: statusData,
+                    grimorioData: JSON.parse(dadosGrimorio),
+                    exportadoEm: new Date().toISOString(),
+                    versao: '3.0-integrada'
+                };
+                
+                const blob = new Blob([JSON.stringify(dadosCompletos, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `grimorio_status_${new Date().getTime()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                mostrarNotificacao('Dados exportados (integrado)!', 'success');
+                return;
+            }
+            
+            // Fallback para exportação local
             const dados = {
                 ...statusData,
                 exportadoEm: new Date().toISOString(),
@@ -1187,7 +1345,7 @@
             
             mostrarNotificacao('Dados exportados!', 'success');
         } catch (error) {
-            mostrarNotificacao('Erro ao exportar', 'error');
+            mostrarNotificacao('Erro ao exportar: ' + error.message, 'error');
         }
     }
     
@@ -1205,21 +1363,46 @@
                 try {
                     const dados = JSON.parse(e.target.result);
                     
-                    if (!dados.recursos || !dados.atributos) {
-                        throw new Error('Formato inválido');
+                    // Verificar se é arquivo integrado
+                    if (dados.grimorioData && dados.statusData) {
+                        // Importar dados do Grimorio System
+                        if (window.GrimorioSystem && dados.grimorioData.personagem) {
+                            GrimorioSystem.salvarPersonagem(dados.grimorioData.personagem);
+                        }
+                        
+                        // Importar dados de status
+                        if (dados.statusData) {
+                            statusData = { ...statusData, ...dados.statusData };
+                        }
+                        
+                        mostrarNotificacao('Dados integrados importados!', 'success');
+                    }
+                    // Verificar se é arquivo do Grimorio System
+                    else if (dados.personagem && dados.sistema === 'Grimório Digital v2.0') {
+                        if (window.GrimorioSystem) {
+                            GrimorioSystem.salvarPersonagem(dados.personagem);
+                            mostrarNotificacao('Personagem do Grimorio importado!', 'success');
+                        }
+                    }
+                    // Verificar se é arquivo de status local
+                    else if (dados.recursos || dados.atributos) {
+                        // Mesclar dados
+                        statusData.recursos = { ...statusData.recursos, ...dados.recursos };
+                        statusData.atributos = { ...statusData.atributos, ...dados.atributos };
+                        
+                        if (dados.sorte) statusData.sorte = { ...statusData.sorte, ...dados.sorte };
+                        if (dados.config) statusData.config = { ...statusData.config, ...dados.config };
+                        
+                        mostrarNotificacao('Dados de status importados!', 'success');
+                    } else {
+                        throw new Error('Formato de arquivo não reconhecido');
                     }
                     
-                    // Mesclar dados
-                    statusData.recursos = { ...statusData.recursos, ...dados.recursos };
-                    statusData.atributos = { ...statusData.atributos, ...dados.atributos };
-                    
-                    if (dados.sorte) statusData.sorte = { ...statusData.sorte, ...dados.sorte };
-                    if (dados.config) statusData.config = { ...statusData.config, ...dados.config };
-                    
                     carregarDadosNaInterface();
-                    mostrarNotificacao('Dados importados!', 'success');
+                    salvarDados();
+                    
                 } catch (error) {
-                    mostrarNotificacao('Arquivo inválido', 'error');
+                    mostrarNotificacao('Erro na importação: ' + error.message, 'error');
                 }
             };
             
@@ -1339,13 +1522,34 @@
     
     // INICIALIZAÇÃO
     document.addEventListener('DOMContentLoaded', function() {
-        carregarDados();
-        
-        document.getElementById('btn-exportar').addEventListener('click', exportarDados);
-        document.getElementById('btn-importar').addEventListener('click', importarDados);
-        document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
-        
-        updateDerivedStats();
+        // Aguardar Grimorio System carregar
+        setTimeout(() => {
+            // Tentar sincronizar com Grimorio System
+            sincronizarComGrimorio();
+            carregarDados();
+            
+            // Configurar botões do navbar
+            document.getElementById('btn-exportar').addEventListener('click', exportarDados);
+            document.getElementById('btn-importar').addEventListener('click', importarDados);
+            document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
+            
+            updateDerivedStats();
+            
+            // Adicionar CSS para animação
+            if (!document.querySelector('#animations-css')) {
+                const style = document.createElement('style');
+                style.id = 'animations-css';
+                style.textContent = `
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            console.log('[Status] Sistema inicializado com integração Grimorio');
+        }, 500);
     });
     </script>
 </body>
