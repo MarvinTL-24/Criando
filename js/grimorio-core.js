@@ -6,7 +6,6 @@
 const GRIMORIO_STORAGE_KEY = 'grimorio_personagem_ativo';
 
 class GrimorioSystem {
-
     
     // ============================================================
     // 1. GESTÃO DO PERSONAGEM PRINCIPAL
@@ -51,74 +50,70 @@ class GrimorioSystem {
                 },
                 
                 // Outras seções (inicialmente vazias)
-            inventario: [],
-            habilidades: [],
-            proficiencias: [],
+                inventario: [],
+                habilidades: [],
+                proficiencias: [],
 
-            // Sistema de Armas e Proficiências
-            armasProficiencia: {
-                // Armas Cortantes (8 tipos)
-                cortantes: {
-                    espadaCurta: { nivel: 0, experiencia: 0 },
-                    espadaLonga: { nivel: 0, experiencia: 0 },
-                    katanas: { nivel: 0, experiencia: 0 },
-                    machados: { nivel: 0, experiencia: 0 },
-                    foices: { nivel: 0, experiencia: 0 },
-                    lâminasDuplas: { nivel: 0, experiencia: 0 },
-                    sabre: { nivel: 0, experiencia: 0 },
-                    cutelo: { nivel: 0, experiencia: 0 }
+                // Sistema de Armas e Proficiências
+                armasProficiencia: {
+                    cortantes: {
+                        espadaCurta: { nivel: 0, experiencia: 0 },
+                        espadaLonga: { nivel: 0, experiencia: 0 },
+                        katanas: { nivel: 0, experiencia: 0 },
+                        machados: { nivel: 0, experiencia: 0 },
+                        foices: { nivel: 0, experiencia: 0 },
+                        laminasDuplas: { nivel: 0, experiencia: 0 },
+                        sabre: { nivel: 0, experiencia: 0 },
+                        cutelo: { nivel: 0, experiencia: 0 }
+                    },
+                    
+                    perfurantes: {
+                        adaga: { nivel: 0, experiencia: 0 },
+                        lanca: { nivel: 0, experiencia: 0 },
+                        rapiera: { nivel: 0, experiencia: 0 },
+                        estilete: { nivel: 0, experiencia: 0 },
+                        picareta: { nivel: 0, experiencia: 0 },
+                        tridente: { nivel: 0, experiencia: 0 },
+                        chuco: { nivel: 0, experiencia: 0 },
+                        arpao: { nivel: 0, experiencia: 0 }
+                    },
+                    
+                    concussao: {
+                        clava: { nivel: 0, experiencia: 0 },
+                        martelo: { nivel: 0, experiencia: 0 },
+                        maca: { nivel: 0, experiencia: 0 },
+                        mangual: { nivel: 0, experiencia: 0 },
+                        porrete: { nivel: 0, experiencia: 0 },
+                        bastao: { nivel: 0, experiencia: 0 },
+                        corrente: { nivel: 0, experiencia: 0 },
+                        chicote: { nivel: 0, experiencia: 0 }
+                    },
+                    
+                    distancia: {
+                        arco: { nivel: 0, experiencia: 0 },
+                        besta: { nivel: 0, experiencia: 0 },
+                        funda: { nivel: 0, experiencia: 0 },
+                        bumerangue: { nivel: 0, experiencia: 0 },
+                        shuriken: { nivel: 0, experiencia: 0 },
+                        cajado: { nivel: 0, experiencia: 0 },
+                        grimorio: { nivel: 0, experiencia: 0 },
+                        orbe: { nivel: 0, experiencia: 0 }
+                    }
                 },
-                
-                // Armas Perfurantes (8 tipos)
-                perfurantes: {
-                    adaga: { nivel: 0, experiencia: 0 },
-                    lança: { nivel: 0, experiencia: 0 },
-                    rapiera: { nivel: 0, experiencia: 0 },
-                    estilete: { nivel: 0, experiencia: 0 },
-                    picareta: { nivel: 0, experiencia: 0 },
-                    tridente: { nivel: 0, experiencia: 0 },
-                    chuço: { nivel: 0, experiencia: 0 },
-                    arpão: { nivel: 0, experiencia: 0 }
-                },
-                
-                // Armas Concussão (8 tipos)
-                concussao: {
-                    clava: { nivel: 0, experiencia: 0 },
-                    martelo: { nivel: 0, experiencia: 0 },
-                    maça: { nivel: 0, experiencia: 0 },
-                    mangual: { nivel: 0, experiencia: 0 },
-                    porrete: { nivel: 0, experiencia: 0 },
-                    bastao: { nivel: 0, experiencia: 0 },
-                    corrente: { nivel: 0, experiencia: 0 },
-                    chicote: { nivel: 0, experiencia: 0 }
-                },
-                
-                // Armas Distância/Magia (8 tipos)
-                distancia: {
-                    arco: { nivel: 0, experiencia: 0 },
-                    besta: { nivel: 0, experiencia: 0 },
-                    funda: { nivel: 0, experiencia: 0 },
-                    bumerangue: { nivel: 0, experiencia: 0 },
-                    shuriken: { nivel: 0, experiencia: 0 },
-                    cajado: { nivel: 0, experiencia: 0 },
-                    grimorio: { nivel: 0, experiencia: 0 },
-                    orbe: { nivel: 0, experiencia: 0 }
-                }
-            },
 
-            // Estilos de Luta
-            estilosLuta: {
-                umaMao: { nivel: 0 },
-                duasMaos: { nivel: 0 },
-                armaEscudo: { nivel: 0 },
-                duasArmas: { nivel: 0 },
-            armaDistancia: { nivel: 0 },
-            magiaPura: { nivel: 0 },
-            corpoCorpo: { nivel: 0 },
-            armasExoticas: { nivel: 0 }
-                        },
-            
-            equipamentos: {
+                // Estilos de Luta
+                estilosLuta: {
+                    umaMao: { nivel: 0 },
+                    duasMaos: { nivel: 0 },
+                    armaEscudo: { nivel: 0 },
+                    duasArmas: { nivel: 0 },
+                    armaDistancia: { nivel: 0 },
+                    magiaPura: { nivel: 0 },
+                    corpoCorpo: { nivel: 0 },
+                    armasExoticas: { nivel: 0 }
+                },
+                
+                equipamentos: {
                     armaPrincipal: 'Nenhuma',
                     armadura: 'Nenhuma',
                     amuleto: 'Nenhum'
@@ -178,7 +173,7 @@ class GrimorioSystem {
     }
     
     // ============================================================
-    // 2. SISTEMA DE ATRIBUTOS (SEU PEDIDO ESPECÍFICO)
+    // 2. SISTEMA DE ATRIBUTOS
     // ============================================================
     
     static calcularRecursosAutomaticos(personagem) {
@@ -208,17 +203,13 @@ class GrimorioSystem {
         return personagem;
     }
     
-    // FUNÇÃO QUE VOCÊ PEDIU: Distribuição aleatória quando total >= 18
     static distribuirPontosAleatorios(personagem, pontosParaDistribuir = 10) {
         if (!personagem.modoChefe) {
-            // Calcula total atual de atributos
             const totalAtual = Object.values(personagem.atributos).reduce((a, b) => a + b, 0);
             
-            // Só distribui se total for 18 ou mais (como você pediu)
             if (totalAtual >= 18 && pontosParaDistribuir > 0) {
                 const atributos = Object.keys(personagem.atributos);
                 
-                // Distribui pontos aleatoriamente
                 for (let i = 0; i < pontosParaDistribuir; i++) {
                     const attrAleatorio = atributos[Math.floor(Math.random() * atributos.length)];
                     personagem.atributos[attrAleatorio]++;
@@ -231,14 +222,12 @@ class GrimorioSystem {
         return personagem;
     }
     
-    // FUNÇÃO QUE VOCÊ PEDIU: Subir de nível
     static subirNivel(personagem, pontosGanhos = 5) {
         personagem.nivel++;
         personagem.pontosDisponiveis += pontosGanhos;
         personagem.experiencia = 0;
         personagem.experienciaProximoNivel = Math.floor(personagem.experienciaProximoNivel * 1.5);
         
-        // Se modo chefe ativo, permite aumentar qualquer atributo
         if (personagem.modoChefe) {
             console.log('[Grimorio] Modo Chefe: Você pode distribuir pontos livremente');
         }
@@ -247,7 +236,6 @@ class GrimorioSystem {
         return personagem;
     }
     
-    // FUNÇÃO QUE VOCÊ PEDIU: Alternar Modo Chefe
     static alternarModoChefe(personagem, ativar = true) {
         personagem.modoChefe = ativar;
         this.salvarPersonagem(personagem);
@@ -257,14 +245,13 @@ class GrimorioSystem {
     }
     
     // ============================================================
-    // 3. SISTEMA DE CLASSE (ATUALIZAÇÃO AUTOMÁTICA)
+    // 3. SISTEMA DE CLASSE
     // ============================================================
     
     static atualizarClasse(nomeClasse) {
         const personagem = this.carregarPersonagem();
         personagem.classe = nomeClasse;
         
-        // Atributos base por classe (você pode ajustar)
         const bonusPorClasse = {
             'Guerreiro': { forca: 2, constituicao: 2 },
             'Mago': { inteligencia: 3, sabedoria: 1 },
@@ -274,7 +261,6 @@ class GrimorioSystem {
             'Bárbaro': { forca: 3, constituicao: 1 }
         };
         
-        // Aplica bônus se for uma classe conhecida
         if (bonusPorClasse[nomeClasse] && !personagem.modoChefe) {
             Object.entries(bonusPorClasse[nomeClasse]).forEach(([attr, bonus]) => {
                 personagem.atributos[attr] += bonus;
@@ -347,11 +333,9 @@ class GrimorioSystem {
     // ============================================================
     
     static mostrarNotificacao(mensagem, tipo = 'info', duracao = 3000) {
-        // Cria elemento de notificação
         const notificacao = document.createElement('div');
         notificacao.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 animate-slide-in-right`;
         
-        // Cores por tipo
         const estilos = {
             success: 'bg-green-900/80 border-green-700 text-green-300',
             error: 'bg-red-900/80 border-red-700 text-red-300',
@@ -361,7 +345,6 @@ class GrimorioSystem {
         
         notificacao.className += ' ' + (estilos[tipo] || estilos.info);
         
-        // Ícone por tipo
         const icones = {
             success: 'check-circle',
             error: 'alert-circle',
@@ -376,15 +359,12 @@ class GrimorioSystem {
             </div>
         `;
         
-        // Adiciona ao documento
         document.body.appendChild(notificacao);
         
-        // Atualiza ícones Lucide
         if (window.lucide) {
             lucide.createIcons();
         }
         
-        // Remove após duração
         setTimeout(() => {
             notificacao.classList.add('opacity-0', 'transition-opacity', 'duration-500');
             setTimeout(() => {
@@ -394,40 +374,33 @@ class GrimorioSystem {
             }, 500);
         }, duracao);
         
-    return notificacao;
-}
-
-// ============================================================
-// 7. COMPATIBILIDADE COM SISTEMA ANTIGO (personagemSalvo)
-// ============================================================
-
-static migrarDadosAntigos() {
-        // Verifica se existe dados no formato antigo
+        return notificacao;
+    }
+    
+    // ============================================================
+    // 7. COMPATIBILIDADE COM SISTEMA ANTIGO
+    // ============================================================
+    
+    static migrarDadosAntigos() {
         const dadosAntigos = localStorage.getItem('personagemSalvo');
         if (dadosAntigos) {
             try {
                 const antigo = JSON.parse(dadosAntigos);
                 const novo = this.carregarPersonagem();
                 
-                // Migra dados básicos
                 if (antigo['inp-nome']) novo.nome = antigo['inp-nome'];
                 if (antigo['inp-titulo']) novo.titulo = antigo['inp-titulo'];
                 if (antigo['inp-raca']) novo.raca = antigo['inp-raca'];
                 if (antigo['inp-classe']) novo.classe = antigo['inp-classe'];
                 if (antigo['inp-idade']) novo.idade = antigo['inp-idade'];
                 
-                // Migra atributos se existirem
                 if (antigo.atributos) {
                     novo.atributos = { ...novo.atributos, ...antigo.atributos };
                 }
                 
-                // Migra avatar
                 if (antigo.avatar) novo.avatar = antigo.avatar;
                 
-                // Salva no novo formato
                 this.salvarPersonagem(novo);
-                
-                // Remove dados antigos
                 localStorage.removeItem('personagemSalvo');
                 
                 console.log('[Grimorio] Dados antigos migrados com sucesso!');
@@ -439,6 +412,169 @@ static migrarDadosAntigos() {
             }
         }
         return false;
+    }
+    
+    // ============================================================
+    // 8. SINCRONIZAÇÃO COM SISTEMA DE STATUS
+    // ============================================================
+    
+    static sincronizarStatus(statusData) {
+        try {
+            const personagem = this.carregarPersonagem();
+            
+            if (!personagem) {
+                console.error('Nenhum personagem encontrado para sincronização');
+                return false;
+            }
+            
+            // Converter atributos de 0-100 para 0-30 (D&D)
+            const escala = 30;
+            if (statusData.atributos) {
+                Object.keys(statusData.atributos).forEach(attr => {
+                    if (personagem.atributos[attr] !== undefined) {
+                        const valorConvertido = Math.round((statusData.atributos[attr] / 100) * escala);
+                        personagem.atributos[attr] = valorConvertido;
+                    }
+                });
+            }
+            
+            // Sincronizar nível e XP
+            if (statusData.nivel) {
+                personagem.nivel = statusData.nivel;
+            }
+            
+            if (statusData.experiencia !== undefined) {
+                personagem.experiencia = statusData.experiencia;
+            }
+            
+            if (statusData.experienciaProximoNivel) {
+                personagem.experienciaProximoNivel = statusData.experienciaProximoNivel;
+            }
+            
+            // Sincronizar pontos
+            if (statusData.pontosDisponiveis !== undefined) {
+                personagem.pontosDisponiveis = statusData.pontosDisponiveis;
+            }
+            
+            // Calcular recursos
+            this.calcularRecursosAutomaticos(personagem);
+            
+            // Salvar personagem atualizado
+            this.salvarPersonagem(personagem);
+            
+            // Disparar evento de atualização
+            window.dispatchEvent(new CustomEvent('grimorio:personagemAtualizado'));
+            
+            console.log('Status sincronizado com sucesso');
+            return true;
+            
+        } catch (error) {
+            console.error('Erro ao sincronizar status:', error);
+            return false;
+        }
+    }
+    
+    // ============================================================
+    // 9. SISTEMA DE SINCRONIZAÇÃO DE IMAGENS E DADOS DA FICHA
+    // ============================================================
+    
+    static salvarAvatar(avatarDataURL) {
+        try {
+            const personagem = this.carregarPersonagem();
+            personagem.avatar = avatarDataURL;
+            this.salvarPersonagem(personagem);
+            console.log('[Grimorio] Avatar salvo com sucesso');
+            return true;
+        } catch (error) {
+            console.error('[Grimorio] Erro ao salvar avatar:', error);
+            return false;
+        }
+    }
+    
+    static salvarDadosBasicos(dados) {
+        try {
+            const personagem = this.carregarPersonagem();
+            
+            console.log('[Grimorio] Salvando dados básicos:', dados);
+            
+            // Dados básicos
+            personagem.nome = dados.nome || personagem.nome;
+            personagem.titulo = dados.titulo || personagem.titulo;
+            personagem.raca = dados.raca || personagem.raca;
+            personagem.classe = dados.classe || personagem.classe;
+            personagem.nivel = parseInt(dados.nivel) || personagem.nivel;
+            personagem.idade = dados.idade || personagem.idade;
+            personagem.altura = dados.altura || personagem.altura;
+            personagem.peso = dados.peso || personagem.peso;
+            
+            // Se não houver origem na ficha, manter a existente
+            if (dados.origem) {
+                personagem.origem = dados.origem;
+            }
+            
+            // Calcular recursos automaticamente
+            this.calcularRecursosAutomaticos(personagem);
+            
+            this.salvarPersonagem(personagem);
+            console.log('[Grimorio] Dados básicos salvos');
+            return true;
+            
+        } catch (error) {
+            console.error('[Grimorio] Erro ao salvar dados básicos:', error);
+            return false;
+        }
+    }
+    
+    static carregarParaPerfil() {
+        return this.carregarPersonagem();
+    }
+    
+    static temDados() {
+        const personagem = this.carregarPersonagem();
+        return personagem && personagem.nome !== 'Novo Aventureiro';
+    }
+    
+    static exportarTudo() {
+        const personagem = this.carregarPersonagem();
+        const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
+        
+        return {
+            personagem: personagem,
+            fichaCompleta: fichaCompleta ? JSON.parse(fichaCompleta) : null,
+            data: new Date().toISOString()
+        };
+    }
+    
+    static sincronizarTudo(dadosFicha) {
+        try {
+            // Salvar dados básicos
+            this.salvarDadosBasicos(dadosFicha);
+            
+            // Salvar ficha completa no localStorage
+            localStorage.setItem('grimorio_ficha_completa', JSON.stringify(dadosFicha));
+            
+            // Disparar evento para atualizar outras páginas
+            window.dispatchEvent(new CustomEvent('grimorio:dadosAtualizados', {
+                detail: { timestamp: Date.now() }
+            }));
+            
+            console.log('[Grimorio] Todos os dados sincronizados');
+            return true;
+        } catch (error) {
+            console.error('[Grimorio] Erro na sincronização:', error);
+            return false;
+        }
+    }
+    
+    // ============================================================
+    // 10. FUNÇÕES AUXILIARES
+    // ============================================================
+    
+    static verificarConexao() {
+        console.log('[Grimorio] Verificando sistema...');
+        console.log('Personagem atual:', this.carregarPersonagem());
+        console.log('Funções disponíveis:', Object.keys(GrimorioSystem));
+        return true;
     }
 }
 
@@ -454,6 +590,14 @@ style.textContent = `
     .animate-slide-in-right {
         animation: slide-in-right 0.3s ease-out;
     }
+    
+    @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in-up {
+        animation: fade-in-up 0.5s ease-out;
+    }
 `;
 document.head.appendChild(style);
 
@@ -467,162 +611,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // 2. Garante que sempre exista um personagem
     GrimorioSystem.inicializarPersonagemPadrao();
     
-    console.log('[Grimorio] Sistema inicializado');
-    
     // 3. Expor para debug no console
     window.Grimorio = GrimorioSystem;
+    
+    // 4. Verificar conexão
+    setTimeout(() => {
+        GrimorioSystem.verificarConexao();
+    }, 100);
+    
+    console.log('[Grimorio] Sistema inicializado v2.1');
 });
 
-// Adicione esta função ao GrimorioSystem em grimorio-core.js
+// ============================================================
+// EVENTOS GLOBAIS PARA SINCRONIZAÇÃO
+// ============================================================
 
-GrimorioSystem.sincronizarStatus = function(statusData) {
-    try {
-        const personagem = this.carregarPersonagem();
-        
-        if (!personagem) {
-            console.error('Nenhum personagem encontrado para sincronização');
-            return false;
-        }
-        
-        // Converter atributos de 0-100 para 0-30 (D&D)
-        const escala = 30;
-        if (statusData.atributos) {
-            Object.keys(statusData.atributos).forEach(attr => {
-                if (personagem.atributos[attr] !== undefined) {
-                    const valorConvertido = Math.round((statusData.atributos[attr] / 100) * escala);
-                    personagem.atributos[attr] = valorConvertido;
-                }
-            });
-        }
-        
-        // Sincronizar nível e XP
-        if (statusData.nivel) {
-            personagem.nivel = statusData.nivel;
-        }
-        
-        if (statusData.experiencia !== undefined) {
-            personagem.experiencia = statusData.experiencia;
-        }
-        
-        if (statusData.experienciaProximoNivel) {
-            personagem.experienciaProximoNivel = statusData.experienciaProximoNivel;
-        }
-        
-        // Sincronizar pontos
-        if (statusData.pontosDisponiveis !== undefined) {
-            personagem.pontosDisponiveis = statusData.pontosDisponiveis;
-        }
-        
-        // Calcular recursos baseados nos atributos
-        const calcularRecursos = () => {
-            const attrs = personagem.atributos;
-            
-            // Vida: Constituição × 5
-            personagem.recursos.vidaMaxima = (attrs.constituicao || 0) * 5;
-            personagem.recursos.vidaAtual = Math.min(
-                personagem.recursos.vidaAtual || personagem.recursos.vidaMaxima,
-                personagem.recursos.vidaMaxima
-            );
-            
-            // Mana: Inteligência × 2
-            personagem.recursos.manaMaxima = (attrs.inteligencia || 0) * 2;
-            personagem.recursos.manaAtual = Math.min(
-                personagem.recursos.manaAtual || personagem.recursos.manaMaxima,
-                personagem.recursos.manaMaxima
-            );
-            
-            // Estamina: (Constituição + Destreza) × 2
-            personagem.recursos.estaminaMaxima = ((attrs.constituicao || 0) + (attrs.destreza || 0)) * 2;
-            personagem.recursos.estaminaAtual = Math.min(
-                personagem.recursos.estaminaAtual || personagem.recursos.estaminaMaxima,
-                personagem.recursos.estaminaMaxima
-            );
-        };
-        
-        calcularRecursos();
-        
-        // Salvar personagem atualizado
-        this.salvarPersonagem(personagem);
-        
-        // Disparar evento de atualização
+// Ouvir eventos de armazenamento de outras abas
+window.addEventListener('storage', function(event) {
+    if (event.key === GRIMORIO_STORAGE_KEY) {
+        console.log('[Grimorio] Dados atualizados de outra aba');
+        // Disparar evento para atualizar a interface
         window.dispatchEvent(new CustomEvent('grimorio:personagemAtualizado'));
-        
-        console.log('Status sincronizado com sucesso');
-        return true;
-        
-    } catch (error) {
-        console.error('Erro ao sincronizar status:', error);
-        return false;
     }
-};
-    // ============================================================
-    // SISTEMA DE SINCRONIZAÇÃO DE IMAGENS E DADOS
-    // ============================================================
+});
 
-    // Função para salvar avatar da ficha
-    GrimorioSystem.salvarAvatar = function(avatarDataURL) {
-        try {
-            const personagem = this.carregarPersonagem();
-            personagem.avatar = avatarDataURL;
-            this.salvarPersonagem(personagem);
-            return true;
-        } catch (error) {
-            console.error('[Grimorio] Erro ao salvar avatar:', error);
-            return false;
-        }
-    };
-
-    // Função para salvar dados básicos da ficha
-    GrimorioSystem.salvarDadosBasicos = function(dados) {
-        try {
-            const personagem = this.carregarPersonagem();
-            
-            // Dados básicos
-            personagem.nome = dados.nome || personagem.nome;
-            personagem.titulo = dados.titulo || personagem.titulo;
-            personagem.raca = dados.raca || personagem.raca;
-            personagem.classe = dados.classe || personagem.classe;
-            personagem.nivel = parseInt(dados.nivel) || personagem.nivel;
-            personagem.idade = dados.idade || personagem.idade;
-            personagem.altura = dados.altura || personagem.altura;
-            personagem.peso = dados.peso || personagem.peso;
-            personagem.origem = dados.origem || personagem.origem;
-            
-            // Atributos (se vierem da ficha)
-            if (dados.atributos) {
-                personagem.atributos = dados.atributos;
-            }
-            
-            // Recursos (se vierem da ficha)
-            if (dados.recursos) {
-                personagem.recursos = dados.recursos;
-            }
-            
-            // XP e progressão
-            if (dados.experiencia !== undefined) {
-                personagem.experiencia = dados.experiencia;
-            }
-            
-            if (dados.experienciaProximoNivel) {
-                personagem.experienciaProximoNivel = dados.experienciaProximoNivel;
-            }
-            
-            this.salvarPersonagem(personagem);
-            return true;
-            
-        } catch (error) {
-            console.error('[Grimorio] Erro ao salvar dados básicos:', error);
-            return false;
-        }
-    };
-
-    // Função para carregar dados no perfil
-    GrimorioSystem.carregarParaPerfil = function() {
-        return this.carregarPersonagem();
-    };
-
-    /// Função para verificar se há dados
-    GrimorioSystem.temDados = function() {
-        const personagem = this.carregarPersonagem();
-        return personagem && personagem.nome !== 'Novo Aventureiro';
-    };
+// Evento customizado para atualização de dados
+window.addEventListener('grimorio:dadosAtualizados', function() {
+    console.log('[Grimorio] Evento de dados atualizados recebido');
+});

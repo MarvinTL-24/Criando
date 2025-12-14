@@ -524,61 +524,51 @@
             }
         }
 
-        // FUNÇÃO PRINCIPAL DE SALVAMENTO - VERSÃO CORRIGIDA
         function salvarEAplicar() {
             try {
-                // Coletar todos os dados
-                const dadosFicha = coletarTodosDados();
+                console.log('Iniciando salvamento...');
                 
-                // Validar campos obrigatórios
-                if (!dadosFicha.nome || dadosFicha.nome.trim() === '') {
+                // Coletar dados básicos
+                const dadosBasicos = {
+                    nome: document.getElementById('inp-nome').value.trim(),
+                    titulo: document.getElementById('inp-titulo').value.trim(),
+                    nivel: parseInt(document.getElementById('inp-nivel').value) || 1,
+                    idade: document.getElementById('inp-idade').value.trim(),
+                    altura: document.getElementById('inp-altura').value.trim(),
+                    peso: document.getElementById('inp-peso').value.trim(),
+                    raca: document.getElementById('inp-raca').value.trim(),
+                    classe: document.getElementById('inp-classe').value.trim()
+                };
+                
+                // Validar
+                if (!dadosBasicos.nome) {
                     showFeedback('⚠️ Atenção', 'O nome do personagem é obrigatório!', 'warning');
-                    document.getElementById('inp-nome').focus();
                     return;
                 }
                 
-                // 1. Salvar no GrimorioSystem
-                const dadosParaGrimorio = {
-                    nome: dadosFicha.nome,
-                    titulo: dadosFicha.titulo || '',
-                    raca: dadosFicha.raca || '',
-                    classe: dadosFicha.classe || 'Escolha livre',
-                    nivel: dadosFicha.nivel || 1,
-                    idade: dadosFicha.idade || '',
-                    altura: dadosFicha.altura || '',
-                    peso: dadosFicha.peso || '',
-                    origem: dadosFicha.origem || ''
-                };
+                // Salvar dados básicos
+                GrimorioSystem.salvarDadosBasicos(dadosBasicos);
                 
-                GrimorioSystem.salvarDadosBasicos(dadosParaGrimorio);
-                
-                // 2. Salvar avatar se houver
+                // Salvar avatar se existir
                 if (currentAvatar) {
                     GrimorioSystem.salvarAvatar(currentAvatar);
                 }
                 
-                // 3. Salvar dados da ficha completa em localStorage separado
-                localStorage.setItem('grimorio_ficha_completa', JSON.stringify(dadosFicha));
+                // Salvar ficha completa em localStorage
+                const fichaCompleta = coletarTodosDados();
+                localStorage.setItem('grimorio_ficha_completa', JSON.stringify(fichaCompleta));
                 
-                // 4. Marcar como salvo
-                hasUnsavedChanges = false;
-                
-                // 5. Feedback
+                // Feedback
                 showFeedback('✅ Sucesso!', 'Ficha salva em todos os sistemas!', 'success');
                 
-                // 6. Forçar atualização das outras páginas
-                window.dispatchEvent(new CustomEvent('grimorio:dadosAtualizados'));
+                // Atualizar estado
+                hasUnsavedChanges = false;
                 
-                // 7. Redirecionar para o perfil (opcional)
-                setTimeout(() => {
-                    if (confirm('Deseja ver seu perfil atualizado?')) {
-                        window.location.href = 'perfil.html';
-                    }
-                }, 1500);
+                console.log('Salvamento concluído com sucesso');
                 
             } catch (error) {
-                console.error('Erro ao salvar:', error);
-                showFeedback('❌ Erro', 'Ocorreu um erro ao salvar: ' + error.message, 'error');
+                console.error('Erro completo ao salvar:', error);
+                showFeedback('❌ Erro', 'Erro ao salvar: ' + error.message, 'error');
             }
         }
 
