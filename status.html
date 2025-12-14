@@ -4057,64 +4057,29 @@
         }
 
         // ============================================================
-        // INICIALIZAR INTEGRAÇÃO (função principal)
+        // CONFIGURAR BOTÕES DE INTEGRAÇÃO
         // ============================================================
 
-        function inicializarIntegracao() {
-            console.log('Inicializando integração...');
+        function configurarIntegracao() {
+            console.log('Configurando botões de integração...');
             
-            try {
-                // Verificar se os sistemas estão disponíveis
-                if (typeof GrimorioSystem === 'undefined') {
-                    console.warn('GrimorioSystem não encontrado - integração desabilitada');
-                    return;
-                }
-                
-                if (typeof StatusSystemAvancado === 'undefined') {
-                    console.warn('StatusSystemAvancado não encontrado - integração desabilitada');
-                    return;
-                }
-                
-                // Expor a classe globalmente
-                window.StatusIntegration = StatusIntegration;
-                
-                // Configurar botões
-                configurarIntegracao();
-                
-                // Carregar dados da ficha automaticamente
-                setTimeout(() => {
-                    StatusIntegration.carregarDaFicha();
-                }, 1500);
-                
-                console.log('✅ Integração inicializada com sucesso');
-                
-            } catch (error) {
-                console.error('Erro ao inicializar integração:', error);
-            }
-        }
-
-        // Expor para uso global
-        window.inicializarIntegracao = inicializarIntegracao;
-        window.configurarIntegracao = configurarIntegracao;
-        // Adicione esta função no status.html como fallback
-        function inicializarIntegracaoPerfil() {
-            console.log('Fallback: inicializarIntegracaoPerfil chamada');
-            
-            try {
-                // Tenta usar a função principal
-                if (window.inicializarIntegracao) {
-                    return inicializarIntegracao();
-                }
-                
-                // Fallback básico se a integração não estiver disponível
-                console.warn('Integração não disponível, criando botão básico...');
-                
-                // Criar botão básico de sincronização
-                const navContainer = document.querySelector('nav div[style*="display: flex; gap: 0.75rem; flex-wrap: wrap;"]');
-                if (navContainer) {
-                    const syncBtn = document.createElement('button');
-                    syncBtn.innerHTML = '<i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i> Sincronizar';
-                    syncBtn.style = `
+            // 1. Botão na navbar para sincronizar
+            const btnExportar = document.getElementById('btn-exportar-grimorio');
+            if (btnExportar) {
+                btnExportar.onclick = () => {
+                    StatusIntegration.sincronizarParaFicha();
+                };
+            } else {
+                // Criar botão se não existir
+                const navButtons = document.querySelector('nav div[style*="display: flex; gap: 0.75rem; flex-wrap: wrap;"]');
+                if (navButtons) {
+                    const btn = document.createElement('button');
+                    btn.id = 'btn-exportar-grimorio';
+                    btn.innerHTML = `
+                        <i data-lucide="upload-cloud" style="width: 1rem; height: 1rem;"></i>
+                        Sincronizar
+                    `;
+                    btn.style = `
                         padding: 0.5rem 1rem;
                         background: linear-gradient(135deg, #22c55e, #10b981);
                         color: white;
@@ -4125,26 +4090,146 @@
                         display: flex;
                         align-items: center;
                         gap: 0.5rem;
+                        transition: all 0.2s;
                     `;
-                    syncBtn.onclick = function() {
-                        if (confirm('Sincronizar dados com a ficha do personagem?')) {
-                            if (window.GrimorioSystem && window.StatusSystemAvancado) {
-                                const statusData = StatusSystemAvancado.load();
-                                GrimorioSystem.sincronizarStatus(statusData);
-                                alert('✅ Dados sincronizados!');
-                            } else {
-                                alert('❌ Sistemas não disponíveis');
-                            }
-                        }
+                    btn.onmouseover = function() {
+                        this.style.transform = 'translateY(-2px)';
+                        this.style.boxShadow = '0 4px 15px rgba(34, 197, 94, 0.3)';
                     };
-                    navContainer.appendChild(syncBtn);
+                    btn.onmouseout = function() {
+                        this.style.transform = 'translateY(0)';
+                        this.style.boxShadow = 'none';
+                    };
+                    btn.onclick = () => {
+                        StatusIntegration.sincronizarParaFicha();
+                    };
+                    
+                    navButtons.appendChild(btn);
                 }
-                
-            } catch (error) {
-                console.error('Erro no fallback:', error);
+            }
+            
+            // 2. Botão no header para carregar da ficha
+            const btnImportar = document.createElement('button');
+            btnImportar.innerHTML = `
+                <i data-lucide="download-cloud" style="width: 1rem; height: 1rem;"></i>
+                Carregar da Ficha
+            `;
+            btnImportar.style = `
+                padding: 0.75rem 1.5rem;
+                background: linear-gradient(135deg, #4a9eff, #0ea5e9);
+                color: white;
+                border: none;
+                border-radius: 0.75rem;
+                font-weight: 600;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                transition: all 0.2s;
+            `;
+            btnImportar.onmouseover = function() {
+                this.style.transform = 'translateY(-2px)';
+                this.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
+            };
+            btnImportar.onmouseout = function() {
+                this.style.transform = 'translateY(0)';
+                this.style.boxShadow = 'none';
+            };
+            btnImportar.onclick = () => {
+                StatusIntegration.carregarDaFicha();
+            };
+            
+            // Adicionar ao header
+            const headerControls = document.querySelector('header > div[style*="display: flex; flex-wrap: wrap; gap: 0.75rem;"]');
+            if (headerControls) {
+                headerControls.appendChild(btnImportar);
+            } else {
+                // Alternativa: adicionar no início da página
+                const primeiraSecao = document.querySelector('section');
+                if (primeiraSecao) {
+                    primeiraSecao.insertBefore(btnImportar, primeiraSecao.firstChild);
+                }
+            }
+            
+            // 3. Criar um card de integração se quiser
+            const cardIntegracao = `
+                <div style="
+                    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+                    border: 1px solid rgba(59, 130, 246, 0.3);
+                    border-radius: 1rem;
+                    padding: 1.5rem;
+                    margin-bottom: 2rem;
+                ">
+                    <h3 style="font-weight: 600; color: #4a9eff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <i data-lucide="link" style="width: 1.25rem; height: 1.25rem;"></i>
+                        Integração com Ficha do Personagem
+                    </h3>
+                    <p style="color: #a0a0a0; margin-bottom: 1.5rem; font-size: 0.875rem;">
+                        Sincronize seus atributos entre o sistema de status e a ficha do personagem.
+                        As alterações serão refletidas no perfil e no hub.
+                    </p>
+                    <div style="display: flex; gap: 1rem;">
+                        <button onclick="StatusIntegration.carregarDaFicha()" style="
+                            flex: 1;
+                            padding: 0.75rem;
+                            background: rgba(59, 130, 246, 0.2);
+                            color: #4a9eff;
+                            border: 1px solid rgba(59, 130, 246, 0.4);
+                            border-radius: 0.5rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.5rem;
+                            transition: all 0.2s;
+                        " onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.borderColor='rgba(59, 130, 246, 0.6)'" 
+                        onmouseout="this.style.backgroundColor='rgba(59, 130, 246, 0.2)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'">
+                            <i data-lucide="download" style="width: 1rem; height: 1rem;"></i>
+                            Carregar da Ficha
+                        </button>
+                        
+                        <button onclick="StatusIntegration.sincronizarParaFicha()" style="
+                            flex: 1;
+                            padding: 0.75rem;
+                            background: rgba(34, 197, 94, 0.2);
+                            color: #22c55e;
+                            border: 1px solid rgba(34, 197, 94, 0.4);
+                            border-radius: 0.5rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 0.5rem;
+                            transition: all 0.2s;
+                        " onmouseover="this.style.backgroundColor='rgba(34, 197, 94, 0.3)'; this.style.borderColor='rgba(34, 197, 94, 0.6)'" 
+                        onmouseout="this.style.backgroundColor='rgba(34, 197, 94, 0.2)'; this.style.borderColor='rgba(34, 197, 94, 0.4)'">
+                            <i data-lucide="upload" style="width: 1rem; height: 1rem;"></i>
+                            Sincronizar com Ficha
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Adicionar card antes da seção de atributos
+            const secaoAtributos = document.getElementById('secao-atributos');
+            if (secaoAtributos) {
+                const card = document.createElement('div');
+                card.innerHTML = cardIntegracao;
+                secaoAtributos.parentNode.insertBefore(card, secaoAtributos);
+            }
+            
+            // Atualizar ícones
+            if (window.lucide) {
+                lucide.createIcons();
             }
         }
 
+        function inicializarIntegracaoPerfil() {
+            console.log('Inicializando integração com ficha do personagem...');
+            configurarIntegracao();
+        }
         // Expor para o evento DOMContentLoaded
         window.inicializarIntegracaoPerfil = inicializarIntegracaoPerfil;
 
