@@ -8,7 +8,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <script src="js/grimorio-core.js"></script>a
+    
+    <!-- Sistema Grimório -->
+    <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -37,6 +39,25 @@
                             gold: '#d4a76a',
                             copper: '#8b7355'
                         }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                        'pulse': 'pulse 2s infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            'from': { opacity: '0', transform: 'translateY(20px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideInRight: {
+                            'from': { transform: 'translateX(100%)', opacity: '0' },
+                            'to': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        pulse: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.5' }
+                        }
                     }
                 }
             }
@@ -46,21 +67,30 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
+        /* Remove arrows from number inputs */
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-
-        .anim-entry { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
         }
+        
+        /* Scrollbar customizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
 
-        .stat-bar-fill { transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        /* Classes de animação */
+        .anim-delay-0 { animation-delay: 0s; }
+        .anim-delay-1 { animation-delay: 0.1s; }
+        .anim-delay-2 { animation-delay: 0.2s; }
+        .anim-delay-3 { animation-delay: 0.3s; }
+        .anim-delay-4 { animation-delay: 0.4s; }
+
+        /* Barras de status */
+        .stat-bar-fill { 
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
         
         /* Cores para seções */
         .section-vital { border-left-color: #dc2626; }
@@ -111,32 +141,25 @@
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
         /* Badge de nível */
         .level-badge {
             background: linear-gradient(45deg, #8b7355, #d4a76a);
             color: white;
             font-weight: bold;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(212, 167, 106, 0.2);
         }
 
-        /* Feedback */
-        .feedback-profile {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            animation: slideInRight 0.3s ease-out;
+        /* Avatar/Imagem */
+        .avatar-container {
+            background: linear-gradient(135deg, #2a2a2e 0%, #1a1a1e 100%);
+            border: 2px solid #8b7355;
+            transition: all 0.3s ease;
         }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        
+        .avatar-container:hover {
+            border-color: #d4a76a;
+            transform: scale(1.02);
         }
     </style>
 </head>
@@ -146,15 +169,16 @@
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
         <div class="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
-                <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
+                <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors flex items-center gap-2">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                    <span class="font-cinzel text-sm">Voltar ao Início</span>
                 </a>
                 <div class="h-6 w-[1px] bg-theme-border"></div>
                 <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Perfil do Personagem</span>
             </div>
             
             <div class="flex items-center gap-3" id="nav-buttons">
-                <!-- Botões serão inseridos aqui dinamicamente -->
+                <!-- Botões serão inseridos dinamicamente -->
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
@@ -162,19 +186,27 @@
 
     <div class="max-w-6xl mx-auto px-4 space-y-6" id="profile-content">
 
-        <!-- Cabeçalho do Perfil -->
-        <header class="flex items-center justify-between mb-8 anim-entry">
-            <div class="flex items-center gap-4">
-                <div class="p-3 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
-                    <i data-lucide="user" class="w-8 h-8 text-theme-orange"></i>
+        <!-- Cabeçalho do Perfil com Avatar -->
+        <header class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 animate-fade-in-up">
+            <div class="flex items-center gap-6 w-full md:w-auto">
+                <!-- Avatar/Imagem -->
+                <div id="avatar-display" class="avatar-container w-24 h-24 rounded-lg overflow-hidden flex items-center justify-center">
+                    <i data-lucide="user" class="w-12 h-12 text-[#606060]" id="avatar-icon"></i>
                 </div>
-                <div>
+                
+                <div class="flex-grow">
                     <h1 class="text-3xl font-cinzel font-bold text-white" id="profile-title">Carregando Perfil...</h1>
-                    <p class="text-gray-400">Status, Atributos e Progressão</p>
+                    <p class="text-gray-400" id="profile-subtitle">Status, Atributos e Progressão</p>
+                    
+                    <div class="flex flex-wrap gap-2 mt-3">
+                        <span id="profile-raca" class="px-3 py-1 bg-theme-blue/10 text-theme-blue text-xs rounded-full border border-theme-border"></span>
+                        <span id="profile-classe" class="px-3 py-1 bg-theme-orange/10 text-theme-orange text-xs rounded-full border border-theme-border"></span>
+                        <span id="profile-nivel" class="px-3 py-1 bg-theme-gold/10 text-theme-gold text-xs rounded-full border border-theme-border">Nível 1</span>
+                    </div>
                 </div>
             </div>
             
-            <div class="relative">
+            <div class="relative mt-4 md:mt-0">
                 <div class="text-right">
                     <span class="text-xs uppercase text-gray-500">Perfil Ativo</span>
                     <div id="active-profile-name" class="font-cinzel font-bold text-theme-gold">Carregando...</div>
@@ -184,36 +216,39 @@
         </header>
 
         <!-- Seção 1: Card de Resumo do Personagem -->
-        <section class="character-card p-6 rounded-xl anim-entry delay-0 relative">
+        <section class="character-card p-6 rounded-xl animate-fade-in-up anim-delay-0 relative">
             <div class="grid md:grid-cols-3 gap-6">
                 <!-- Informações Básicas -->
                 <div class="md:col-span-2">
-                    <div class="flex items-center gap-3 mb-4">
-                        <i data-lucide="user-circle" class="w-6 h-6 text-theme-gold"></i>
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="p-2 rounded-lg bg-theme-gold/10 border border-theme-gold/20">
+                            <i data-lucide="user-circle" class="w-5 h-5 text-theme-gold"></i>
+                        </div>
                         <h3 class="font-cinzel text-xl font-bold text-theme-gold">Informações do Personagem</h3>
                     </div>
                     
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Nome do Personagem</label>
+                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Nome do Personagem</label>
                             <div class="text-2xl font-cinzel font-bold text-white" id="display-nome">-</div>
+                            <div class="text-sm text-gray-400 mt-1" id="display-titulo">-</div>
                         </div>
                         
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Raça</label>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Raça</label>
                                 <div class="text-lg font-bold text-white" id="display-raca">-</div>
                             </div>
                             <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Classe</label>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Classe</label>
                                 <div class="text-lg font-bold text-theme-orange" id="display-classe">-</div>
                             </div>
                             <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Origem</label>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Origem</label>
                                 <div class="text-lg font-bold text-white" id="display-origem">-</div>
                             </div>
                             <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-1 font-cinzel">Idade</label>
+                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Idade</label>
                                 <div class="text-lg font-bold text-white" id="display-idade">-</div>
                             </div>
                         </div>
@@ -221,33 +256,36 @@
                 </div>
                 
                 <!-- Nível e Progressão -->
-                <div class="bg-destiny-1 border border-destiny rounded-lg p-4">
-                    <div class="flex items-center gap-2 mb-3">
+                <div class="bg-destiny-1 border border-destiny rounded-lg p-5">
+                    <div class="flex items-center gap-2 mb-4">
                         <i data-lucide="crown" class="w-5 h-5 text-theme-gold"></i>
                         <h4 class="font-cinzel font-bold text-theme-gold">Progressão</h4>
                     </div>
                     
-                    <div class="text-center mb-3">
+                    <div class="text-center mb-4">
                         <div class="level-badge text-4xl font-bold w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-2">
                             <span id="display-nivel">1</span>
                         </div>
                         <div class="text-sm text-gray-400">Nível</div>
                     </div>
                     
-                    <div class="space-y-2">
+                    <div class="space-y-3">
                         <div>
-                            <div class="flex justify-between text-sm mb-1">
+                            <div class="flex justify-between text-sm mb-2">
                                 <span class="text-gray-400">XP Acumulado</span>
                                 <span class="font-mono text-theme-orange" id="display-xp">0/1000</span>
                             </div>
                             <div class="h-2 bg-destiny-2 rounded-full overflow-hidden">
-                                <div id="display-xp-bar" class="h-full bg-theme-orange stat-bar-fill" style="width: 0%"></div>
+                                <div id="display-xp-bar" class="h-full bg-gradient-to-r from-theme-orange to-orange-400 stat-bar-fill" style="width: 0%"></div>
                             </div>
                         </div>
                         
-                        <div class="pt-2 border-t border-destiny/20">
-                            <div class="text-sm text-gray-400 mb-1">Próximo Nível</div>
-                            <div class="font-mono text-lg text-white" id="display-proximo-nivel">-</div>
+                        <div class="pt-3 border-t border-destiny/20">
+                            <div class="flex justify-between items-center">
+                                <div class="text-sm text-gray-400">Próximo Nível</div>
+                                <div class="font-mono text-lg text-white" id="display-proximo-nivel">-</div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-1">Pontos Disponíveis: <span id="display-pontos" class="text-theme-green font-bold">0</span></div>
                         </div>
                     </div>
                 </div>
@@ -255,146 +293,176 @@
         </section>
 
         <!-- Seção 2: Atributos Base -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 relative overflow-hidden section-attributes">
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-1 relative overflow-hidden section-attributes">
             <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
             
             <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold">
-                    <i data-lucide="activity" class="w-4 h-4"></i> Atributos Base
-                </h3>
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
+                        <i data-lucide="activity" class="w-4 h-4 text-theme-blue"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Atributos Base</h3>
+                </div>
                 <div class="text-sm text-gray-500 font-mono">
-                    Total: <span id="total-atributos" class="text-theme-blue font-bold">0</span> pontos
+                    Total: <span id="total-atributos" class="text-theme-blue font-bold text-lg">0</span> pontos
                 </div>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <!-- Força -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-red/50 transition-colors">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-red/10 flex items-center justify-center">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-red/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-red/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
                     </div>
                     <label class="text-xs uppercase text-gray-500 font-cinzel">Força</label>
                     <div class="text-2xl font-bold font-mono text-theme-red mt-2" id="display-forca">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Físico, Dano</div>
                 </div>
 
                 <!-- Destreza -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-green/50 transition-colors">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-green/10 flex items-center justify-center">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-green/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-green/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
                     </div>
                     <label class="text-xs uppercase text-gray-500 font-cinzel">Destreza</label>
                     <div class="text-2xl font-bold font-mono text-theme-green mt-2" id="display-destreza">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Agilidade, Precisão</div>
                 </div>
 
                 <!-- Constituição -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-yellow/50 transition-colors">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-yellow/10 flex items-center justify-center">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-yellow/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-yellow/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
                     </div>
                     <label class="text-xs uppercase text-gray-500 font-cinzel">Constituição</label>
                     <div class="text-2xl font-bold font-mono text-theme-yellow mt-2" id="display-constituicao">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Vida, Resistência</div>
                 </div>
 
                 <!-- Inteligência -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-blue/50 transition-colors">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-blue/10 flex items-center justify-center">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-blue/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-blue/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
                     </div>
                     <label class="text-xs uppercase text-gray-500 font-cinzel">Inteligência</label>
                     <div class="text-2xl font-bold font-mono text-theme-blue mt-2" id="display-inteligencia">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Mana, Conhecimento</div>
                 </div>
 
                 <!-- Sabedoria -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-purple/50 transition-colors">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-purple/10 flex items-center justify-center">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-purple/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-purple/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
                     </div>
                     <label class="text-xs uppercase text-gray-500 font-cinzel">Sabedoria</label>
                     <div class="text-2xl font-bold font-mono text-theme-purple mt-2" id="display-sabedoria">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Percepção, Intuição</div>
                 </div>
 
                 <!-- Carisma -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded hover:border-theme-pink/50 transition-colors">
-                    <div class="w-10 h-10 mx-auto mb-2 rounded bg-theme-pink/10 flex items-center justify-center">
+                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-pink/50 transition-all duration-300 group">
+                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-pink/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <i data-lucide="sparkles" class="w-5 h-5 text-theme-pink"></i>
                     </div>
                     <label class="text-xs uppercase text-gray-500 font-cinzel">Carisma</label>
                     <div class="text-2xl font-bold font-mono text-theme-pink mt-2" id="display-carisma">0</div>
+                    <div class="text-xs text-gray-500 mt-1">Persuasão, Liderança</div>
                 </div>
             </div>
         </section>
 
         <!-- Seção 3: Recursos Vitais -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 relative overflow-hidden section-vital">
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-2 relative overflow-hidden section-vital">
             <div class="absolute top-0 left-0 w-1 h-full bg-theme-red"></div>
             
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
-                <i data-lucide="heart" class="w-4 h-4"></i> Recursos Vitais
-            </h3>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 rounded-lg bg-theme-red/10 border border-theme-red/20">
+                    <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                </div>
+                <h3 class="font-cinzel text-lg font-semibold text-white">Recursos Vitais</h3>
+            </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
+            <div class="grid md:grid-cols-3 gap-6">
                 <!-- Vida -->
-                <div class="resource-group">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
-                            <span class="text-sm font-medium text-theme-red">Vida</span>
+                <div class="resource-group bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-full bg-theme-red/10">
+                                <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-theme-red">Vida</span>
+                                <div class="text-xs text-gray-500">Base: <span id="display-vida-base" class="text-white">10</span></div>
+                            </div>
                         </div>
-                        <span class="font-mono text-lg text-white" id="display-vida">0/0</span>
+                        <span class="font-mono text-xl font-bold text-white" id="display-vida">0/0</span>
                     </div>
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-vida-bar" class="h-full bg-gradient-to-r from-red-600 to-red-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 text-right">Base: <span id="display-vida-base" class="text-white">0</span></div>
+                    <div class="text-xs text-gray-500 mt-2">Fórmula: Constituição × 5</div>
                 </div>
 
                 <!-- Mana -->
-                <div class="resource-group">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="flame" class="w-4 h-4 text-theme-blue"></i>
-                            <span class="text-sm font-medium text-theme-blue">Mana</span>
+                <div class="resource-group bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-full bg-theme-blue/10">
+                                <i data-lucide="flame" class="w-4 h-4 text-theme-blue"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-theme-blue">Mana</span>
+                                <div class="text-xs text-gray-500">Base: <span id="display-mana-base" class="text-white">0</span></div>
+                            </div>
                         </div>
-                        <span class="font-mono text-lg text-white" id="display-mana">0/0</span>
+                        <span class="font-mono text-xl font-bold text-white" id="display-mana">0/0</span>
                     </div>
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-mana-bar" class="h-full bg-gradient-to-r from-blue-600 to-blue-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 text-right">Base: <span id="display-mana-base" class="text-white">0</span></div>
+                    <div class="text-xs text-gray-500 mt-2">Fórmula: Inteligência × 2</div>
                 </div>
 
                 <!-- Estamina -->
-                <div class="resource-group">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex items-center gap-2">
-                            <i data-lucide="wind" class="w-4 h-4 text-theme-green"></i>
-                            <span class="text-sm font-medium text-theme-green">Estamina</span>
+                <div class="resource-group bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded-full bg-theme-green/10">
+                                <i data-lucide="wind" class="w-4 h-4 text-theme-green"></i>
+                            </div>
+                            <div>
+                                <span class="text-sm font-medium text-theme-green">Estamina</span>
+                                <div class="text-xs text-gray-500">Base: <span id="display-estamina-base" class="text-white">20</span></div>
+                            </div>
                         </div>
-                        <span class="font-mono text-lg text-white" id="display-estamina">0/0</span>
+                        <span class="font-mono text-xl font-bold text-white" id="display-estamina">0/0</span>
                     </div>
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-estamina-bar" class="h-full bg-gradient-to-r from-green-600 to-green-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 text-right">Base: <span id="display-estamina-base" class="text-white">0</span></div>
+                    <div class="text-xs text-gray-500 mt-2">Fórmula: (Const + Dex) × 2</div>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 4: Destino e Sorte -->
-        <section class="bg-destiny-1 border border-destiny p-6 rounded-lg anim-entry delay-3 relative overflow-hidden section-destiny">
+        <!-- Seção 4: Destino e Sorte (Opcional - pode remover se não usar) -->
+        <section class="bg-destiny-1 border border-destiny p-6 rounded-lg animate-fade-in-up anim-delay-3 relative overflow-hidden section-destiny">
             <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-theme-purple via-theme-pink to-theme-gold"></div>
             
             <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-destiny-light">
-                    <i data-lucide="clover" class="w-4 h-4"></i> Destino & Sorte
-                </h3>
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-theme-purple/10 border border-theme-purple/20">
+                        <i data-lucide="clover" class="w-4 h-4 text-theme-purple"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-destiny-light">Destino & Sorte</h3>
+                </div>
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-destiny-dark">Status:</span>
                     <span id="destiny-status" class="text-sm font-bold text-destiny-gold">Não Definido</span>
                 </div>
             </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
+            <div class="grid md:grid-cols-2 gap-6">
                 <!-- Card de Destino -->
                 <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-theme-purple to-theme-pink flex items-center justify-center shadow-lg">
@@ -453,47 +521,50 @@
                     </div>
                 </div>
             </div>
-            
-            <!-- Interpretação do Destino -->
-            <div class="mt-6 pt-6 border-t border-destiny/20">
-                <h4 class="font-cinzel font-bold text-destiny-light text-sm mb-3">Interpretação do Destino</h4>
-                <div id="destiny-interpretation" class="text-sm text-destiny-light italic">
-                    Seu destino ainda não foi revelado. Role os dados para descobrir seu caminho.
-                </div>
-            </div>
         </section>
 
         <!-- Seção 5: Resumo de Equipamentos e Habilidades -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4 relative overflow-hidden section-summary">
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-4 relative overflow-hidden section-summary">
             <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
             
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
-                <i data-lucide="package" class="w-4 h-4"></i> Resumo & Equipamentos
-            </h3>
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 rounded-lg bg-theme-green/10 border border-theme-green/20">
+                    <i data-lucide="package" class="w-4 h-4 text-theme-green"></i>
+                </div>
+                <h3 class="font-cinzel text-lg font-semibold text-white">Equipamentos & Habilidades</h3>
+            </div>
 
-            <div class="grid md:grid-cols-2 gap-8">
+            <div class="grid md:grid-cols-2 gap-6">
                 <!-- Equipamentos Principais -->
                 <div>
-                    <h4 class="font-cinzel font-bold text-white text-sm mb-3">Equipamentos Principais</h4>
+                    <h4 class="font-cinzel font-bold text-white text-sm mb-4 flex items-center gap-2">
+                        <i data-lucide="shield" class="w-3 h-3"></i> Equipamentos Principais
+                    </h4>
                     <div class="space-y-3">
-                        <div class="flex items-center gap-3 p-3 bg-[#0a0a0c] rounded border border-theme-border">
-                            <i data-lucide="sword" class="w-4 h-4 text-theme-red"></i>
+                        <div class="flex items-center gap-3 p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-red/50 transition-colors">
+                            <div class="p-2 rounded bg-theme-red/10">
+                                <i data-lucide="sword" class="w-4 h-4 text-theme-red"></i>
+                            </div>
                             <div class="flex-1">
                                 <div class="font-bold text-white" id="display-arma-principal">Não equipado</div>
                                 <div class="text-xs text-gray-500">Arma Principal</div>
                             </div>
                         </div>
                         
-                        <div class="flex items-center gap-3 p-3 bg-[#0a0a0c] rounded border border-theme-border">
-                            <i data-lucide="shield" class="w-4 h-4 text-theme-yellow"></i>
+                        <div class="flex items-center gap-3 p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-yellow/50 transition-colors">
+                            <div class="p-2 rounded bg-theme-yellow/10">
+                                <i data-lucide="shield" class="w-4 h-4 text-theme-yellow"></i>
+                            </div>
                             <div class="flex-1">
                                 <div class="font-bold text-white" id="display-armadura">Não equipado</div>
                                 <div class="text-xs text-gray-500">Armadura</div>
                             </div>
                         </div>
                         
-                        <div class="flex items-center gap-3 p-3 bg-[#0a0a0c] rounded border border-theme-border">
-                            <i data-lucide="star" class="w-4 h-4 text-theme-blue"></i>
+                        <div class="flex items-center gap-3 p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-blue/50 transition-colors">
+                            <div class="p-2 rounded bg-theme-blue/10">
+                                <i data-lucide="star" class="w-4 h-4 text-theme-blue"></i>
+                            </div>
                             <div class="flex-1">
                                 <div class="font-bold text-white" id="display-amuleto">Não equipado</div>
                                 <div class="text-xs text-gray-500">Amuleto/Anel</div>
@@ -504,28 +575,30 @@
 
                 <!-- Habilidades Chave -->
                 <div>
-                    <h4 class="font-cinzel font-bold text-white text-sm mb-3">Habilidades Chave</h4>
+                    <h4 class="font-cinzel font-bold text-white text-sm mb-4 flex items-center gap-2">
+                        <i data-lucide="zap" class="w-3 h-3"></i> Habilidades Chave
+                    </h4>
                     <div class="space-y-3">
-                        <div class="p-3 bg-[#0a0a0c] rounded border border-theme-border">
-                            <div class="flex justify-between items-center mb-1">
+                        <div class="p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-red/50 transition-colors">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="font-bold text-white" id="display-habilidade1">Ataque Básico</span>
-                                <span class="text-xs px-2 py-1 rounded bg-theme-red/20 text-theme-red">Lv. 1</span>
+                                <span class="text-xs px-2 py-1 rounded-full bg-theme-red/20 text-theme-red font-medium">Lv. 1</span>
                             </div>
                             <div class="text-xs text-gray-500" id="display-desc-habilidade1">Dano físico básico</div>
                         </div>
                         
-                        <div class="p-3 bg-[#0a0a0c] rounded border border-theme-border">
-                            <div class="flex justify-between items-center mb-1">
+                        <div class="p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-yellow/50 transition-colors">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="font-bold text-white" id="display-habilidade2">Defesa</span>
-                                <span class="text-xs px-2 py-1 rounded bg-theme-yellow/20 text-theme-yellow">Lv. 1</span>
+                                <span class="text-xs px-2 py-1 rounded-full bg-theme-yellow/20 text-theme-yellow font-medium">Lv. 1</span>
                             </div>
                             <div class="text-xs text-gray-500" id="display-desc-habilidade2">Proteção básica</div>
                         </div>
                         
-                        <div class="p-3 bg-[#0a0a0c] rounded border border-theme-border">
-                            <div class="flex justify-between items-center mb-1">
+                        <div class="p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-purple/50 transition-colors">
+                            <div class="flex justify-between items-center mb-2">
                                 <span class="font-bold text-white" id="display-habilidade3">Habilidade de Classe</span>
-                                <span class="text-xs px-2 py-1 rounded bg-theme-purple/20 text-theme-purple">Lv. 1</span>
+                                <span class="text-xs px-2 py-1 rounded-full bg-theme-purple/20 text-theme-purple font-medium">Lv. 1</span>
                             </div>
                             <div class="text-xs text-gray-500" id="display-desc-habilidade3">Baseado na classe</div>
                         </div>
@@ -535,28 +608,31 @@
         </section>
 
         <!-- Seção 6: Estatísticas Avançadas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-4">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold mb-6">
-                <i data-lucide="bar-chart" class="w-4 h-4"></i> Estatísticas Avançadas
-            </h3>
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-4">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
+                    <i data-lucide="bar-chart" class="w-4 h-4 text-theme-blue"></i>
+                </div>
+                <h3 class="font-cinzel text-lg font-semibold text-white">Estatísticas Avançadas</h3>
+            </div>
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="text-center">
+                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
                     <div class="text-2xl font-bold text-white font-mono" id="display-blindagem">0</div>
                     <div class="text-xs uppercase text-gray-500 mt-1">Blindagem</div>
                 </div>
                 
-                <div class="text-center">
+                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
                     <div class="text-2xl font-bold text-white font-mono" id="display-velocidade">0</div>
                     <div class="text-xs uppercase text-gray-500 mt-1">Velocidade</div>
                 </div>
                 
-                <div class="text-center">
+                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
                     <div class="text-2xl font-bold text-white font-mono" id="display-iniciativa">0</div>
                     <div class="text-xs uppercase text-gray-500 mt-1">Iniciativa</div>
                 </div>
                 
-                <div class="text-center">
+                <div class="text-center bg-[#0a0a0c] p-4 rounded-lg border border-theme-border">
                     <div class="text-2xl font-bold text-white font-mono" id="display-percepcao">0</div>
                     <div class="text-xs uppercase text-gray-500 mt-1">Percepção</div>
                 </div>
@@ -564,15 +640,18 @@
         </section>
 
         <!-- Seção 7: Mascote Companheiro -->
-        <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg anim-entry delay-4">
+        <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg animate-fade-in-up anim-delay-4">
             <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#f4d29a]">
-                    <i data-lucide="dog" class="w-4 h-4"></i> Mascote Companheiro
-                </h3>
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-[#8b7355]/20 border border-[#8b7355]">
+                        <i data-lucide="dog" class="w-4 h-4 text-[#d4a76a]"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-[#f4d29a]">Mascote Companheiro</h3>
+                </div>
                 <button onclick="window.location.href='mascote.html'" 
-                        class="flex items-center gap-2 px-3 py-2 text-sm bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded transition-colors">
+                        class="flex items-center gap-2 px-3 py-2 text-sm bg-[#8b7355]/20 hover:bg-[#8b7355]/30 text-[#d4a76a] border border-[#8b7355] rounded-lg transition-colors">
                     <i data-lucide="edit-3" class="w-3 h-3"></i>
-                    Editar
+                    Editar Mascote
                 </button>
             </div>
             
@@ -587,22 +666,23 @@
         </div>
 
     </div>
+
     <!-- Rodapé com Botões de Ação -->
-    <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6 anim-entry delay-4" data-html2pdf-ignore="true">
+    <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6 animate-fade-in-up anim-delay-4" data-html2pdf-ignore="true">
         <button onclick="goToFicha()" 
-            class="group flex items-center gap-2 px-6 py-2 bg-theme-orange hover:bg-orange-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            class="group flex items-center gap-2 px-6 py-3 bg-theme-orange hover:bg-orange-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="edit-3" class="w-4 h-4"></i>
             <span>Editar Ficha</span>
         </button>
         
         <button onclick="exportProfile()" 
-            class="group flex items-center gap-2 px-6 py-2 bg-theme-purple hover:bg-purple-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            class="group flex items-center gap-2 px-6 py-3 bg-theme-purple hover:bg-purple-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="download" class="w-4 h-4"></i>
             <span>Exportar Perfil</span>
         </button>
         
         <button onclick="refreshProfile()" 
-            class="group flex items-center gap-2 px-6 py-2 bg-theme-blue hover:bg-blue-600 rounded text-white shadow-lg transition-all font-cinzel text-sm font-bold">
+            class="group flex items-center gap-2 px-6 py-3 bg-theme-blue hover:bg-blue-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="refresh-cw" class="w-4 h-4"></i>
             <span>Atualizar</span>
         </button>
@@ -622,11 +702,11 @@
             
             <div class="flex justify-end gap-3">
                 <button onclick="hideWarning()" 
-                    class="px-4 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors">
+                    class="px-4 py-2 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
                     Cancelar
                 </button>
                 <button onclick="goToFicha()" 
-                    class="px-4 py-2 bg-theme-orange hover:bg-orange-600 rounded text-white">
+                    class="px-4 py-2 bg-theme-orange hover:bg-orange-600 rounded-lg text-white">
                     Criar Ficha
                 </button>
             </div>
@@ -635,8 +715,8 @@
 
     <script>
         // ====================================================================
-        // PERFIL.HTML - VERSÃO SIMPLIFICADA E FUNCIONAL
-        // Usa o sistema centralizado grimorio-core.js
+        // PERFIL.HTML - VERSÃO OTIMIZADA
+        // Sistema completo integrado com grimorio-core.js
         // ====================================================================
         
         // 1. Inicializar ícones
@@ -647,12 +727,15 @@
         // 2. Carregar dados do sistema centralizado
         function carregarPerfil() {
             try {
+                console.log('Carregando perfil do GrimorioSystem...');
                 const personagem = GrimorioSystem.carregarPersonagem();
                 
                 if (!personagem) {
                     mostrarErro('Nenhum personagem encontrado. Crie uma ficha primeiro.');
                     return;
                 }
+                
+                console.log('Personagem carregado:', personagem.nome);
                 
                 // Atualizar todos os campos da interface
                 atualizarInterface(personagem);
@@ -665,13 +748,37 @@
         
         // 3. Atualizar interface com dados do personagem
         function atualizarInterface(personagem) {
-            // Informações básicas
+            console.log('Atualizando interface com dados:', personagem);
+            
+            // Informações básicas - HEADER
             document.getElementById('profile-title').textContent = personagem.nome || 'Personagem';
+            document.getElementById('profile-subtitle').textContent = personagem.titulo || 'Aventureiro';
             document.getElementById('active-profile-name').textContent = personagem.nome || 'Personagem';
+            document.getElementById('profile-raca').textContent = personagem.raca || 'Não Definida';
+            document.getElementById('profile-classe').textContent = personagem.classe || 'Não Escolhida';
+            document.getElementById('profile-nivel').textContent = `Nível ${personagem.nivel || 1}`;
+            
+            // Avatar/Imagem
+            const avatarDisplay = document.getElementById('avatar-display');
+            const avatarIcon = document.getElementById('avatar-icon');
+            
+            if (personagem.avatar && personagem.avatar.trim() !== '') {
+                avatarDisplay.style.backgroundImage = `url('${personagem.avatar}')`;
+                avatarDisplay.style.backgroundSize = 'cover';
+                avatarDisplay.style.backgroundPosition = 'center';
+                avatarIcon.style.display = 'none';
+            } else {
+                avatarDisplay.style.backgroundImage = '';
+                avatarIcon.style.display = 'block';
+            }
+            
+            // Seção 1: Informações básicas
             document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
-            document.getElementById('display-titulo').textContent = personagem.titulo || 'Sem Título';
+            document.getElementById('display-titulo').textContent = personagem.titulo || 'Aventureiro sem título';
             document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
             document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
+            document.getElementById('display-origem').textContent = personagem.origem || 'Não Definida';
+            document.getElementById('display-idade').textContent = personagem.idade || 'Não Informada';
             
             // Atributos
             const attrs = personagem.atributos || {};
@@ -690,6 +797,7 @@
             document.getElementById('display-nivel').textContent = personagem.nivel || 1;
             document.getElementById('display-xp').textContent = 
                 `${personagem.experiencia || 0}/${personagem.experienciaProximoNivel || 1000}`;
+            document.getElementById('display-pontos').textContent = personagem.pontosDisponiveis || 0;
             
             const xpPercent = personagem.experienciaProximoNivel > 0 ? 
                 ((personagem.experiencia || 0) / personagem.experienciaProximoNivel) * 100 : 0;
@@ -704,30 +812,57 @@
             document.getElementById('display-estamina').textContent = 
                 `${recursos.estaminaAtual || 0}/${recursos.estaminaMaxima || 20}`;
             
+            // Bases dos recursos
+            document.getElementById('display-vida-base').textContent = recursos.vidaMaxima || 10;
+            document.getElementById('display-mana-base').textContent = recursos.manaMaxima || 0;
+            document.getElementById('display-estamina-base').textContent = recursos.estaminaMaxima || 20;
+            
             // Barras de recursos
-            document.getElementById('display-vida-bar').style.width = 
-                recursos.vidaMaxima > 0 ? `${(recursos.vidaAtual / recursos.vidaMaxima) * 100}%` : '0%';
-            document.getElementById('display-mana-bar').style.width = 
-                recursos.manaMaxima > 0 ? `${(recursos.manaAtual / recursos.manaMaxima) * 100}%` : '0%';
-            document.getElementById('display-estamina-bar').style.width = 
-                recursos.estaminaMaxima > 0 ? `${(recursos.estaminaAtual / recursos.estaminaMaxima) * 100}%` : '0%';
+            const vidaPercent = recursos.vidaMaxima > 0 ? ((recursos.vidaAtual || 0) / recursos.vidaMaxima) * 100 : 0;
+            const manaPercent = recursos.manaMaxima > 0 ? ((recursos.manaAtual || 0) / recursos.manaMaxima) * 100 : 0;
+            const estaminaPercent = recursos.estaminaMaxima > 0 ? ((recursos.estaminaAtual || 0) / recursos.estaminaMaxima) * 100 : 0;
+            
+            document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
+            document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
+            document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
             
             // Equipamentos
             const equip = personagem.equipamentos || {};
-            document.getElementById('display-arma-principal').textContent = equip.armaPrincipal || 'Nenhuma';
-            document.getElementById('display-armadura').textContent = equip.armadura || 'Nenhuma';
-            document.getElementById('display-amuleto').textContent = equip.amuleto || 'Nenhum';
+            document.getElementById('display-arma-principal').textContent = equip.armaPrincipal || 'Não equipado';
+            document.getElementById('display-armadura').textContent = equip.armadura || 'Não equipado';
+            document.getElementById('display-amuleto').textContent = equip.amuleto || 'Não equipado';
+            
+            // Habilidades
+            const habilidades = personagem.habilidades || [];
+            if (habilidades.length > 0) {
+                document.getElementById('display-habilidade1').textContent = habilidades[0].nome || 'Ataque Básico';
+                document.getElementById('display-desc-habilidade1').textContent = habilidades[0].descricao || 'Dano físico básico';
+                
+                if (habilidades.length > 1) {
+                    document.getElementById('display-habilidade2').textContent = habilidades[1].nome || 'Defesa';
+                    document.getElementById('display-desc-habilidade2').textContent = habilidades[1].descricao || 'Proteção básica';
+                }
+                
+                if (habilidades.length > 2) {
+                    document.getElementById('display-habilidade3').textContent = habilidades[2].nome || 'Habilidade de Classe';
+                    document.getElementById('display-desc-habilidade3').textContent = habilidades[2].descricao || 'Baseado na classe';
+                }
+            }
             
             // Mascote
             if (personagem.mascote) {
                 document.getElementById('mascote-summary').innerHTML = `
-                    <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-full border-2 border-[#8b7355] flex items-center justify-center">
-                            <i data-lucide="dog" class="w-8 h-8 text-[#d4a76a]"></i>
+                    <div class="flex flex-col md:flex-row items-center gap-6 p-4 bg-[#1a1510]/50 rounded-lg border border-[#8b7355]">
+                        <div class="w-20 h-20 rounded-full border-2 border-[#d4a76a] overflow-hidden flex items-center justify-center">
+                            <i data-lucide="dog" class="w-10 h-10 text-[#d4a76a]"></i>
                         </div>
-                        <div>
-                            <h4 class="font-cinzel font-bold text-[#f4d29a]">${personagem.mascote.nome || 'Mascote'}</h4>
-                            <p class="text-[#8b7355]">Nível ${personagem.mascote.nivel || 1}</p>
+                        <div class="flex-grow text-center md:text-left">
+                            <h4 class="font-cinzel font-bold text-[#f4d29a] text-lg">${personagem.mascote.nome || 'Mascote'}</h4>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">Nível ${personagem.mascote.nivel || 1}</span>
+                                <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">${personagem.mascote.tipo || 'Animal'}</span>
+                            </div>
+                            <p class="text-[#8b7355] text-sm mt-2">${personagem.mascote.descricao || 'Companheiro leal'}</p>
                         </div>
                     </div>
                 `;
@@ -737,7 +872,7 @@
             // Mostrar indicador ativo
             document.getElementById('profile-active-indicator').classList.remove('hidden');
             
-            console.log('Perfil atualizado:', personagem.nome);
+            console.log('Perfil atualizado com sucesso!');
         }
         
         // 4. Funções de navegação
@@ -755,19 +890,24 @@
         
         // 5. Exportar perfil
         function exportProfile() {
-            const json = GrimorioSystem.exportarPersonagem();
-            const blob = new Blob([json], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `perfil_${new Date().getTime()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            GrimorioSystem.mostrarNotificacao('Perfil exportado com sucesso!', 'success');
+            try {
+                const json = GrimorioSystem.exportarPersonagem();
+                const blob = new Blob([json], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `perfil_${new Date().getTime()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                GrimorioSystem.mostrarNotificacao('Perfil exportado com sucesso!', 'success');
+            } catch (error) {
+                console.error('Erro ao exportar:', error);
+                GrimorioSystem.mostrarNotificacao('Erro ao exportar perfil', 'error');
+            }
         }
         
         // 6. Atualizar perfil
@@ -795,9 +935,6 @@
                 return;
             }
             
-            // Carregar perfil após breve delay
-            setTimeout(carregarPerfil, 100);
-            
             // Configurar botões de navegação
             const navButtons = document.getElementById('nav-buttons');
             if (navButtons) {
@@ -815,7 +952,17 @@
                 if (window.lucide) lucide.createIcons();
             }
             
-            console.log('Página de perfil inicializada');
+            // Carregar perfil após breve delay
+            setTimeout(() => {
+                carregarPerfil();
+                // Atualizar a cada 2 segundos para sincronizar entre abas
+                setInterval(carregarPerfil, 2000);
+            }, 100);
+            
+            // Ouvir eventos do sistema
+            window.addEventListener('grimorio:personagemAtualizado', carregarPerfil);
+            
+            console.log('Página de perfil inicializada com sucesso!');
         });
         
         // 9. Estilo para botões de navegação
@@ -837,6 +984,14 @@
             .nav-btn:hover {
                 background: #1a1a1e;
                 border-color: #4a9eff;
+                transform: translateY(-1px);
+            }
+            
+            /* Animações suaves para todos os elementos */
+            .animate-fade-in-up {
+                opacity: 0;
+                transform: translateY(20px);
+                animation: fadeInUp 0.6s ease-out forwards;
             }
         `;
         document.head.appendChild(estiloNav);
