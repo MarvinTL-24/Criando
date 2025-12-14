@@ -612,30 +612,68 @@
         <!-- CONTROLE DE PONTOS -->
         <section class="mb-6 points-controls">
             <h2 class="section-title">
-                <i data-lucide="coins"></i>
-                Controle de Pontos
+                <i data-lucide="dice-5"></i>
+                Sorteio de Pontos
             </h2>
             
-            <div class="points-display">
-                <span>Pontos Disponíveis:</span>
-                <div class="points-value" id="pontos-disponiveis">0</div>
+            <div class="text-center mb-6">
+                <div class="text-lg mb-2" style="color: var(--text-secondary);">
+                    Digite quantos pontos quer sortear:
+                </div>
+                <div class="flex gap-2 justify-center items-center" style="max-width: 300px; margin: 0 auto;">
+                    <input 
+                        type="number" 
+                        id="input-pontos-sorteio" 
+                        class="form-input" 
+                        placeholder="Ex: 10" 
+                        min="1" 
+                        max="1000" 
+                        value="10"
+                        style="
+                            flex: 1;
+                            text-align: center;
+                            padding: 0.75rem;
+                            font-size: 1.125rem;
+                            font-weight: 600;
+                            background: rgba(255, 255, 255, 0.05);
+                            border: 2px solid var(--border-color);
+                        "
+                    >
+                    <button 
+                        onclick="sortearPontos()" 
+                        class="btn"
+                        style="
+                            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+                            color: white;
+                            padding: 0.75rem 1.5rem;
+                            font-weight: 600;
+                        "
+                    >
+                        <i data-lucide="dice-5"></i>
+                        Sortear
+                    </button>
+                </div>
+                <div class="text-sm mt-2" style="color: var(--text-secondary);">
+                    Os pontos serão distribuídos aleatoriamente entre os atributos
+                </div>
             </div>
-            
-            <div class="flex gap-2 justify-center flex-wrap" ,style="align = center">
-                <button onclick="adicionarPontos(1)" class="btn btn-sm" style="background: rgba(74, 158, 255, 0.2); color: var(--accent-blue);">
-                    <i data-lucide="plus"></i> +1
-                </button>
-                <button onclick="adicionarPontos(5)" class="btn btn-sm" style="background: rgba(34, 197, 94, 0.2); color: var(--accent-green);">
-                    <i data-lucide="plus"></i> +5
-                </button>
-                <button onclick="adicionarPontos(10)" class="btn btn-sm" style="background: rgba(139, 92, 246, 0.2); color: var(--accent-purple);">
-                    <i data-lucide="plus"></i> +10
-                </button>
-                <button onclick="resetarPontos()" class="btn btn-sm btn-danger">
-                    <i data-lucide="trash-2"></i> Zerar
-                </button>
+        
+        <!-- STATUS DOS PONTOS -->
+        <div class="text-center">
+            <div class="inline-block bg-black/30 p-4 rounded-lg border border-border-color">
+                <div class="grid grid-cols-2 gap-4" style="grid-template-columns: repeat(2, 1fr);">
+                    <div>
+                        <div class="text-sm" style="color: var(--text-secondary);">Pontos Disponíveis</div>
+                        <div class="text-2xl font-bold" style="color: var(--accent-blue);" id="pontos-disponiveis">0</div>
+                    </div>
+                    <div>
+                        <div class="text-sm" style="color: var(--text-secondary);">Pontos Gastos</div>
+                        <div class="text-2xl font-bold" style="color: var(--accent-green);" id="pontos-gastos">0</div>
+                    </div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
         <!-- RECURSOS VITAIS -->
         <section class="mb-6">
@@ -1069,7 +1107,7 @@
                 
                 <div class="form-group">
                     <label class="form-label">Dificuldade do Destino</label>
-                    <select style="color: var(--accent-black);"   id="config-dificuldade-destino" class="form-input">
+                    <select style="color: var(--accent-white); background: rgba(255,255,255,0.1);" id="config-dificuldade-destino" class="form-input">
                         <option value="1">Fácil</option>
                         <option value="2" selected>Normal</option>
                         <option value="3">Difícil</option>
@@ -1287,17 +1325,12 @@
             fixado: false
         },
         pontos: {
-            disponiveis: 0,
-            gastos: 0,
-            totalGanhos: 0
+            disponiveis: 18,
+            gastos: 0
         },
         config: {
             limiteAtributo: 100,
-            pontosPorNivel: 2,
-            minimoAleatorio: 10,
-            minimoDistribuicao: 10,
-            rolagensMaximas: 5,
-            dificuldadeDestino: 2
+            rolagensMaximas: 5
         }
     };
     
@@ -1457,7 +1490,7 @@
         });
     }
     
-    // SISTEMA DE DESTINO MELHORADO
+    // SISTEMA DE DESTINO SIMPLIFICADO
     function rolarSorte() {
         if (statusData.sorte.fixado) {
             mostrarNotificacao('Destino já foi fixado!', 'warning');
@@ -1470,17 +1503,13 @@
         }
         
         // Sistema mais difícil
-        const dificuldade = statusData.config.dificuldadeDestino;
-        const base = 100;
-        const divisor = 1 + (dificuldade * 0.5); // Aumenta a dificuldade
+        const dado1 = Math.floor(Math.random() * 100) + 1;
+        const dado2 = Math.floor(Math.random() * 100) + 1;
+        const dado3 = Math.floor(Math.random() * 100) + 1;
         
-        const dado1 = Math.floor(Math.random() * base) + 1;
-        const dado2 = Math.floor(Math.random() * base) + 1;
-        const dado3 = Math.floor(Math.random() * base) + 1;
-        
-        // Fórmula mais complexa e difícil
+        // Fórmula difícil de chegar a 100%
         const resultado = Math.max(1, Math.min(100, Math.round(
-            ((dado1 * 0.7 + dado3 * 0.5) - dado2) * 0.8 / divisor
+            ((dado1 * 0.6 + dado3 * 0.4) - dado2 * 0.7) * 0.9
         )));
         
         statusData.sorte.dado1 = dado1;
@@ -1505,22 +1534,22 @@
         let status = 'Neutro';
         let statusColor = 'var(--destiny-gold)';
         
-        if (resultado > 80) {
+        if (resultado > 85) {
             status = 'SORTE LENDÁRIA';
             statusColor = '#FFD700';
-        } else if (resultado > 65) {
+        } else if (resultado > 70) {
             status = 'Sorte Excelente';
             statusColor = '#22c55e';
-        } else if (resultado > 55) {
+        } else if (resultado > 60) {
             status = 'Sortudo';
             statusColor = '#4a9eff';
-        } else if (resultado < 20) {
+        } else if (resultado < 15) {
             status = 'AZAR EXTREMO';
             statusColor = '#ff4757';
-        } else if (resultado < 35) {
+        } else if (resultado < 30) {
             status = 'Azar Crítico';
             statusColor = '#f59e0b';
-        } else if (resultado < 45) {
+        } else if (resultado < 40) {
             status = 'Azarado';
             statusColor = '#a0a0a0';
         }
@@ -1532,19 +1561,11 @@
             statusElement.style.color = statusColor;
         }
         
-        // Fórmula
-        const formula = document.getElementById('calculo-sorte');
-        if (formula) {
-            formula.textContent = 
-                `((${dado1} × 0.7 + ${dado3} × 0.5) - ${dado2}) × 0.8 ÷ ${divisor} = ${resultado}`;
-        }
-        
         // Rolagens restantes
         const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
         const rollsInfo = document.getElementById('rolls-info');
         if (rollsInfo) {
-            rollsInfo.textContent = 
-                `Rolagens restantes: ${restantes}`;
+            rollsInfo.textContent = `Rolagens restantes: ${restantes}`;
         }
         
         mostrarNotificacao(`Destino: ${resultado}% (${status})`, resultado > 50 ? 'success' : 'warning');
@@ -1563,131 +1584,142 @@
         salvarDados();
     }
     
-    // SORTEIO ALEATÓRIO MELHORADO
-    function distribuirAleatorio() {
-        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
-        const totalAtual = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
+    // SISTEMA DE PONTOS - SORTEIO ALEATÓRIO SIMPLIFICADO
+    function sortearPontos() {
+        const input = document.getElementById('input-pontos-sorteio');
+        const pontosParaSortear = parseInt(input.value);
         
-        if (totalAtual >= statusData.config.minimoAleatorio) {
-            // Distribuir pontos baseados nos pontos disponíveis
-            const pontos = Math.min(statusData.pontos.disponiveis, statusData.config.pontosPorNivel);
-            
-            if (pontos <= 0) {
-                mostrarNotificacao('Sem pontos disponíveis para distribuir!', 'warning');
-                return;
-            }
-            
-            for (let i = 0; i < pontos; i++) {
-                // Distribuição mais inteligente - atributos mais baixos têm mais chance
-                const weights = atributos.map(attr => {
-                    const valor = statusData.atributos[attr];
-                    const peso = Math.max(1, (statusData.config.limiteAtributo - valor) * 2);
-                    return peso;
-                });
-                
-                const totalWeight = weights.reduce((a, b) => a + b, 0);
-                let random = Math.random() * totalWeight;
-                
-                let chosenAttr = atributos[0];
-                for (let j = 0; j < weights.length; j++) {
-                    random -= weights[j];
-                    if (random <= 0) {
-                        chosenAttr = atributos[j];
-                        break;
-                    }
-                }
-                
-                if (statusData.atributos[chosenAttr] < statusData.config.limiteAtributo) {
-                    statusData.atributos[chosenAttr]++;
-                    
-                    // Atualizar visual
-                    const progressBar = progressBars.find(pb => pb.statId === chosenAttr);
-                    if (progressBar) {
-                        progressBar.setValue(statusData.atributos[chosenAttr]);
-                    } else {
-                        // Fallback
-                        const element = document.getElementById(chosenAttr);
-                        if (element) element.textContent = statusData.atributos[chosenAttr];
-                    }
-                }
-                
-                // Gastar ponto
-                if (statusData.pontos.disponiveis > 0) {
-                    statusData.pontos.disponiveis--;
-                    statusData.pontos.gastos++;
-                }
-            }
-            
-            atualizarDisplayPontos();
-            mostrarNotificacao(`${pontos} pontos distribuídos aleatoriamente!`, 'success');
-            salvarDados();
-            updateDerivedStats();
-            salvarNoGrimorio();
-        } else {
-            mostrarNotificacao(`Mínimo de ${statusData.config.minimoAleatorio} pontos totais necessários`, 'warning');
-        }
-    }
-    
-    // NOVA FUNÇÃO: Distribuir pontos mínimos
-    function distribuirAleatorioMinimo() {
-        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
-        const minimo = statusData.config.minimoDistribuicao;
-        
-        // Verificar se já tem pontos suficientes
-        let precisamosDistribuir = false;
-        for (const attr of atributos) {
-            if (statusData.atributos[attr] < minimo) {
-                precisamosDistribuir = true;
-                break;
-            }
-        }
-        
-        if (!precisamosDistribuir) {
-            mostrarNotificacao('Todos atributos já atingiram o mínimo!', 'info');
+        if (!pontosParaSortear || pontosParaSortear <= 0) {
+            mostrarNotificacao('Digite um número válido de pontos!', 'warning');
+            input.focus();
             return;
         }
         
-        // Calcular pontos necessários
-        let pontosNecessarios = 0;
-        for (const attr of atributos) {
-            if (statusData.atributos[attr] < minimo) {
-                pontosNecessarios += minimo - statusData.atributos[attr];
-            }
+        if (pontosParaSortear > 1000) {
+            mostrarNotificacao('Máximo de 1000 pontos por sorteio!', 'warning');
+            input.value = 1000;
+            input.focus();
+            return;
         }
         
         // Verificar se tem pontos suficientes
-        if (statusData.pontos.disponiveis < pontosNecessarios) {
-            mostrarNotificacao(`Precisa de ${pontosNecessarios} pontos para atingir o mínimo!`, 'warning');
+        if (statusData.pontos.disponiveis < pontosParaSortear) {
+            const faltam = pontosParaSortear - statusData.pontos.disponiveis;
+            mostrarNotificacao(`Faltam ${faltam} pontos! Adicione mais pontos primeiro.`, 'error');
+            input.focus();
             return;
         }
         
-        // Distribuir até atingir o mínimo
-        for (const attr of atributos) {
-            while (statusData.atributos[attr] < minimo && statusData.pontos.disponiveis > 0) {
-                statusData.atributos[attr]++;
-                statusData.pontos.disponiveis--;
-                statusData.pontos.gastos++;
+        // Array de atributos
+        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
+        
+        // Registrar valores antes do sorteio
+        const valoresAntes = {};
+        atributos.forEach(attr => {
+            valoresAntes[attr] = statusData.atributos[attr];
+        });
+        
+        // Distribuir pontos aleatoriamente
+        let pontosDistribuidos = 0;
+        const distribuicoes = {};
+        
+        while (pontosDistribuidos < pontosParaSortear) {
+            // Sortear atributo aleatório
+            const randomIndex = Math.floor(Math.random() * atributos.length);
+            const atributoSorteado = atributos[randomIndex];
+            
+            // Verificar se pode adicionar (não ultrapassar limite)
+            if (statusData.atributos[atributoSorteado] < statusData.config.limiteAtributo) {
+                statusData.atributos[atributoSorteado]++;
+                pontosDistribuidos++;
                 
-                // Atualizar visual
-                const progressBar = progressBars.find(pb => pb.statId === attr);
+                // Contar distribuição
+                if (!distribuicoes[atributoSorteado]) {
+                    distribuicoes[atributoSorteado] = 0;
+                }
+                distribuicoes[atributoSorteado]++;
+                
+                // Atualizar visual imediatamente
+                const progressBar = progressBars.find(pb => pb.statId === atributoSorteado);
                 if (progressBar) {
-                    progressBar.setValue(statusData.atributos[attr]);
-                } else {
-                    const element = document.getElementById(attr);
-                    if (element) element.textContent = statusData.atributos[attr];
+                    progressBar.setValue(statusData.atributos[atributoSorteado]);
                 }
             }
         }
         
+        // Gastar os pontos
+        statusData.pontos.disponiveis -= pontosParaSortear;
+        statusData.pontos.gastos += pontosParaSortear;
+        
+        // Atualizar displays
         atualizarDisplayPontos();
-        mostrarNotificacao(`Distribuído até mínimo ${minimo} em todos atributos!`, 'success');
+        
+        // Mostrar resumo da distribuição
+        const resumo = Object.keys(distribuicoes)
+            .map(attr => {
+                const nome = attr.charAt(0).toUpperCase() + attr.slice(1);
+                return `${nome}: +${distribuicoes[attr]}`;
+            })
+            .join(', ');
+        
+        mostrarNotificacao(
+            `${pontosParaSortear} pontos sorteados! ${resumo}`,
+            'success'
+        );
+        
+        // Atualizar tudo
         salvarDados();
         updateDerivedStats();
         salvarNoGrimorio();
+        
+        // Resetar input para próximo uso
+        input.value = '';
+        input.focus();
     }
     
+    // Adicionar pontos ao total disponível
+    function adicionarPontos() {
+        const input = document.getElementById('input-adicionar-pontos');
+        const quantidade = parseInt(input.value);
+        
+        if (!quantidade || quantidade <= 0) {
+            mostrarNotificacao('Digite um valor válido!', 'warning');
+            return;
+        }
+        
+        if (quantidade > 1000) {
+            mostrarNotificacao('Máximo de 1000 pontos por vez!', 'warning');
+            input.value = 1000;
+            return;
+        }
+        
+        statusData.pontos.disponiveis += quantidade;
+        atualizarDisplayPontos();
+        
+        mostrarNotificacao(`+${quantidade} pontos adicionados! Total: ${statusData.pontos.disponiveis}`, 'success');
+        salvarDados();
+        
+        // Limpar input
+        input.value = '';
+        input.focus();
+    }
+    
+    // Atualizar display de pontos
+    function atualizarDisplayPontos() {
+        const pontosElement = document.getElementById('pontos-disponiveis');
+        const gastosElement = document.getElementById('pontos-gastos');
+        
+        if (pontosElement) {
+            pontosElement.textContent = statusData.pontos.disponiveis;
+        }
+        if (gastosElement) {
+            gastosElement.textContent = statusData.pontos.gastos;
+        }
+    }
+    
+    // Resetar atributos e devolver pontos
     function resetarAtributos() {
-        if (confirm('Resetar todos os atributos para 0? Pontos serão devolvidos.')) {
+        if (confirm('Resetar todos os atributos para 0? Os pontos gastos serão devolvidos.')) {
             const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
             let pontosDevolvidos = 0;
             
@@ -1698,78 +1730,41 @@
                 const progressBar = progressBars.find(pb => pb.statId === attr);
                 if (progressBar) {
                     progressBar.setValue(0);
-                } else {
-                    const element = document.getElementById(attr);
-                    if (element) element.textContent = '0';
                 }
             });
             
             // Devolver pontos
             statusData.pontos.disponiveis += pontosDevolvidos;
             statusData.pontos.gastos -= pontosDevolvidos;
+            
             atualizarDisplayPontos();
+            updateDerivedStats();
+            salvarDados();
+            salvarNoGrimorio();
             
             mostrarNotificacao(`Atributos resetados! ${pontosDevolvidos} pontos devolvidos.`, 'info');
-            salvarDados();
-            updateDerivedStats();
-            salvarNoGrimorio();
         }
     }
     
     function restaurarRecursos() {
-        if (confirm('Restaurar todos os recursos?')) {
-            ['vida', 'mana', 'estamina'].forEach(resource => {
-                statusData.recursos[resource].atual = statusData.recursos[resource].max;
-                
-                const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
-                if (progressBar) {
-                    progressBar.setValue(statusData.recursos[resource].atual);
-                } else {
-                    const element = document.getElementById(`${resource}-atual`);
-                    if (element) element.textContent = statusData.recursos[resource].atual;
-                }
-            });
+        ['vida', 'mana', 'estamina'].forEach(resource => {
+            statusData.recursos[resource].atual = statusData.recursos[resource].max;
             
-            mostrarNotificacao('Recursos restaurados!', 'success');
-            salvarDados();
-            salvarNoGrimorio();
-        }
-    }
-    
-    // SISTEMA DE PONTOS
-    function adicionarPontos(quantidade) {
-        statusData.pontos.disponiveis += quantidade;
-        statusData.pontos.totalGanhos += quantidade;
+            const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
+            if (progressBar) {
+                progressBar.setValue(statusData.recursos[resource].atual);
+            }
+        });
         
-        atualizarDisplayPontos();
-        mostrarNotificacao(`+${quantidade} pontos adicionados! Total: ${statusData.pontos.disponiveis}`, 'success');
+        mostrarNotificacao('Recursos restaurados!', 'success');
         salvarDados();
+        salvarNoGrimorio();
     }
     
-    function resetarPontos() {
-        if (confirm('Zerar todos os pontos? Isso resetará o histórico.')) {
-            statusData.pontos.disponiveis = 0;
-            statusData.pontos.gastos = 0;
-            statusData.pontos.totalGanhos = 0;
-            
-            atualizarDisplayPontos();
-            mostrarNotificacao('Pontos zerados!', 'info');
-            salvarDados();
-        }
-    }
-    
-    function atualizarDisplayPontos() {
-        const pontosElement = document.getElementById('pontos-disponiveis');
-        if (pontosElement) {
-            pontosElement.textContent = statusData.pontos.disponiveis;
-        }
-    }
-    
-    // ESTATÍSTICAS DERIVADAS MELHORADAS
+    // ESTATÍSTICAS DERIVADAS
     function updateDerivedStats() {
         const { forca, destreza, constituicao, inteligencia, sabedoria } = statusData.atributos;
         
-        // Cálculos mais interessantes
         const blindagem = Math.floor((constituicao * 0.7) + (forca * 0.3));
         const velocidade = Math.floor((destreza * 0.6) + (constituicao * 0.4));
         const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
@@ -1797,329 +1792,6 @@
                 element.textContent = value;
             }
         });
-    }
-    
-    // SISTEMA DE IMPORTAÇÃO/EXPORTAÇÃO
-    function abrirModalExport() {
-        atualizarPreviewExport();
-        document.getElementById('modal-export').classList.add('active');
-    }
-    
-    function atualizarPreviewExport() {
-        const format = document.getElementById('export-format').value;
-        const exportContent = document.getElementById('export-content');
-        
-        const dados = {
-            statusData: statusData,
-            grimorioData: window.GrimorioSystem ? GrimorioSystem.carregarPersonagem() : null,
-            config: statusData.config,
-            exportadoEm: new Date().toISOString(),
-            versao: '3.0-grimorio'
-        };
-        
-        let preview = '';
-        
-        switch(format) {
-            case 'json':
-                preview = JSON.stringify(dados, null, 2);
-                break;
-            case 'txt':
-                preview = `=== GRIMÓRIO DIGITAL - STATUS ===
-Data: ${new Date().toLocaleString()}
-
-ATRIBUTOS:
-Força: ${statusData.atributos.forca}
-Destreza: ${statusData.atributos.destreza}
-Constituição: ${statusData.atributos.constituicao}
-Inteligência: ${statusData.atributos.inteligencia}
-Sabedoria: ${statusData.atributos.sabedoria}
-Carisma: ${statusData.atributos.carisma}
-
-RECURSOS:
-Vida: ${statusData.recursos.vida.atual}/${statusData.recursos.vida.max}
-Mana: ${statusData.recursos.mana.atual}/${statusData.recursos.mana.max}
-Estamina: ${statusData.recursos.estamina.atual}/${statusData.recursos.estamina.max}
-
-DESTINO:
-Índice: ${statusData.sorte.indice}%
-Fé: ${statusData.sorte.dado1} | Sorte: ${statusData.sorte.dado2} | Destino: ${statusData.sorte.dado3}
-Status: ${statusData.sorte.status}
-
-PONTOS:
-Disponíveis: ${statusData.pontos.disponiveis}
-Gastos: ${statusData.pontos.gastos}
-Total Ganhos: ${statusData.pontos.totalGanhos}`;
-                break;
-            case 'csv':
-                preview = `Atributo,Valor,Máximo
-Força,${statusData.atributos.forca},100
-Destreza,${statusData.atributos.destreza},100
-Constituição,${statusData.atributos.constituicao},100
-Inteligência,${statusData.atributos.inteligencia},100
-Sabedoria,${statusData.atributos.sabedoria},100
-Carisma,${statusData.atributos.carisma},100
-Vida,${statusData.recursos.vida.atual},${statusData.recursos.vida.max}
-Mana,${statusData.recursos.mana.atual},${statusData.recursos.mana.max}
-Estamina,${statusData.recursos.estamina.atual},${statusData.recursos.estamina.max}
-Destino,${statusData.sorte.indice},100`;
-                break;
-        }
-        
-        exportContent.value = preview;
-    }
-    
-    function executarExportacao() {
-        const format = document.getElementById('export-format').value;
-        const exportStatus = document.getElementById('export-status').checked;
-        const exportGrimorio = document.getElementById('export-grimorio').checked;
-        const exportConfig = document.getElementById('export-config').checked;
-        
-        let dados = {};
-        
-        if (exportStatus) {
-            dados.statusData = statusData;
-        }
-        
-        if (exportGrimorio && window.GrimorioSystem) {
-            dados.grimorioData = GrimorioSystem.carregarPersonagem();
-        }
-        
-        if (exportConfig) {
-            dados.config = statusData.config;
-        }
-        
-        dados.exportadoEm = new Date().toISOString();
-        dados.versao = '3.0-grimorio';
-        
-        let conteudo, tipo, extensao;
-        
-        switch(format) {
-            case 'json':
-                conteudo = JSON.stringify(dados, null, 2);
-                tipo = 'application/json';
-                extensao = 'json';
-                break;
-            case 'txt':
-                conteudo = `=== GRIMÓRIO DIGITAL - STATUS ===
-Data: ${new Date().toLocaleString()}
-
-ATRIBUTOS:
-Força: ${statusData.atributos.forca}
-Destreza: ${statusData.atributos.destreza}
-Constituição: ${statusData.atributos.constituicao}
-Inteligência: ${statusData.atributos.inteligencia}
-Sabedoria: ${statusData.atributos.sabedoria}
-Carisma: ${statusData.atributos.carisma}
-
-RECURSOS:
-Vida: ${statusData.recursos.vida.atual}/${statusData.recursos.vida.max}
-Mana: ${statusData.recursos.mana.atual}/${statusData.recursos.mana.max}
-Estamina: ${statusData.recursos.estamina.atual}/${statusData.recursos.estamina.max}
-
-DESTINO:
-Índice: ${statusData.sorte.indice}%
-Status: ${statusData.sorte.status}
-
-PONTOS:
-Disponíveis: ${statusData.pontos.disponiveis}
-Gastos: ${statusData.pontos.gastos}`;
-                tipo = 'text/plain';
-                extensao = 'txt';
-                break;
-            case 'csv':
-                conteudo = `Atributo,Valor,Máximo
-Força,${statusData.atributos.forca},100
-Destreza,${statusData.atributos.destreza},100
-Constituição,${statusData.atributos.constituicao},100
-Inteligência,${statusData.atributos.inteligencia},100
-Sabedoria,${statusData.atributos.sabedoria},100
-Carisma,${statusData.atributos.carisma},100
-Vida,${statusData.recursos.vida.atual},${statusData.recursos.vida.max}
-Mana,${statusData.recursos.mana.atual},${statusData.recursos.mana.max}
-Estamina,${statusData.recursos.estamina.atual},${statusData.recursos.estamina.max}
-Destino,${statusData.sorte.indice},100`;
-                tipo = 'text/csv';
-                extensao = 'csv';
-                break;
-        }
-        
-        const blob = new Blob([conteudo], { type: tipo });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `grimorio_status_${new Date().getTime()}.${extensao}`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        mostrarNotificacao(`Arquivo exportado em formato ${format.toUpperCase()}!`, 'success');
-        fecharModal('modal-export');
-    }
-    
-    function abrirModalImport() {
-        document.getElementById('modal-import').classList.add('active');
-    }
-    
-    function executarImportacao() {
-        const fileInput = document.getElementById('import-file');
-        const file = fileInput.files[0];
-        
-        if (!file) {
-            mostrarNotificacao('Selecione um arquivo para importar!', 'warning');
-            return;
-        }
-        
-        const reader = new FileReader();
-        
-        reader.onload = function(e) {
-            try {
-                const conteudo = e.target.result;
-                const tipo = document.getElementById('import-type').value;
-                const importStatus = document.getElementById('import-status').checked;
-                const importGrimorio = document.getElementById('import-grimorio').checked;
-                const importConfig = document.getElementById('import-config').checked;
-                
-                let dados = {};
-                
-                // Detectar tipo automaticamente
-                if (tipo === 'auto') {
-                    if (conteudo.trim().startsWith('{')) {
-                        dados = JSON.parse(conteudo);
-                    } else if (conteudo.includes('Atributo,Valor')) {
-                        // CSV
-                        const linhas = conteudo.trim().split('\n');
-                        const cabecalho = linhas[0].split(',');
-                        for (let i = 1; i < linhas.length; i++) {
-                            const valores = linhas[i].split(',');
-                            // Implementar parse CSV se necessário
-                        }
-                    } else {
-                        // TXT
-                        dados = parseTxt(conteudo);
-                    }
-                } else if (tipo === 'json') {
-                    dados = JSON.parse(conteudo);
-                } else if (tipo === 'txt') {
-                    dados = parseTxt(conteudo);
-                } else if (tipo === 'csv') {
-                    dados = parseCsv(conteudo);
-                }
-                
-                // Aplicar dados
-                if (importStatus && dados.statusData) {
-                    statusData = { ...statusData, ...dados.statusData };
-                }
-                
-                if (importGrimorio && dados.grimorioData && window.GrimorioSystem) {
-                    GrimorioSystem.salvarPersonagem(dados.grimorioData);
-                }
-                
-                if (importConfig && dados.config) {
-                    statusData.config = { ...statusData.config, ...dados.config };
-                }
-                
-                carregarDadosNaInterface();
-                salvarDados();
-                mostrarNotificacao('Dados importados com sucesso!', 'success');
-                fecharModal('modal-import');
-                
-            } catch (error) {
-                mostrarNotificacao(`Erro na importação: ${error.message}`, 'error');
-                console.error('Erro na importação:', error);
-            }
-        };
-        
-        reader.readAsText(file);
-    }
-    
-    function parseTxt(conteudo) {
-        const dados = {
-            statusData: {
-                atributos: {},
-                recursos: {},
-                sorte: {},
-                pontos: {}
-            }
-        };
-        
-        const linhas = conteudo.split('\n');
-        let secaoAtual = '';
-        
-        for (const linha of linhas) {
-            if (linha.includes('===')) continue;
-            if (linha.trim() === '') continue;
-            
-            if (linha.includes('ATRIBUTOS:')) {
-                secaoAtual = 'atributos';
-                continue;
-            } else if (linha.includes('RECURSOS:')) {
-                secaoAtual = 'recursos';
-                continue;
-            } else if (linha.includes('DESTINO:')) {
-                secaoAtual = 'destino';
-                continue;
-            } else if (linha.includes('PONTOS:')) {
-                secaoAtual = 'pontos';
-                continue;
-            }
-            
-            if (secaoAtual === 'atributos' && linha.includes(':')) {
-                const [nome, valor] = linha.split(':').map(s => s.trim());
-                const nomeLower = nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-                
-                if (nomeLower.includes('forca')) dados.statusData.atributos.forca = parseInt(valor) || 0;
-                else if (nomeLower.includes('destreza')) dados.statusData.atributos.destreza = parseInt(valor) || 0;
-                else if (nomeLower.includes('constituicao') || nomeLower.includes('constituição')) dados.statusData.atributos.constituicao = parseInt(valor) || 0;
-                else if (nomeLower.includes('inteligencia') || nomeLower.includes('inteligência')) dados.statusData.atributos.inteligencia = parseInt(valor) || 0;
-                else if (nomeLower.includes('sabedoria')) dados.statusData.atributos.sabedoria = parseInt(valor) || 0;
-                else if (nomeLower.includes('carisma')) dados.statusData.atributos.carisma = parseInt(valor) || 0;
-            }
-        }
-        
-        return dados;
-    }
-    
-    function parseCsv(conteudo) {
-        // Implementação básica de CSV
-        return {};
-    }
-    
-    // CONFIGURAÇÕES
-    function abrirModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) {
-            modal.classList.add('active');
-        }
-        
-        if (id === 'modal-config') {
-            document.getElementById('config-limite-atributo').value = statusData.config.limiteAtributo;
-            document.getElementById('config-pontos-nivel').value = statusData.config.pontosPorNivel;
-            document.getElementById('config-minimo-aleatorio').value = statusData.config.minimoAleatorio;
-            document.getElementById('config-minimo-distribuicao').value = statusData.config.minimoDistribuicao;
-            document.getElementById('config-rolagens-maximas').value = statusData.config.rolagensMaximas;
-            document.getElementById('config-dificuldade-destino').value = statusData.config.dificuldadeDestino;
-        }
-    }
-    
-    function fecharModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) {
-            modal.classList.remove('active');
-        }
-    }
-    
-    function salvarConfiguracoes() {
-        statusData.config.limiteAtributo = parseInt(document.getElementById('config-limite-atributo').value) || 100;
-        statusData.config.pontosPorNivel = parseInt(document.getElementById('config-pontos-nivel').value) || 2;
-        statusData.config.minimoAleatorio = parseInt(document.getElementById('config-minimo-aleatorio').value) || 10;
-        statusData.config.minimoDistribuicao = parseInt(document.getElementById('config-minimo-distribuicao').value) || 10;
-        statusData.config.rolagensMaximas = parseInt(document.getElementById('config-rolagens-maximas').value) || 5;
-        statusData.config.dificuldadeDestino = parseInt(document.getElementById('config-dificuldade-destino').value) || 2;
-        
-        mostrarNotificacao('Configurações salvas!', 'success');
-        salvarDados();
-        fecharModal('modal-config');
     }
     
     // Sincronizar com Grimorio System
@@ -2268,14 +1940,6 @@ Destino,${statusData.sorte.indice},100`;
         // Inicializar ícones
         lucide.createIcons();
         
-        // Configurar botões
-        document.getElementById('btn-exportar').addEventListener('click', abrirModalExport);
-        document.getElementById('btn-importar').addEventListener('click', abrirModalImport);
-        document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
-        
-        // Configurar listeners para export
-        document.getElementById('export-format').addEventListener('change', atualizarPreviewExport);
-        
         // Inicializar progress bars
         setTimeout(() => {
             inicializarProgressBars();
@@ -2285,10 +1949,18 @@ Destino,${statusData.sorte.indice},100`;
                 sincronizarComGrimorio();
                 carregarDados();
                 
-                // Atualizar eventos de input para export preview
-                document.getElementById('export-status').addEventListener('change', atualizarPreviewExport);
-                document.getElementById('export-grimorio').addEventListener('change', atualizarPreviewExport);
-                document.getElementById('export-config').addEventListener('change', atualizarPreviewExport);
+                // Configurar eventos de Enter nos inputs
+                const inputSorteio = document.getElementById('input-pontos-sorteio');
+                if (inputSorteio) {
+                    inputSorteio.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            sortearPontos();
+                        }
+                    });
+                    
+                    // Focar no input ao carregar
+                    inputSorteio.focus();
+                }
                 
                 console.log('[Status] Sistema inicializado com sucesso!');
                 mostrarNotificacao('Sistema de Status carregado!', 'success', 2000);
@@ -2296,14 +1968,15 @@ Destino,${statusData.sorte.indice},100`;
         }, 100);
     });
     
-    // Fechar modal com ESC
+    // Fechar modal com ESC (se houver modais)
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            fecharModal('modal-config');
-            fecharModal('modal-export');
-            fecharModal('modal-import');
+            const modais = document.querySelectorAll('.modal.active');
+            modais.forEach(modal => {
+                modal.classList.remove('active');
+            });
         }
     });
-    </script>
+</script>
 </body>
 </html>
