@@ -1373,8 +1373,8 @@
                         <div class="text-xs text-yellow-600 mt-1">Nível 10 alcançado</div>
                     </div>
                     <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
-                        <div class="text-3xl font-bold text-blue-400 mb-1">${totalHabilidades}</div>
-                        <div class="text-sm text-gray-400">Habilidades</div>
+                        <div class="text-3xl font-bold text-blue-400 mb-1">94</div>
+                        <div class="text-sm text-gray-400">proficiências</div>
                         <div class="text-xs text-blue-600 mt-1">Total registrado</div>
                     </div>
                     <div class="bg-gray-800/50 border border-gray-700/50 p-4 rounded-lg">
@@ -1662,9 +1662,9 @@
     }
 
     function rolarSorte() {
-        personagem.sorte.fe = Math.floor(Math.random() * 0.5) + 1;
-        personagem.sorte.sorte = Math.floor(Math.random() * 0.4) + 1;
-        personagem.sorte.destino = Math.floor(Math.random() * 0.2) + 1;
+        personagem.sorte.fe = Math.floor(Math.random() * 3) + 1;
+        personagem.sorte.sorte = Math.floor(Math.random() * 4) + 1;
+        personagem.sorte.destino = Math.floor(Math.random() * 2) + 1;
         
         atualizarSorte();
         salvarDados();
