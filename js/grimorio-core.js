@@ -602,6 +602,153 @@ style.textContent = `
 document.head.appendChild(style);
 
 // ============================================================
+// 12. SISTEMA DE SORTE/DESTINO
+// ============================================================
+
+GrimorioSystem.calcularSorte = function() {
+    const personagem = this.carregarPersonagem();
+    
+    // Se já tiver dados de sorte, usar eles
+    if (personagem.dadosSorte) {
+        const dados = personagem.dadosSorte;
+        const indice = ((dados.fe + dados.destino) * 2 - dados.sorte) / 2;
+        return {
+            indice: indice,
+            percentual: Math.max(0, Math.min(100, indice * 5 + 50)),
+            dados: dados
+        };
+    }
+    
+    // Gerar dados aleatórios
+    const dadosSorte = {
+        fe: Math.floor(Math.random() * 10) + 1,
+        sorte: Math.floor(Math.random() * 10) + 1,
+        destino: Math.floor(Math.random() * 10) + 1
+    };
+    
+    personagem.dadosSorte = dadosSorte;
+    this.salvarPersonagem(personagem);
+    
+    const indice = ((dadosSorte.fe + dadosSorte.destino) * 2 - dadosSorte.sorte) / 2;
+    
+    return {
+        indice: indice,
+        percentual: Math.max(0, Math.min(100, indice * 5 + 50)),
+        dados: dadosSorte
+    };
+};
+
+// ============================================================
+// 13. SISTEMA DE EQUIPAMENTOS
+// ============================================================
+
+GrimorioSystem.equiparItem = function(tipo, itemNome, atributosBonus = {}) {
+    const personagem = this.carregarPersonagem();
+    
+    if (!personagem.equipamentos) {
+        personagem.equipamentos = {};
+    }
+    
+    personagem.equipamentos[tipo] = itemNome;
+    
+    // Aplicar bônus de atributos temporários (se houver)
+    if (Object.keys(atributosBonus).length > 0) {
+        if (!personagem.bonusEquipamentos) {
+            personagem.bonusEquipamentos = {};
+        }
+        personagem.bonusEquipamentos[tipo] = atributosBonus;
+    }
+    
+    this.salvarPersonagem(personagem);
+    console.log(`[Grimorio] Item equipado: ${itemNome} (${tipo})`);
+    return true;
+};
+
+GrimorioSystem.desequiparItem = function(tipo) {
+    const personagem = this.carregarPersonagem();
+    
+    if (personagem.equipamentos && personagem.equipamentos[tipo]) {
+        delete personagem.equipamentos[tipo];
+        
+        // Remover bônus
+        if (personagem.bonusEquipamentos && personagem.bonusEquipamentos[tipo]) {
+            delete personagem.bonusEquipamentos[tipo];
+        }
+        
+        this.salvarPersonagem(personagem);
+        console.log(`[Grimorio] Item desequipado: ${tipo}`);
+        return true;
+    }
+    
+    return false;
+};
+
+// ============================================================
+// 14. SISTEMA DE HABILIDADES
+// ============================================================
+
+GrimorioSystem.adicionarHabilidade = function(habilidade) {
+    const personagem = this.carregarPersonagem();
+    
+    if (!personagem.habilidades) {
+        personagem.habilidades = [];
+    }
+    
+    // Verificar se habilidade já existe
+    const existe = personagem.habilidades.find(h => h.id === habilidade.id);
+    if (!existe) {
+        personagem.habilidades.push({
+            id: habilidade.id || Date.now(),
+            nome: habilidade.nome,
+            descricao: habilidade.descricao,
+            nivel: habilidade.nivel || 1,
+            tipo: habilidade.tipo || 'Ativa',
+            custo: habilidade.custo || 0,
+            cooldown: habilidade.cooldown || 0,
+            dano: habilidade.dano || '1d6'
+        });
+        
+        this.salvarPersonagem(personagem);
+        console.log(`[Grimorio] Habilidade adicionada: ${habilidade.nome}`);
+        return true;
+    }
+    
+    return false;
+};
+
+GrimorioSystem.removerHabilidade = function(habilidadeId) {
+    const personagem = this.carregarPersonagem();
+    
+    if (personagem.habilidades) {
+        const index = personagem.habilidades.findIndex(h => h.id === habilidadeId);
+        if (index !== -1) {
+            personagem.habilidades.splice(index, 1);
+            this.salvarPersonagem(personagem);
+            console.log(`[Grimorio] Habilidade removida: ${habilidadeId}`);
+            return true;
+        }
+    }
+    
+    return false;
+};
+
+GrimorioSystem.subirNivelHabilidade = function(habilidadeId) {
+    const personagem = this.carregarPersonagem();
+    
+    if (personagem.habilidades) {
+        const habilidade = personagem.habilidades.find(h => h.id === habilidadeId);
+        if (habilidade) {
+            habilidade.nivel = (habilidade.nivel || 1) + 1;
+            this.salvarPersonagem(personagem);
+            console.log(`[Grimorio] Habilidade ${habilidade.nome} subiu para nível ${habilidade.nivel}`);
+            return habilidade.nivel;
+        }
+    }
+    
+    return false;
+};
+
+// ============================================================
 // INICIALIZAÇÃO AUTOMÁTICA DO SISTEMA
 // ============================================================
 document.addEventListener('DOMContentLoaded', function() {

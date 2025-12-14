@@ -713,307 +713,473 @@
         </div>
     </div>
 
+    <!-- ADICIONE ESTE SCRIPT NO <head> OU ANTES DO FECHAMENTO DO <body> -->
     <script>
-        // ====================================================================
-        // PERFIL.HTML - VERSÃO OTIMIZADA
-        // Sistema completo integrado com grimorio-core.js
-        // ====================================================================
-        
-        // 1. Inicializar ícones
-        if (window.lucide) {
-            lucide.createIcons();
-        }
-        
-        // 2. Carregar dados do sistema centralizado
-        function carregarPerfil() {
-            try {
-                console.log('Carregando perfil do GrimorioSystem...');
-                const personagem = GrimorioSystem.carregarPersonagem();
-                
-                if (!personagem) {
-                    mostrarErro('Nenhum personagem encontrado no Grimorio. Crie uma ficha primeiro.');
-                    return;
-                }
-                
-                console.log('Personagem carregado:', personagem.nome);
-                
-                // Verificar se é o personagem padrão
-                if (personagem.nome === 'Novo Aventureiro') {
-                    mostrarErro('Personagem não configurado. Preencha a ficha primeiro.');
-                    document.getElementById('warning-modal').classList.remove('hidden');
-                    return;
-                }
-                
-                // Atualizar interface com dados
-                atualizarInterface(personagem);
-                
-            } catch (error) {
-                console.error('Erro ao carregar perfil:', error);
-                mostrarErro('Erro ao carregar dados do personagem: ' + error.message);
-            }
-        }
+    // ====================================================================
+    // PERFIL.HTML - VERSÃO OTIMIZADA E COMPLETA
+    // Sistema completo integrado com grimorio-core.js
+    // ====================================================================
 
-        // Atualize a função atualizarInterface() para garantir que o avatar apareça:
-        function atualizarInterface(personagem) {
-            console.log('Atualizando interface com dados:', personagem);
+    // 1. Inicializar ícones
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+
+    // 2. Função principal para carregar todos os dados
+    function carregarPerfilCompleto() {
+        try {
+            console.log('Carregando perfil completo do GrimorioSystem...');
+            const personagem = GrimorioSystem.carregarPersonagem();
             
-            // Informações básicas - HEADER
-            document.getElementById('profile-title').textContent = personagem.nome || 'Personagem';
-            document.getElementById('profile-subtitle').textContent = personagem.titulo || 'Aventureiro';
-            document.getElementById('active-profile-name').textContent = personagem.nome || 'Personagem';
-            document.getElementById('profile-raca').textContent = personagem.raca || 'Não Definida';
-            document.getElementById('profile-classe').textContent = personagem.classe || 'Não Escolhida';
-            document.getElementById('profile-nivel').textContent = `Nível ${personagem.nivel || 1}`;
-            
-            // Avatar/Imagem - CORRIGIDO
-            const avatarDisplay = document.getElementById('avatar-display');
-            const avatarIcon = document.getElementById('avatar-icon');
-            
-            if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
-                console.log('Tentando carregar avatar:', personagem.avatar.substring(0, 50) + '...');
-                
-                // Usar try/catch para lidar com URLs inválidas
-                try {
-                    avatarDisplay.style.backgroundImage = `url('${personagem.avatar}')`;
-                    avatarDisplay.style.backgroundSize = 'cover';
-                    avatarDisplay.style.backgroundPosition = 'center';
-                    avatarIcon.style.display = 'none';
-                    
-                    console.log('Avatar carregado com sucesso');
-                } catch (error) {
-                    console.error('Erro ao aplicar avatar:', error);
-                    avatarDisplay.style.backgroundImage = '';
-                    avatarIcon.style.display = 'block';
-                }
-            } else {
-                console.log('Nenhum avatar definido');
-                avatarDisplay.style.backgroundImage = '';
-                avatarIcon.style.display = 'block';
-            }
-            
-            // Seção 1: Informações básicas
-            document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
-            document.getElementById('display-titulo').textContent = personagem.titulo || 'Aventureiro sem título';
-            document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
-            document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
-            document.getElementById('display-origem').textContent = personagem.origem || 'Não Definida';
-            document.getElementById('display-idade').textContent = personagem.idade || 'Não Informada';
-            
-            // Atributos
-            const attrs = personagem.atributos || {};
-            document.getElementById('display-forca').textContent = attrs.forca || 0;
-            document.getElementById('display-destreza').textContent = attrs.destreza || 0;
-            document.getElementById('display-constituicao').textContent = attrs.constituicao || 0;
-            document.getElementById('display-inteligencia').textContent = attrs.inteligencia || 0;
-            document.getElementById('display-sabedoria').textContent = attrs.sabedoria || 0;
-            document.getElementById('display-carisma').textContent = attrs.carisma || 0;
-            
-            // Calcular total
-            const totalAtributos = Object.values(attrs).reduce((sum, val) => sum + val, 0);
-            document.getElementById('total-atributos').textContent = totalAtributos;
-            
-            // Nível e XP
-            document.getElementById('display-nivel').textContent = personagem.nivel || 1;
-            document.getElementById('display-xp').textContent = 
-                `${personagem.experiencia || 0}/${personagem.experienciaProximoNivel || 1000}`;
-            document.getElementById('display-pontos').textContent = personagem.pontosDisponiveis || 0;
-            
-            const xpPercent = personagem.experienciaProximoNivel > 0 ? 
-                ((personagem.experiencia || 0) / personagem.experienciaProximoNivel) * 100 : 0;
-            document.getElementById('display-xp-bar').style.width = `${xpPercent}%`;
-            
-            // Recursos
-            const recursos = personagem.recursos || {};
-            document.getElementById('display-vida').textContent = 
-                `${recursos.vidaAtual || 0}/${recursos.vidaMaxima || 100}`;
-            document.getElementById('display-mana').textContent = 
-                `${recursos.manaAtual || 0}/${recursos.manaMaxima || 100}`;
-            document.getElementById('display-estamina').textContent = 
-                `${recursos.estaminaAtual || 0}/${recursos.estaminaMaxima || 100}`;
-            
-            // Bases dos recursos
-            document.getElementById('display-vida-base').textContent = recursos.vidaMaxima || 100;
-            document.getElementById('display-mana-base').textContent = recursos.manaMaxima || 100;
-            document.getElementById('display-estamina-base').textContent = recursos.estaminaMaxima || 100;
-            
-            // Barras de recursos
-            const vidaPercent = recursos.vidaMaxima > 0 ? ((recursos.vidaAtual || 0) / recursos.vidaMaxima) * 100 : 0;
-            const manaPercent = recursos.manaMaxima > 0 ? ((recursos.manaAtual || 0) / recursos.manaMaxima) * 100 : 0;
-            const estaminaPercent = recursos.estaminaMaxima > 0 ? ((recursos.estaminaAtual || 0) / recursos.estaminaMaxima) * 100 : 0;
-            
-            document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
-            document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
-            document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
-            
-            // Equipamentos
-            const equip = personagem.equipamentos || {};
-            document.getElementById('display-arma-principal').textContent = equip.armaPrincipal || 'Não equipado';
-            document.getElementById('display-armadura').textContent = equip.armadura || 'Não equipado';
-            document.getElementById('display-amuleto').textContent = equip.amuleto || 'Não equipado';
-            
-            // Habilidades
-            const habilidades = personagem.habilidades || [];
-            if (habilidades.length > 0) {
-                document.getElementById('display-habilidade1').textContent = habilidades[0].nome || 'Ataque Básico';
-                document.getElementById('display-desc-habilidade1').textContent = habilidades[0].descricao || 'Dano físico básico';
-                
-                if (habilidades.length > 1) {
-                    document.getElementById('display-habilidade2').textContent = habilidades[1].nome || 'Defesa';
-                    document.getElementById('display-desc-habilidade2').textContent = habilidades[1].descricao || 'Proteção básica';
-                }
-                
-                if (habilidades.length > 2) {
-                    document.getElementById('display-habilidade3').textContent = habilidades[2].nome || 'Habilidade de Classe';
-                    document.getElementById('display-desc-habilidade3').textContent = habilidades[2].descricao || 'Baseado na classe';
-                }
-            }
-            
-            // Mascote
-            if (personagem.mascote) {
-                document.getElementById('mascote-summary').innerHTML = `
-                    <div class="flex flex-col md:flex-row items-center gap-6 p-4 bg-[#1a1510]/50 rounded-lg border border-[#8b7355]">
-                        <div class="w-20 h-20 rounded-full border-2 border-[#d4a76a] overflow-hidden flex items-center justify-center">
-                            <i data-lucide="dog" class="w-10 h-10 text-[#d4a76a]"></i>
-                        </div>
-                        <div class="flex-grow text-center md:text-left">
-                            <h4 class="font-cinzel font-bold text-[#f4d29a] text-lg">${personagem.mascote.nome || 'Mascote'}</h4>
-                            <div class="flex flex-wrap gap-2 mt-2">
-                                <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">Nível ${personagem.mascote.nivel || 1}</span>
-                                <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">${personagem.mascote.tipo || 'Animal'}</span>
-                            </div>
-                            <p class="text-[#8b7355] text-sm mt-2">${personagem.mascote.descricao || 'Companheiro leal'}</p>
-                        </div>
-                    </div>
-                `;
-                if (window.lucide) lucide.createIcons();
-            }
-            
-            // Mostrar indicador ativo
-            document.getElementById('profile-active-indicator').classList.remove('hidden');
-            
-            console.log('Perfil atualizado com sucesso!');
-        }
-        
-        // 4. Funções de navegação
-        function goToFicha() {
-            window.location.href = 'ficha.html';
-        }
-        
-        function goToStatus() {
-            window.location.href = 'status.html';
-        }
-        
-        function goToIndex() {
-            window.location.href = 'index.html';
-        }
-        
-        // 5. Exportar perfil
-        function exportProfile() {
-            try {
-                const json = GrimorioSystem.exportarPersonagem();
-                const blob = new Blob([json], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `perfil_${new Date().getTime()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                GrimorioSystem.mostrarNotificacao('Perfil exportado com sucesso!', 'success');
-            } catch (error) {
-                console.error('Erro ao exportar:', error);
-                GrimorioSystem.mostrarNotificacao('Erro ao exportar perfil', 'error');
-            }
-        }
-        
-        // 6. Atualizar perfil
-        function refreshProfile() {
-            carregarPerfil();
-            GrimorioSystem.mostrarNotificacao('Perfil atualizado!', 'info');
-        }
-        
-        // 7. Mostrar erro
-        function mostrarErro(mensagem) {
-            document.getElementById('warning-message').textContent = mensagem;
-            document.getElementById('warning-modal').classList.remove('hidden');
-        }
-        
-        function hideWarning() {
-            document.getElementById('warning-modal').classList.add('hidden');
-        }
-        
-        // 8. Inicializar quando a página carregar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Verificar se o sistema centralizado está carregado
-            if (typeof GrimorioSystem === 'undefined') {
-                console.error('Sistema Grimório não carregado! Carregue grimorio-core.js primeiro.');
-                mostrarErro('Sistema não carregado. Recarregue a página.');
+            if (!personagem) {
+                mostrarErro('Nenhum personagem encontrado no Grimorio. Crie uma ficha primeiro.');
                 return;
             }
             
-            // Configurar botões de navegação
-            const navButtons = document.getElementById('nav-buttons');
-            if (navButtons) {
-                navButtons.innerHTML = `
-                    <button onclick="goToIndex()" class="nav-btn">
-                        <i data-lucide="home" class="w-4 h-4"></i> Início
-                    </button>
-                    <button onclick="goToFicha()" class="nav-btn bg-orange-500/20 text-orange-400">
-                        <i data-lucide="edit-3" class="w-4 h-4"></i> Editar Ficha
-                    </button>
-                    <button onclick="goToStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
-                        <i data-lucide="activity" class="w-4 h-4"></i> Status
-                    </button>
-                `;
-                if (window.lucide) lucide.createIcons();
+            console.log('Personagem carregado:', personagem.nome);
+            
+            // Verificar se é o personagem padrão
+            if (personagem.nome === 'Novo Aventureiro') {
+                mostrarErro('Personagem não configurado. Preencha a ficha primeiro.');
+                document.getElementById('warning-modal').classList.remove('hidden');
+                return;
             }
             
-            // Carregar perfil após breve delay
-            setTimeout(() => {
-                carregarPerfil();
-                // Atualizar a cada 2 segundos para sincronizar entre abas
-                setInterval(carregarPerfil, 2000);
-            }, 100);
+            // Atualizar interface com dados COMPLETOS
+            atualizarInterfaceCompleta(personagem);
             
-            // Ouvir eventos do sistema
-            window.addEventListener('grimorio:personagemAtualizado', carregarPerfil);
+            // Carregar dados da ficha complementares
+            carregarDadosComplementares();
             
-            console.log('Página de perfil inicializada com sucesso!');
+        } catch (error) {
+            console.error('Erro ao carregar perfil:', error);
+            mostrarErro('Erro ao carregar dados do personagem: ' + error.message);
+        }
+    }
+
+    // 3. Atualizar TODOS os dados da interface
+    function atualizarInterfaceCompleta(personagem) {
+        console.log('Atualizando interface completa com dados:', personagem);
+        
+        // =================== CABEÇALHO ===================
+        document.getElementById('profile-title').textContent = personagem.nome || 'Personagem';
+        document.getElementById('profile-subtitle').textContent = personagem.titulo || 'Aventureiro';
+        document.getElementById('active-profile-name').textContent = personagem.nome || 'Personagem';
+        document.getElementById('profile-raca').textContent = personagem.raca || 'Não Definida';
+        document.getElementById('profile-classe').textContent = personagem.classe || 'Não Escolhida';
+        document.getElementById('profile-nivel').textContent = `Nível ${personagem.nivel || 1}`;
+        
+        // Avatar/Imagem
+        const avatarDisplay = document.getElementById('avatar-display');
+        const avatarIcon = document.getElementById('avatar-icon');
+        
+        if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
+            avatarDisplay.style.backgroundImage = `url('${personagem.avatar}')`;
+            avatarDisplay.style.backgroundSize = 'cover';
+            avatarDisplay.style.backgroundPosition = 'center';
+            avatarIcon.style.display = 'none';
+        } else {
+            avatarDisplay.style.backgroundImage = '';
+            avatarIcon.style.display = 'block';
+        }
+        
+        // =================== SEÇÃO 1: INFORMAÇÕES BÁSICAS ===================
+        document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
+        document.getElementById('display-titulo').textContent = personagem.titulo || 'Aventureiro sem título';
+        document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
+        document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
+        document.getElementById('display-origem').textContent = personagem.origem || 'Não Definida';
+        document.getElementById('display-idade').textContent = personagem.idade || 'Não Informada';
+        
+        // =================== SEÇÃO 2: ATRIBUTOS ===================
+        const attrs = personagem.atributos || {};
+        document.getElementById('display-forca').textContent = attrs.forca || 0;
+        document.getElementById('display-destreza').textContent = attrs.destreza || 0;
+        document.getElementById('display-constituicao').textContent = attrs.constituicao || 0;
+        document.getElementById('display-inteligencia').textContent = attrs.inteligencia || 0;
+        document.getElementById('display-sabedoria').textContent = attrs.sabedoria || 0;
+        document.getElementById('display-carisma').textContent = attrs.carisma || 0;
+        
+        // Calcular total de atributos
+        const totalAtributos = Object.values(attrs).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
+        document.getElementById('total-atributos').textContent = totalAtributos;
+        
+        // =================== SEÇÃO 3: NÍVEL E PROGRESSÃO ===================
+        const nivel = parseInt(personagem.nivel) || 1;
+        const xpAtual = parseInt(personagem.experiencia) || 0;
+        const xpProximo = parseInt(personagem.experienciaProximoNivel) || 1000;
+        const pontos = parseInt(personagem.pontosDisponiveis) || 0;
+        
+        document.getElementById('display-nivel').textContent = nivel;
+        document.getElementById('display-xp').textContent = `${xpAtual}/${xpProximo}`;
+        document.getElementById('display-pontos').textContent = pontos;
+        document.getElementById('display-proximo-nivel').textContent = `${xpProximo - xpAtual} XP`;
+        
+        // Barra de XP
+        const xpPercent = xpProximo > 0 ? Math.min(100, (xpAtual / xpProximo) * 100) : 0;
+        document.getElementById('display-xp-bar').style.width = `${xpPercent}%`;
+        
+        // =================== SEÇÃO 4: RECURSOS VITAIS ===================
+        const recursos = personagem.recursos || {};
+        
+        // Vida (calculada automaticamente)
+        const vidaBase = Math.max(10, (attrs.constituicao || 0) * 5);
+        const vidaMax = recursos.vidaMaxima || vidaBase;
+        const vidaAtual = recursos.vidaAtual || vidaMax;
+        
+        document.getElementById('display-vida-base').textContent = vidaBase;
+        document.getElementById('display-vida').textContent = `${vidaAtual}/${vidaMax}`;
+        document.getElementById('display-vida-bar').style.width = `${(vidaAtual / vidaMax) * 100}%`;
+        
+        // Mana (calculada automaticamente)
+        const manaBase = (attrs.inteligencia || 0) * 2;
+        const manaMax = recursos.manaMaxima || manaBase;
+        const manaAtual = recursos.manaAtual || manaMax;
+        
+        document.getElementById('display-mana-base').textContent = manaBase;
+        document.getElementById('display-mana').textContent = `${manaAtual}/${manaMax}`;
+        document.getElementById('display-mana-bar').style.width = `${(manaAtual / manaMax) * 100}%`;
+        
+        // Estamina (calculada automaticamente)
+        const estaminaBase = Math.max(20, ((attrs.constituicao || 0) + (attrs.destreza || 0)) * 2);
+        const estaminaMax = recursos.estaminaMaxima || estaminaBase;
+        const estaminaAtual = recursos.estaminaAtual || estaminaMax;
+        
+        document.getElementById('display-estamina-base').textContent = estaminaBase;
+        document.getElementById('display-estamina').textContent = `${estaminaAtual}/${estaminaMax}`;
+        document.getElementById('display-estamina-bar').style.width = `${(estaminaAtual / estaminaMax) * 100}%`;
+        
+        // =================== SEÇÃO 5: DESTINO E SORTE ===================
+        const dadosSorte = personagem.dadosSorte || {};
+        const dado1 = dadosSorte.fe || Math.floor(Math.random() * 10) + 1;
+        const dado2 = dadosSorte.sorte || Math.floor(Math.random() * 10) + 1;
+        const dado3 = dadosSorte.destino || Math.floor(Math.random() * 10) + 1;
+        
+        // Fórmula de sorte: ((Fé + Destino) × 2 - Sorte) ÷ 2
+        const indiceSorte = ((dado1 + dado3) * 2 - dado2) / 2;
+        const sortePercent = Math.max(0, Math.min(100, indiceSorte * 5 + 50)); // Normaliza para 0-100%
+        
+        document.getElementById('display-dado1').textContent = dado1;
+        document.getElementById('display-dado2').textContent = dado2;
+        document.getElementById('display-dado3').textContent = dado3;
+        document.getElementById('display-sorte').textContent = `${Math.round(sortePercent)}%`;
+        document.getElementById('display-sorte-bar').style.width = `${sortePercent}%`;
+        
+        // Status baseado na sorte
+        let statusSorte = 'Neutro';
+        if (sortePercent > 70) statusSorte = 'Sorte Excelente';
+        else if (sortePercent > 55) statusSorte = 'Sortudo';
+        else if (sortePercent < 30) statusSorte = 'Azarado';
+        else if (sortePercent < 45) statusSorte = 'Muito Azarado';
+        
+        document.getElementById('destiny-status').textContent = statusSorte;
+        document.getElementById('destiny-formula-display').textContent = 
+            `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${indiceSorte.toFixed(1)}`;
+        
+        // =================== SEÇÃO 6: EQUIPAMENTOS E HABILIDADES ===================
+        const equipamentos = personagem.equipamentos || {};
+        document.getElementById('display-arma-principal').textContent = equipamentos.armaPrincipal || 'Não equipado';
+        document.getElementById('display-armadura').textContent = equipamentos.armadura || 'Não equipado';
+        document.getElementById('display-amuleto').textContent = equipamentos.amuleto || 'Não equipado';
+        
+        // Habilidades
+        const habilidades = personagem.habilidades || [];
+        if (habilidades.length > 0) {
+            document.getElementById('display-habilidade1').textContent = habilidades[0].nome || 'Ataque Básico';
+            document.getElementById('display-desc-habilidade1').textContent = habilidades[0].descricao || 'Dano físico básico';
+            
+            if (habilidades.length > 1) {
+                document.getElementById('display-habilidade2').textContent = habilidades[1].nome || 'Defesa';
+                document.getElementById('display-desc-habilidade2').textContent = habilidades[1].descricao || 'Proteção básica';
+            } else {
+                document.getElementById('display-habilidade2').textContent = 'Defesa';
+                document.getElementById('display-desc-habilidade2').textContent = 'Proteção básica';
+            }
+            
+            if (habilidades.length > 2) {
+                document.getElementById('display-habilidade3').textContent = habilidades[2].nome || 'Habilidade de Classe';
+                document.getElementById('display-desc-habilidade3').textContent = habilidades[2].descricao || 'Baseado na classe';
+            } else {
+                document.getElementById('display-habilidade3').textContent = 'Habilidade de Classe';
+                document.getElementById('display-desc-habilidade3').textContent = 'Baseado na classe';
+            }
+        } else {
+            // Habilidades padrão
+            document.getElementById('display-habilidade1').textContent = 'Ataque Básico';
+            document.getElementById('display-desc-habilidade1').textContent = 'Dano físico básico';
+            document.getElementById('display-habilidade2').textContent = 'Defesa';
+            document.getElementById('display-desc-habilidade2').textContent = 'Proteção básica';
+            document.getElementById('display-habilidade3').textContent = 'Habilidade de Classe';
+            document.getElementById('display-desc-habilidade3').textContent = 'Baseado na classe';
+        }
+        
+        // =================== SEÇÃO 7: ESTATÍSTICAS AVANÇADAS ===================
+        const atributos = personagem.atributos || {};
+        
+        // Blindagem (baseada em Constituição e equipamento)
+        const blindagem = Math.floor((atributos.constituicao || 0) * 1.5) + (equipamentos.armadura ? 5 : 0);
+        document.getElementById('display-blindagem').textContent = blindagem;
+        
+        // Velocidade (baseada em Destreza)
+        const velocidade = Math.floor((atributos.destreza || 0) * 2) + 30;
+        document.getElementById('display-velocidade').textContent = velocidade;
+        
+        // Iniciativa (baseada em Destreza e Sabedoria)
+        const iniciativa = Math.floor((atributos.destreza || 0) + (atributos.sabedoria || 0) / 2);
+        document.getElementById('display-iniciativa').textContent = iniciativa;
+        
+        // Percepção (baseada em Sabedoria)
+        const percepcao = Math.floor((atributos.sabedoria || 0) * 3);
+        document.getElementById('display-percepcao').textContent = percepcao;
+        
+        // =================== SEÇÃO 8: MASCOTE ===================
+        atualizarMascote(personagem.mascote);
+        
+        // Mostrar indicador ativo
+        document.getElementById('profile-active-indicator').classList.remove('hidden');
+        
+        console.log('Perfil atualizado completamente!');
+    }
+
+    // 4. Carregar dados complementares da ficha
+    function carregarDadosComplementares() {
+        try {
+            // Carregar dados da ficha completa do localStorage
+            const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
+            
+            if (fichaCompleta) {
+                const dadosFicha = JSON.parse(fichaCompleta);
+                
+                // Se houver dados de sorte na ficha, salvar no personagem
+                if (dadosFicha.sorte || dadosFicha.dadosSorte) {
+                    const personagem = GrimorioSystem.carregarPersonagem();
+                    personagem.dadosSorte = dadosFicha.dadosSorte || {
+                        fe: dadosFicha.sorte?.dado1 || 5,
+                        sorte: dadosFicha.sorte?.dado2 || 5,
+                        destino: dadosFicha.sorte?.dado3 || 5
+                    };
+                    GrimorioSystem.salvarPersonagem(personagem);
+                }
+                
+                // Se houver equipamentos na ficha, atualizar
+                if (dadosFicha.equipamentos) {
+                    const personagem = GrimorioSystem.carregarPersonagem();
+                    personagem.equipamentos = {
+                        ...personagem.equipamentos,
+                        ...dadosFicha.equipamentos
+                    };
+                    GrimorioSystem.salvarPersonagem(personagem);
+                }
+                
+                // Se houver habilidades na ficha, atualizar
+                if (dadosFicha.habilidades && Array.isArray(dadosFicha.habilidades)) {
+                    const personagem = GrimorioSystem.carregarPersonagem();
+                    personagem.habilidades = dadosFicha.habilidades;
+                    GrimorioSystem.salvarPersonagem(personagem);
+                }
+                
+                console.log('Dados complementares carregados da ficha');
+            }
+        } catch (error) {
+            console.error('Erro ao carregar dados complementares:', error);
+        }
+    }
+
+    // 5. Atualizar seção do mascote
+    function atualizarMascote(dadosMascote) {
+        const mascoteContainer = document.getElementById('mascote-summary');
+        
+        if (dadosMascote && dadosMascote.nome) {
+            mascoteContainer.innerHTML = `
+                <div class="flex flex-col md:flex-row items-center gap-6 p-4 bg-[#1a1510]/50 rounded-lg border border-[#8b7355]">
+                    <div class="w-20 h-20 rounded-full border-2 border-[#d4a76a] overflow-hidden flex items-center justify-center">
+                        ${dadosMascote.avatar ? 
+                            `<img src="${dadosMascote.avatar}" alt="${dadosMascote.nome}" class="w-full h-full object-cover">` :
+                            `<i data-lucide="dog" class="w-10 h-10 text-[#d4a76a]"></i>`
+                        }
+                    </div>
+                    <div class="flex-grow text-center md:text-left">
+                        <h4 class="font-cinzel font-bold text-[#f4d29a] text-lg">${dadosMascote.nome}</h4>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">Nível ${dadosMascote.nivel || 1}</span>
+                            <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">${dadosMascote.tipo || 'Animal'}</span>
+                            <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">${dadosMascote.raridade || 'Comum'}</span>
+                        </div>
+                        <p class="text-[#8b7355] text-sm mt-2">${dadosMascote.descricao || 'Companheiro leal'}</p>
+                        <div class="mt-3 grid grid-cols-2 gap-2">
+                            <div class="text-center">
+                                <div class="text-[#f4d29a] font-bold">${dadosMascote.saude || 10}/${dadosMascote.saudeMax || 10}</div>
+                                <div class="text-xs text-[#8b7355]">Saúde</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-[#f4d29a] font-bold">${dadosMascote.energia || 10}</div>
+                                <div class="text-xs text-[#8b7355]">Energia</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            if (window.lucide) lucide.createIcons();
+        } else {
+            mascoteContainer.innerHTML = `
+                <div class="text-center py-8 text-[#8b7355]">
+                    <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
+                    <p>Nenhum mascote vinculado</p>
+                    <p class="text-sm mt-2">Crie um mascote para acompanhar seu personagem</p>
+                    <button onclick="window.location.href='mascote.html'" 
+                        class="mt-4 px-4 py-2 bg-[#8b7355] hover:bg-[#a38b6d] text-white rounded-lg transition-colors">
+                        Criar Mascote
+                    </button>
+                </div>
+            `;
+            
+            if (window.lucide) lucide.createIcons();
+        }
+    }
+
+    // 6. Funções de navegação
+    function goToFicha() {
+        window.location.href = 'ficha.html';
+    }
+
+    function goToStatus() {
+        window.location.href = 'status.html';
+    }
+
+    function goToIndex() {
+        window.location.href = 'index.html';
+    }
+
+    // 7. Exportar perfil
+    function exportProfile() {
+        try {
+            const personagem = GrimorioSystem.carregarPersonagem();
+            const dadosExportacao = {
+                personagem: personagem,
+                sistema: 'Grimório Digital - Perfil Completo',
+                exportadoEm: new Date().toISOString(),
+                versao: '2.1'
+            };
+            
+            const json = JSON.stringify(dadosExportacao, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `perfil_${personagem.nome}_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            GrimorioSystem.mostrarNotificacao('Perfil exportado com sucesso!', 'success');
+        } catch (error) {
+            console.error('Erro ao exportar:', error);
+            GrimorioSystem.mostrarNotificacao('Erro ao exportar perfil', 'error');
+        }
+    }
+
+    // 8. Atualizar perfil
+    function refreshProfile() {
+        carregarPerfilCompleto();
+        GrimorioSystem.mostrarNotificacao('Perfil atualizado!', 'info');
+    }
+
+    // 9. Mostrar erro
+    function mostrarErro(mensagem) {
+        document.getElementById('warning-message').textContent = mensagem;
+        document.getElementById('warning-modal').classList.remove('hidden');
+    }
+
+    function hideWarning() {
+        document.getElementById('warning-modal').classList.add('hidden');
+    }
+
+    // 10. Inicializar quando a página carregar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Verificar se o sistema centralizado está carregado
+        if (typeof GrimorioSystem === 'undefined') {
+            console.error('Sistema Grimório não carregado! Carregue grimorio-core.js primeiro.');
+            mostrarErro('Sistema não carregado. Recarregue a página.');
+            return;
+        }
+        
+        // Configurar botões de navegação
+        const navButtons = document.getElementById('nav-buttons');
+        if (navButtons) {
+            navButtons.innerHTML = `
+                <button onclick="goToIndex()" class="nav-btn">
+                    <i data-lucide="home" class="w-4 h-4"></i> Início
+                </button>
+                <button onclick="goToFicha()" class="nav-btn bg-orange-500/20 text-orange-400">
+                    <i data-lucide="edit-3" class="w-4 h-4"></i> Editar Ficha
+                </button>
+                <button onclick="goToStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
+                    <i data-lucide="activity" class="w-4 h-4"></i> Status
+                </button>
+            `;
+            if (window.lucide) lucide.createIcons();
+        }
+        
+        // Carregar perfil completo após breve delay
+        setTimeout(() => {
+            carregarPerfilCompleto();
+            
+            // Atualizar a cada 3 segundos para sincronizar entre abas
+            setInterval(carregarPerfilCompleto, 3000);
+        }, 100);
+        
+        // Ouvir eventos do sistema
+        window.addEventListener('grimorio:personagemAtualizado', carregarPerfilCompleto);
+        
+        // Ouvir eventos de atualização de dados
+        window.addEventListener('grimorio:dadosAtualizados', function(event) {
+            console.log('Dados atualizados recebidos:', event);
+            carregarPerfilCompleto();
         });
         
-        // 9. Estilo para botões de navegação
-        const estiloNav = document.createElement('style');
-        estiloNav.textContent = `
-            .nav-btn {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.5rem 1rem;
-                border: 1px solid #2a2a2e;
-                border-radius: 0.5rem;
-                background: #0f0f12;
-                color: #e8e4dc;
-                font-size: 0.875rem;
-                cursor: pointer;
-                transition: all 0.2s;
-            }
-            .nav-btn:hover {
-                background: #1a1a1e;
-                border-color: #4a9eff;
-                transform: translateY(-1px);
-            }
-            
-            /* Animações suaves para todos os elementos */
-            .animate-fade-in-up {
-                opacity: 0;
-                transform: translateY(20px);
-                animation: fadeInUp 0.6s ease-out forwards;
-            }
-        `;
-        document.head.appendChild(estiloNav);
+        console.log('Página de perfil inicializada com sucesso!');
+    });
+
+    // 11. Estilo para botões de navegação
+    const estiloNav = document.createElement('style');
+    estiloNav.textContent = `
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid #2a2a2e;
+            border-radius: 0.5rem;
+            background: #0f0f12;
+            color: #e8e4dc;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background: #1a1a1e;
+            border-color: #4a9eff;
+            transform: translateY(-1px);
+        }
+        
+        /* Animações suaves para todos os elementos */
+        .animate-fade-in-up {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        /* Ajuste para o mascote */
+        #mascote-summary .animate-fade-in-up {
+            opacity: 1;
+            transform: none;
+            animation: none;
+        }
+    `;
+    document.head.appendChild(estiloNav);
     </script>
 </body>
 </html>
