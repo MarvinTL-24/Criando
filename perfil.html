@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Sistema Grimório -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
@@ -67,48 +66,27 @@
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Remove arrows from number inputs */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
             -webkit-appearance: none; 
             margin: 0; 
         }
         
-        /* Scrollbar customizada */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
 
-        /* Classes de animação */
         .anim-delay-0 { animation-delay: 0s; }
         .anim-delay-1 { animation-delay: 0.1s; }
         .anim-delay-2 { animation-delay: 0.2s; }
         .anim-delay-3 { animation-delay: 0.3s; }
         .anim-delay-4 { animation-delay: 0.4s; }
 
-        /* Barras de status */
         .stat-bar-fill { 
             transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
         }
         
-        /* Cores para seções */
-        .section-vital { border-left-color: #dc2626; }
-        .section-vital h3 { color: #dc2626; }
-        
-        .section-attributes { border-left-color: #4a9eff; }
-        .section-attributes h3 { color: #4a9eff; }
-        
-        .section-progression { border-left-color: #ff6b35; }
-        .section-progression h3 { color: #ff6b35; }
-        
-        .section-destiny { border-left-color: #8b5cf6; }
-        .section-destiny h3 { color: #8b5cf6; }
-        
-        .section-summary { border-left-color: #22c55e; }
-        .section-summary h3 { color: #22c55e; }
-
-        /* Card de personagem */
         .character-card {
             background: linear-gradient(145deg, #1a1510, #2a2318);
             border: 2px solid #8b7355;
@@ -120,7 +98,6 @@
             box-shadow: 0 8px 32px rgba(139, 115, 85, 0.2);
         }
 
-        /* Tema de sorte/destino */
         .bg-destiny-1 { background-color: #1a1510; }
         .bg-destiny-2 { background-color: #2a2318; }
         .border-destiny { border-color: #8b7355; }
@@ -128,7 +105,6 @@
         .text-destiny-light { color: #f4d29a; }
         .text-destiny-dark { color: #8b7355; }
 
-        /* Indicador de perfil ativo */
         .profile-active-indicator {
             position: absolute;
             top: 10px;
@@ -141,7 +117,6 @@
             animation: pulse 2s infinite;
         }
 
-        /* Badge de nível */
         .level-badge {
             background: linear-gradient(45deg, #8b7355, #d4a76a);
             color: white;
@@ -150,7 +125,6 @@
             box-shadow: 0 4px 12px rgba(212, 167, 106, 0.2);
         }
 
-        /* Avatar/Imagem */
         .avatar-container {
             background: linear-gradient(135deg, #2a2a2e 0%, #1a1a1e 100%);
             border: 2px solid #8b7355;
@@ -161,12 +135,56 @@
             border-color: #d4a76a;
             transform: scale(1.02);
         }
+
+        .item-slot {
+            background: #0a0a0c;
+            border: 2px dashed #2a2a2e;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-height: 150px;
+        }
+        
+        .item-slot:hover {
+            border-color: #4a9eff;
+            background: #0f0f12;
+        }
+        
+        .item-slot.filled {
+            border-style: solid;
+            border-color: #8b7355;
+        }
+        
+        .quick-item {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #2a2a2e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0a0a0c;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .quick-item:hover {
+            border-color: #d4a76a;
+            transform: scale(1.05);
+        }
+        
+        .quick-item img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-20">
 
     <!-- Navbar -->
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8" data-html2pdf-ignore="true">
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
         <div class="max-w-7xl mx-auto px-4 flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
                 <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors flex items-center gap-2">
@@ -178,15 +196,23 @@
             </div>
             
             <div class="flex items-center gap-3" id="nav-buttons">
-                <!-- Botões serão inseridos dinamicamente -->
+                <button onclick="goToStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
+                    <i data-lucide="activity" class="w-4 h-4"></i> Status
+                </button>
+                <button onclick="goToEquipamentos()" class="nav-btn bg-green-500/20 text-green-400">
+                    <i data-lucide="sword" class="w-4 h-4"></i> Equipamentos
+                </button>
+                <button onclick="goToHabilidades()" class="nav-btn bg-purple-500/20 text-purple-400">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Habilidades
+                </button>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6" id="profile-content">
+    <div class="max-w-7xl mx-auto px-4 space-y-6" id="profile-content">
 
-        <!-- Cabeçalho do Perfil com Avatar -->
+        <!-- Cabeçalho do Perfil -->
         <header class="flex flex-col md:flex-row items-start md:items-center justify-between mb-8 animate-fade-in-up">
             <div class="flex items-center gap-6 w-full md:w-auto">
                 <!-- Avatar/Imagem -->
@@ -195,196 +221,35 @@
                 </div>
                 
                 <div class="flex-grow">
-                    <h1 class="text-3xl font-cinzel font-bold text-white" id="profile-title">Carregando Perfil...</h1>
-                    <p class="text-gray-400" id="profile-subtitle">Status, Atributos e Progressão</p>
-                    
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span id="profile-raca" class="px-3 py-1 bg-theme-blue/10 text-theme-blue text-xs rounded-full border border-theme-border"></span>
-                        <span id="profile-classe" class="px-3 py-1 bg-theme-orange/10 text-theme-orange text-xs rounded-full border border-theme-border"></span>
-                        <span id="profile-nivel" class="px-3 py-1 bg-theme-gold/10 text-theme-gold text-xs rounded-full border border-theme-border">Nível 1</span>
-                    </div>
+                    <h1 class="text-3xl font-cinzel font-bold text-white" id="profile-title">Perfil do Personagem</h1>
+                    <p class="text-gray-400" id="profile-subtitle">Status, Equipamentos e Habilidades</p>
                 </div>
             </div>
             
             <div class="relative mt-4 md:mt-0">
                 <div class="text-right">
-                    <span class="text-xs uppercase text-gray-500">Perfil Ativo</span>
-                    <div id="active-profile-name" class="font-cinzel font-bold text-theme-gold">Carregando...</div>
+                    <span class="text-xs uppercase text-gray-500">Última Atualização</span>
+                    <div id="last-update" class="font-cinzel font-bold text-theme-gold">Carregando...</div>
                 </div>
                 <div id="profile-active-indicator" class="profile-active-indicator hidden"></div>
             </div>
         </header>
 
-        <!-- Seção 1: Card de Resumo do Personagem -->
-        <section class="character-card p-6 rounded-xl animate-fade-in-up anim-delay-0 relative">
-            <div class="grid md:grid-cols-3 gap-6">
-                <!-- Informações Básicas -->
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-3 mb-6">
-                        <div class="p-2 rounded-lg bg-theme-gold/10 border border-theme-gold/20">
-                            <i data-lucide="user-circle" class="w-5 h-5 text-theme-gold"></i>
-                        </div>
-                        <h3 class="font-cinzel text-xl font-bold text-theme-gold">Informações do Personagem</h3>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Nome do Personagem</label>
-                            <div class="text-2xl font-cinzel font-bold text-white" id="display-nome">-</div>
-                            <div class="text-sm text-gray-400 mt-1" id="display-titulo">-</div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Raça</label>
-                                <div class="text-lg font-bold text-white" id="display-raca">-</div>
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Classe</label>
-                                <div class="text-lg font-bold text-theme-orange" id="display-classe">-</div>
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Origem</label>
-                                <div class="text-lg font-bold text-white" id="display-origem">-</div>
-                            </div>
-                            <div>
-                                <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2 font-cinzel">Idade</label>
-                                <div class="text-lg font-bold text-white" id="display-idade">-</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Nível e Progressão -->
-                <div class="bg-destiny-1 border border-destiny rounded-lg p-5">
-                    <div class="flex items-center gap-2 mb-4">
-                        <i data-lucide="crown" class="w-5 h-5 text-theme-gold"></i>
-                        <h4 class="font-cinzel font-bold text-theme-gold">Progressão</h4>
-                    </div>
-                    
-                    <div class="text-center mb-4">
-                        <div class="level-badge text-4xl font-bold w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <span id="display-nivel">1</span>
-                        </div>
-                        <div class="text-sm text-gray-400">Nível</div>
-                    </div>
-                    
-                    <div class="space-y-3">
-                        <div>
-                            <div class="flex justify-between text-sm mb-2">
-                                <span class="text-gray-400">XP Acumulado</span>
-                                <span class="font-mono text-theme-orange" id="display-xp">0/1000</span>
-                            </div>
-                            <div class="h-2 bg-destiny-2 rounded-full overflow-hidden">
-                                <div id="display-xp-bar" class="h-full bg-gradient-to-r from-theme-orange to-orange-400 stat-bar-fill" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="pt-3 border-t border-destiny/20">
-                            <div class="flex justify-between items-center">
-                                <div class="text-sm text-gray-400">Próximo Nível</div>
-                                <div class="font-mono text-lg text-white" id="display-proximo-nivel">-</div>
-                            </div>
-                            <div class="text-xs text-gray-500 mt-1">Pontos Disponíveis: <span id="display-pontos" class="text-theme-green font-bold">0</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção 2: Atributos Base -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-1 relative overflow-hidden section-attributes">
-            <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue"></div>
-            
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
-                        <i data-lucide="activity" class="w-4 h-4 text-theme-blue"></i>
-                    </div>
-                    <h3 class="font-cinzel text-lg font-semibold text-white">Atributos Base</h3>
-                </div>
-                <div class="text-sm text-gray-500 font-mono">
-                    Total: <span id="total-atributos" class="text-theme-blue font-bold text-lg">0</span> pontos
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <!-- Força -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-red/50 transition-all duration-300 group">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-red/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i data-lucide="sword" class="w-5 h-5 text-theme-red"></i>
-                    </div>
-                    <label class="text-xs uppercase text-gray-500 font-cinzel">Força</label>
-                    <div class="text-2xl font-bold font-mono text-theme-red mt-2" id="display-forca">0</div>
-                    <div class="text-xs text-gray-500 mt-1">Físico, Dano</div>
-                </div>
-
-                <!-- Destreza -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-green/50 transition-all duration-300 group">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-green/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i data-lucide="wind" class="w-5 h-5 text-theme-green"></i>
-                    </div>
-                    <label class="text-xs uppercase text-gray-500 font-cinzel">Destreza</label>
-                    <div class="text-2xl font-bold font-mono text-theme-green mt-2" id="display-destreza">0</div>
-                    <div class="text-xs text-gray-500 mt-1">Agilidade, Precisão</div>
-                </div>
-
-                <!-- Constituição -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-yellow/50 transition-all duration-300 group">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-yellow/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i data-lucide="shield" class="w-5 h-5 text-theme-yellow"></i>
-                    </div>
-                    <label class="text-xs uppercase text-gray-500 font-cinzel">Constituição</label>
-                    <div class="text-2xl font-bold font-mono text-theme-yellow mt-2" id="display-constituicao">0</div>
-                    <div class="text-xs text-gray-500 mt-1">Vida, Resistência</div>
-                </div>
-
-                <!-- Inteligência -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-blue/50 transition-all duration-300 group">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-blue/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i data-lucide="brain" class="w-5 h-5 text-theme-blue"></i>
-                    </div>
-                    <label class="text-xs uppercase text-gray-500 font-cinzel">Inteligência</label>
-                    <div class="text-2xl font-bold font-mono text-theme-blue mt-2" id="display-inteligencia">0</div>
-                    <div class="text-xs text-gray-500 mt-1">Mana, Conhecimento</div>
-                </div>
-
-                <!-- Sabedoria -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-purple/50 transition-all duration-300 group">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-purple/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i data-lucide="eye" class="w-5 h-5 text-theme-purple"></i>
-                    </div>
-                    <label class="text-xs uppercase text-gray-500 font-cinzel">Sabedoria</label>
-                    <div class="text-2xl font-bold font-mono text-theme-purple mt-2" id="display-sabedoria">0</div>
-                    <div class="text-xs text-gray-500 mt-1">Percepção, Intuição</div>
-                </div>
-
-                <!-- Carisma -->
-                <div class="bg-[#0a0a0c] border border-theme-border p-4 text-center rounded-lg hover:border-theme-pink/50 transition-all duration-300 group">
-                    <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-theme-pink/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <i data-lucide="sparkles" class="w-5 h-5 text-theme-pink"></i>
-                    </div>
-                    <label class="text-xs uppercase text-gray-500 font-cinzel">Carisma</label>
-                    <div class="text-2xl font-bold font-mono text-theme-pink mt-2" id="display-carisma">0</div>
-                    <div class="text-xs text-gray-500 mt-1">Persuasão, Liderança</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção 3: Recursos Vitais -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-2 relative overflow-hidden section-vital">
-            <div class="absolute top-0 left-0 w-1 h-full bg-theme-red"></div>
-            
+        <!-- Seção 1: Status Principal (Preenchido pelo status.html) -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-0">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 rounded-lg bg-theme-red/10 border border-theme-red/20">
-                    <i data-lucide="heart" class="w-4 h-4 text-theme-red"></i>
+                    <i data-lucide="activity" class="w-4 h-4 text-theme-red"></i>
                 </div>
-                <h3 class="font-cinzel text-lg font-semibold text-white">Recursos Vitais</h3>
+                <h3 class="font-cinzel text-lg font-semibold text-white">Status Principal</h3>
+                <button onclick="goToStatus()" class="ml-auto text-sm text-theme-blue hover:underline">
+                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Editar Status
+                </button>
             </div>
 
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <!-- Vida -->
-                <div class="resource-group bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2 rounded-full bg-theme-red/10">
@@ -392,7 +257,6 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-red">Vida</span>
-                                <div class="text-xs text-gray-500">Base: <span id="display-vida-base" class="text-white">10</span></div>
                             </div>
                         </div>
                         <span class="font-mono text-xl font-bold text-white" id="display-vida">0/0</span>
@@ -400,11 +264,10 @@
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-vida-bar" class="h-full bg-gradient-to-r from-red-600 to-red-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">Fórmula: Constituição × 5</div>
                 </div>
 
                 <!-- Mana -->
-                <div class="resource-group bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2 rounded-full bg-theme-blue/10">
@@ -412,7 +275,6 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-blue">Mana</span>
-                                <div class="text-xs text-gray-500">Base: <span id="display-mana-base" class="text-white">0</span></div>
                             </div>
                         </div>
                         <span class="font-mono text-xl font-bold text-white" id="display-mana">0/0</span>
@@ -420,11 +282,10 @@
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-mana-bar" class="h-full bg-gradient-to-r from-blue-600 to-blue-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">Fórmula: Inteligência × 2</div>
                 </div>
 
                 <!-- Estamina -->
-                <div class="resource-group bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
+                <div class="bg-[#0a0a0c] border border-theme-border p-5 rounded-lg">
                     <div class="flex justify-between items-center mb-4">
                         <div class="flex items-center gap-3">
                             <div class="p-2 rounded-full bg-theme-green/10">
@@ -432,7 +293,6 @@
                             </div>
                             <div>
                                 <span class="text-sm font-medium text-theme-green">Estamina</span>
-                                <div class="text-xs text-gray-500">Base: <span id="display-estamina-base" class="text-white">20</span></div>
                             </div>
                         </div>
                         <span class="font-mono text-xl font-bold text-white" id="display-estamina">0/0</span>
@@ -440,21 +300,46 @@
                     <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden mb-2">
                         <div id="display-estamina-bar" class="h-full bg-gradient-to-r from-green-600 to-green-400 stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    <div class="text-xs text-gray-500 mt-2">Fórmula: (Const + Dex) × 2</div>
+                </div>
+            </div>
+
+            <!-- Atributos -->
+            <div class="grid grid-cols-2 md:grid-cols-6 gap-4 mt-6">
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-red" id="display-forca">0</div>
+                    <div class="text-xs text-gray-500">Força</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-green" id="display-destreza">0</div>
+                    <div class="text-xs text-gray-500">Destreza</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-yellow" id="display-constituicao">0</div>
+                    <div class="text-xs text-gray-500">Constituição</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-blue" id="display-inteligencia">0</div>
+                    <div class="text-xs text-gray-500">Inteligência</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-purple" id="display-sabedoria">0</div>
+                    <div class="text-xs text-gray-500">Sabedoria</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-lg font-bold text-theme-pink" id="display-carisma">0</div>
+                    <div class="text-xs text-gray-500">Carisma</div>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 4: Destino e Sorte (Opcional - pode remover se não usar) -->
-        <section class="bg-destiny-1 border border-destiny p-6 rounded-lg animate-fade-in-up anim-delay-3 relative overflow-hidden section-destiny">
-            <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-theme-purple via-theme-pink to-theme-gold"></div>
-            
+        <!-- Seção 2: Sorte e Destino (Preenchido pelo status.html) -->
+        <section class="bg-destiny-1 border border-destiny p-6 rounded-lg animate-fade-in-up anim-delay-1">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
                     <div class="p-2 rounded-lg bg-theme-purple/10 border border-theme-purple/20">
                         <i data-lucide="clover" class="w-4 h-4 text-theme-purple"></i>
                     </div>
-                    <h3 class="font-cinzel text-lg font-semibold text-destiny-light">Destino & Sorte</h3>
+                    <h3 class="font-cinzel text-lg font-semibold text-destiny-light">Sorte & Destino</h3>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-destiny-dark">Status:</span>
@@ -463,32 +348,21 @@
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
-                <!-- Card de Destino -->
+                <!-- Índice de Sorte -->
                 <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-theme-purple to-theme-pink flex items-center justify-center shadow-lg">
                         <i data-lucide="sparkles" class="w-8 h-8 text-white"></i>
                     </div>
-                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-2">Índice de Destino</h4>
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-2">Índice de Sorte</h4>
                     <div class="text-5xl font-bold font-mono text-destiny-gold mb-2" id="display-sorte">--</div>
-                    <div class="text-sm text-destiny-dark mb-4">porcentagem</div>
-                    
                     <div class="h-2 bg-destiny-1 rounded-full overflow-hidden mb-3">
                         <div id="display-sorte-bar" class="h-full bg-gradient-to-r from-theme-purple to-theme-pink stat-bar-fill" style="width: 0%"></div>
                     </div>
-                    
-                    <div class="flex justify-between text-xs text-destiny-dark">
-                        <span>Azar</span>
-                        <span>Neutro</span>
-                        <span>Sorte</span>
-                    </div>
                 </div>
 
-                <!-- Dados de Destino -->
+                <!-- Dados Fixos -->
                 <div class="bg-destiny-2 border border-destiny/50 p-6 rounded-xl">
-                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4 flex items-center gap-2">
-                        <i data-lucide="dice-5" class="w-4 h-4"></i> Dados do Destino
-                    </h4>
-                    
+                    <h4 class="font-cinzel font-bold text-destiny-light text-lg mb-4">Dados Fixos</h4>
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="text-center">
                             <div class="w-12 h-12 mx-auto mb-2 rounded-lg bg-destiny-1 border border-destiny flex items-center justify-center">
@@ -509,106 +383,15 @@
                             <div class="text-xs text-destiny-dark">Destino</div>
                         </div>
                     </div>
-                    
-                    <div class="text-sm text-destiny-dark">
-                        <div class="flex items-center gap-2 mb-2">
-                            <i data-lucide="info" class="w-3 h-3"></i>
-                            <span>Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2</span>
-                        </div>
-                        <div id="destiny-formula-display" class="font-mono text-xs text-destiny-light bg-destiny-1 p-2 rounded border border-destiny/30">
-                            ((0 + 0) × 2 - 0) ÷ 2 = 0
-                        </div>
+                    <div class="text-sm text-destiny-dark" id="destiny-formula-display">
+                        Fórmula: ((Fé + Destino) × 2 - Sorte) ÷ 2
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Seção 5: Resumo de Equipamentos e Habilidades -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-4 relative overflow-hidden section-summary">
-            <div class="absolute top-0 left-0 w-1 h-full bg-theme-green"></div>
-            
-            <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 rounded-lg bg-theme-green/10 border border-theme-green/20">
-                    <i data-lucide="package" class="w-4 h-4 text-theme-green"></i>
-                </div>
-                <h3 class="font-cinzel text-lg font-semibold text-white">Equipamentos & Habilidades</h3>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-6">
-                <!-- Equipamentos Principais -->
-                <div>
-                    <h4 class="font-cinzel font-bold text-white text-sm mb-4 flex items-center gap-2">
-                        <i data-lucide="shield" class="w-3 h-3"></i> Equipamentos Principais
-                    </h4>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-3 p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-red/50 transition-colors">
-                            <div class="p-2 rounded bg-theme-red/10">
-                                <i data-lucide="sword" class="w-4 h-4 text-theme-red"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-bold text-white" id="display-arma-principal">Não equipado</div>
-                                <div class="text-xs text-gray-500">Arma Principal</div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center gap-3 p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-yellow/50 transition-colors">
-                            <div class="p-2 rounded bg-theme-yellow/10">
-                                <i data-lucide="shield" class="w-4 h-4 text-theme-yellow"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-bold text-white" id="display-armadura">Não equipado</div>
-                                <div class="text-xs text-gray-500">Armadura</div>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-center gap-3 p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-blue/50 transition-colors">
-                            <div class="p-2 rounded bg-theme-blue/10">
-                                <i data-lucide="star" class="w-4 h-4 text-theme-blue"></i>
-                            </div>
-                            <div class="flex-1">
-                                <div class="font-bold text-white" id="display-amuleto">Não equipado</div>
-                                <div class="text-xs text-gray-500">Amuleto/Anel</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Habilidades Chave -->
-                <div>
-                    <h4 class="font-cinzel font-bold text-white text-sm mb-4 flex items-center gap-2">
-                        <i data-lucide="zap" class="w-3 h-3"></i> Habilidades Chave
-                    </h4>
-                    <div class="space-y-3">
-                        <div class="p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-red/50 transition-colors">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-white" id="display-habilidade1">Ataque Básico</span>
-                                <span class="text-xs px-2 py-1 rounded-full bg-theme-red/20 text-theme-red font-medium">Lv. 1</span>
-                            </div>
-                            <div class="text-xs text-gray-500" id="display-desc-habilidade1">Dano físico básico</div>
-                        </div>
-                        
-                        <div class="p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-yellow/50 transition-colors">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-white" id="display-habilidade2">Defesa</span>
-                                <span class="text-xs px-2 py-1 rounded-full bg-theme-yellow/20 text-theme-yellow font-medium">Lv. 1</span>
-                            </div>
-                            <div class="text-xs text-gray-500" id="display-desc-habilidade2">Proteção básica</div>
-                        </div>
-                        
-                        <div class="p-4 bg-[#0a0a0c] rounded-lg border border-theme-border hover:border-theme-purple/50 transition-colors">
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="font-bold text-white" id="display-habilidade3">Habilidade de Classe</span>
-                                <span class="text-xs px-2 py-1 rounded-full bg-theme-purple/20 text-theme-purple font-medium">Lv. 1</span>
-                            </div>
-                            <div class="text-xs text-gray-500" id="display-desc-habilidade3">Baseado na classe</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Seção 6: Estatísticas Avançadas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-4">
+        <!-- Seção 3: Estatísticas Avançadas (Preenchido pelo status.html) -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-2">
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 rounded-lg bg-theme-blue/10 border border-theme-blue/20">
                     <i data-lucide="bar-chart" class="w-4 h-4 text-theme-blue"></i>
@@ -639,7 +422,125 @@
             </div>
         </section>
 
-        <!-- Seção 7: Mascote Companheiro -->
+        <!-- Seção 4: Equipamentos (5 slots editáveis) -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-3">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-theme-orange/10 border border-theme-orange/20">
+                        <i data-lucide="sword" class="w-4 h-4 text-theme-orange"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Equipamentos</h3>
+                </div>
+                <button onclick="editarEquipamentos()" class="text-sm text-theme-orange hover:underline">
+                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Gerenciar
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="equipamentos-container">
+                <!-- Slots serão preenchidos dinamicamente -->
+                <div class="item-slot text-center" onclick="editarEquipamento(0)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 1</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarEquipamento(1)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 2</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarEquipamento(2)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 3</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarEquipamento(3)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 4</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarEquipamento(4)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Equipamento 5</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 5: Habilidades (5 slots editáveis) -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-3">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-theme-purple/10 border border-theme-purple/20">
+                        <i data-lucide="zap" class="w-4 h-4 text-theme-purple"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Habilidades</h3>
+                </div>
+                <button onclick="editarHabilidades()" class="text-sm text-theme-purple hover:underline">
+                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Gerenciar
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4" id="habilidades-container">
+                <!-- Slots serão preenchidos dinamicamente -->
+                <div class="item-slot text-center" onclick="editarHabilidade(0)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 1</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarHabilidade(1)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 2</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarHabilidade(2)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 3</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarHabilidade(3)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 4</div>
+                </div>
+                <div class="item-slot text-center" onclick="editarHabilidade(4)">
+                    <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                    <div class="text-sm text-gray-500">Clique para adicionar</div>
+                    <div class="text-xs text-gray-600 mt-2">Slot de Habilidade 5</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção 6: Inventário Rápido (3 slots) -->
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg animate-fade-in-up anim-delay-4">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="p-2 rounded-lg bg-theme-green/10 border border-theme-green/20">
+                        <i data-lucide="package" class="w-4 h-4 text-theme-green"></i>
+                    </div>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Inventário Rápido</h3>
+                </div>
+                <button onclick="editarInventario()" class="text-sm text-theme-green hover:underline">
+                    <i data-lucide="edit" class="w-3 h-3 inline mr-1"></i> Configurar
+                </button>
+            </div>
+
+            <div class="flex justify-center gap-8" id="inventario-rapido">
+                <div class="quick-item" onclick="usarItem(0)">
+                    <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
+                </div>
+                <div class="quick-item" onclick="usarItem(1)">
+                    <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
+                </div>
+                <div class="quick-item" onclick="usarItem(2)">
+                    <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
+                </div>
+            </div>
+            <div class="text-center text-sm text-gray-500 mt-4">
+                Clique em um item para usar rapidamente
+            </div>
+        </section>
+
+        <!-- Seção 7: Mascote -->
         <div class="bg-gradient-to-br from-[#1a1510] to-[#2a2318] border border-[#8b7355] p-6 rounded-lg animate-fade-in-up anim-delay-4">
             <div class="flex items-center justify-between mb-6">
                 <div class="flex items-center gap-3">
@@ -656,7 +557,6 @@
             </div>
             
             <div id="mascote-summary">
-                <!-- Conteúdo será carregado dinamicamente -->
                 <div class="text-center py-8 text-[#8b7355]">
                     <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
                     <p>Nenhum mascote vinculado</p>
@@ -667,14 +567,8 @@
 
     </div>
 
-    <!-- Rodapé com Botões de Ação -->
-    <div class="max-w-6xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6 animate-fade-in-up anim-delay-4" data-html2pdf-ignore="true">
-        <button onclick="goToFicha()" 
-            class="group flex items-center gap-2 px-6 py-3 bg-theme-orange hover:bg-orange-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
-            <i data-lucide="edit-3" class="w-4 h-4"></i>
-            <span>Editar Ficha</span>
-        </button>
-        
+    <!-- Rodapé -->
+    <div class="max-w-7xl mx-auto px-4 pb-12 pt-6 flex flex-wrap justify-end gap-4 border-t border-theme-border mt-6" data-html2pdf-ignore="true">
         <button onclick="exportProfile()" 
             class="group flex items-center gap-2 px-6 py-3 bg-theme-purple hover:bg-purple-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="download" class="w-4 h-4"></i>
@@ -684,40 +578,40 @@
         <button onclick="refreshProfile()" 
             class="group flex items-center gap-2 px-6 py-3 bg-theme-blue hover:bg-blue-600 rounded-lg text-white shadow-lg transition-all font-cinzel text-sm font-bold">
             <i data-lucide="refresh-cw" class="w-4 h-4"></i>
-            <span>Atualizar</span>
+            <span>Atualizar Tudo</span>
         </button>
     </div>
 
-    <!-- Modal de Aviso -->
-    <div id="warning-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
-        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4">
-            <div class="flex items-center gap-3 mb-4">
-                <i data-lucide="alert-triangle" class="w-8 h-8 text-theme-orange"></i>
-                <h3 class="font-cinzel font-bold text-xl text-white">Aviso</h3>
+    <!-- Modal para editar equipamentos/habilidades -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/70 flex items-center justify-center z-50 hidden">
+        <div class="bg-theme-panel border border-theme-border rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-cinzel font-bold text-xl text-white" id="modal-title">Editar Item</h3>
+                <button onclick="fecharModal()" class="text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
             
-            <p id="warning-message" class="text-gray-300 mb-6">
-                Nenhum perfil ativo encontrado. Você precisa criar uma ficha primeiro.
-            </p>
+            <div id="modal-content">
+                <!-- Conteúdo será inserido dinamicamente -->
+            </div>
             
-            <div class="flex justify-end gap-3">
-                <button onclick="hideWarning()" 
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="fecharModal()" 
                     class="px-4 py-2 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
                     Cancelar
                 </button>
-                <button onclick="goToFicha()" 
+                <button onclick="salvarItem()" 
                     class="px-4 py-2 bg-theme-orange hover:bg-orange-600 rounded-lg text-white">
-                    Criar Ficha
+                    Salvar
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- ADICIONE ESTE SCRIPT NO <head> OU ANTES DO FECHAMENTO DO <body> -->
     <script>
     // ====================================================================
-    // PERFIL.HTML - VERSÃO OTIMIZADA E COMPLETA
-    // Sistema completo integrado com grimorio-core.js
+    // SISTEMA DE PERFIL SIMPLIFICADO
     // ====================================================================
 
     // 1. Inicializar ícones
@@ -725,461 +619,586 @@
         lucide.createIcons();
     }
 
-    // 2. Função principal para carregar todos os dados
-    function carregarPerfilCompleto() {
+    // 2. Carregar dados do status (txt do status.html)
+    function carregarDadosStatus() {
         try {
-            console.log('Carregando perfil completo do GrimorioSystem...');
-            const personagem = GrimorioSystem.carregarPersonagem();
-            
-            if (!personagem) {
-                mostrarErro('Nenhum personagem encontrado no Grimorio. Crie uma ficha primeiro.');
-                return;
+            // Carregar dados do status salvo
+            const statusData = localStorage.getItem('grimorio_status_data');
+            if (statusData) {
+                const dados = JSON.parse(statusData);
+                atualizarStatus(dados);
             }
             
-            console.log('Personagem carregado:', personagem.nome);
+            // Carregar dados da sorte (fixos)
+            carregarDadosSorte();
             
-            // Verificar se é o personagem padrão
-            if (personagem.nome === 'Novo Aventureiro') {
-                mostrarErro('Personagem não configurado. Preencha a ficha primeiro.');
-                document.getElementById('warning-modal').classList.remove('hidden');
-                return;
-            }
-            
-            // Atualizar interface com dados COMPLETOS
-            atualizarInterfaceCompleta(personagem);
-            
-            // Carregar dados da ficha complementares
-            carregarDadosComplementares();
-            
+            // Atualizar timestamp
+            document.getElementById('last-update').textContent = 
+                new Date().toLocaleString('pt-BR');
+                
         } catch (error) {
-            console.error('Erro ao carregar perfil:', error);
-            mostrarErro('Erro ao carregar dados do personagem: ' + error.message);
+            console.error('Erro ao carregar status:', error);
         }
     }
 
-    // 3. Atualizar TODOS os dados da interface
-    function atualizarInterfaceCompleta(personagem) {
-        console.log('Atualizando interface completa com dados:', personagem);
+    // 3. Atualizar seção de status
+    function atualizarStatus(dados) {
+        if (!dados) return;
         
-        // =================== CABEÇALHO ===================
-        document.getElementById('profile-title').textContent = personagem.nome || 'Personagem';
-        document.getElementById('profile-subtitle').textContent = personagem.titulo || 'Aventureiro';
-        document.getElementById('active-profile-name').textContent = personagem.nome || 'Personagem';
-        document.getElementById('profile-raca').textContent = personagem.raca || 'Não Definida';
-        document.getElementById('profile-classe').textContent = personagem.classe || 'Não Escolhida';
-        document.getElementById('profile-nivel').textContent = `Nível ${personagem.nivel || 1}`;
-        
-        // Avatar/Imagem
-        const avatarDisplay = document.getElementById('avatar-display');
-        const avatarIcon = document.getElementById('avatar-icon');
-        
-        if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
-            avatarDisplay.style.backgroundImage = `url('${personagem.avatar}')`;
-            avatarDisplay.style.backgroundSize = 'cover';
-            avatarDisplay.style.backgroundPosition = 'center';
-            avatarIcon.style.display = 'none';
-        } else {
-            avatarDisplay.style.backgroundImage = '';
-            avatarIcon.style.display = 'block';
+        // Recursos vitais
+        if (dados.vida) {
+            document.getElementById('display-vida').textContent = `${dados.vida.atual || 0}/${dados.vida.maxima || 0}`;
+            const vidaPercent = dados.vida.maxima > 0 ? (dados.vida.atual / dados.vida.maxima) * 100 : 0;
+            document.getElementById('display-vida-bar').style.width = `${vidaPercent}%`;
         }
         
-        // =================== SEÇÃO 1: INFORMAÇÕES BÁSICAS ===================
-        document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
-        document.getElementById('display-titulo').textContent = personagem.titulo || 'Aventureiro sem título';
-        document.getElementById('display-raca').textContent = personagem.raca || 'Não Definida';
-        document.getElementById('display-classe').textContent = personagem.classe || 'Não Escolhida';
-        document.getElementById('display-origem').textContent = personagem.origem || 'Não Definida';
-        document.getElementById('display-idade').textContent = personagem.idade || 'Não Informada';
-        
-        // =================== SEÇÃO 2: ATRIBUTOS ===================
-        const attrs = personagem.atributos || {};
-        document.getElementById('display-forca').textContent = attrs.forca || 0;
-        document.getElementById('display-destreza').textContent = attrs.destreza || 0;
-        document.getElementById('display-constituicao').textContent = attrs.constituicao || 0;
-        document.getElementById('display-inteligencia').textContent = attrs.inteligencia || 0;
-        document.getElementById('display-sabedoria').textContent = attrs.sabedoria || 0;
-        document.getElementById('display-carisma').textContent = attrs.carisma || 0;
-        
-        // Calcular total de atributos
-        const totalAtributos = Object.values(attrs).reduce((sum, val) => sum + (parseInt(val) || 0), 0);
-        document.getElementById('total-atributos').textContent = totalAtributos;
-        
-        // =================== SEÇÃO 3: NÍVEL E PROGRESSÃO ===================
-        const nivel = parseInt(personagem.nivel) || 1;
-        const xpAtual = parseInt(personagem.experiencia) || 0;
-        const xpProximo = parseInt(personagem.experienciaProximoNivel) || 1000;
-        const pontos = parseInt(personagem.pontosDisponiveis) || 0;
-        
-        document.getElementById('display-nivel').textContent = nivel;
-        document.getElementById('display-xp').textContent = `${xpAtual}/${xpProximo}`;
-        document.getElementById('display-pontos').textContent = pontos;
-        document.getElementById('display-proximo-nivel').textContent = `${xpProximo - xpAtual} XP`;
-        
-        // Barra de XP
-        const xpPercent = xpProximo > 0 ? Math.min(100, (xpAtual / xpProximo) * 100) : 0;
-        document.getElementById('display-xp-bar').style.width = `${xpPercent}%`;
-        
-        // =================== SEÇÃO 4: RECURSOS VITAIS ===================
-        const recursos = personagem.recursos || {};
-        
-        // Vida (calculada automaticamente)
-        const vidaBase = Math.max(10, (attrs.constituicao || 0) * 5);
-        const vidaMax = recursos.vidaMaxima || vidaBase;
-        const vidaAtual = recursos.vidaAtual || vidaMax;
-        
-        document.getElementById('display-vida-base').textContent = vidaBase;
-        document.getElementById('display-vida').textContent = `${vidaAtual}/${vidaMax}`;
-        document.getElementById('display-vida-bar').style.width = `${(vidaAtual / vidaMax) * 100}%`;
-        
-        // Mana (calculada automaticamente)
-        const manaBase = (attrs.inteligencia || 0) * 2;
-        const manaMax = recursos.manaMaxima || manaBase;
-        const manaAtual = recursos.manaAtual || manaMax;
-        
-        document.getElementById('display-mana-base').textContent = manaBase;
-        document.getElementById('display-mana').textContent = `${manaAtual}/${manaMax}`;
-        document.getElementById('display-mana-bar').style.width = `${(manaAtual / manaMax) * 100}%`;
-        
-        // Estamina (calculada automaticamente)
-        const estaminaBase = Math.max(20, ((attrs.constituicao || 0) + (attrs.destreza || 0)) * 2);
-        const estaminaMax = recursos.estaminaMaxima || estaminaBase;
-        const estaminaAtual = recursos.estaminaAtual || estaminaMax;
-        
-        document.getElementById('display-estamina-base').textContent = estaminaBase;
-        document.getElementById('display-estamina').textContent = `${estaminaAtual}/${estaminaMax}`;
-        document.getElementById('display-estamina-bar').style.width = `${(estaminaAtual / estaminaMax) * 100}%`;
-        
-        // =================== SEÇÃO 5: DESTINO E SORTE ===================
-        const dadosSorte = personagem.dadosSorte || {};
-        const dado1 = dadosSorte.fe || Math.floor(Math.random() * 10) + 1;
-        const dado2 = dadosSorte.sorte || Math.floor(Math.random() * 10) + 1;
-        const dado3 = dadosSorte.destino || Math.floor(Math.random() * 10) + 1;
-        
-        // Fórmula de sorte: ((Fé + Destino) × 2 - Sorte) ÷ 2
-        const indiceSorte = ((dado1 + dado3) * 2 - dado2) / 2;
-        const sortePercent = Math.max(0, Math.min(100, indiceSorte * 5 + 50)); // Normaliza para 0-100%
-        
-        document.getElementById('display-dado1').textContent = dado1;
-        document.getElementById('display-dado2').textContent = dado2;
-        document.getElementById('display-dado3').textContent = dado3;
-        document.getElementById('display-sorte').textContent = `${Math.round(sortePercent)}%`;
-        document.getElementById('display-sorte-bar').style.width = `${sortePercent}%`;
-        
-        // Status baseado na sorte
-        let statusSorte = 'Neutro';
-        if (sortePercent > 70) statusSorte = 'Sorte Excelente';
-        else if (sortePercent > 55) statusSorte = 'Sortudo';
-        else if (sortePercent < 30) statusSorte = 'Azarado';
-        else if (sortePercent < 45) statusSorte = 'Muito Azarado';
-        
-        document.getElementById('destiny-status').textContent = statusSorte;
-        document.getElementById('destiny-formula-display').textContent = 
-            `((${dado1} + ${dado3}) × 2 - ${dado2}) ÷ 2 = ${indiceSorte.toFixed(1)}`;
-        
-        // =================== SEÇÃO 6: EQUIPAMENTOS E HABILIDADES ===================
-        const equipamentos = personagem.equipamentos || {};
-        document.getElementById('display-arma-principal').textContent = equipamentos.armaPrincipal || 'Não equipado';
-        document.getElementById('display-armadura').textContent = equipamentos.armadura || 'Não equipado';
-        document.getElementById('display-amuleto').textContent = equipamentos.amuleto || 'Não equipado';
-        
-        // Habilidades
-        const habilidades = personagem.habilidades || [];
-        if (habilidades.length > 0) {
-            document.getElementById('display-habilidade1').textContent = habilidades[0].nome || 'Ataque Básico';
-            document.getElementById('display-desc-habilidade1').textContent = habilidades[0].descricao || 'Dano físico básico';
-            
-            if (habilidades.length > 1) {
-                document.getElementById('display-habilidade2').textContent = habilidades[1].nome || 'Defesa';
-                document.getElementById('display-desc-habilidade2').textContent = habilidades[1].descricao || 'Proteção básica';
-            } else {
-                document.getElementById('display-habilidade2').textContent = 'Defesa';
-                document.getElementById('display-desc-habilidade2').textContent = 'Proteção básica';
-            }
-            
-            if (habilidades.length > 2) {
-                document.getElementById('display-habilidade3').textContent = habilidades[2].nome || 'Habilidade de Classe';
-                document.getElementById('display-desc-habilidade3').textContent = habilidades[2].descricao || 'Baseado na classe';
-            } else {
-                document.getElementById('display-habilidade3').textContent = 'Habilidade de Classe';
-                document.getElementById('display-desc-habilidade3').textContent = 'Baseado na classe';
-            }
-        } else {
-            // Habilidades padrão
-            document.getElementById('display-habilidade1').textContent = 'Ataque Básico';
-            document.getElementById('display-desc-habilidade1').textContent = 'Dano físico básico';
-            document.getElementById('display-habilidade2').textContent = 'Defesa';
-            document.getElementById('display-desc-habilidade2').textContent = 'Proteção básica';
-            document.getElementById('display-habilidade3').textContent = 'Habilidade de Classe';
-            document.getElementById('display-desc-habilidade3').textContent = 'Baseado na classe';
+        if (dados.mana) {
+            document.getElementById('display-mana').textContent = `${dados.mana.atual || 0}/${dados.mana.maxima || 0}`;
+            const manaPercent = dados.mana.maxima > 0 ? (dados.mana.atual / dados.mana.maxima) * 100 : 0;
+            document.getElementById('display-mana-bar').style.width = `${manaPercent}%`;
         }
         
-        // =================== SEÇÃO 7: ESTATÍSTICAS AVANÇADAS ===================
-        const atributos = personagem.atributos || {};
+        if (dados.estamina) {
+            document.getElementById('display-estamina').textContent = `${dados.estamina.atual || 0}/${dados.estamina.maxima || 0}`;
+            const estaminaPercent = dados.estamina.maxima > 0 ? (dados.estamina.atual / dados.estamina.maxima) * 100 : 0;
+            document.getElementById('display-estamina-bar').style.width = `${estaminaPercent}%`;
+        }
         
-        // Blindagem (baseada em Constituição e equipamento)
-        const blindagem = Math.floor((atributos.constituicao || 0) * 1.5) + (equipamentos.armadura ? 5 : 0);
-        document.getElementById('display-blindagem').textContent = blindagem;
+        // Atributos
+        if (dados.atributos) {
+            document.getElementById('display-forca').textContent = dados.atributos.forca || 0;
+            document.getElementById('display-destreza').textContent = dados.atributos.destreza || 0;
+            document.getElementById('display-constituicao').textContent = dados.atributos.constituicao || 0;
+            document.getElementById('display-inteligencia').textContent = dados.atributos.inteligencia || 0;
+            document.getElementById('display-sabedoria').textContent = dados.atributos.sabedoria || 0;
+            document.getElementById('display-carisma').textContent = dados.atributos.carisma || 0;
+        }
         
-        // Velocidade (baseada em Destreza)
-        const velocidade = Math.floor((atributos.destreza || 0) * 2) + 30;
-        document.getElementById('display-velocidade').textContent = velocidade;
-        
-        // Iniciativa (baseada em Destreza e Sabedoria)
-        const iniciativa = Math.floor((atributos.destreza || 0) + (atributos.sabedoria || 0) / 2);
-        document.getElementById('display-iniciativa').textContent = iniciativa;
-        
-        // Percepção (baseada em Sabedoria)
-        const percepcao = Math.floor((atributos.sabedoria || 0) * 3);
-        document.getElementById('display-percepcao').textContent = percepcao;
-        
-        // =================== SEÇÃO 8: MASCOTE ===================
-        atualizarMascote(personagem.mascote);
-        
-        // Mostrar indicador ativo
-        document.getElementById('profile-active-indicator').classList.remove('hidden');
-        
-        console.log('Perfil atualizado completamente!');
+        // Estatísticas avançadas
+        if (dados.estatisticas) {
+            document.getElementById('display-blindagem').textContent = dados.estatisticas.blindagem || 0;
+            document.getElementById('display-velocidade').textContent = dados.estatisticas.velocidade || 0;
+            document.getElementById('display-iniciativa').textContent = dados.estatisticas.iniciativa || 0;
+            document.getElementById('display-percepcao').textContent = dados.estatisticas.percepcao || 0;
+        }
     }
 
-    // 4. Carregar dados complementares da ficha
-    function carregarDadosComplementares() {
+    // 4. Carregar dados da sorte (fixos)
+    function carregarDadosSorte() {
         try {
-            // Carregar dados da ficha completa do localStorage
-            const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
-            
-            if (fichaCompleta) {
-                const dadosFicha = JSON.parse(fichaCompleta);
-                
-                // Se houver dados de sorte na ficha, salvar no personagem
-                if (dadosFicha.sorte || dadosFicha.dadosSorte) {
-                    const personagem = GrimorioSystem.carregarPersonagem();
-                    personagem.dadosSorte = dadosFicha.dadosSorte || {
-                        fe: dadosFicha.sorte?.dado1 || 5,
-                        sorte: dadosFicha.sorte?.dado2 || 5,
-                        destino: dadosFicha.sorte?.dado3 || 5
-                    };
-                    GrimorioSystem.salvarPersonagem(personagem);
-                }
-                
-                // Se houver equipamentos na ficha, atualizar
-                if (dadosFicha.equipamentos) {
-                    const personagem = GrimorioSystem.carregarPersonagem();
-                    personagem.equipamentos = {
-                        ...personagem.equipamentos,
-                        ...dadosFicha.equipamentos
-                    };
-                    GrimorioSystem.salvarPersonagem(personagem);
-                }
-                
-                // Se houver habilidades na ficha, atualizar
-                if (dadosFicha.habilidades && Array.isArray(dadosFicha.habilidades)) {
-                    const personagem = GrimorioSystem.carregarPersonagem();
-                    personagem.habilidades = dadosFicha.habilidades;
-                    GrimorioSystem.salvarPersonagem(personagem);
-                }
-                
-                console.log('Dados complementares carregados da ficha');
+            // Carregar dados salvos ou usar padrão
+            const sorteData = localStorage.getItem('grimorio_sorte_data');
+            if (sorteData) {
+                const dados = JSON.parse(sorteData);
+                atualizarSorte(dados);
+            } else {
+                // Dados padrão
+                const dadosPadrao = {
+                    dado1: 5,  // Fé
+                    dado2: 5,  // Sorte
+                    dado3: 5,  // Destino
+                    sorte: 50, // Índice de sorte (50% neutro)
+                    status: 'Neutro'
+                };
+                localStorage.setItem('grimorio_sorte_data', JSON.stringify(dadosPadrao));
+                atualizarSorte(dadosPadrao);
             }
         } catch (error) {
-            console.error('Erro ao carregar dados complementares:', error);
+            console.error('Erro ao carregar dados da sorte:', error);
         }
     }
 
-    // 5. Atualizar seção do mascote
-    function atualizarMascote(dadosMascote) {
-        const mascoteContainer = document.getElementById('mascote-summary');
+    // 5. Atualizar seção de sorte
+    function atualizarSorte(dados) {
+        if (!dados) return;
         
-        if (dadosMascote && dadosMascote.nome) {
-            mascoteContainer.innerHTML = `
-                <div class="flex flex-col md:flex-row items-center gap-6 p-4 bg-[#1a1510]/50 rounded-lg border border-[#8b7355]">
-                    <div class="w-20 h-20 rounded-full border-2 border-[#d4a76a] overflow-hidden flex items-center justify-center">
-                        ${dadosMascote.avatar ? 
-                            `<img src="${dadosMascote.avatar}" alt="${dadosMascote.nome}" class="w-full h-full object-cover">` :
-                            `<i data-lucide="dog" class="w-10 h-10 text-[#d4a76a]"></i>`
-                        }
-                    </div>
-                    <div class="flex-grow text-center md:text-left">
-                        <h4 class="font-cinzel font-bold text-[#f4d29a] text-lg">${dadosMascote.nome}</h4>
-                        <div class="flex flex-wrap gap-2 mt-2">
-                            <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">Nível ${dadosMascote.nivel || 1}</span>
-                            <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">${dadosMascote.tipo || 'Animal'}</span>
-                            <span class="px-3 py-1 bg-[#8b7355]/20 text-[#d4a76a] text-xs rounded-full">${dadosMascote.raridade || 'Comum'}</span>
-                        </div>
-                        <p class="text-[#8b7355] text-sm mt-2">${dadosMascote.descricao || 'Companheiro leal'}</p>
-                        <div class="mt-3 grid grid-cols-2 gap-2">
-                            <div class="text-center">
-                                <div class="text-[#f4d29a] font-bold">${dadosMascote.saude || 10}/${dadosMascote.saudeMax || 10}</div>
-                                <div class="text-xs text-[#8b7355]">Saúde</div>
+        // Dados fixos
+        document.getElementById('display-dado1').textContent = dados.dado1 || 0;
+        document.getElementById('display-dado2').textContent = dados.dado2 || 0;
+        document.getElementById('display-dado3').textContent = dados.dado3 || 0;
+        
+        // Índice de sorte
+        document.getElementById('display-sorte').textContent = `${dados.sorte || 0}%`;
+        document.getElementById('display-sorte-bar').style.width = `${dados.sorte || 0}%`;
+        
+        // Status
+        document.getElementById('destiny-status').textContent = dados.status || 'Neutro';
+        
+        // Fórmula
+        const formula = `((${dados.dado1} + ${dados.dado3}) × 2 - ${dados.dado2}) ÷ 2 = ${((dados.dado1 + dados.dado3) * 2 - dados.dado2) / 2}`;
+        document.getElementById('destiny-formula-display').textContent = formula;
+    }
+
+    // 6. Sistema de Equipamentos
+    function carregarEquipamentos() {
+        try {
+            const equipamentos = JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]');
+            const container = document.getElementById('equipamentos-container');
+            
+            container.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const equipamento = equipamentos[i];
+                
+                if (equipamento) {
+                    container.innerHTML += `
+                        <div class="item-slot filled" onclick="editarEquipamento(${i})">
+                            <div class="flex items-center justify-center mb-3">
+                                ${equipamento.icone ? 
+                                    `<img src="${equipamento.icone}" alt="${equipamento.nome}" class="w-10 h-10 object-contain">` :
+                                    `<i data-lucide="${equipamento.iconeLucide || 'sword'}" class="w-10 h-10 text-theme-orange"></i>`
+                                }
                             </div>
-                            <div class="text-center">
-                                <div class="text-[#f4d29a] font-bold">${dadosMascote.energia || 10}</div>
-                                <div class="text-xs text-[#8b7355]">Energia</div>
-                            </div>
+                            <div class="font-bold text-white text-sm mb-1">${equipamento.nome}</div>
+                            <div class="text-xs text-gray-400 mb-2">${equipamento.tipo || 'Equipamento'}</div>
+                            ${equipamento.mana ? `<div class="text-xs text-theme-blue mb-1">Mana: ${equipamento.mana}</div>` : ''}
+                            ${equipamento.cooldown ? `<div class="text-xs text-theme-orange mb-1">Cooldown: ${equipamento.cooldown}s</div>` : ''}
+                            <div class="text-xs text-gray-500 truncate">${equipamento.descricao || ''}</div>
                         </div>
-                    </div>
-                </div>
-            `;
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <div class="item-slot text-center" onclick="editarEquipamento(${i})">
+                            <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                            <div class="text-sm text-gray-500">Clique para adicionar</div>
+                            <div class="text-xs text-gray-600 mt-2">Slot ${i + 1}</div>
+                        </div>
+                    `;
+                }
+            }
             
             if (window.lucide) lucide.createIcons();
-        } else {
-            mascoteContainer.innerHTML = `
-                <div class="text-center py-8 text-[#8b7355]">
-                    <i data-lucide="dog" class="w-12 h-12 mx-auto mb-3 opacity-50"></i>
-                    <p>Nenhum mascote vinculado</p>
-                    <p class="text-sm mt-2">Crie um mascote para acompanhar seu personagem</p>
-                    <button onclick="window.location.href='mascote.html'" 
-                        class="mt-4 px-4 py-2 bg-[#8b7355] hover:bg-[#a38b6d] text-white rounded-lg transition-colors">
-                        Criar Mascote
-                    </button>
-                </div>
-            `;
-            
-            if (window.lucide) lucide.createIcons();
+        } catch (error) {
+            console.error('Erro ao carregar equipamentos:', error);
         }
     }
 
-    // 6. Funções de navegação
-    function goToFicha() {
-        window.location.href = 'ficha.html';
+    // 7. Sistema de Habilidades
+    function carregarHabilidades() {
+        try {
+            const habilidades = JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]');
+            const container = document.getElementById('habilidades-container');
+            
+            container.innerHTML = '';
+            for (let i = 0; i < 5; i++) {
+                const habilidade = habilidades[i];
+                
+                if (habilidade) {
+                    container.innerHTML += `
+                        <div class="item-slot filled" onclick="editarHabilidade(${i})">
+                            <div class="flex items-center justify-center mb-3">
+                                ${habilidade.icone ? 
+                                    `<img src="${habilidade.icone}" alt="${habilidade.nome}" class="w-10 h-10 object-contain">` :
+                                    `<i data-lucide="${habilidade.iconeLucide || 'zap'}" class="w-10 h-10 text-theme-purple"></i>`
+                                }
+                            </div>
+                            <div class="font-bold text-white text-sm mb-1">${habilidade.nome}</div>
+                            <div class="text-xs text-gray-400 mb-2">${habilidade.tipo || 'Habilidade'}</div>
+                            ${habilidade.mana ? `<div class="text-xs text-theme-blue mb-1">Mana: ${habilidade.mana}</div>` : ''}
+                            ${habilidade.cooldown ? `<div class="text-xs text-theme-orange mb-1">Cooldown: ${habilidade.cooldown}s</div>` : ''}
+                            <div class="text-xs text-gray-500 truncate">${habilidade.descricao || ''}</div>
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <div class="item-slot text-center" onclick="editarHabilidade(${i})">
+                            <i data-lucide="plus" class="w-8 h-8 text-gray-600 mx-auto mb-3"></i>
+                            <div class="text-sm text-gray-500">Clique para adicionar</div>
+                            <div class="text-xs text-gray-600 mt-2">Slot ${i + 1}</div>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (window.lucide) lucide.createIcons();
+        } catch (error) {
+            console.error('Erro ao carregar habilidades:', error);
+        }
     }
 
+    // 8. Sistema de Inventário Rápido
+    function carregarInventarioRapido() {
+        try {
+            const inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
+            const container = document.getElementById('inventario-rapido');
+            
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                const item = inventario[i];
+                
+                if (item && item.icone) {
+                    container.innerHTML += `
+                        <div class="quick-item" onclick="usarItem(${i})" title="${item.nome || 'Item'}">
+                            <img src="${item.icone}" alt="${item.nome || 'Item'}" class="w-10 h-10 object-contain">
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML += `
+                        <div class="quick-item" onclick="usarItem(${i})">
+                            <i data-lucide="package" class="w-6 h-6 text-gray-600"></i>
+                        </div>
+                    `;
+                }
+            }
+            
+            if (window.lucide) lucide.createIcons();
+        } catch (error) {
+            console.error('Erro ao carregar inventário:', error);
+        }
+    }
+
+    // 9. Modal para editar items
+    let itemEditando = null;
+    let tipoEditando = ''; // 'equipamento' ou 'habilidade'
+
+    function editarEquipamento(index) {
+        itemEditando = index;
+        tipoEditando = 'equipamento';
+        
+        const equipamentos = JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]');
+        const equipamento = equipamentos[index] || {
+            nome: '',
+            tipo: '',
+            icone: '',
+            iconeLucide: 'sword',
+            mana: '',
+            cooldown: '',
+            descricao: ''
+        };
+        
+        document.getElementById('modal-title').textContent = `Editar Equipamento ${index + 1}`;
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome</label>
+                    <input type="text" id="edit-nome" value="${equipamento.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                    <input type="text" id="edit-tipo" value="${equipamento.tipo}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Ícone (URL ou nome do ícone Lucide)</label>
+                    <input type="text" id="edit-icone" value="${equipamento.icone || equipamento.iconeLucide || 'sword'}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="sword, shield, wand, etc.">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Mana</label>
+                        <input type="number" id="edit-mana" value="${equipamento.mana || ''}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="0">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Cooldown (s)</label>
+                        <input type="number" id="edit-cooldown" value="${equipamento.cooldown || ''}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="0">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="edit-descricao" rows="3"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${equipamento.descricao || ''}</textarea>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function editarHabilidade(index) {
+        itemEditando = index;
+        tipoEditando = 'habilidade';
+        
+        const habilidades = JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]');
+        const habilidade = habilidades[index] || {
+            nome: '',
+            tipo: '',
+            icone: '',
+            iconeLucide: 'zap',
+            mana: '',
+            cooldown: '',
+            descricao: ''
+        };
+        
+        document.getElementById('modal-title').textContent = `Editar Habilidade ${index + 1}`;
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome</label>
+                    <input type="text" id="edit-nome" value="${habilidade.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Tipo</label>
+                    <input type="text" id="edit-tipo" value="${habilidade.tipo}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Ícone (URL ou nome do ícone Lucide)</label>
+                    <input type="text" id="edit-icone" value="${habilidade.icone || habilidade.iconeLucide || 'zap'}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="zap, shield, flame, etc.">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Mana</label>
+                        <input type="number" id="edit-mana" value="${habilidade.mana || ''}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="0">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Cooldown (s)</label>
+                        <input type="number" id="edit-cooldown" value="${habilidade.cooldown || ''}" 
+                               class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                               placeholder="0">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="edit-descricao" rows="3"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${habilidade.descricao || ''}</textarea>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+    }
+
+    function salvarItem() {
+        const nome = document.getElementById('edit-nome').value;
+        const tipo = document.getElementById('edit-tipo').value;
+        const icone = document.getElementById('edit-icone').value;
+        const mana = document.getElementById('edit-mana').value;
+        const cooldown = document.getElementById('edit-cooldown').value;
+        const descricao = document.getElementById('edit-descricao').value;
+        
+        let item = {
+            nome: nome,
+            tipo: tipo,
+            mana: mana,
+            cooldown: cooldown,
+            descricao: descricao
+        };
+        
+        // Verificar se o ícone é uma URL ou nome do Lucide
+        if (icone.startsWith('http://') || icone.startsWith('https://') || icone.startsWith('data:')) {
+            item.icone = icone;
+        } else {
+            item.iconeLucide = icone;
+        }
+        
+        if (tipoEditando === 'equipamento') {
+            let equipamentos = JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]');
+            equipamentos[itemEditando] = item;
+            localStorage.setItem('grimorio_equipamentos', JSON.stringify(equipamentos));
+            carregarEquipamentos();
+        } else if (tipoEditando === 'habilidade') {
+            let habilidades = JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]');
+            habilidades[itemEditando] = item;
+            localStorage.setItem('grimorio_habilidades', JSON.stringify(habilidades));
+            carregarHabilidades();
+        }
+        
+        fecharModal();
+        GrimorioSystem.mostrarNotificacao('Item salvo com sucesso!', 'success');
+    }
+
+    function fecharModal() {
+        document.getElementById('edit-modal').classList.add('hidden');
+        itemEditando = null;
+        tipoEditando = '';
+    }
+
+    // 10. Funções para usar itens rápidos
+    function usarItem(index) {
+        const inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
+        const item = inventario[index];
+        
+        if (item) {
+            GrimorioSystem.mostrarNotificacao(`Usando: ${item.nome}`, 'info');
+            // Aqui você pode adicionar lógica para usar o item
+        } else {
+            // Abrir modal para configurar o slot
+            editarInventarioSlot(index);
+        }
+    }
+
+    function editarInventarioSlot(index) {
+        itemEditando = index;
+        tipoEditando = 'inventario';
+        
+        const inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
+        const item = inventario[index] || {
+            nome: '',
+            icone: '',
+            descricao: ''
+        };
+        
+        document.getElementById('modal-title').textContent = `Configurar Item Rápido ${index + 1}`;
+        document.getElementById('modal-content').innerHTML = `
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Nome do Item</label>
+                    <input type="text" id="edit-nome" value="${item.nome}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">URL do Ícone</label>
+                    <input type="text" id="edit-icone" value="${item.icone}" 
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white"
+                           placeholder="https://... ou data:image/...">
+                </div>
+                
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Descrição</label>
+                    <textarea id="edit-descricao" rows="2"
+                           class="w-full bg-[#0a0a0c] border border-theme-border rounded-lg px-3 py-2 text-white">${item.descricao || ''}</textarea>
+                </div>
+                
+                <div class="text-sm text-gray-500">
+                    <i data-lucide="info" class="w-4 h-4 inline mr-1"></i>
+                    Use URLs de imagens ou imagens em base64
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('edit-modal').classList.remove('hidden');
+        
+        // Sobrescrever a função salvarItem para inventário
+        const salvarOriginal = salvarItem;
+        window.salvarItem = function() {
+            const nome = document.getElementById('edit-nome').value;
+            const icone = document.getElementById('edit-icone').value;
+            const descricao = document.getElementById('edit-descricao').value;
+            
+            let item = {
+                nome: nome,
+                icone: icone,
+                descricao: descricao
+            };
+            
+            let inventario = JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]');
+            inventario[itemEditando] = item;
+            localStorage.setItem('grimorio_inventario_rapido', JSON.stringify(inventario));
+            carregarInventarioRapido();
+            
+            fecharModal();
+            GrimorioSystem.mostrarNotificacao('Item configurado!', 'success');
+            
+            // Restaurar função original
+            window.salvarItem = salvarOriginal;
+        };
+    }
+
+    function editarInventario() {
+        GrimorioSystem.mostrarNotificacao('Clique em um slot para configurar', 'info');
+    }
+
+    // 11. Navegação
     function goToStatus() {
         window.location.href = 'status.html';
     }
 
-    function goToIndex() {
-        window.location.href = 'index.html';
+    function goToEquipamentos() {
+        // Foco nos equipamentos (rolar para seção)
+        document.getElementById('equipamentos-container').scrollIntoView({ behavior: 'smooth' });
     }
 
-    // 7. Exportar perfil
+    function goToHabilidades() {
+        // Foco nas habilidades (rolar para seção)
+        document.getElementById('habilidades-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 12. Exportar perfil
     function exportProfile() {
         try {
-            const personagem = GrimorioSystem.carregarPersonagem();
-            const dadosExportacao = {
-                personagem: personagem,
-                sistema: 'Grimório Digital - Perfil Completo',
-                exportadoEm: new Date().toISOString(),
-                versao: '2.1'
+            const dados = {
+                status: JSON.parse(localStorage.getItem('grimorio_status_data') || '{}'),
+                sorte: JSON.parse(localStorage.getItem('grimorio_sorte_data') || '{}'),
+                equipamentos: JSON.parse(localStorage.getItem('grimorio_equipamentos') || '[]'),
+                habilidades: JSON.parse(localStorage.getItem('grimorio_habilidades') || '[]'),
+                inventario: JSON.parse(localStorage.getItem('grimorio_inventario_rapido') || '[]'),
+                exportadoEm: new Date().toISOString()
             };
             
-            const json = JSON.stringify(dadosExportacao, null, 2);
+            const json = JSON.stringify(dados, null, 2);
             const blob = new Blob([json], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `perfil_${personagem.nome}_${new Date().getTime()}.json`;
+            a.download = `perfil_grimorio_${new Date().getTime()}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            GrimorioSystem.mostrarNotificacao('Perfil exportado com sucesso!', 'success');
+            GrimorioSystem.mostrarNotificacao('Perfil exportado!', 'success');
         } catch (error) {
             console.error('Erro ao exportar:', error);
-            GrimorioSystem.mostrarNotificacao('Erro ao exportar perfil', 'error');
+            GrimorioSystem.mostrarNotificacao('Erro ao exportar', 'error');
         }
     }
 
-    // 8. Atualizar perfil
+    // 13. Atualizar tudo
     function refreshProfile() {
-        carregarPerfilCompleto();
+        carregarDadosStatus();
+        carregarEquipamentos();
+        carregarHabilidades();
+        carregarInventarioRapido();
         GrimorioSystem.mostrarNotificacao('Perfil atualizado!', 'info');
     }
 
-    // 9. Mostrar erro
-    function mostrarErro(mensagem) {
-        document.getElementById('warning-message').textContent = mensagem;
-        document.getElementById('warning-modal').classList.remove('hidden');
-    }
-
-    function hideWarning() {
-        document.getElementById('warning-modal').classList.add('hidden');
-    }
-
-    // 10. Inicializar quando a página carregar
+    // 14. Inicializar
     document.addEventListener('DOMContentLoaded', function() {
-        // Verificar se o sistema centralizado está carregado
-        if (typeof GrimorioSystem === 'undefined') {
-            console.error('Sistema Grimório não carregado! Carregue grimorio-core.js primeiro.');
-            mostrarErro('Sistema não carregado. Recarregue a página.');
-            return;
-        }
+        // Carregar todos os dados
+        carregarDadosStatus();
+        carregarEquipamentos();
+        carregarHabilidades();
+        carregarInventarioRapido();
         
-        // Configurar botões de navegação
-        const navButtons = document.getElementById('nav-buttons');
-        if (navButtons) {
-            navButtons.innerHTML = `
-                <button onclick="goToIndex()" class="nav-btn">
-                    <i data-lucide="home" class="w-4 h-4"></i> Início
-                </button>
-                <button onclick="goToFicha()" class="nav-btn bg-orange-500/20 text-orange-400">
-                    <i data-lucide="edit-3" class="w-4 h-4"></i> Editar Ficha
-                </button>
-                <button onclick="goToStatus()" class="nav-btn bg-blue-500/20 text-blue-400">
-                    <i data-lucide="activity" class="w-4 h-4"></i> Status
-                </button>
-            `;
-            if (window.lucide) lucide.createIcons();
-        }
+        // Atualizar a cada 5 segundos
+        setInterval(refreshProfile, 5000);
         
-        // Carregar perfil completo após breve delay
-        setTimeout(() => {
-            carregarPerfilCompleto();
-            
-            // Atualizar a cada 3 segundos para sincronizar entre abas
-            setInterval(carregarPerfilCompleto, 3000);
-        }, 100);
+        // Estilo para botões de navegação
+        const estilo = document.createElement('style');
+        estilo.textContent = `
+            .nav-btn {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem 1rem;
+                border: 1px solid #2a2a2e;
+                border-radius: 0.5rem;
+                background: #0f0f12;
+                color: #e8e4dc;
+                font-size: 0.875rem;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+            .nav-btn:hover {
+                background: #1a1a1e;
+                border-color: #4a9eff;
+                transform: translateY(-1px);
+            }
+        `;
+        document.head.appendChild(estilo);
         
-        // Ouvir eventos do sistema
-        window.addEventListener('grimorio:personagemAtualizado', carregarPerfilCompleto);
-        
-        // Ouvir eventos de atualização de dados
-        window.addEventListener('grimorio:dadosAtualizados', function(event) {
-            console.log('Dados atualizados recebidos:', event);
-            carregarPerfilCompleto();
-        });
-        
-        console.log('Página de perfil inicializada com sucesso!');
+        console.log('Perfil carregado com sucesso!');
     });
-
-    // 11. Estilo para botões de navegação
-    const estiloNav = document.createElement('style');
-    estiloNav.textContent = `
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border: 1px solid #2a2a2e;
-            border-radius: 0.5rem;
-            background: #0f0f12;
-            color: #e8e4dc;
-            font-size: 0.875rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .nav-btn:hover {
-            background: #1a1a1e;
-            border-color: #4a9eff;
-            transform: translateY(-1px);
-        }
-        
-        /* Animações suaves para todos os elementos */
-        .animate-fade-in-up {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-        
-        /* Ajuste para o mascote */
-        #mascote-summary .animate-fade-in-up {
-            opacity: 1;
-            transform: none;
-            animation: none;
-        }
-    `;
-    document.head.appendChild(estiloNav);
     </script>
 </body>
 </html>

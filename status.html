@@ -15,7 +15,7 @@
     
     <!-- ICONES -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    
+
     <style>
         
         /* RESET E ESTILOS GLOBAIS */
@@ -2624,6 +2624,52 @@
         window.toggleDerivado = toggleDerivado;
         window.sistemaDerivados = sistemaDerivados;
 
+        // No status.html, quando salvar os dados:
+        function salvarStatus() {
+            const dados = {
+                vida: {
+                    atual: parseInt(document.getElementById('vida-atual').value),
+                    maxima: parseInt(document.getElementById('vida-maxima').value)
+                },
+                mana: {
+                    atual: parseInt(document.getElementById('mana-atual').value),
+                    maxima: parseInt(document.getElementById('mana-maxima').value)
+                },
+                estamina: {
+                    atual: parseInt(document.getElementById('estamina-atual').value),
+                    maxima: parseInt(document.getElementById('estamina-maxima').value)
+                },
+                atributos: {
+                    forca: parseInt(document.getElementById('forca').value),
+                    destreza: parseInt(document.getElementById('destreza').value),
+                    constituicao: parseInt(document.getElementById('constituicao').value),
+                    inteligencia: parseInt(document.getElementById('inteligencia').value),
+                    sabedoria: parseInt(document.getElementById('sabedoria').value),
+                    carisma: parseInt(document.getElementById('carisma').value)
+                },
+                estatisticas: {
+                    blindagem: parseInt(document.getElementById('blindagem').value),
+                    velocidade: parseInt(document.getElementById('velocidade').value),
+                    iniciativa: parseInt(document.getElementById('iniciativa').value),
+                    percepcao: parseInt(document.getElementById('percepcao').value)
+                }
+            };
+            
+            localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
+            
+            // Salvar dados da sorte separadamente (fixos)
+            const sorteData = {
+                dado1: parseInt(document.getElementById('dado-fe').value) || 5,
+                dado2: parseInt(document.getElementById('dado-sorte').value) || 5,
+                dado3: parseInt(document.getElementById('dado-destino').value) || 5,
+                sorte: parseInt(document.getElementById('indice-sorte').value) || 50,
+                status: document.getElementById('status-sorte').value || 'Neutro'
+            };
+            
+            localStorage.setItem('grimorio_sorte_data', JSON.stringify(sorteData));
+            
+            alert('Status salvo com sucesso!');
+        }
         // INICIALIZAÇÃO SIMPLIFICADA
         document.addEventListener('DOMContentLoaded', function() {
             try {
