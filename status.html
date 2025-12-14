@@ -507,8 +507,7 @@
                     Exportar TXT
                 </button>
                 
-                <!-- BOTÃO DE SINCRONIZAÇÃO COM GRIMÓRIO -->
-                <button id="btn-exportar-grimorio" style="
+                <button id="btn-sincronizar-ficha" style="
                     padding: 0.5rem 1rem;
                     background: linear-gradient(135deg, #22c55e, #10b981);
                     color: white;
@@ -522,8 +521,8 @@
                     transition: all 0.2s;
                 " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 15px rgba(34, 197, 94, 0.3)';" 
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                    <i data-lucide="upload-cloud" style="width: 1rem; height: 1rem;"></i>
-                    Sincronizar
+                    <i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i>
+                    Sincronizar com Ficha
                 </button>
                 
                 <button id="btn-config" style="
@@ -1781,7 +1780,7 @@
         </div>
     </div>
 
-    <!-- SISTEMA AVANÇADO DE STATUS -->
+    <!-- SISTEMA AVANÇADO DE STATUS - VERSÃO SIMPLIFICADA -->
     <script>
         // ============================================================
         // SISTEMA AVANÇADO DE STATUS - VERSÃO 3.0
@@ -1790,9 +1789,8 @@
         // CONSTANTES E VARIÁVEIS GLOBAIS
         const STATUS_STORAGE_KEY = 'grimorio_status_avancado';
         let statusData = null;
-        let historico = [];
 
-        // CLASSE PRINCIPAL DO SISTEMA
+        // CLASSE PRINCIPAL DO SISTEMA (versão simplificada)
         class StatusSystemAvancado {
             // INICIALIZAR SISTEMA
             static init() {
@@ -1822,15 +1820,7 @@
                         // CONFIGURAÇÕES DO SISTEMA
                         modoMestre: false,
                         limitePorAtributo: 100,
-                        minimoParaAleatorio: 18,
-                        pontosDistribuicaoAleatoria: 0,
-                        metodoDistribuicao: 'total',
-                        
-                        // HISTÓRICO E METADADOS
-                        historico: [],
-                        criadoEm: new Date().toISOString(),
-                        atualizadoEm: new Date().toISOString(),
-                        ultimaDistribuicao: null
+                        minimoParaAleatorio: 18
                     };
                     
                     localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify(defaultData));
@@ -1849,28 +1839,7 @@
             static save(data) {
                 data.atualizadoEm = new Date().toISOString();
                 localStorage.setItem(STATUS_STORAGE_KEY, JSON.stringify(data));
-                window.dispatchEvent(new CustomEvent('statusAvancadoUpdated'));
                 return true;
-            }
-            
-            // ADICIONAR REGISTRO AO HISTÓRICO
-            static addHistorico(acao, detalhes) {
-                const data = this.load();
-                const registro = {
-                    data: new Date().toISOString(),
-                    acao: acao,
-                    detalhes: detalhes,
-                    nivel: data.nivel,
-                    xp: data.experiencia
-                };
-                
-                data.historico.unshift(registro);
-                if (data.historico.length > 50) {
-                    data.historico = data.historico.slice(0, 50);
-                }
-                
-                this.save(data);
-                return registro;
             }
             
             // ADICIONAR PONTO A UM ATRIBUTO
@@ -1901,16 +1870,7 @@
                 }
                 
                 this.save(data);
-                
-                this.addHistorico(
-                    'Adicionar ponto',
-                    `${quantidade} ponto(s) em ${atributo} (agora: ${data.atributos[atributo]})`
-                );
-                
                 this.showNotification(`${quantidade} ponto(s) adicionado(s) em ${atributo}`, 'success');
-                
-                this.checkRandomDistribution(data);
-                
                 return data;
             }
             
@@ -1927,12 +1887,6 @@
                     }
                     
                     this.save(data);
-                    
-                    this.addHistorico(
-                        'Remover ponto',
-                        `${quantidade} ponto(s) removido(s) de ${atributo} (agora: ${data.atributos[atributo]})`
-                    );
-                    
                     this.showNotification(`${quantidade} ponto(s) removido(s) de ${atributo}`, 'info');
                     return data;
                 }
@@ -1945,143 +1899,7 @@
                 const data = this.load();
                 data.pontosDisponiveis += parseInt(quantidade);
                 this.save(data);
-                
-                this.addHistorico(
-                    'Adicionar pontos',
-                    `${quantidade} ponto(s) adicionado(s) ao total disponível`
-                );
-                
                 this.showNotification(`${quantidade} ponto(s) adicionado(s)`, 'success');
-                return data;
-            }
-            
-            // VERIFICAR DISTRIBUIÇÃO ALEATÓRIA
-            static checkRandomDistribution(data) {
-                const totalAtual = Object.values(data.atributos).reduce((a, b) => a + b, 0);
-                
-                if (totalAtual >= data.minimoParaAleatorio && !data.ultimaDistribuicao) {
-                    const pontosDistribuir = data.pontosDistribuicaoAleatoria;
-                    const atributos = Object.keys(data.atributos);
-                    let pontosRestantes = pontosDistribuir;
-                    
-                    while (pontosRestantes > 0) {
-                        const attrAleatorio = atributos[Math.floor(Math.random() * atributos.length)];
-                        
-                        if (data.atributos[attrAleatorio] < data.limitePorAtributo) {
-                            data.atributos[attrAleatorio]++;
-                            pontosRestantes--;
-                        }
-                    }
-                    
-                    data.ultimaDistribuicao = new Date().toISOString();
-                    data.pontosUsados += pontosDistribuir;
-                    
-                    if (!data.modoMestre) {
-                        data.pontosDisponiveis = Math.max(0, data.pontosDisponiveis - pontosDistribuir);
-                    }
-                    
-                    this.save(data);
-                    
-                    this.addHistorico(
-                        'Distribuição aleatória',
-                        `${pontosDistribuir} ponto(s) distribuído(s) aleatoriamente (total ≥ ${data.minimoParaAleatorio})`
-                    );
-                    
-                    this.showNotification(
-                        `🎲 ${pontosDistribuir} pontos distribuídos aleatoriamente!`, 
-                        'success'
-                    );
-                    
-                    return true;
-                }
-                
-                return false;
-            }
-            
-            // DISTRIBUIÇÃO ALEATÓRIA AVANÇADA
-            static distribuirAleatorioAvancado(quantidade, metodo = 'total') {
-                const data = this.load();
-                const pontosDistribuir = parseInt(quantidade);
-                const atributos = Object.keys(data.atributos);
-                
-                if (metodo === 'total') {
-                    const totalAtual = Object.values(data.atributos).reduce((a, b) => a + b, 0);
-                    
-                    if (totalAtual >= data.minimoParaAleatorio) {
-                        return this.distribuirPontosAleatorios(data, pontosDistribuir);
-                    } else {
-                        const pontosParaMinimo = data.minimoParaAleatorio - totalAtual;
-                        
-                        for (let i = 0; i < pontosParaMinimo; i++) {
-                            const attrAleatorio = atributos[Math.floor(Math.random() * atributos.length)];
-                            if (data.atributos[attrAleatorio] < data.limitePorAtributo) {
-                                data.atributos[attrAleatorio]++;
-                            }
-                        }
-                        
-                        return this.distribuirPontosAleatorios(data, pontosDistribuir);
-                    }
-                } else if (metodo === 'fixo') {
-                    return this.distribuirPontosAleatorios(data, pontosDistribuir);
-                } else if (metodo === 'porcentagem') {
-                    const totalAtual = Object.values(data.atributos).reduce((a, b) => a + b, 0);
-                    const pontosDistribuirCalc = Math.floor(totalAtual * (pontosDistribuir / 100));
-                    return this.distribuirPontosAleatorios(data, pontosDistribuirCalc);
-                } else if (metodo === 'balanceado') {
-                    const pontosPorAtributo = Math.floor(pontosDistribuir / atributos.length);
-                    const pontosRestantes = pontosDistribuir % atributos.length;
-                    
-                    atributos.forEach(attr => {
-                        data.atributos[attr] = Math.min(
-                            data.limitePorAtributo,
-                            data.atributos[attr] + pontosPorAtributo
-                        );
-                    });
-                    
-                    for (let i = 0; i < pontosRestantes; i++) {
-                        const attrAleatorio = atributos[Math.floor(Math.random() * atributos.length)];
-                        if (data.atributos[attrAleatorio] < data.limitePorAtributo) {
-                            data.atributos[attrAleatorio]++;
-                        }
-                    }
-                    
-                    data.pontosUsados += pontosDistribuir;
-                    this.save(data);
-                    
-                    this.addHistorico(
-                        'Distribuição balanceada',
-                        `${pontosDistribuir} ponto(s) distribuído(s) balanceadamente`
-                    );
-                    
-                    this.showNotification(
-                        `⚖️ ${pontosDistribuir} pontos distribuídos balanceadamente`,
-                        'success'
-                    );
-                    
-                    return data;
-                }
-                
-                return false;
-            }
-            
-            // DISTRIBUIR PONTOS ALEATORIAMENTE (FUNÇÃO AUXILIAR)
-            static distribuirPontosAleatorios(data, pontosDistribuir) {
-                const atributos = Object.keys(data.atributos);
-                let pontosRestantes = pontosDistribuir;
-                
-                while (pontosRestantes > 0) {
-                    const attrAleatorio = atributos[Math.floor(Math.random() * atributos.length)];
-                    
-                    if (data.atributos[attrAleatorio] < data.limitePorAtributo) {
-                        data.atributos[attrAleatorio]++;
-                        pontosRestantes--;
-                    }
-                }
-                
-                data.pontosUsados += pontosDistribuir;
-                data.ultimaDistribuicao = new Date().toISOString();
-                this.save(data);
-                
                 return data;
             }
             
@@ -2104,11 +1922,6 @@
                 
                 this.save(data);
                 
-                this.addHistorico(
-                    'Adicionar XP',
-                    `${quantidade} XP adicionado(s) (nível: ${data.nivel})`
-                );
-                
                 if (niveisGanhos > 0) {
                     this.showNotification(
                         `🎉 Nível ${data.nivel}! +${data.pontosPorNivel * niveisGanhos} pontos ganhos`,
@@ -2116,7 +1929,7 @@
                     );
                 } else {
                     this.showNotification(
-                        `${quantidade} XP adicionado(s) (faltam ${data.experienciaProximoNivel - data.experiencia} XP para o próximo nível)`,
+                        `${quantidade} XP adicionado(s)`,
                         'info'
                     );
                 }
@@ -2130,21 +1943,10 @@
                 data.nivel++;
                 data.pontosDisponiveis += data.pontosPorNivel;
                 data.experiencia = 0;
-                
                 data.experienciaProximoNivel = Math.floor(data.experienciaProximoNivel * 1.5);
                 
                 this.save(data);
-                
-                this.addHistorico(
-                    'Subir de nível',
-                    `Nível ${data.nivel} alcançado manualmente`
-                );
-                
-                this.showNotification(
-                    `⬆️ Nível ${data.nivel}! +${data.pontosPorNivel} pontos ganhos`,
-                    'success'
-                );
-                
+                this.showNotification(`⬆️ Nível ${data.nivel}! +${data.pontosPorNivel} pontos ganhos`, 'success');
                 return data;
             }
             
@@ -2159,12 +1961,6 @@
                 });
                 
                 this.save(data);
-                
-                this.addHistorico(
-                    'Atualizar configurações',
-                    'Configurações do sistema modificadas'
-                );
-                
                 this.showNotification('Configurações atualizadas com sucesso!', 'success');
                 return data;
             }
@@ -2199,15 +1995,7 @@
                     data.experiencia = 0;
                     data.experienciaProximoNivel = 1000;
                     
-                    data.ultimaDistribuicao = null;
-                    
                     this.save(data);
-                    
-                    this.addHistorico(
-                        'Resetar tudo',
-                        'Todos os status foram resetados para 0'
-                    );
-                    
                     this.showNotification('Sistema resetado com sucesso!', 'info');
                     return data;
                 }
@@ -2215,148 +2003,99 @@
                 return false;
             }
             
-            // EXPORTAR DADOS PARA TXT
-            static exportToTxt() {
-                const data = this.load();
-                const recursos = window.sistemaDerivados ? window.sistemaDerivados.recursos : null;
-                const sorte = window.sorteAtual || null;
-                
-                let txtContent = '=== SISTEMA DE STATUS AVANÇADO ===\n';
-                txtContent += `Exportado em: ${new Date().toLocaleString()}\n\n`;
-                
-                // Atributos
-                txtContent += '=== ATRIBUTOS ===\n';
-                Object.entries(data.atributos).forEach(([attr, valor]) => {
-                    txtContent += `${attr.charAt(0).toUpperCase() + attr.slice(1)}: ${valor}/100\n`;
-                });
-                txtContent += '\n';
-                
-                // Pontos e Nível
-                txtContent += '=== PONTOS E NÍVEL ===\n';
-                txtContent += `Pontos Disponíveis: ${data.pontosDisponiveis}\n`;
-                txtContent += `Pontos Usados: ${data.pontosUsados}/${data.limiteTotalPontos}\n`;
-                txtContent += `Nível: ${data.nivel}\n`;
-                txtContent += `XP: ${data.experiencia}/${data.experienciaProximoNivel}\n`;
-                txtContent += `Pontos por Nível: ${data.pontosPorNivel}\n\n`;
-                
-                // Recursos Vitais
-                if (recursos) {
-                    txtContent += '=== RECURSOS VITAIS ===\n';
-                    txtContent += `Vida: ${recursos.vida.atual}/${recursos.vida.max}\n`;
-                    txtContent += `Mana: ${recursos.mana.atual}/${recursos.mana.max}\n`;
-                    txtContent += `Estamina: ${recursos.estamina.atual}/${recursos.estamina.max}\n\n`;
-                }
-                
-                // Sorte
-                if (sorte !== null) {
-                    txtContent += '=== DESTINO ===\n';
-                    txtContent += `Destino: ${sorte}%\n`;
-                    if (window.dadosSorte) {
-                        txtContent += `Dados: Fé=${window.dadosSorte[0]}, Sorte=${window.dadosSorte[1]}, Destino=${window.dadosSorte[2]}\n`;
-                    }
-                    txtContent += `Fixado: ${window.sorteFixada ? 'Sim' : 'Não'}\n\n`;
-                }
-                
-                // Derivados
-                if (window.sistemaDerivados && window.sistemaDerivados.derivados) {
-                    txtContent += '=== DERIVADOS AVANÇADOS ===\n';
-                    Object.entries(window.sistemaDerivados.derivados).forEach(([key, derivado]) => {
-                        if (derivado.ativo) {
-                            txtContent += `${key.replace(/([A-Z])/g, ' $1').toUpperCase()}: ${derivado.valor}/${derivado.max}\n`;
-                        }
-                    });
-                    txtContent += '\n';
-                }
-                
-                // Configurações
-                txtContent += '=== CONFIGURAÇÕES ===\n';
-                txtContent += `Limite por Atributo: ${data.limitePorAtributo}\n`;
-                txtContent += `Limite Total: ${data.limiteTotalPontos}\n`;
-                txtContent += `Mínimo para Aleatório: ${data.minimoParaAleatorio}\n`;
-                txtContent += `Pontos Distribuição Aleatória: ${data.pontosDistribuicaoAleatoria}\n`;
-                txtContent += `Modo Mestre: ${data.modoMestre ? 'Ativo' : 'Inativo'}\n`;
-                
-                return txtContent;
-            }
-            
-            // IMPORTAR DADOS DE TXT
-            static importFromTxt(txtContent) {
+            // EXPORTAR DADOS PARA GRIMORIO
+            static exportToGrimorio() {
                 try {
-                    const lines = txtContent.split('\n');
                     const data = this.load();
-                    const novosAtributos = { ...data.atributos };
                     
-                    // Regex para capturar valores
-                    lines.forEach(line => {
-                        // Atributos
-                        for (const attr in data.atributos) {
-                            const regex = new RegExp(`^${attr}\\s*[=:]\\s*(\\d+)`, 'i');
-                            const match = line.match(regex);
-                            if (match) {
-                                const valor = parseInt(match[1]);
-                                novosAtributos[attr] = Math.min(100, Math.max(0, valor));
-                                return;
-                            }
-                        }
-                        
-                        // Pontos e Nível
-                        if (line.toLowerCase().includes('pontos disponíveis')) {
-                            const match = line.match(/(\d+)/);
-                            if (match) data.pontosDisponiveis = parseInt(match[1]);
-                        } else if (line.toLowerCase().includes('nível')) {
-                            const match = line.match(/(\d+)/);
-                            if (match) data.nivel = parseInt(match[1]);
-                        } else if (line.toLowerCase().includes('xp:')) {
-                            const match = line.match(/(\d+)\/(\d+)/);
-                            if (match) {
-                                data.experiencia = parseInt(match[1]);
-                                data.experienciaProximoNivel = parseInt(match[2]);
-                            }
-                        }
+                    // Verificar se o GrimorioSystem existe
+                    if (typeof window.GrimorioSystem === 'undefined') {
+                        this.showNotification('❌ Sistema Grimório não encontrado', 'error');
+                        return false;
+                    }
+                    
+                    // Preparar dados para a ficha (converter de 0-100 para 0-30)
+                    const atributosConvertidos = {};
+                    Object.keys(data.atributos).forEach(key => {
+                        // Converter de 0-100 para 0-30 (escala da ficha)
+                        const valorConvertido = Math.round((data.atributos[key] / 100) * 30);
+                        atributosConvertidos[key] = Math.min(30, valorConvertido);
                     });
                     
-                    // Atualizar atributos
-                    data.atributos = novosAtributos;
-                    data.pontosUsados = Object.values(novosAtributos).reduce((a, b) => a + b, 0);
+                    // Criar objeto de sincronização
+                    const syncData = {
+                        atributos: atributosConvertidos,
+                        nivel: data.nivel,
+                        experiencia: data.experiencia,
+                        experienciaProximoNivel: data.experienciaProximoNivel,
+                        pontosDisponiveis: data.pontosDisponiveis,
+                        sincronizadoEm: new Date().toISOString(),
+                        origem: 'sistema_status_avancado'
+                    };
                     
-                    // Tentar extrair recursos
-                    const vidaMatch = txtContent.match(/vida\s*[=:]\s*(\d+)\/(\d+)/i);
-                    const manaMatch = txtContent.match(/mana\s*[=:]\s*(\d+)\/(\d+)/i);
-                    const estaminaMatch = txtContent.match(/estamina\s*[=:]\s*(\d+)\/(\d+)/i);
+                    // Salvar no GrimorioSystem
+                    window.GrimorioSystem.sincronizarStatus(syncData);
                     
-                    if (vidaMatch && window.ajustarRecurso) {
-                        window.ajustarRecurso('vida', parseInt(vidaMatch[1]));
-                        window.ajustarRecurso('vida', parseInt(vidaMatch[1]));
-                    }
+                    this.showNotification('✅ Status sincronizado com a ficha!', 'success');
                     
-                    if (manaMatch && window.ajustarRecurso) {
-                        window.ajustarRecurso('mana', parseInt(manaMatch[1]));
-                    }
+                    // Forçar atualização do perfil
+                    window.dispatchEvent(new CustomEvent('grimorio:personagemAtualizado'));
                     
-                    if (estaminaMatch && window.ajustarRecurso) {
-                        window.ajustarRecurso('estamina', parseInt(estaminaMatch[1]));
-                    }
-                    
-                    // Tentar extrair sorte
-                    const sorteMatch = txtContent.match(/destino\s*[=:]\s*(\d+)%/i);
-                    if (sorteMatch && window.rolarSorte) {
-                        const sorteValor = parseInt(sorteMatch[1]);
-                        if (window.sorteAtual === null) {
-                            // Simular uma rolagem
-                            window.sorteAtual = sorteValor;
-                            window.dadosSorte = [sorteValor, sorteValor, sorteValor];
-                            window.atualizarDisplaySorte();
-                            window.gerarRecomendacoesBaseadasNaSorte(sorteValor);
-                        }
-                    }
-                    
-                    this.save(data);
-                    this.showNotification('Dados importados com sucesso!', 'success');
                     return true;
                     
                 } catch (error) {
-                    console.error('Erro ao importar dados:', error);
-                    this.showNotification('Erro ao importar dados! Formato inválido.', 'error');
+                    console.error('Erro ao exportar para Grimório:', error);
+                    this.showNotification('❌ Erro ao sincronizar com a ficha', 'error');
+                    return false;
+                }
+            }
+            
+            // IMPORTAR DADOS DO GRIMORIO
+            static importFromGrimorio() {
+                try {
+                    if (typeof window.GrimorioSystem === 'undefined') {
+                        this.showNotification('❌ Sistema Grimório não encontrado', 'error');
+                        return false;
+                    }
+                    
+                    const personagem = window.GrimorioSystem.carregarPersonagem();
+                    
+                    if (!personagem) {
+                        this.showNotification('❌ Nenhum personagem encontrado', 'error');
+                        return false;
+                    }
+                    
+                    const data = this.load();
+                    
+                    // Converter atributos de 0-30 para 0-100
+                    const attrs = personagem.atributos || {};
+                    
+                    Object.keys(attrs).forEach(attr => {
+                        if (data.atributos[attr] !== undefined) {
+                            // Converter de 0-30 para 0-100
+                            const valorConvertido = Math.round((attrs[attr] / 30) * 100);
+                            data.atributos[attr] = Math.min(100, valorConvertido);
+                        }
+                    });
+                    
+                    // Atualizar progressão
+                    data.nivel = personagem.nivel || 1;
+                    data.experiencia = personagem.experiencia || 0;
+                    data.experienciaProximoNivel = personagem.experienciaProximoNivel || 1000;
+                    data.pontosDisponiveis = personagem.pontosDisponiveis || 0;
+                    
+                    // Recalcular pontos usados
+                    data.pontosUsados = Object.values(data.atributos).reduce((a, b) => a + b, 0);
+                    
+                    // Salvar dados atualizados
+                    this.save(data);
+                    
+                    this.showNotification('✅ Dados carregados da ficha!', 'success');
+                    return true;
+                    
+                } catch (error) {
+                    console.error('Erro ao importar do Grimório:', error);
+                    this.showNotification('❌ Erro ao carregar dados da ficha', 'error');
                     return false;
                 }
             }
@@ -2365,11 +2104,16 @@
             static showNotification(message, type = 'info') {
                 const notification = document.createElement('div');
                 notification.className = `status-notification status-notification-${type}`;
+                
+                const icons = {
+                    success: 'check-circle',
+                    warning: 'alert-triangle',
+                    error: 'x-circle',
+                    info: 'info'
+                };
+                
                 notification.innerHTML = `
-                    <i data-lucide="${type === 'success' ? 'check-circle' : 
-                                    type === 'warning' ? 'alert-triangle' : 
-                                    type === 'error' ? 'x-circle' : 'info'}" 
-                    class="notification-icon"></i>
+                    <i data-lucide="${icons[type] || 'info'}" class="notification-icon"></i>
                     <span>${message}</span>
                 `;
                 
@@ -2389,48 +2133,33 @@
         }
 
         // ====================================================================
-        // SISTEMA DE SORTE/DERIVADOS
+        // SISTEMA DE SORTE/DERIVADOS (Simplificado)
         // ====================================================================
 
-        // Variáveis globais do sistema de sorte
         let sorteAtual = null;
         let dadosSorte = [0, 0, 0];
         let sorteFixada = false;
 
-        // Sistema de derivados avançados
         const sistemaDerivados = {
             derivados: {
                 blindagem: { ativo: false, valor: 0, max: 100, cor: '#dc2626', icone: 'shield' },
                 velocidade: { ativo: false, valor: 0, max: 100, cor: '#22c55e', icone: 'wind' },
                 iniciativa: { ativo: false, valor: 0, max: 100, cor: '#4a9eff', icone: 'zap' },
                 percepcao: { ativo: false, valor: 0, max: 100, cor: '#8b5cf6', icone: 'eye' },
-                visaoNoturna: { ativo: false, valor: 0, max: 100, cor: '#f59e0b', icone: 'moon' },
-                esquiva: { ativo: false, valor: 0, max: 100, cor: '#ec4899', icone: 'move' },
-                resistencia: { ativo: false, valor: 0, max: 100, cor: '#14b8a6', icone: 'shield-off' }
+                esquiva: { ativo: false, valor: 0, max: 100, cor: '#ec4899', icone: 'move' }
             },
             
             recursos: {
                 vida: { atual: 100, max: 100, cor: '#dc2626', icone: 'heart' },
                 mana: { atual: 100, max: 100, cor: '#4a9eff', icone: 'sparkles' },
                 estamina: { atual: 100, max: 100, cor: '#22c55e', icone: 'zap' }
-            },
-            
-            atributos: {
-                forca: 0,
-                destreza: 0,
-                constituicao: 0,
-                inteligencia: 0,
-                sabedoria: 0,
-                carisma: 0
             }
         };
 
-        // FUNÇÕES DO SISTEMA DE SORTE
+        // FUNÇÕES BÁSICAS DO SISTEMA DE SORTE
         function rolarSorte() {
             if (sorteFixada) {
-                if (!confirm("O destino está fixado! Deseja rolar novamente e sobrescrever?")) {
-                    return;
-                }
+                if (!confirm("O destino está fixado! Deseja rolar novamente?")) return;
                 sorteFixada = false;
             }
             
@@ -2445,177 +2174,39 @@
             resultadoFinal = Math.max(1, Math.min(100, resultadoFinal));
             
             sorteAtual = resultadoFinal;
-            
             atualizarDisplaySorte();
-            
-            const secaoSorte = document.getElementById('secao-sorte');
-            if (secaoSorte) secaoSorte.style.display = 'block';
-            
-            gerarRecomendacoesBaseadasNaSorte(sorteAtual);
             salvarSorteNoLocalStorage();
-            aplicarEfeitoSorteNosDerivados();
             
-            mostrarFeedback(`🎲 Destino rolado: ${sorteAtual}%`, 'success');
+            StatusSystemAvancado.showNotification(`🎲 Destino rolado: ${sorteAtual}%`, 'success');
         }
 
         function fixarSorte() {
             sorteFixada = true;
-            
-            const botaoFixar = document.getElementById('btn-fixar-sorte');
-            if (botaoFixar) {
-                botaoFixar.innerHTML = '<i data-lucide="check" style="width: 1rem; height: 1rem;"></i> Destino Selado!';
-                botaoFixar.style.background = 'linear-gradient(135deg, rgba(139, 115, 85, 0.3), rgba(212, 167, 106, 0.3))';
-                botaoFixar.style.borderColor = '#d4a76a';
-                botaoFixar.disabled = true;
-                if (window.lucide) lucide.createIcons();
-            }
-            
-            const secaoSorte = document.getElementById('secao-sorte');
-            if (secaoSorte) {
-                secaoSorte.style.borderColor = '#d4a76a';
-                secaoSorte.style.boxShadow = '0 0 30px rgba(212, 167, 106, 0.2)';
-                setTimeout(() => {
-                    secaoSorte.style.boxShadow = '';
-                }, 1000);
-            }
-            
             salvarSorteNoLocalStorage();
-            
-            let mensagem = '';
-            if (sorteAtual >= 75) {
-                mensagem = `✨ Destino glorioso fixado em ${sorteAtual}%! A fortuna sorri para você.`;
-            } else if (sorteAtual <= 25) {
-                mensagem = `🌑 Destino sombrio fixado em ${sorteAtual}%. O caminho será árduo, mas não impossível.`;
-            } else {
-                mensagem = `⚖️ Destino fixado em ${sorteAtual}%. O equilíbrio está em suas mãos.`;
-            }
-            
-            mostrarFeedback(mensagem, 'success');
+            StatusSystemAvancado.showNotification(`Destino fixado em ${sorteAtual}%!`, 'success');
         }
 
         function atualizarDisplaySorte() {
             const cardSorte = document.getElementById('calc-sorte');
             if (cardSorte) {
                 cardSorte.textContent = sorteAtual !== null ? `${sorteAtual}%` : '--';
-                
-                const cardContainer = cardSorte.closest('#conteudo-sorte');
-                if (cardContainer) {
-                    if (sorteAtual >= 75) {
-                        cardContainer.style.borderColor = '#f4d29a';
-                        cardContainer.style.boxShadow = '0 0 20px rgba(244, 210, 154, 0.2)';
-                    } else if (sorteAtual <= 25) {
-                        cardContainer.style.borderColor = '#8b4513';
-                        cardContainer.style.boxShadow = '';
-                    } else {
-                        cardContainer.style.borderColor = '#8b7355';
-                        cardContainer.style.boxShadow = '';
-                    }
-                }
             }
             
             const dadosIds = ['dado-sorte-1', 'dado-sorte-2', 'dado-sorte-3'];
             dadosIds.forEach((id, index) => {
                 const elemento = document.getElementById(id);
                 if (elemento) {
-                    elemento.classList.add('dice-rolling');
-                    setTimeout(() => {
-                        elemento.textContent = dadosSorte[index];
-                        
-                        const dadoContainer = elemento.closest('.dado-container');
-                        if (dadosSorte[index] > 80 && dadoContainer) {
-                            dadoContainer.classList.add('high-roll');
-                        } else {
-                            dadoContainer.classList.remove('high-roll');
-                        }
-                        
-                        setTimeout(() => {
-                            elemento.classList.remove('dice-rolling');
-                        }, 800);
-                    }, 300);
+                    elemento.textContent = dadosSorte[index];
                 }
             });
-            
-            const calculoEl = document.getElementById('calculo-sorte');
-            if (calculoEl) {
-                const calculo = `((<span style="color: white">${dadosSorte[0]}</span> + <span style="color: white">${dadosSorte[2]}</span>) × 2 - <span style="color: white">${dadosSorte[1]}</span>) ÷ 2 = <span style="color: ${sorteAtual >= 75 ? '#f4d29a' : sorteAtual <= 25 ? '#8b4513' : '#d4a76a'}; font-weight: bold">${sorteAtual}</span>`;
-                calculoEl.innerHTML = calculo;
-            }
-            
-            const titulo = document.querySelector('#secao-sorte h2');
-            if (titulo) {
-                if (sorteAtual >= 75) {
-                    titulo.innerHTML = '<i data-lucide="crown" style="width: 1.5rem; height: 1.5rem;"></i> Destino Glorioso';
-                } else if (sorteAtual <= 25) {
-                    titulo.innerHTML = '<i data-lucide="cloud-rain" style="width: 1.5rem; height: 1.5rem;"></i> Destino Sombrio';
-                } else {
-                    titulo.innerHTML = '<i data-lucide="compass" style="width: 1.5rem; height: 1.5rem;"></i> Sistema de Destino';
-                }
-                if (window.lucide) lucide.createIcons();
-            }
-        }
-
-        function gerarRecomendacoesBaseadasNaSorte(sorte) {
-            const container = document.getElementById('recomendacoes-container');
-            if (!container) return;
-            
-            let recomendacao = '';
-            let icone = '🎯';
-            let titulo = 'DESTINO: ' + sorte + '%';
-            
-            if (sorte >= 90) {
-                recomendacao = 'SORTE LENDÁRIA! Você é abençoado pelos deuses. Armas com crítico máximo são obrigatórias.';
-                icone = '✨';
-                titulo = '✨ DESTINO GLORIOSO: ' + sorte + '%';
-            } else if (sorte >= 75) {
-                recomendacao = 'Sorte excelente! Foque em armas com alto dano crítico e efeitos especiais.';
-                icone = '🎲';
-                titulo = '🎲 DESTINO FAVORÁVEL: ' + sorte + '%';
-            } else if (sorte >= 60) {
-                recomendacao = 'Sorte acima da média. Armas balanceadas com chance de crítico são ideais.';
-                icone = '🍀';
-                titulo = '🍀 DESTINO POSITIVO: ' + sorte + '%';
-            } else if (sorte >= 40) {
-                recomendacao = 'Sorte mediana. Use armas confiáveis com dano constante.';
-                icone = '⚖️';
-                titulo = '⚖️ DESTINO EQUILIBRADO: ' + sorte + '%';
-            } else if (sorte >= 25) {
-                recomendacao = 'Sorte abaixo da média. Prefira armas defensivas e equipamentos de proteção.';
-                icone = '🛡️';
-                titulo = '🛡️ DESTINO DESAFIADOR: ' + sorte + '%';
-            } else {
-                recomendacao = 'Sorte crítica baixa. Foque em sobrevivência e evite riscos desnecessários.';
-                icone = '⚠️';
-                titulo = '⚠️ DESTINO SOMBRIO: ' + sorte + '%';
-            }
-            
-            container.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem;">
-                    <span style="font-size: 1.5rem;">${icone}</span>
-                    <span style="font-family: Cinzel; font-weight: bold; color: #f4d29a;">${titulo}</span>
-                </div>
-                <p style="color: #d4a76a; margin-bottom: 1rem;">${recomendacao}</p>
-                ${sorte >= 75 ? `
-                <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(139, 115, 85, 0.1); border: 1px solid rgba(139, 115, 85, 0.2); border-radius: 0.5rem;">
-                    <p style="color: #f4d29a; font-weight: 500; margin-bottom: 0.5rem;">🎯 Armas recomendadas (Alto Crítico):</p>
-                    <ul style="color: #d4a76a; font-size: 0.875rem; margin-left: 1rem;">
-                        <li>Adagas Gêmeas da Sorte (19-20/x3)</li>
-                        <li>Espada Vorpal (18-20/x2)</li>
-                        <li>Arco do Acerto Certeiro (x4 crítico)</li>
-                    </ul>
-                </div>
-                ` : ''}
-            `;
         }
 
         function salvarSorteNoLocalStorage() {
-            const dadosSorteParaSalvar = {
+            localStorage.setItem('grimorio_sorte', JSON.stringify({
                 valor: sorteAtual,
                 dados: dadosSorte,
-                fixada: sorteFixada,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('grimorio_sorte', JSON.stringify(dadosSorteParaSalvar));
+                fixada: sorteFixada
+            }));
         }
 
         function carregarSorteDoLocalStorage() {
@@ -2630,35 +2221,13 @@
                 
                 if (sorteAtual !== null) {
                     atualizarDisplaySorte();
-                    
-                    if (sorteFixada) {
-                        const botaoFixar = document.getElementById('btn-fixar-sorte');
-                        if (botaoFixar) {
-                            botaoFixar.innerHTML = '<i data-lucide="check" style="width: 1rem; height: 1rem;"></i> Destino Selado!';
-                            botaoFixar.disabled = true;
-                        }
-                    }
-                    
-                    gerarRecomendacoesBaseadasNaSorte(sorteAtual);
                 }
             } catch (error) {
                 console.error('Erro ao carregar sorte:', error);
             }
         }
 
-        function configurarEventosSorte() {
-            const btnRolar = document.getElementById('btn-rolar-sorte');
-            if (btnRolar) {
-                btnRolar.addEventListener('click', rolarSorte);
-            }
-            
-            const btnFixar = document.getElementById('btn-fixar-sorte');
-            if (btnFixar) {
-                btnFixar.addEventListener('click', fixarSorte);
-            }
-        }
-
-        // FUNÇÕES DO SISTEMA DE RECURSOS
+        // FUNÇÕES DE RECURSOS E DERIVADOS
         function renderRecursos() {
             const container = document.getElementById('recursos-container');
             if (!container) return;
@@ -2667,468 +2236,132 @@
             
             container.innerHTML = Object.entries(recursos).map(([key, recurso]) => {
                 const porcentagem = (recurso.atual / recurso.max) * 100;
-                const classe = `card-${key}`;
                 
                 return `
-                    <div class="${classe} animate-fadeIn" style="
-                        border: 1px solid;
+                    <div class="card-${key}" style="
+                        border: 1px solid ${recurso.cor}30;
                         border-radius: 1rem;
                         padding: 1.5rem;
-                        position: relative;
-                        overflow: hidden;
+                        background: linear-gradient(135deg, ${recurso.cor}10, ${recurso.cor}05);
+                        margin-bottom: 1rem;
                     ">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="
-                                    width: 3rem;
-                                    height: 3rem;
-                                    background: ${recurso.cor}20;
-                                    border-radius: 0.75rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                ">
+                                <div style="width: 3rem; height: 3rem; background: ${recurso.cor}20; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
                                     <i data-lucide="${recurso.icone}" style="width: 1.5rem; height: 1.5rem; color: ${recurso.cor};"></i>
                                 </div>
                                 <div>
-                                    <h4 style="
-                                        font-weight: 600;
-                                        font-size: 1.25rem;
-                                        color: ${recurso.cor};
-                                        margin-bottom: 0.25rem;
-                                        text-transform: capitalize;
-                                    ">${key}</h4>
-                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                                        Recursos vitais do personagem
-                                    </p>
+                                    <h4 style="font-weight: 600; font-size: 1.25rem; color: ${recurso.cor}; margin-bottom: 0.25rem; text-transform: capitalize;">
+                                        ${key}
+                                    </h4>
+                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">Recursos vitais</p>
                                 </div>
                             </div>
-                            
                             <div style="text-align: right;">
-                                <div id="${key}-atual" style="
-                                    font-family: 'JetBrains Mono', monospace;
-                                    font-size: 2.5rem;
-                                    font-weight: 700;
-                                    color: ${recurso.cor};
-                                ">${recurso.atual}</div>
-                                <div style="color: var(--text-secondary); font-size: 0.875rem;">
-                                    / <span id="${key}-max">${recurso.max}</span>
+                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: ${recurso.cor};">
+                                    ${recurso.atual}
                                 </div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem;">/ ${recurso.max}</div>
                             </div>
                         </div>
-                        
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">Progresso</span>
-                                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: ${recurso.cor};">
-                                    ${porcentagem.toFixed(1)}%
-                                </span>
+                        <div>
+                            <div style="height: 8px; background: ${recurso.cor}20; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: ${recurso.cor}; width: ${porcentagem}%;"></div>
                             </div>
-                            <div style="
-                                height: 8px;
-                                background: ${recurso.cor}20;
-                                border-radius: 4px;
-                                overflow: hidden;
-                            ">
-                                <div id="barra-${key}" style="
-                                    height: 100%;
-                                    background: ${recurso.cor};
-                                    border-radius: 4px;
-                                    width: ${porcentagem}%;
-                                    transition: width 0.5s ease;
-                                "></div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;">
-                            <input type="range" 
-                                id="input-${key}"
-                                min="0" 
-                                max="${recurso.max}" 
-                                value="${recurso.atual}" 
-                                oninput="ajustarRecurso('${key}', this.value)"
-                                style="
-                                    width: 100%;
-                                    height: 8px;
-                                    background: ${recurso.cor}20;
-                                    border-radius: 4px;
-                            ">
-                            <input type="number" 
-                                min="0" 
-                                max="${recurso.max}" 
-                                value="${recurso.atual}"
-                                onchange="ajustarRecurso('${key}', this.value)"
-                                style="
-                                    width: 60px;
-                                    padding: 0.25rem;
-                                    background: var(--bg-panel);
-                                    border: 1px solid var(--border-color);
-                                    border-radius: 0.25rem;
-                                    color: ${recurso.cor};
-                                    font-family: 'JetBrains Mono', monospace;
-                                    text-align: center;
-                            ">
+                            <input type="range" min="0" max="${recurso.max}" value="${recurso.atual}" 
+                                   oninput="ajustarRecurso('${key}', this.value)"
+                                   style="width: 100%; margin-top: 0.5rem;">
                         </div>
                     </div>
                 `;
             }).join('');
             
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            if (window.lucide) lucide.createIcons();
         }
 
-        // FUNÇÕES DO SISTEMA DE DERIVADOS
         function renderDerivados() {
             const container = document.getElementById('derivados-container');
             if (!container) return;
             
             container.innerHTML = Object.entries(sistemaDerivados.derivados).map(([key, derivado]) => {
                 const porcentagem = (derivado.valor / derivado.max) * 100;
-                const ativoClass = derivado.ativo ? 'border-opacity-100' : 'border-opacity-30 opacity-70';
                 const nomeExibicao = key.replace(/([A-Z])/g, ' $1').toUpperCase();
                 
                 return `
-                    <div class="derivado-card animate-fadeIn" onclick="toggleDerivado('${key}')" style="
+                    <div style="
                         background: var(--bg-panel);
-                        border: 1px solid ${derivado.cor};
-                        ${ativoClass ? 'border-opacity: ' + (derivado.ativo ? '1' : '0.3') + ';' : ''}
-                        ${!derivado.ativo ? 'opacity: 0.7;' : ''}
+                        border: 1px solid ${derivado.cor}${derivado.ativo ? '80' : '30'};
                         border-radius: 1rem;
                         padding: 1.5rem;
+                        opacity: ${derivado.ativo ? '1' : '0.7'};
                         cursor: pointer;
-                        transition: all 0.3s;
-                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 25px rgba(0, 0, 0, 0.3)';" 
-                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none';">
-                        
+                    " onclick="toggleDerivado('${key}')">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="
-                                    width: 3rem;
-                                    height: 3rem;
-                                    background: ${derivado.cor}20;
-                                    border-radius: 0.75rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                ">
+                                <div style="width: 3rem; height: 3rem; background: ${derivado.cor}20; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
                                     <i data-lucide="${derivado.icone}" style="width: 1.5rem; height: 1.5rem; color: ${derivado.cor};"></i>
                                 </div>
                                 <div>
-                                    <h4 style="
-                                        font-weight: 600;
-                                        font-size: 1.25rem;
-                                        color: ${derivado.cor};
-                                        margin-bottom: 0.25rem;
-                                    ">${nomeExibicao}</h4>
+                                    <h4 style="font-weight: 600; font-size: 1.25rem; color: ${derivado.cor}; margin-bottom: 0.25rem;">
+                                        ${nomeExibicao}
+                                    </h4>
                                     <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                                        ${derivado.ativo ? 'Ativo' : 'Inativo'} - ${obterDescricaoDerivado(key)}
+                                        ${derivado.ativo ? 'Ativo' : 'Inativo'}
                                     </p>
                                 </div>
                             </div>
-                            
                             <div style="text-align: right;">
-                                <div id="valor-${key}" style="
-                                    font-family: 'JetBrains Mono', monospace;
-                                    font-size: 2.5rem;
-                                    font-weight: 700;
-                                    color: ${derivado.cor};
-                                ">${derivado.valor}</div>
-                                <div style="color: var(--text-secondary); font-size: 0.875rem;">
-                                    / ${derivado.max}
+                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: ${derivado.cor};">
+                                    ${derivado.valor}
                                 </div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem;">/ ${derivado.max}</div>
                             </div>
                         </div>
-                        
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">Progresso</span>
-                                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: ${derivado.cor};">
-                                    ${porcentagem.toFixed(1)}%
-                                </span>
+                        <div>
+                            <div style="height: 8px; background: ${derivado.cor}20; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: ${derivado.cor}; width: ${porcentagem}%;"></div>
                             </div>
-                            <div style="
-                                height: 8px;
-                                background: ${derivado.cor}20;
-                                border-radius: 4px;
-                                overflow: hidden;
-                            ">
-                                <div id="barra-${key}" style="
-                                    height: 100%;
-                                    background: ${derivado.cor};
-                                    border-radius: 4px;
-                                    width: ${porcentagem}%;
-                                    transition: width 0.5s ease;
-                                "></div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;">
-                            <input type="range" 
-                                min="0" 
-                                max="${derivado.max}" 
-                                value="${derivado.valor}" 
-                                oninput="ajustarDerivado('${key}', this.value)"
-                                style="
-                                    width: 100%;
-                                    height: 8px;
-                                    background: ${derivado.cor}20;
-                                    border-radius: 4px;
-                            ">
-                            <button onclick="event.stopPropagation(); calcularDerivado('${key}');" style="
-                                padding: 0.5rem;
-                                background: ${derivado.cor};
-                                color: white;
-                                border: none;
-                                border-radius: 0.5rem;
-                                font-weight: 600;
-                                cursor: pointer;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                transition: all 0.2s;
-                            " onmouseover="this.style.opacity='0.9';" 
-                               onmouseout="this.style.opacity='1';">
-                                <i data-lucide="refresh-cw" style="width: 1rem; height: 1rem;"></i>
-                            </button>
+                            <input type="range" min="0" max="${derivado.max}" value="${derivado.valor}" 
+                                   oninput="ajustarDerivado('${key}', this.value)"
+                                   style="width: 100%; margin-top: 0.5rem;">
                         </div>
                     </div>
                 `;
             }).join('');
             
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
-
-        function toggleDerivado(key) {
-            if (!sistemaDerivados.derivados[key]) return;
-            
-            sistemaDerivados.derivados[key].ativo = !sistemaDerivados.derivados[key].ativo;
-            
-            // Atualizar display
-            const card = document.querySelector(`[onclick="toggleDerivado('${key}')"]`);
-            if (card) {
-                if (sistemaDerivados.derivados[key].ativo) {
-                    card.style.borderOpacity = '1';
-                    card.style.opacity = '1';
-                } else {
-                    card.style.borderOpacity = '0.3';
-                    card.style.opacity = '0.7';
-                }
-            }
-            
-            salvarDerivadosNoLocalStorage();
-            mostrarFeedback(`${key.replace(/([A-Z])/g, ' $1')} ${sistemaDerivados.derivados[key].ativo ? 'ativado' : 'desativado'}`, 'info');
-        }
-
-        function ajustarDerivado(key, valor) {
-            if (!sistemaDerivados.derivados[key]) return;
-            
-            const valorInt = parseInt(valor);
-            if (isNaN(valorInt)) return;
-            
-            sistemaDerivados.derivados[key].valor = Math.max(0, Math.min(valorInt, sistemaDerivados.derivados[key].max));
-            
-            const valorEl = document.getElementById(`valor-${key}`);
-            const barraEl = document.getElementById(`barra-${key}`);
-            
-            if (valorEl) {
-                valorEl.textContent = sistemaDerivados.derivados[key].valor;
-            }
-            
-            if (barraEl) {
-                const porcentagem = (sistemaDerivados.derivados[key].valor / sistemaDerivados.derivados[key].max) * 100;
-                barraEl.style.width = `${porcentagem}%`;
-            }
-            
-            salvarDerivadosNoLocalStorage();
+            if (window.lucide) lucide.createIcons();
         }
 
         function ajustarRecurso(tipo, valor) {
             if (!sistemaDerivados.recursos[tipo]) return;
-            
             const valorInt = parseInt(valor);
             if (isNaN(valorInt)) return;
             
             sistemaDerivados.recursos[tipo].atual = Math.max(0, Math.min(valorInt, sistemaDerivados.recursos[tipo].max));
-            atualizarDisplayRecurso(tipo);
             salvarDerivadosNoLocalStorage();
         }
 
-        function atualizarDisplayRecurso(tipo) {
-            const recurso = sistemaDerivados.recursos[tipo];
-            if (!recurso) return;
-            
-            const atualEl = document.getElementById(`${tipo}-atual`);
-            const maxEl = document.getElementById(`${tipo}-max`);
-            const barraEl = document.getElementById(`barra-${tipo}`);
-            const inputEl = document.getElementById(`input-${tipo}`);
-            
-            if (atualEl) atualEl.textContent = recurso.atual;
-            if (maxEl) maxEl.textContent = recurso.max;
-            if (inputEl) inputEl.value = recurso.atual;
-            
-            if (barraEl) {
-                const porcentagem = (recurso.atual / recurso.max) * 100;
-                barraEl.style.width = `${porcentagem}%`;
-            }
-        }
-
-        function calcularDerivado(key) {
+        function ajustarDerivado(key, valor) {
             if (!sistemaDerivados.derivados[key]) return;
+            const valorInt = parseInt(valor);
+            if (isNaN(valorInt)) return;
             
-            // Obter atributos atualizados do sistema principal
-            const data = StatusSystemAvancado.load();
-            const { forca, destreza, constituicao, inteligencia, sabedoria, carisma } = data.atributos;
-            const nivel = data.nivel;
-            
-            let valor = 0;
-            let descricao = '';
-            
-            switch(key) {
-                case 'blindagem':
-                    const blindagemBase = Math.floor(constituicao * 0.7 + forca * 0.3);
-                    valor = Math.floor(blindagemBase * (1 + nivel * 0.1));
-                    descricao = `CON(${constituicao})×0.7 + STR(${forca})×0.3 = ${blindagemBase} × nível(${nivel}) = ${valor}`;
-                    break;
-                    
-                case 'velocidade':
-                    const velocidadeBase = Math.floor(destreza * 0.8 + constituicao * 0.2);
-                    valor = Math.floor(velocidadeBase * (1 + nivel * 0.08));
-                    descricao = `DEX(${destreza})×0.8 + CON(${constituicao})×0.2 = ${velocidadeBase} × nível(${nivel}) = ${valor}`;
-                    break;
-                    
-                case 'iniciativa':
-                    const iniciativaBase = Math.floor(destreza * 0.6 + inteligencia * 0.4);
-                    valor = Math.floor(iniciativaBase * (1 + nivel * 0.06));
-                    descricao = `DEX(${destreza})×0.6 + INT(${inteligencia})×0.4 = ${iniciativaBase} × nível(${nivel}) = ${valor}`;
-                    break;
-                    
-                case 'percepcao':
-                    const percepcaoBase = Math.floor(sabedoria * 0.7 + inteligencia * 0.3);
-                    valor = Math.floor(percepcaoBase * (1 + nivel * 0.07));
-                    descricao = `WIS(${sabedoria})×0.7 + INT(${inteligencia})×0.3 = ${percepcaoBase} × nível(${nivel}) = ${valor}`;
-                    break;
-                    
-                case 'visaoNoturna':
-                    const visaoNoturnaBase = Math.floor((sabedoria + inteligencia) * 0.5);
-                    valor = Math.floor(visaoNoturnaBase * (1 + nivel * 0.05));
-                    descricao = `(WIS(${sabedoria}) + INT(${inteligencia}))×0.5 = ${visaoNoturnaBase} × nível(${nivel}) = ${valor}`;
-                    break;
-                    
-                case 'esquiva':
-                    const esquivaBase = Math.floor(destreza * 0.9);
-                    valor = Math.floor(esquivaBase * (1 + nivel * 0.12));
-                    descricao = `DEX(${destreza})×0.9 = ${esquivaBase} × nível(${nivel}) = ${valor}`;
-                    break;
-                    
-                case 'resistencia':
-                    const resistenciaBase = Math.floor(constituicao * 0.8);
-                    valor = Math.floor(resistenciaBase * (1 + nivel * 0.05));
-                    descricao = `CON(${constituicao})×0.8 = ${resistenciaBase} × nível(${nivel}) = ${valor}`;
-                    break;
-            }
-            
-            // Aplicar limite máximo
-            valor = Math.min(valor, sistemaDerivados.derivados[key].max);
-            
-            // Aplicar bônus da sorte
-            if (sorteAtual !== null) {
-                const bonusSorte = Math.floor(valor * (sorteAtual / 500));
-                valor += bonusSorte;
-                descricao += ` + Sorte(${sorteAtual}%): +${bonusSorte}`;
-            }
-            
-            // Atualizar valor
-            sistemaDerivados.derivados[key].valor = valor;
-            
-            // Atualizar display
-            const valorEl = document.getElementById(`valor-${key}`);
-            const barraEl = document.getElementById(`barra-${key}`);
-            
-            if (valorEl) valorEl.textContent = valor;
-            if (barraEl) {
-                const porcentagem = (valor / sistemaDerivados.derivados[key].max) * 100;
-                barraEl.style.width = `${porcentagem}%`;
-            }
-            
+            sistemaDerivados.derivados[key].valor = Math.max(0, Math.min(valorInt, sistemaDerivados.derivados[key].max));
             salvarDerivadosNoLocalStorage();
-            mostrarFeedback(`${key.replace(/([A-Z])/g, ' $1')} calculado: ${valor}`, 'success');
         }
 
-        function calcularTodosDerivados() {
-            Object.keys(sistemaDerivados.derivados).forEach(key => {
-                if (sistemaDerivados.derivados[key].ativo) {
-                    calcularDerivado(key);
-                }
-            });
-        }
-
-        function obterDescricaoDerivado(key) {
-            const descricoes = {
-                blindagem: 'Defesa contra danos físicos',
-                velocidade: 'Velocidade de movimento e ataque',
-                iniciativa: 'Quem age primeiro no combate',
-                percepcao: 'Detectar perigos e detalhes',
-                visaoNoturna: 'Ver no escuro',
-                esquiva: 'Evitar ataques',
-                resistencia: 'Resistir a efeitos e condições'
-            };
-            
-            return descricoes[key] || 'Derivado calculado a partir de atributos e nível';
-        }
-
-        function aplicarEfeitoSorteNosDerivados() {
-            if (sorteAtual === null) return;
-            
-            Object.keys(sistemaDerivados.derivados).forEach(key => {
-                if (sistemaDerivados.derivados[key].ativo) {
-                    setTimeout(() => calcularDerivado(key), 100);
-                }
-            });
-            
-            aplicarBonusSorteRecursos();
-        }
-
-        function aplicarBonusSorteRecursos() {
-            if (sorteAtual >= 75) {
-                Object.keys(sistemaDerivados.recursos).forEach(key => {
-                    const bonus = Math.floor(sistemaDerivados.recursos[key].max * 0.1);
-                    sistemaDerivados.recursos[key].atual = Math.min(
-                        sistemaDerivados.recursos[key].max,
-                        sistemaDerivados.recursos[key].atual + bonus
-                    );
-                });
-                
-                mostrarFeedback(`✨ Bônus da sorte aplicado! Recursos aumentados.`, 'success');
-            } else if (sorteAtual <= 25) {
-                Object.keys(sistemaDerivados.recursos).forEach(key => {
-                    const penalidade = Math.floor(sistemaDerivados.recursos[key].atual * 0.1);
-                    sistemaDerivados.recursos[key].atual = Math.max(
-                        0,
-                        sistemaDerivados.recursos[key].atual - penalidade
-                    );
-                });
-                
-                mostrarFeedback(`🌑 Penalidade da sorte aplicada. Cuidado!`, 'warning');
-            }
-            
-            Object.keys(sistemaDerivados.recursos).forEach(key => {
-                atualizarDisplayRecurso(key);
-            });
-            
+        function toggleDerivado(key) {
+            if (!sistemaDerivados.derivados[key]) return;
+            sistemaDerivados.derivados[key].ativo = !sistemaDerivados.derivados[key].ativo;
+            renderDerivados();
             salvarDerivadosNoLocalStorage();
         }
 
         function salvarDerivadosNoLocalStorage() {
-            const dadosParaSalvar = {
+            localStorage.setItem('grimorio_derivados', JSON.stringify({
                 derivados: sistemaDerivados.derivados,
-                recursos: sistemaDerivados.recursos,
-                timestamp: new Date().toISOString()
-            };
-            
-            localStorage.setItem('grimorio_derivados', JSON.stringify(dadosParaSalvar));
+                recursos: sistemaDerivados.recursos
+            }));
         }
 
         function carregarDerivadosDoLocalStorage() {
@@ -3160,86 +2393,9 @@
                     });
                 }
                 
-                console.log('Derivados carregados do localStorage');
-                
             } catch (error) {
                 console.error('Erro ao carregar derivados:', error);
             }
-        }
-
-        function mostrarFeedback(mensagem, tipo = 'info') {
-            let container = document.getElementById('feedback-container');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'feedback-container';
-                container.className = 'feedback-container';
-                document.body.appendChild(container);
-            }
-            
-            const feedback = document.createElement('div');
-            
-            const classes = {
-                success: 'feedback-success',
-                warning: 'feedback-warning',
-                error: 'feedback-error',
-                info: 'feedback-info'
-            };
-            
-            feedback.className = `feedback-item ${classes[tipo] || classes.info}`;
-            feedback.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <span>${mensagem}</span>
-                </div>
-            `;
-            
-            container.appendChild(feedback);
-            
-            setTimeout(() => {
-                feedback.style.opacity = '0';
-                feedback.style.transition = 'opacity 0.5s';
-                setTimeout(() => feedback.remove(), 500);
-            }, 3000);
-        }
-
-        function resetarRecursos() {
-            if (confirm('Restaurar todos os recursos vitais para o máximo?')) {
-                Object.keys(sistemaDerivados.recursos).forEach(key => {
-                    sistemaDerivados.recursos[key].atual = sistemaDerivados.recursos[key].max;
-                });
-                
-                renderRecursos();
-                salvarDerivadosNoLocalStorage();
-                mostrarFeedback('Recursos vitais restaurados!', 'success');
-            }
-        }
-
-        function resetarApenasDerivados() {
-            if (!confirm('Resetar todos os derivados avançados para 0?')) {
-                return;
-            }
-            
-            Object.keys(sistemaDerivados.derivados).forEach(key => {
-                sistemaDerivados.derivados[key].valor = 0;
-            });
-            
-            renderDerivados();
-            salvarDerivadosNoLocalStorage();
-            mostrarFeedback('Derivados resetados!', 'info');
-        }
-
-        function resetarDerivadosAvancados() {
-            if (!confirm('Resetar TODOS os derivados avançados?\n\nIsso incluirá blindagem, velocidade, etc.')) {
-                return;
-            }
-            
-            Object.keys(sistemaDerivados.derivados).forEach(key => {
-                sistemaDerivados.derivados[key].valor = 0;
-                sistemaDerivados.derivados[key].ativo = false;
-            });
-            
-            renderDerivados();
-            salvarDerivadosNoLocalStorage();
-            mostrarFeedback('Derivados avançados resetados!', 'success');
         }
 
         // ====================================================================
@@ -3251,12 +2407,6 @@
             statusData = StatusSystemAvancado.load();
             renderAtributos(statusData);
             updateUI(statusData);
-            renderHistorico(statusData.historico);
-            
-            // Atualizar recursos e derivados com dados do sistema principal
-            sistemaDerivados.atributos = { ...statusData.atributos };
-            
-            // Renderizar recursos e derivados
             renderRecursos();
             renderDerivados();
         }
@@ -3267,227 +2417,90 @@
             const atributos = data.atributos;
             
             const config = {
-                forca: { 
-                    nome: 'Força', 
-                    cor: '#dc2626', 
-                    icone: 'sword',
-                    descricao: 'Poder físico, capacidade de carga, dano corpo-a-corpo'
-                },
-                destreza: { 
-                    nome: 'Destreza', 
-                    cor: '#22c55e', 
-                    icone: 'wind',
-                    descricao: 'Agilidade, reflexos, precisão, ataques à distância'
-                },
-                constituicao: { 
-                    nome: 'Constituição', 
-                    cor: '#f59e0b', 
-                    icone: 'shield',
-                    descricao: 'Resistência, saúde, recuperação, tolerância a dano'
-                },
-                inteligencia: { 
-                    nome: 'Inteligência', 
-                    cor: '#4a9eff', 
-                    icone: 'brain',
-                    descricao: 'Conhecimento, lógica, magias arcanas, análise'
-                },
-                sabedoria: { 
-                    nome: 'Sabedoria', 
-                    cor: '#8b5cf6', 
-                    icone: 'eye',
-                    descricao: 'Percepção, intuição, magias divinas, sobrevivência'
-                },
-                carisma: { 
-                    nome: 'Carisma', 
-                    cor: '#ec4899', 
-                    icone: 'sparkles',
-                    descricao: 'Persuasão, liderança, interação social, presença'
-                }
+                forca: { nome: 'Força', cor: '#dc2626', icone: 'sword' },
+                destreza: { nome: 'Destreza', cor: '#22c55e', icone: 'wind' },
+                constituicao: { nome: 'Constituição', cor: '#f59e0b', icone: 'shield' },
+                inteligencia: { nome: 'Inteligência', cor: '#4a9eff', icone: 'brain' },
+                sabedoria: { nome: 'Sabedoria', cor: '#8b5cf6', icone: 'eye' },
+                carisma: { nome: 'Carisma', cor: '#ec4899', icone: 'sparkles' }
             };
             
             container.innerHTML = Object.keys(atributos).map(attr => {
                 const cfg = config[attr];
                 const porcentagem = (atributos[attr] / data.limitePorAtributo) * 100;
-                const isNearLimit = atributos[attr] >= data.limitePorAtributo * 0.9;
                 
                 return `
-                    <div class="atributo-card animate-fadeIn" style="
+                    <div style="
                         background: var(--bg-panel);
                         border: 2px solid ${cfg.cor}40;
                         border-radius: 1rem;
                         padding: 1.5rem;
-                        transition: all 0.3s;
-                        position: relative;
-                        overflow: hidden;
-                    " onmouseover="this.style.borderColor='${cfg.cor}80'; this.style.transform='translateY(-2px)';" 
-                    onmouseout="this.style.borderColor='${cfg.cor}40'; this.style.transform='translateY(0)';">
-                        
-                        ${isNearLimit ? `
-                        <div style="
-                            position: absolute;
-                            top: 0.5rem;
-                            right: 0.5rem;
-                            background: rgba(220, 38, 38, 0.9);
-                            color: white;
-                            padding: 0.25rem 0.5rem;
-                            border-radius: 0.5rem;
-                            font-size: 0.75rem;
-                            font-weight: 600;
-                            z-index: 2;
-                        ">
-                            <i data-lucide="alert-triangle" style="width: 0.75rem; height: 0.75rem; vertical-align: middle;"></i>
-                            Limite
-                        </div>
-                        ` : ''}
-                        
+                        margin-bottom: 1rem;
+                    ">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="
-                                    width: 3rem;
-                                    height: 3rem;
-                                    background: ${cfg.cor}20;
-                                    border-radius: 0.75rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                ">
+                                <div style="width: 3rem; height: 3rem; background: ${cfg.cor}20; border-radius: 0.75rem; display: flex; align-items: center; justify-content: center;">
                                     <i data-lucide="${cfg.icone}" style="width: 1.5rem; height: 1.5rem; color: ${cfg.cor};"></i>
                                 </div>
                                 <div>
-                                    <h4 style="
-                                        font-weight: 600;
-                                        font-size: 1.25rem;
-                                        color: ${cfg.cor};
-                                        margin-bottom: 0.25rem;
-                                    ">${cfg.nome}</h4>
-                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">
-                                        ${cfg.descricao}
-                                    </p>
+                                    <h4 style="font-weight: 600; font-size: 1.25rem; color: ${cfg.cor}; margin-bottom: 0.25rem;">
+                                        ${cfg.nome}
+                                    </h4>
+                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">Atributo base</p>
                                 </div>
                             </div>
-                            
                             <div style="text-align: right;">
-                                <div id="valor-${attr}" style="
-                                    font-family: 'JetBrains Mono', monospace;
-                                    font-size: 2.5rem;
-                                    font-weight: 700;
-                                    color: ${cfg.cor};
-                                ">${atributos[attr]}</div>
-                                <div style="color: var(--text-secondary); font-size: 0.875rem;">
-                                    / ${data.limitePorAtributo}
+                                <div style="font-family: 'JetBrains Mono', monospace; font-size: 2.5rem; font-weight: 700; color: ${cfg.cor};">
+                                    ${atributos[attr]}
                                 </div>
+                                <div style="color: var(--text-secondary); font-size: 0.875rem;">/ ${data.limitePorAtributo}</div>
                             </div>
                         </div>
-                        
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">Progresso</span>
-                                <span style="font-family: 'JetBrains Mono', monospace; font-weight: 600; color: ${cfg.cor};">
-                                    ${porcentagem.toFixed(1)}%
-                                </span>
+                        <div>
+                            <div style="height: 8px; background: ${cfg.cor}20; border-radius: 4px; overflow: hidden;">
+                                <div style="height: 100%; background: ${cfg.cor}; width: ${porcentagem}%;"></div>
                             </div>
-                            <div style="
-                                height: 8px;
-                                background: ${cfg.cor}20;
-                                border-radius: 4px;
-                                overflow: hidden;
-                            ">
-                                <div style="
-                                    height: 100%;
-                                    background: ${cfg.cor};
-                                    border-radius: 4px;
-                                    width: ${porcentagem}%;
-                                    transition: width 0.5s ease;
-                                "></div>
-                            </div>
-                        </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
-                            <button onclick="removerPontoAvancado('${attr}')" style="
-                                padding: 0.75rem;
-                                background: ${cfg.cor}20;
-                                color: ${cfg.cor};
-                                border: 1px solid ${cfg.cor}40;
-                                border-radius: 0.5rem;
-                                font-weight: 600;
-                                cursor: pointer;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                                transition: all 0.2s;
-                            " onmouseover="this.style.backgroundColor='${cfg.cor}30'; this.style.borderColor='${cfg.cor}60';" 
-                            onmouseout="this.style.backgroundColor='${cfg.cor}20'; this.style.borderColor='${cfg.cor}40';">
-                                <i data-lucide="minus" style="width: 1rem; height: 1rem;"></i>
-                                Remover
-                            </button>
-                            
-                            <button onclick="adicionarPontoAvancado('${attr}')" style="
-                                padding: 0.75rem;
-                                background: ${cfg.cor};
-                                color: white;
-                                border: none;
-                                border-radius: 0.5rem;
-                                font-weight: 600;
-                                cursor: pointer;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                                transition: all 0.2s;
-                            " onmouseover="this.style.backgroundColor='${cfg.cor}90'; this.style.transform='translateY(-1px)';" 
-                            onmouseout="this.style.backgroundColor='${cfg.cor}'; this.style.transform='translateY(0)';">
-                                <i data-lucide="plus" style="width: 1rem; height: 1rem;"></i>
-                                Adicionar
-                            </button>
-                        </div>
-                        
-                        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
-                                <i data-lucide="sliders" style="width: 1rem; height: 1rem; color: ${cfg.cor};"></i>
-                                <span style="color: var(--text-secondary); font-size: 0.875rem;">Ajuste preciso</span>
-                            </div>
-                            <input type="range" 
-                                min="0" 
-                                max="${data.limitePorAtributo}" 
-                                value="${atributos[attr]}" 
-                                oninput="atualizarSliderAvancado('${attr}', this.value)"
-                                style="
-                                    width: 100%;
-                                    height: 8px;
+                            <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                                <button onclick="removerPontoAvancado('${attr}')" style="
+                                    flex: 1;
+                                    padding: 0.75rem;
                                     background: ${cfg.cor}20;
-                                    border-radius: 4px;
-                            ">
-                            <div style="display: flex; justify-content: space-between; margin-top: 0.5rem;">
-                                <span style="color: var(--text-secondary); font-size: 0.75rem;">0</span>
-                                <span style="color: var(--text-secondary); font-size: 0.75rem;">${data.limitePorAtributo}</span>
+                                    color: ${cfg.cor};
+                                    border: 1px solid ${cfg.cor}40;
+                                    border-radius: 0.5rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                ">
+                                    <i data-lucide="minus" style="width: 1rem; height: 1rem;"></i> Remover
+                                </button>
+                                <button onclick="adicionarPontoAvancado('${attr}')" style="
+                                    flex: 1;
+                                    padding: 0.75rem;
+                                    background: ${cfg.cor};
+                                    color: white;
+                                    border: none;
+                                    border-radius: 0.5rem;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                ">
+                                    <i data-lucide="plus" style="width: 1rem; height: 1rem;"></i> Adicionar
+                                </button>
                             </div>
                         </div>
                     </div>
                 `;
             }).join('');
             
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            if (window.lucide) lucide.createIcons();
         }
 
         // ATUALIZAR INTERFACE
         function updateUI(data) {
             document.getElementById('pontos-disponiveis').textContent = data.pontosDisponiveis;
             document.getElementById('pontos-ratio').textContent = `${data.pontosUsados}/${data.limiteTotalPontos}`;
-            
-            const pontosPercent = (data.pontosUsados / data.limiteTotalPontos) * 100;
-            document.getElementById('pontos-bar').style.width = `${pontosPercent}%`;
-            
             document.getElementById('nivel-atual').textContent = data.nivel;
             document.getElementById('xp-atual').textContent = data.experiencia;
             document.getElementById('xp-proximo').textContent = data.experienciaProximoNivel;
-            document.getElementById('xp-restante').textContent = `${data.experienciaProximoNivel - data.experiencia} restante`;
-            
-            const xpPercent = (data.experiencia / data.experienciaProximoNivel) * 100;
-            document.getElementById('xp-bar').style.width = `${xpPercent}%`;
-            
             document.getElementById('limite-pontos').textContent = data.limiteTotalPontos;
             document.getElementById('pontos-por-nivel').textContent = data.pontosPorNivel;
             document.getElementById('minimo-aleatorio').textContent = data.minimoParaAleatorio;
@@ -3495,227 +2508,44 @@
             
             const total = Object.values(data.atributos).reduce((a, b) => a + b, 0);
             document.getElementById('total-atributos').textContent = total;
-            
-            const btnChefe = document.getElementById('btn-chefe');
-            if (data.modoMestre) {
-                btnChefe.innerHTML = '<i data-lucide="crown" style="width: 1rem; height: 1rem;"></i> Modo Mestre (ATIVO)';
-                btnChefe.style.background = 'linear-gradient(135deg, #f59e0b, #dc2626)';
-            } else {
-                btnChefe.innerHTML = '<i data-lucide="crown" style="width: 1rem; height: 1rem;"></i> Modo Mestre';
-                btnChefe.style.background = 'linear-gradient(135deg, var(--accent-purple), var(--accent-pink))';
-            }
-            
-            const statusDistribuicao = document.getElementById('status-distribuicao');
-            if (data.ultimaDistribuicao) {
-                statusDistribuicao.textContent = 'Concluída';
-                statusDistribuicao.style.color = '#22c55e';
-            } else {
-                const totalAtual = Object.values(data.atributos).reduce((a, b) => a + b, 0);
-                if (totalAtual >= data.minimoParaAleatorio) {
-                    statusDistribuicao.textContent = 'Pronto!';
-                    statusDistribuicao.style.color = '#dc2626';
-                } else {
-                    statusDistribuicao.textContent = `Faltam ${data.minimoParaAleatorio - totalAtual} pontos`;
-                    statusDistribuicao.style.color = '#f59e0b';
-                }
-            }
-            
-            document.getElementById('modal-xp-atual').textContent = data.experiencia;
-            document.getElementById('modal-xp-necessario').textContent = data.experienciaProximoNivel;
-            document.getElementById('modal-xp-faltam').textContent = data.experienciaProximoNivel - data.experiencia;
-            
-            document.getElementById('modal-pontos-disponiveis').textContent = data.pontosDisponiveis;
-            document.getElementById('modal-limite-total').textContent = data.limiteTotalPontos;
-            document.getElementById('modal-pontos-restantes').textContent = data.limiteTotalPontos - data.pontosUsados;
-            
-            document.getElementById('input-minimo-aleatorio').value = data.minimoParaAleatorio;
-            document.getElementById('input-pontos-nivel').value = data.pontosPorNivel;
-            document.getElementById('input-limite-total').value = data.limiteTotalPontos;
-            document.getElementById('input-pontos-aleatorio').value = data.pontosDistribuicaoAleatoria;
-            document.getElementById('select-metodo-aleatorio').value = data.metodoDistribuicao;
-            
-            document.getElementById('input-config-limite-total').value = data.limiteTotalPontos;
-            document.getElementById('input-config-pontos-nivel').value = data.pontosPorNivel;
-            document.getElementById('input-config-xp-proximo').value = data.experienciaProximoNivel;
-            document.getElementById('input-config-minimo-aleatorio').value = data.minimoParaAleatorio;
-            document.getElementById('input-config-pontos-aleatorio').value = data.pontosDistribuicaoAleatoria;
-            document.getElementById('slider-limite-atributo').value = data.limitePorAtributo;
-            document.getElementById('valor-limite-atributo').textContent = data.limitePorAtributo;
-        }
-
-        // RENDERIZAR HISTÓRICO
-        function renderHistorico(historico) {
-            const container = document.getElementById('historico-container');
-            
-            if (historico.length === 0) {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 2rem; color: var(--text-secondary);">
-                        <i data-lucide="history" style="width: 2rem; height: 2rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                        <p>Nenhuma ação registrada ainda</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = historico.map((item, index) => {
-                const data = new Date(item.data);
-                const hora = data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                
-                let icone = 'circle';
-                let cor = 'var(--text-secondary)';
-                
-                if (item.acao.includes('Adicionar')) {
-                    icone = 'plus-circle';
-                    cor = '#22c55e';
-                } else if (item.acao.includes('Remover')) {
-                    icone = 'minus-circle';
-                    cor = '#dc2626';
-                } else if (item.acao.includes('Distribuição')) {
-                    icone = 'dice-5';
-                    cor = '#8b5cf6';
-                } else if (item.acao.includes('nível')) {
-                    icone = 'trending-up';
-                    cor = '#f59e0b';
-                } else if (item.acao.includes('Resetar')) {
-                    icone = 'trash-2';
-                    cor = '#ef4444';
-                }
-                
-                return `
-                    <div style="
-                        padding: 0.75rem;
-                        border-bottom: 1px solid var(--border-color);
-                        display: flex;
-                        align-items: center;
-                        gap: 0.75rem;
-                        transition: all 0.2s;
-                    " onmouseover="this.style.backgroundColor='rgba(255,255,255,0.05)';" 
-                    onmouseout="this.style.backgroundColor='transparent';">
-                        <div style="
-                            width: 2rem;
-                            height: 2rem;
-                            border-radius: 0.5rem;
-                            background: ${cor}20;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            flex-shrink: 0;
-                        ">
-                            <i data-lucide="${icone}" style="width: 1rem; height: 1rem; color: ${cor};"></i>
-                        </div>
-                        
-                        <div style="flex: 1;">
-                            <div style="font-weight: 600; color: var(--text-primary); font-size: 0.875rem;">
-                                ${item.acao}
-                            </div>
-                            <div style="color: var(--text-secondary); font-size: 0.75rem; margin-top: 0.25rem;">
-                                ${item.detalhes}
-                            </div>
-                        </div>
-                        
-                        <div style="text-align: right;">
-                            <div style="color: var(--text-secondary); font-size: 0.75rem;">${hora}</div>
-                            <div style="color: var(--text-secondary); font-size: 0.625rem; margin-top: 0.25rem;">
-                                Nv. ${item.nivel}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            if (window.lucide) {
-                lucide.createIcons();
-            }
         }
 
         // FUNÇÕES DE MANIPULAÇÃO DE PONTOS
         function adicionarPontoAvancado(atributo) {
             const novoStatus = StatusSystemAvancado.addPoint(atributo);
             if (novoStatus) {
-                document.getElementById(`valor-${atributo}`).textContent = novoStatus.atributos[atributo];
-                updateUI(novoStatus);
+                loadStatusData();
             }
         }
 
         function removerPontoAvancado(atributo) {
             const novoStatus = StatusSystemAvancado.removePoint(atributo);
             if (novoStatus) {
-                document.getElementById(`valor-${atributo}`).textContent = novoStatus.atributos[atributo];
-                updateUI(novoStatus);
+                loadStatusData();
             }
-        }
-
-        function atualizarSliderAvancado(atributo, valor) {
-            const status = StatusSystemAvancado.load();
-            const diferenca = valor - status.atributos[atributo];
-            
-            if (diferenca > 0) {
-                for (let i = 0; i < diferenca; i++) {
-                    if (!StatusSystemAvancado.addPoint(atributo)) break;
-                }
-            } else if (diferenca < 0) {
-                for (let i = 0; i < Math.abs(diferenca); i++) {
-                    if (!StatusSystemAvancado.removePoint(atributo)) break;
-                }
-            }
-            
-            loadStatusData();
-        }
-
-        // FUNÇÕES DE MODAL
-        function abrirModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.add('active');
-        }
-
-        function fecharModal(id) {
-            const modal = document.getElementById(id);
-            modal.classList.remove('active');
-        }
-
-        // FUNÇÕES DE EXPORT/IMPORT
-        function exportarParaTxt() {
-            const txtContent = StatusSystemAvancado.exportToTxt();
-            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `status_avancado_${new Date().getTime()}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            StatusSystemAvancado.showNotification('Dados exportados para TXT com sucesso!', 'success');
-        }
-
-        function importarDeTxt() {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = '.txt';
-            
-            input.onchange = function(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const content = e.target.result;
-                    const sucesso = StatusSystemAvancado.importFromTxt(content);
-                    if (sucesso) {
-                        loadStatusData();
-                        mostrarFeedback('Dados importados com sucesso!', 'success');
-                    }
-                };
-                reader.readAsText(file);
-            };
-            
-            input.click();
         }
 
         // CONFIGURAR EVENTOS
         function setupEventListeners() {
+            // Botão de sincronização PRINCIPAL
+            const btnSincronizar = document.getElementById('btn-sincronizar-ficha');
+            if (btnSincronizar) {
+                btnSincronizar.addEventListener('click', function() {
+                    StatusSystemAvancado.exportToGrimorio();
+                });
+            }
+            
+            // Botão para carregar da ficha
+            const btnImportarFicha = document.getElementById('btn-importar-txt');
+            if (btnImportarFicha) {
+                btnImportarFicha.addEventListener('click', function() {
+                    if (confirm('Carregar dados da ficha do personagem? Isso substituirá os dados atuais.')) {
+                        StatusSystemAvancado.importFromGrimorio();
+                        loadStatusData();
+                    }
+                });
+            }
+            
             // Configurações
             document.getElementById('btn-config').addEventListener('click', () => abrirModal('modal-config'));
             document.getElementById('btn-fechar-modal').addEventListener('click', () => fecharModal('modal-config'));
@@ -3748,35 +2578,9 @@
                 }
             });
             
-            // Distribuição Aleatória
-            document.getElementById('btn-distribuir-aleatorio').addEventListener('click', function() {
-                const data = StatusSystemAvancado.load();
-                const totalAtual = Object.values(data.atributos).reduce((a, b) => a + b, 0);
-                
-                if (totalAtual >= data.minimoParaAleatorio) {
-                    StatusSystemAvancado.showNotification('Distribuição automática já foi feita ou está pronta!', 'info');
-                } else {
-                    StatusSystemAvancado.showNotification(`Adicione mais ${data.minimoParaAleatorio - totalAtual} pontos para distribuição aleatória`, 'warning');
-                }
-            });
-            
-            document.getElementById('btn-distribuir-avancado').addEventListener('click', function() {
-                const quantidade = document.getElementById('input-pontos-aleatorio').value;
-                const metodo = document.getElementById('select-metodo-aleatorio').value;
-                
-                const resultado = StatusSystemAvancado.distribuirAleatorioAvancado(quantidade, metodo);
-                if (resultado) {
-                    loadStatusData();
-                }
-            });
-            
-            // Subir nível
-            document.getElementById('btn-subir-nivel').addEventListener('click', function() {
-                const resultado = StatusSystemAvancado.subirNivel();
-                if (resultado) {
-                    loadStatusData();
-                }
-            });
+            // Sorte
+            document.getElementById('btn-rolar-sorte').addEventListener('click', rolarSorte);
+            document.getElementById('btn-fixar-sorte').addEventListener('click', fixarSorte);
             
             // Resetar tudo
             document.getElementById('btn-reset-tudo').addEventListener('click', function() {
@@ -3785,97 +2589,17 @@
                     loadStatusData();
                 }
             });
-            
-            // Configurações avançadas
-            document.getElementById('btn-aplicar-minimo').addEventListener('click', function() {
-                const valor = document.getElementById('input-minimo-aleatorio').value;
-                StatusSystemAvancado.updateConfig({ minimoParaAleatorio: parseInt(valor) });
-                loadStatusData();
-            });
-            
-            document.getElementById('btn-aplicar-pontos-nivel').addEventListener('click', function() {
-                const valor = document.getElementById('input-pontos-nivel').value;
-                StatusSystemAvancado.updateConfig({ pontosPorNivel: parseInt(valor) });
-                loadStatusData();
-            });
-            
-            document.getElementById('btn-aplicar-limite').addEventListener('click', function() {
-                const valor = document.getElementById('input-limite-total').value;
-                StatusSystemAvancado.updateConfig({ limiteTotalPontos: parseInt(valor) });
-                loadStatusData();
-            });
-            
-            // Configurações do modal
-            document.getElementById('slider-limite-atributo').addEventListener('input', function() {
-                document.getElementById('valor-limite-atributo').textContent = this.value;
-            });
-            
-            document.getElementById('btn-salvar-config').addEventListener('click', function() {
-                const config = {
-                    limitePorAtributo: parseInt(document.getElementById('slider-limite-atributo').value),
-                    limiteTotalPontos: parseInt(document.getElementById('input-config-limite-total').value),
-                    pontosPorNivel: parseInt(document.getElementById('input-config-pontos-nivel').value),
-                    experienciaProximoNivel: parseInt(document.getElementById('input-config-xp-proximo').value),
-                    minimoParaAleatorio: parseInt(document.getElementById('input-config-minimo-aleatorio').value),
-                    pontosDistribuicaoAleatoria: parseInt(document.getElementById('input-config-pontos-aleatorio').value)
-                };
-                
-                StatusSystemAvancado.updateConfig(config);
-                loadStatusData();
-                fecharModal('modal-config');
-            });
-            
-            document.getElementById('btn-restaurar-padrao').addEventListener('click', function() {
-                if (confirm('Restaurar configurações padrão?')) {
-                    StatusSystemAvancado.updateConfig({
-                        limitePorAtributo: 100,
-                        limiteTotalPontos: 100,
-                        pontosPorNivel: 5,
-                        experienciaProximoNivel: 1000,
-                        minimoParaAleatorio: 18,
-                        pontosDistribuicaoAleatoria: 10
-                    });
-                    loadStatusData();
-                }
-            });
-            
-            // Histórico
-            document.getElementById('btn-limpar-historico').addEventListener('click', function() {
-                if (confirm('Limpar todo o histórico de ações?')) {
-                    const data = StatusSystemAvancado.load();
-                    data.historico = [];
-                    StatusSystemAvancado.save(data);
-                    renderHistorico([]);
-                    StatusSystemAvancado.showNotification('Histórico limpo!', 'info');
-                }
-            });
-            
-            // Exportar dados
-            document.getElementById('btn-exportar-dados').addEventListener('click', function() {
-                const data = StatusSystemAvancado.exportData();
-                const blob = new Blob([data], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `status_avancado_${new Date().getTime()}.json`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-                
-                StatusSystemAvancado.showNotification('Dados exportados para JSON com sucesso!', 'success');
-            });
-            
-            // Exportar/Importar TXT
-            document.getElementById('btn-exportar-txt').addEventListener('click', exportarParaTxt);
-            document.getElementById('btn-importar-txt').addEventListener('click', importarDeTxt);
-            
-            // Atualização de outras abas
-            window.addEventListener('statusAvancadoUpdated', function() {
-                loadStatusData();
-                StatusSystemAvancado.showNotification('Dados atualizados de outra aba', 'info');
-            });
+        }
+
+        // FUNÇÕES DE MODAL
+        function abrirModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.add('active');
+        }
+
+        function fecharModal(id) {
+            const modal = document.getElementById(id);
+            modal.classList.remove('active');
         }
 
         // EXPOR FUNÇÕES GLOBAIS
@@ -3885,31 +2609,17 @@
         window.fecharModal = fecharModal;
         window.adicionarPontoAvancado = adicionarPontoAvancado;
         window.removerPontoAvancado = removerPontoAvancado;
-        window.atualizarSliderAvancado = atualizarSliderAvancado;
-        window.exportarParaTxt = exportarParaTxt;
-        window.importarDeTxt = importarDeTxt;
-
-        // SISTEMA DE SORTE/DERIVADOS
         window.rolarSorte = rolarSorte;
         window.fixarSorte = fixarSorte;
-        window.calcularDerivado = calcularDerivado;
-        window.calcularTodosDerivados = calcularTodosDerivados;
         window.ajustarDerivado = ajustarDerivado;
         window.ajustarRecurso = ajustarRecurso;
         window.toggleDerivado = toggleDerivado;
-        window.resetarRecursos = resetarRecursos;
-        window.resetarApenasDerivados = resetarApenasDerivados;
-        window.resetarDerivadosAvancados = resetarDerivadosAvancados;
         window.sistemaDerivados = sistemaDerivados;
-        window.sorteAtual = sorteAtual;
-        window.dadosSorte = dadosSorte;
-        window.sorteFixada = sorteFixada;
 
-        // No final do status.html, atualize o evento DOMContentLoaded:
-
+        // INICIALIZAÇÃO SIMPLIFICADA
         document.addEventListener('DOMContentLoaded', function() {
             try {
-                console.log('DOM carregado - Inicializando sistemas...');
+                console.log('Inicializando Sistema de Status...');
                 
                 // Inicializar ícones
                 if (window.lucide) {
@@ -3919,311 +2629,32 @@
                 // Inicializar sistema principal
                 StatusSystemAvancado.init();
                 
-                // Carregar dados iniciais
+                // Carregar dados
                 loadStatusData();
                 
-                // Carregar dados do sistema de sorte/derivados
-                if (window.carregarSorteDoLocalStorage) carregarSorteDoLocalStorage();
-                if (window.carregarDerivadosDoLocalStorage) carregarDerivadosDoLocalStorage();
+                // Carregar dados da sorte e derivados
+                carregarSorteDoLocalStorage();
+                carregarDerivadosDoLocalStorage();
                 
                 // Configurar eventos
-                if (window.setupEventListeners) setupEventListeners();
-                if (window.configurarEventosSorte) configurarEventosSorte();
+                setupEventListeners();
                 
-                // INICIALIZAR INTEGRAÇÃO COM FICHA
-                if (window.inicializarIntegracao) {
-                    inicializarIntegracao();
-                } else {
-                    console.error('Função inicializarIntegracao não encontrada!');
-                }
+                // Tentar carregar dados da ficha automaticamente
+                setTimeout(() => {
+                    if (window.GrimorioSystem) {
+                        console.log('GrimorioSystem detectado, tentando carregar dados...');
+                        StatusSystemAvancado.importFromGrimorio();
+                        loadStatusData();
+                    }
+                }, 1000);
                 
-                console.log('Todos os sistemas inicializados com sucesso');
+                console.log('Sistema de Status inicializado com sucesso!');
                 
             } catch (error) {
                 console.error('Erro na inicialização:', error);
-                StatusSystemAvancado.showNotification('Erro ao inicializar sistemas!', 'error');
+                StatusSystemAvancado.showNotification('Erro ao inicializar sistema!', 'error');
             }
         });
-
-        // ============================================================
-        // SISTEMA DE INTEGRAÇÃO DIRETO NO STATUS.HTML
-        // ============================================================
-
-        class StatusIntegration {
-            
-            static sincronizarParaFicha() {
-                try {
-                    console.log('Sincronizando status para ficha...');
-                    
-                    // Carregar dados do status
-                    const statusData = StatusSystemAvancado.load();
-                    
-                    if (!statusData) {
-                        StatusSystemAvancado.showNotification('❌ Nenhum dado de status para sincronizar', 'error');
-                        return false;
-                    }
-                    
-                    // Verificar se o GrimorioSystem está disponível
-                    if (typeof GrimorioSystem === 'undefined') {
-                        StatusSystemAvancado.showNotification('❌ Sistema Grimório não encontrado', 'error');
-                        return false;
-                    }
-                    
-                    // Usar a função de sincronização
-                    const sucesso = GrimorioSystem.sincronizarStatus(statusData);
-                    
-                    if (sucesso) {
-                        StatusSystemAvancado.showNotification('✅ Status sincronizado com ficha!', 'success');
-                        
-                        // Forçar atualização do perfil
-                        window.dispatchEvent(new CustomEvent('grimorio:personagemAtualizado'));
-                        
-                        // Opcional: redirecionar para o perfil
-                        setTimeout(() => {
-                            if (confirm('Sincronização concluída! Deseja ver o perfil?')) {
-                                window.open('perfil.html', '_blank');
-                            }
-                        }, 1000);
-                        
-                        return true;
-                    } else {
-                        StatusSystemAvancado.showNotification('❌ Erro ao sincronizar status', 'error');
-                        return false;
-                    }
-                    
-                } catch (error) {
-                    console.error('Erro na sincronização:', error);
-                    StatusSystemAvancado.showNotification('❌ Erro na sincronização', 'error');
-                    return false;
-                }
-            }
-            
-            static carregarDaFicha() {
-                try {
-                    console.log('Carregando dados da ficha para status...');
-                    
-                    if (typeof GrimorioSystem === 'undefined') {
-                        StatusSystemAvancado.showNotification('❌ Sistema Grimório não encontrado', 'error');
-                        return false;
-                    }
-                    
-                    const personagem = GrimorioSystem.carregarPersonagem();
-                    
-                    if (!personagem) {
-                        StatusSystemAvancado.showNotification('❌ Nenhum personagem encontrado', 'error');
-                        return false;
-                    }
-                    
-                    const statusData = StatusSystemAvancado.load();
-                    
-                    // Converter atributos de 0-30 para 0-100
-                    const escala = 100;
-                    const attrs = personagem.atributos || {};
-                    
-                    Object.keys(attrs).forEach(attr => {
-                        if (statusData.atributos[attr] !== undefined) {
-                            const valorConvertido = Math.round((attrs[attr] / 30) * 100);
-                            statusData.atributos[attr] = Math.min(100, valorConvertido);
-                        }
-                    });
-                    
-                    // Atualizar progressão
-                    statusData.nivel = personagem.nivel || 1;
-                    statusData.experiencia = personagem.experiencia || 0;
-                    statusData.experienciaProximoNivel = personagem.experienciaProximoNivel || 1000;
-                    statusData.pontosDisponiveis = personagem.pontosDisponiveis || 0;
-                    
-                    // Recalcular pontos usados
-                    statusData.pontosUsados = Object.values(statusData.atributos).reduce((a, b) => a + b, 0);
-                    
-                    // Salvar dados atualizados
-                    StatusSystemAvancado.save(statusData);
-                    
-                    // Atualizar interface
-                    if (window.loadStatusData) loadStatusData();
-                    if (window.renderRecursos) renderRecursos();
-                    if (window.renderDerivados) renderDerivados();
-                    
-                    StatusSystemAvancado.showNotification('✅ Dados carregados da ficha!', 'success');
-                    return true;
-                    
-                } catch (error) {
-                    console.error('Erro ao carregar da ficha:', error);
-                    StatusSystemAvancado.showNotification('❌ Erro ao carregar dados', 'error');
-                    return false;
-                }
-            }
-        }
-
-        // ============================================================
-        // CONFIGURAR BOTÕES DE INTEGRAÇÃO
-        // ============================================================
-
-        function configurarIntegracao() {
-            console.log('Configurando botões de integração...');
-            
-            // 1. Botão na navbar para sincronizar
-            const btnExportar = document.getElementById('btn-exportar-grimorio');
-            if (btnExportar) {
-                btnExportar.onclick = () => {
-                    StatusIntegration.sincronizarParaFicha();
-                };
-            } else {
-                // Criar botão se não existir
-                const navButtons = document.querySelector('nav div[style*="display: flex; gap: 0.75rem; flex-wrap: wrap;"]');
-                if (navButtons) {
-                    const btn = document.createElement('button');
-                    btn.id = 'btn-exportar-grimorio';
-                    btn.innerHTML = `
-                        <i data-lucide="upload-cloud" style="width: 1rem; height: 1rem;"></i>
-                        Sincronizar
-                    `;
-                    btn.style = `
-                        padding: 0.5rem 1rem;
-                        background: linear-gradient(135deg, #22c55e, #10b981);
-                        color: white;
-                        border: none;
-                        border-radius: 0.5rem;
-                        font-weight: 600;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        gap: 0.5rem;
-                        transition: all 0.2s;
-                    `;
-                    btn.onmouseover = function() {
-                        this.style.transform = 'translateY(-2px)';
-                        this.style.boxShadow = '0 4px 15px rgba(34, 197, 94, 0.3)';
-                    };
-                    btn.onmouseout = function() {
-                        this.style.transform = 'translateY(0)';
-                        this.style.boxShadow = 'none';
-                    };
-                    btn.onclick = () => {
-                        StatusIntegration.sincronizarParaFicha();
-                    };
-                    
-                    navButtons.appendChild(btn);
-                }
-            }
-            
-            // 2. Botão no header para carregar da ficha
-            const btnImportar = document.createElement('button');
-            btnImportar.innerHTML = `
-                <i data-lucide="download-cloud" style="width: 1rem; height: 1rem;"></i>
-                Carregar da Ficha
-            `;
-            btnImportar.style = `
-                padding: 0.75rem 1.5rem;
-                background: linear-gradient(135deg, #4a9eff, #0ea5e9);
-                color: white;
-                border: none;
-                border-radius: 0.75rem;
-                font-weight: 600;
-                cursor: pointer;
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                transition: all 0.2s;
-            `;
-            btnImportar.onmouseover = function() {
-                this.style.transform = 'translateY(-2px)';
-                this.style.boxShadow = '0 8px 25px rgba(59, 130, 246, 0.4)';
-            };
-            btnImportar.onmouseout = function() {
-                this.style.transform = 'translateY(0)';
-                this.style.boxShadow = 'none';
-            };
-            btnImportar.onclick = () => {
-                StatusIntegration.carregarDaFicha();
-            };
-            
-            // Adicionar ao header
-            const headerControls = document.querySelector('header > div[style*="display: flex; flex-wrap: wrap; gap: 0.75rem;"]');
-            if (headerControls) {
-                headerControls.appendChild(btnImportar);
-            } else {
-                // Alternativa: adicionar no início da página
-                const primeiraSecao = document.querySelector('section');
-                if (primeiraSecao) {
-                    primeiraSecao.insertBefore(btnImportar, primeiraSecao.firstChild);
-                }
-            }
-            
-            // 3. Criar um card de integração se quiser
-            const cardIntegracao = `
-                <div style="
-                    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-                    border: 1px solid rgba(59, 130, 246, 0.3);
-                    border-radius: 1rem;
-                    padding: 1.5rem;
-                    margin-bottom: 2rem;
-                ">
-                    <h3 style="font-weight: 600; color: #4a9eff; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
-                        <i data-lucide="link" style="width: 1.25rem; height: 1.25rem;"></i>
-                        Integração com Ficha do Personagem
-                    </h3>
-                    <p style="color: #a0a0a0; margin-bottom: 1.5rem; font-size: 0.875rem;">
-                        Sincronize seus atributos entre o sistema de status e a ficha do personagem.
-                        As alterações serão refletidas no perfil e no hub.
-                    </p>
-                    <div style="display: flex; gap: 1rem;">
-                        <button onclick="StatusIntegration.carregarDaFicha()" style="
-                            flex: 1;
-                            padding: 0.75rem;
-                            background: rgba(59, 130, 246, 0.2);
-                            color: #4a9eff;
-                            border: 1px solid rgba(59, 130, 246, 0.4);
-                            border-radius: 0.5rem;
-                            font-weight: 600;
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 0.5rem;
-                            transition: all 0.2s;
-                        " onmouseover="this.style.backgroundColor='rgba(59, 130, 246, 0.3)'; this.style.borderColor='rgba(59, 130, 246, 0.6)'" 
-                        onmouseout="this.style.backgroundColor='rgba(59, 130, 246, 0.2)'; this.style.borderColor='rgba(59, 130, 246, 0.4)'">
-                            <i data-lucide="download" style="width: 1rem; height: 1rem;"></i>
-                            Carregar da Ficha
-                        </button>
-                        
-                        <button onclick="StatusIntegration.sincronizarParaFicha()" style="
-                            flex: 1;
-                            padding: 0.75rem;
-                            background: rgba(34, 197, 94, 0.2);
-                            color: #22c55e;
-                            border: 1px solid rgba(34, 197, 94, 0.4);
-                            border-radius: 0.5rem;
-                            font-weight: 600;
-                            cursor: pointer;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 0.5rem;
-                            transition: all 0.2s;
-                        " onmouseover="this.style.backgroundColor='rgba(34, 197, 94, 0.3)'; this.style.borderColor='rgba(34, 197, 94, 0.6)'" 
-                        onmouseout="this.style.backgroundColor='rgba(34, 197, 94, 0.2)'; this.style.borderColor='rgba(34, 197, 94, 0.4)'">
-                            <i data-lucide="upload" style="width: 1rem; height: 1rem;"></i>
-                            Sincronizar com Ficha
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            // Adicionar card antes da seção de atributos
-            const secaoAtributos = document.getElementById('secao-atributos');
-            if (secaoAtributos) {
-                const card = document.createElement('div');
-                card.innerHTML = cardIntegracao;
-                secaoAtributos.parentNode.insertBefore(card, secaoAtributos);
-            }
-            
-            // Atualizar ícones
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
     </script>
 </body>
 </html>
