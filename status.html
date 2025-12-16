@@ -625,10 +625,10 @@
                         type="number" 
                         id="input-pontos-sorteio" 
                         class="form-input" 
-                        placeholder="Ex: 10" 
+                        placeholder="Ex: 18" 
                         min="1" 
                         max="1000" 
-                        value="10"
+                        value="18"
                         style="
                             flex: 1;
                             text-align: center;
@@ -796,7 +796,7 @@
                     <div class="stat-value color-forca" id="forca">0</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="forca" data-max="100">
+                        <div class="progress-bar" data-stat="forca" data-min="0" data-max="100">
                             <div class="progress-fill bg-forca" style="width: 0%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -823,7 +823,7 @@
                     <div class="stat-value color-destreza" id="destreza">0</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="destreza" data-max="100">
+                        <div class="progress-bar" data-stat="destreza" data-min="0" data-max="100">
                             <div class="progress-fill bg-destreza" style="width: 0%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -850,7 +850,7 @@
                     <div class="stat-value color-constituicao" id="constituicao">0</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="constituicao" data-max="100">
+                        <div class="progress-bar" data-stat="constituicao" data-min="0" data-max="100">
                             <div class="progress-fill bg-constituicao" style="width: 0%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -877,7 +877,7 @@
                     <div class="stat-value color-inteligencia" id="inteligencia">0</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="inteligencia" data-max="100">
+                        <div class="progress-bar" data-stat="inteligencia" data-min="0" data-max="100">
                             <div class="progress-fill bg-inteligencia" style="width: 0%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -904,7 +904,7 @@
                     <div class="stat-value color-sabedoria" id="sabedoria">0</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="sabedoria" data-max="100">
+                        <div class="progress-bar" data-stat="sabedoria" data-min="0" data-max="100">
                             <div class="progress-fill bg-sabedoria" style="width: 0%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -931,7 +931,7 @@
                     <div class="stat-value color-carisma" id="carisma">0</div>
                     
                     <div class="progress-control">
-                        <div class="progress-bar" data-stat="carisma" data-max="100">
+                        <div class="progress-bar" data-stat="carisma" data-min="0" data-max="100">
                             <div class="progress-fill bg-carisma" style="width: 0%">
                                 <div class="progress-handle"></div>
                             </div>
@@ -986,7 +986,7 @@
                 <div class="destiny-result">
                     <div class="destiny-percentage" id="indice-sorte">--</div>
                     <div class="text-sm" id="calculo-sorte">
-                        ((Fé × 0.7 + Destino × 0.5) - Sorte) × 0.8
+                        ((Fé × 0.4 + Destino × 0.3) - Sorte) × 0.5
                     </div>
                 </div>
                 
@@ -1082,7 +1082,7 @@
             <div class="space-y-4">
                 <div class="form-group">
                     <label class="form-label">Limite Máximo por Atributo</label>
-                    <input type="number" id="config-limite-atributo" class="form-input" value="100" min="10" max="500">
+                    <input type="number" id="config-limite-atributo" class="form-input" value="100" min="5" max="500">
                 </div>
                 
                 <div class="form-group">
@@ -1092,17 +1092,17 @@
                 
                 <div class="form-group">
                     <label class="form-label">Mínimo para Sorteio Aleatório</label>
-                    <input type="number" id="config-minimo-aleatorio" class="form-input" value="10" min="0" max="200">
+                    <input type="number" id="config-minimo-aleatorio" class="form-input" value="5" min="0" max="200">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Mínimo para Distribuição</label>
-                    <input type="number" id="config-minimo-distribuicao" class="form-input" value="10" min="0" max="50">
+                    <input type="number" id="config-minimo-distribuicao" class="form-input" value="5" min="0" max="50">
                 </div>
                 
                 <div class="form-group">
                     <label class="form-label">Rolagens de Destino Máximas</label>
-                    <input type="number" id="config-rolagens-maximas" class="form-input" value="5" min="1" max="10">
+                    <input type="number" id="config-rolagens-maximas" class="form-input" max ="1000" value="0" min="0">
                 </div>
                 
                 <div class="form-group">
