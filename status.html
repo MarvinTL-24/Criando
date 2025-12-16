@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Sistema de Status</title>
+    <title>Grimório Digital - Sistema de Status Avançado</title>
     <script src="js/grimorio-core.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,6 +26,9 @@
             --accent-yellow: #f59e0b;
             --accent-pink: #ec4899;
             --destiny-gold: #d4a76a;
+            --status-active: rgba(34, 197, 94, 0.2);
+            --status-inactive: rgba(255, 71, 87, 0.2);
+            --status-locked: rgba(245, 158, 11, 0.2);
         }
         
         * {
@@ -59,7 +62,7 @@
         }
         
         .nav-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 0 1rem;
             display: flex;
@@ -90,11 +93,6 @@
             text-decoration: none;
         }
         
-        .back-button:hover {
-            background: rgba(74, 158, 255, 0.2);
-            transform: translateY(-1px);
-        }
-        
         .nav-buttons {
             display: flex;
             gap: 0.5rem;
@@ -119,21 +117,21 @@
             filter: brightness(110%);
         }
         
-        .nav-button-import {
+        .nav-button-save {
             background: var(--accent-green);
         }
         
-        .nav-button-export {
+        .nav-button-import {
             background: var(--accent-blue);
         }
         
-        .nav-button-config {
+        .nav-button-export {
             background: var(--accent-purple);
         }
         
         /* LAYOUT PRINCIPAL */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 1.5rem;
         }
@@ -141,304 +139,236 @@
         .section-title {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            justify-content: space-between;
             margin-bottom: 1.5rem;
             color: var(--accent-blue);
             font-family: 'Cinzel', serif;
             font-size: 1.25rem;
         }
         
-        /* CARD SIMPLIFICADO */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-card {
+        /* SESSÕES */
+        .section-panel {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: 1rem;
-            padding: 1.25rem;
-            transition: border-color 0.3s;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
         }
         
-        .stat-card:hover {
-            border-color: var(--accent-blue);
+        /* CONTROLE DE CATEGORIAS */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
         
-        .stat-header {
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .category-card.active {
+            border-color: var(--accent-green);
+            background: var(--status-active);
+        }
+        
+        .category-card.inactive {
+            border-color: var(--accent-red);
+            background: var(--status-inactive);
+        }
+        
+        .category-card.locked {
+            border-color: var(--accent-yellow);
+            background: var(--status-locked);
+        }
+        
+        .category-header {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin-bottom: 1rem;
         }
         
-        .stat-icon {
+        .category-icon {
             width: 2.5rem;
             height: 2.5rem;
-            border-radius: 0.75rem;
+            border-radius: 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
         }
         
-        .stat-info {
+        .category-info {
             flex: 1;
         }
         
-        .stat-name {
+        .category-name {
             font-weight: 600;
-            font-size: 1rem;
             margin-bottom: 0.25rem;
         }
         
-        .stat-description {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-        
-        .stat-value {
-            font-family: 'Inter', sans-serif;
-            font-size: 2.5rem;
+        .category-value {
+            font-size: 1.5rem;
             font-weight: 700;
             text-align: center;
-            margin: 1rem 0;
-            padding: 0.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 0.5rem;
-            min-height: 70px;
+            margin: 0.5rem 0;
+        }
+        
+        .category-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .control-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.25rem;
         }
         
-        /* PROGRESS BAR COMO CONTROLE */
-        .progress-control {
-            margin: 1rem 0;
+        .control-btn-small {
+            padding: 0.125rem 0.25rem;
+            font-size: 0.625rem;
         }
         
-        .progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+        .btn-active { background: var(--accent-green); color: white; }
+        .btn-inactive { background: var(--accent-red); color: white; }
+        .btn-lock { background: var(--accent-yellow); color: white; }
+        .btn-unlock { background: var(--accent-blue); color: white; }
+        
+        /* SISTEMA DE ATRIBUTOS */
+        .attributes-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
         }
         
-        .progress-fill {
-            height: 100%;
-            border-radius: 3px;
-            transition: width 0.3s;
-            position: relative;
+        @media (max-width: 1024px) {
+            .attributes-section {
+                grid-template-columns: 1fr;
+            }
         }
         
-        .progress-handle {
-            width: 16px;
-            height: 16px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            right: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: grab;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            border: 2px solid var(--bg-panel);
+        .attributes-controls {
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
         }
         
-        .progress-handle:active {
-            cursor: grabbing;
+        .attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
         }
         
-        .progress-labels {
+        .attribute-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+        
+        .attribute-header {
             display: flex;
-            justify-content: space-between;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
         }
         
-        /* SISTEMA DE DESTINO */
-        .destiny-section {
+        .attribute-name {
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .attribute-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        
+        .attribute-input {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        /* DERIVADOS */
+        .derived-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .derived-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+        
+        .derived-formula {
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.25rem;
+        }
+        
+        /* SISTEMA DE SORTE */
+        .sorcery-system {
             background: linear-gradient(135deg, rgba(26, 21, 16, 0.9), rgba(42, 35, 24, 0.9));
             border: 1px solid rgba(212, 167, 106, 0.3);
             border-radius: 1rem;
             padding: 1.5rem;
-            margin-bottom: 2rem;
         }
         
-        .dice-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }
-        
-        .dice-box {
-            text-align: center;
-            padding: 1rem;
-            background: rgba(26, 21, 16, 0.5);
-            border-radius: 0.75rem;
-            border: 1px solid rgba(212, 167, 106, 0.2);
-        }
-        
-        .dice-value {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--destiny-gold);
-            margin: 0.5rem 0;
-        }
-        
-        .destiny-result {
-            text-align: center;
-            margin: 1.5rem 0;
-        }
-        
-        .destiny-percentage {
+        .sorcery-display {
             font-size: 3rem;
             font-weight: 800;
             color: var(--destiny-gold);
-            margin-bottom: 0.5rem;
-        }
-        
-        /* ESTATÍSTICAS DERIVADAS */
-        .derived-stats {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            font-family: monospace;
-            font-size: 0.875rem;
-        }
-        
-        .derived-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .derived-item:last-child {
-            border-bottom: none;
-        }
-        
-        /* CONTROLES DE PONTOS */
-        .points-controls {
-            background: rgba(74, 158, 255, 0.1);
-            border: 1px solid rgba(74, 158, 255, 0.2);
-            border-radius: 1rem;
-            padding: 1.5rem;
+            text-align: center;
             margin: 1rem 0;
         }
         
-        .points-display {
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .sentiments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin: 1.5rem 0;
         }
         
-        .points-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent-blue);
-            background: rgba(0, 0, 0, 0.3);
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            min-width: 100px;
-            text-align: center;
-        }
-        
-        /* MODAL */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+        .sentiment-card {
+            background: rgba(26, 21, 16, 0.5);
+            border: 1px solid rgba(212, 167, 106, 0.2);
+            border-radius: 0.75rem;
             padding: 1rem;
         }
         
-        .modal.active {
-            display: flex;
-        }
-        
-        .modal-content {
-            background: var(--bg-panel);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--border-color);
-        }
-        
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .modal-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.25rem;
-            color: var(--accent-blue);
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.2s;
-        }
-        
-        .modal-close:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-primary);
-        }
-        
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            font-weight: 500;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            color: var(--text-primary);
-            font-size: 0.875rem;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: var(--accent-blue);
+        .sentiment-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
         
         /* UTILITIES */
@@ -448,8 +378,10 @@
         .gap-2 { gap: 0.5rem; }
         .gap-3 { gap: 0.75rem; }
         .gap-4 { gap: 1rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
         .mb-4 { margin-bottom: 1rem; }
         .mb-6 { margin-bottom: 1.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
         .mt-4 { margin-top: 1rem; }
         .mt-6 { margin-top: 1.5rem; }
         .w-full { width: 100%; }
@@ -491,48 +423,111 @@
             color: white;
         }
         
+        .btn-purple {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
         .btn:hover {
             transform: translateY(-1px);
             filter: brightness(110%);
         }
         
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
         
-        /* CORES DOS ATRIBUTOS */
-        .color-vida { color: var(--accent-red); }
-        .color-mana { color: var(--accent-blue); }
-        .color-estamina { color: var(--accent-green); }
-        .color-forca { color: var(--accent-red); }
-        .color-destreza { color: var(--accent-green); }
-        .color-constituicao { color: var(--accent-yellow); }
-        .color-inteligencia { color: var(--accent-blue); }
-        .color-sabedoria { color: var(--accent-purple); }
-        .color-carisma { color: var(--accent-pink); }
+        .modal.active {
+            display: flex;
+        }
         
-        .bg-vida { background: rgba(255, 71, 87, 0.2); }
-        .bg-mana { background: rgba(74, 158, 255, 0.2); }
-        .bg-estamina { background: rgba(34, 197, 94, 0.2); }
-        .bg-forca { background: rgba(255, 71, 87, 0.2); }
-        .bg-destreza { background: rgba(34, 197, 94, 0.2); }
-        .bg-constituicao { background: rgba(245, 158, 11, 0.2); }
-        .bg-inteligencia { background: rgba(74, 158, 255, 0.2); }
-        .bg-sabedoria { background: rgba(139, 92, 246, 0.2); }
-        .bg-carisma { background: rgba(236, 72, 153, 0.2); }
+        .modal-content {
+            background: var(--bg-panel);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        /* ALERTAS */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--accent-yellow);
+        }
         
         /* RESPONSIVO */
         @media (max-width: 768px) {
-            .card-grid {
-                grid-template-columns: 1fr;
-            }
-            
             .container {
                 padding: 1rem;
             }
             
-            .dice-container {
+            .categories-grid,
+            .attributes-grid,
+            .derived-grid,
+            .sentiments-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -540,41 +535,19 @@
                 gap: 0.25rem;
             }
             
-            .nav-button {
-                padding: 0.4rem 0.6rem;
-                font-size: 0.75rem;
-            }
-            
             .nav-button span {
                 display: none;
-            }
-            
-            .nav-button i {
-                margin-right: 0;
-            }
-            
-            .points-controls .flex {
-                flex-direction: column;
             }
         }
         
         /* ANIMAÇÕES */
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .animate-slide-in {
-            animation: slideIn 0.3s ease-out;
-        }
-        
         .animate-fade-in {
-            animation: fadeIn 0.5s ease-out;
+            animation: fadeIn 0.3s ease-out;
         }
     </style>
 </head>
@@ -587,21 +560,21 @@
                     <i data-lucide="arrow-left"></i>
                     <span class="font-cinzel">Voltar</span>
                 </a>
-                <h1 class="font-cinzel" style="color: var(--accent-blue);">Sistema de Status</h1>
+                <h1 class="font-cinzel" style="color: var(--accent-blue);">Sistema de Status Avançado</h1>
             </div>
             
             <div class="nav-buttons">
-                <button id="btn-importar" class="nav-button nav-button-import">
+                <button id="btn-save-all" class="nav-button nav-button-save">
+                    <i data-lucide="save"></i>
+                    <span>Salvar Tudo</span>
+                </button>
+                <button id="btn-import" class="nav-button nav-button-import">
                     <i data-lucide="upload"></i>
                     <span>Importar</span>
                 </button>
-                <button id="btn-exportar" class="nav-button nav-button-export">
+                <button id="btn-export" class="nav-button nav-button-export">
                     <i data-lucide="download"></i>
                     <span>Exportar</span>
-                </button>
-                <button id="btn-config" class="nav-button nav-button-config">
-                    <i data-lucide="settings"></i>
-                    <span>Configurar</span>
                 </button>
             </div>
         </div>
@@ -609,1384 +582,1242 @@
 
     <!-- CONTEÚDO PRINCIPAL -->
     <div class="container">
-        <!-- CONTROLE DE PONTOS -->
-        <section class="mb-6 points-controls">
-            <h2 class="section-title">
-                <i data-lucide="dice-5"></i>
-                Sorteio de Pontos
-            </h2>
-            
-            <div class="text-center mb-6">
-                <div class="text-lg mb-2" style="color: var(--text-secondary);">
-                    Digite quantos pontos quer sortear:
-                </div>
-                <div class="flex gap-2 justify-center items-center" style="max-width: 300px; margin: 0 auto;">
-                    <input 
-                        type="number" 
-                        id="input-pontos-sorteio" 
-                        class="form-input" 
-                        placeholder="Ex: 18" 
-                        min="1" 
-                        max="1000" 
-                        value="18"
-                        style="
-                            flex: 1;
-                            text-align: center;
-                            padding: 0.75rem;
-                            font-size: 1.125rem;
-                            font-weight: 600;
-                            background: rgba(255, 255, 255, 0.05);
-                            border: 2px solid var(--border-color);
-                        "
-                    >
-                    <button 
-                        onclick="sortearPontos()" 
-                        class="btn"
-                        style="
-                            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-                            color: white;
-                            padding: 0.75rem 1.5rem;
-                            font-weight: 600;
-                        "
-                    >
-                        <i data-lucide="dice-5"></i>
-                        Sortear
-                    </button>
-                </div>
-                <div class="text-sm mt-2" style="color: var(--text-secondary);">
-                    Os pontos serão distribuídos aleatoriamente entre os atributos
-                </div>
-            </div>
-        
-        <!-- STATUS DOS PONTOS -->
-        <div class="text-center">
-            <div class="inline-block bg-black/30 p-4 rounded-lg border border-border-color">
-                <div class="grid grid-cols-2 gap-4" style="grid-template-columns: repeat(2, 1fr);">
-                    <div>
-                        <div class="text-sm" style="color: var(--text-secondary);">Pontos Disponíveis</div>
-                        <div class="text-2xl font-bold" style="color: var(--accent-blue);" id="pontos-disponiveis">0</div>
-                    </div>
-                    <div>
-                        <div class="text-sm" style="color: var(--text-secondary);">Pontos Gastos</div>
-                        <div class="text-2xl font-bold" style="color: var(--accent-green);" id="pontos-gastos">0</div>
-                    </div>
-                </div>
-            </div>
+        <!-- ALERTA DE INFORMAÇÃO -->
+        <div class="alert alert-warning mb-6">
+            <i data-lucide="alert-triangle"></i>
+            Sistema em desenvolvimento - Algumas funcionalidades podem estar em incremento
         </div>
-    </section>
 
-        <!-- RECURSOS VITAIS -->
-        <section class="mb-6">
-            <h2 class="section-title">
-                <i data-lucide="heart"></i>
-                Recursos Vitais
-            </h2>
-            
-            <div class="card-grid">
-                <!-- VIDA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-vida">
-                            <i data-lucide="heart" class="color-vida"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-vida">Vida</div>
-                            <div class="stat-description">Pontos de vida atuais</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-vida" id="vida-atual">100</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="vida-atual" data-max="100">
-                            <div class="progress-fill bg-vida" style="width: 50%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span id="vida-maxima">100</span>
-                        </div>
-                    </div>
+        <!-- 1. CATEGORIAS DE CONTROLE -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="heart-pulse"></i>
+                    <h2>Categorias de Controle (Máx: 8)</h2>
                 </div>
-                
-                <!-- MANA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-mana">
-                            <i data-lucide="flame" class="color-mana"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-mana">Mana</div>
-                            <div class="stat-description">Pontos de mana atuais</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-mana" id="mana-atual">100</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="mana-atual" data-max="100">
-                            <div class="progress-fill bg-mana" style="width: 50%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span id="mana-maxima">100</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- ESTAMINA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-estamina">
-                            <i data-lucide="zap" class="color-estamina"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-estamina">Estamina</div>
-                            <div class="stat-description">Pontos de estamina atuais</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-estamina" id="estamina-atual">100</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="estamina-atual" data-max="100">
-                            <div class="progress-fill bg-estamina" style="width: 50%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span id="estamina-maxima">100</span>
-                        </div>
-                    </div>
-                </div>
+                <button onclick="openCategoryModal()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar
+                </button>
             </div>
             
-            <div class="text-center mt-4">
-                <button onclick="restaurarRecursos()" class="btn btn-success">
-                    <i data-lucide="refresh-cw"></i>
-                    Restaurar Recursos
-                </button>
+            <div class="categories-grid" id="categories-container">
+                <!-- Categorias serão geradas dinamicamente -->
             </div>
         </section>
 
-        <!-- ATRIBUTOS -->
-        <section class="mb-6">
-            <h2 class="section-title">
-                <i data-lucide="activity"></i>
-                Atributos (0-100)
-            </h2>
-            
-            <div class="card-grid">
-                <!-- FORÇA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-forca">
-                            <i data-lucide="sword" class="color-forca"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-forca">Força</div>
-                            <div class="stat-description">Poder físico</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-forca" id="forca">0</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="forca" data-min="0" data-max="100">
-                            <div class="progress-fill bg-forca" style="width: 0%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span>100</span>
-                        </div>
-                    </div>
+        <!-- 2. SISTEMA DE ATRIBUTOS -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="activity"></i>
+                    <h2>Atributos Principais (Máx: 8)</h2>
                 </div>
-                
-                <!-- DESTREZA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-destreza">
-                            <i data-lucide="wind" class="color-destreza"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-destreza">Destreza</div>
-                            <div class="stat-description">Agilidade</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-destreza" id="destreza">0</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="destreza" data-min="0" data-max="100">
-                            <div class="progress-fill bg-destreza" style="width: 0%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span>100</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- CONSTITUIÇÃO -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-constituicao">
-                            <i data-lucide="shield" class="color-constituicao"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-constituicao">Constituição</div>
-                            <div class="stat-description">Resistência</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-constituicao" id="constituicao">0</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="constituicao" data-min="0" data-max="100">
-                            <div class="progress-fill bg-constituicao" style="width: 0%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span>100</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- INTELIGÊNCIA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-inteligencia">
-                            <i data-lucide="brain" class="color-inteligencia"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-inteligencia">Inteligência</div>
-                            <div class="stat-description">Conhecimento</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-inteligencia" id="inteligencia">0</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="inteligencia" data-min="0" data-max="100">
-                            <div class="progress-fill bg-inteligencia" style="width: 0%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span>100</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- SABEDORIA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-sabedoria">
-                            <i data-lucide="eye" class="color-sabedoria"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-sabedoria">Sabedoria</div>
-                            <div class="stat-description">Percepção</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-sabedoria" id="sabedoria">0</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="sabedoria" data-min="0" data-max="100">
-                            <div class="progress-fill bg-sabedoria" style="width: 0%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span>100</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- CARISMA -->
-                <div class="stat-card">
-                    <div class="stat-header">
-                        <div class="stat-icon bg-carisma">
-                            <i data-lucide="sparkles" class="color-carisma"></i>
-                        </div>
-                        <div class="stat-info">
-                            <div class="stat-name color-carisma">Carisma</div>
-                            <div class="stat-description">Persuasão</div>
-                        </div>
-                    </div>
-                    
-                    <div class="stat-value color-carisma" id="carisma">0</div>
-                    
-                    <div class="progress-control">
-                        <div class="progress-bar" data-stat="carisma" data-min="0" data-max="100">
-                            <div class="progress-fill bg-carisma" style="width: 0%">
-                                <div class="progress-handle"></div>
-                            </div>
-                        </div>
-                        <div class="progress-labels">
-                            <span>0</span>
-                            <span>100</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="flex justify-center gap-3 mt-4 flex-wrap">
-                <button onclick="distribuirAleatorio()" class="btn btn-primary">
-                    <i data-lucide="dice-5"></i>
-                    Sorteio Aleatório
-                </button>
-                <button onclick="distribuirAleatorioMinimo()" class="btn btn-warning">
-                    <i data-lucide="dice-6"></i>
-                    Distribuir Mínimo
-                </button>
-                <button onclick="resetarAtributos()" class="btn btn-danger">
-                    <i data-lucide="trash-2"></i>
-                    Resetar
+                <button onclick="openAttributeModal()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar
                 </button>
             </div>
-        </section>
-
-        <!-- SISTEMA DE DESTINO -->
-        <section class="mb-6">
-            <h2 class="section-title" style="color: var(--destiny-gold);">
-                <i data-lucide="clover"></i>
-                Sistema de Destino
-            </h2>
             
-            <div class="destiny-section">
-                <div class="dice-container">
-                    <div class="dice-box">
-                        <div class="text-sm">Fé</div>
-                        <div class="dice-value" id="dado-fe">0</div>
+            <div class="attributes-section">
+                <!-- CONTROLES DE DISTRIBUIÇÃO -->
+                <div class="attributes-controls">
+                    <h3 class="mb-4" style="color: var(--accent-blue);">Opções de Distribuição</h3>
+                    
+                    <!-- Opção 1: Sorteio Aleatório -->
+                    <div class="mb-4">
+                        <h4 class="mb-2">1. Sorteio Aleatório</h4>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="total-points" placeholder="Total de pontos" 
+                                   class="form-input" min="1" max="1000">
+                            <button onclick="distributeRandom()" class="btn btn-success">
+                                Sortear
+                            </button>
+                        </div>
                     </div>
-                    <div class="dice-box">
-                        <div class="text-sm">Sorte</div>
-                        <div class="dice-value" id="dado-sorte">0</div>
+                    
+                    <!-- Opção 2: Valor Mínimo -->
+                    <div class="mb-4">
+                        <h4 class="mb-2">2. Valor Mínimo</h4>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="min-value" placeholder="Valor mínimo" 
+                                   class="form-input" min="0" max="100">
+                            <button onclick="distributeWithMin()" class="btn btn-warning">
+                                Distribuir
+                            </button>
+                        </div>
                     </div>
-                    <div class="dice-box">
-                        <div class="text-sm">Destino</div>
-                        <div class="dice-value" id="dado-destino">0</div>
+                    
+                    <!-- Opção 3: Valor Manual -->
+                    <div class="mb-4">
+                        <h4 class="mb-2">3. Valor Manual</h4>
+                        <div class="text-sm mb-2">
+                            Defina manualmente e use o cadeado para fixar
+                        </div>
+                    </div>
+                    
+                    <!-- Controles Gerais -->
+                    <div class="mt-6">
+                        <div class="flex gap-2">
+                            <button onclick="saveAttributes()" class="btn btn-success flex-1">
+                                <i data-lucide="save"></i>
+                                Salvar Atributos
+                            </button>
+                            <button onclick="resetAttributes()" class="btn btn-danger">
+                                <i data-lucide="trash-2"></i>
+                                Resetar
+                            </button>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="destiny-result">
-                    <div class="destiny-percentage" id="indice-sorte">--</div>
-                    <div class="text-sm" id="calculo-sorte">
-                        ((Fé × 0.4 + Destino × 0.3) - Sorte) × 0.5
-                    </div>
-                </div>
-                
-                <div class="progress-control mb-4">
-                    <div class="progress-bar" style="background: rgba(212, 167, 106, 0.1);">
-                        <div class="progress-fill" style="background: var(--destiny-gold); width: 0%"></div>
-                    </div>
-                </div>
-                
-                <div class="text-center mb-4">
-                    <div class="text-sm" style="color: var(--destiny-gold);" id="status-sorte">
-                        Não definido
-                    </div>
-                    <div class="text-sm mt-1" id="rolls-info">
-                        Rolagens restantes: ilimitadas
-                    </div>
-                </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="rolarSorte()" class="btn w-full" style="background: rgba(212, 167, 106, 0.2); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
-                        <i data-lucide="dice-5"></i>
-                        Rolar Destino
-                    </button>
-                    <button onclick="fixarSorte()" class="btn w-full" style="background: rgba(212, 167, 106, 0.2); color: var(--destiny-gold); border: 1px solid rgba(212, 167, 106, 0.3);">
-                        <i data-lucide="lock"></i>
-                        Fixar
-                    </button>
+                <!-- LISTA DE ATRIBUTOS -->
+                <div class="attributes-grid" id="attributes-container">
+                    <!-- Atributos serão gerados dinamicamente -->
                 </div>
             </div>
         </section>
 
-        <!-- ESTATÍSTICAS DERIVADAS -->
-        <section class="mb-6">
-            <h2 class="section-title">
-                <i data-lucide="layers"></i>
-                Estatísticas Avançadas
-            </h2>
+        <!-- 3. ATRIBUTOS DERIVADOS -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="layers"></i>
+                    <h2>Atributos Derivados (Máx: 8)</h2>
+                </div>
+                <button onclick="openDerivedModal()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar
+                </button>
+            </div>
             
-            <div class="derived-stats">
-                <div class="derived-item">
-                    <span>Blindagem:</span>
-                    <span style="color: var(--accent-blue);" id="calc-blindagem">0</span>
+            <div class="derived-grid" id="derived-container">
+                <!-- Derivados serão gerados dinamicamente -->
+            </div>
+        </section>
+
+        <!-- 4. SISTEMA DE SORTE -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="clover"></i>
+                    <h2>Sistema de Sorte (Máx: 8 sentimentos)</h2>
                 </div>
-                <div class="derived-item">
-                    <span>Velocidade:</span>
-                    <span style="color: var(--accent-green);" id="calc-velocidade">0</span>
+                <button onclick="addSentiment()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar Sentimento
+                </button>
+            </div>
+            
+            <div class="sorcery-system">
+                <!-- DISPLAY DA SORTE -->
+                <div class="text-center mb-6">
+                    <div class="text-lg mb-2">Sorte Atual</div>
+                    <div class="sorcery-display" id="luck-value">50</div>
+                    <div class="flex justify-center gap-3 mt-4">
+                        <button onclick="rollLuck()" class="btn btn-warning">
+                            <i data-lucide="dice-5"></i>
+                            Rolar Sorte
+                        </button>
+                        <button onclick="saveLuck()" class="btn btn-success">
+                            <i data-lucide="save"></i>
+                            Salvar Sorte
+                        </button>
+                    </div>
                 </div>
-                <div class="derived-item">
-                    <span>Iniciativa:</span>
-                    <span style="color: var(--accent-yellow);" id="calc-iniciativa">0</span>
-                </div>
-                <div class="derived-item">
-                    <span>Percepção:</span>
-                    <span style="color: var(--accent-purple);" id="calc-percepcao">0</span>
-                </div>
-                <div class="derived-item">
-                    <span>Pontos de Vida Máx:</span>
-                    <span style="color: var(--accent-red);" id="calc-vida-max">100</span>
-                </div>
-                <div class="derived-item">
-                    <span>Pontos de Mana Máx:</span>
-                    <span style="color: var(--accent-blue);" id="calc-mana-max">100</span>
-                </div>
-                <div class="derived-item">
-                    <span>Pontos Estamina Máx:</span>
-                    <span style="color: var(--accent-green);" id="calc-estamina-max">100</span>
-                </div>
-                <div class="text-sm mt-4" style="color: var(--text-secondary);">
-                    *Calculadas automaticamente com base nos atributos
+                
+                <!-- SENTIMENTOS -->
+                <h3 class="mb-3" style="color: var(--destiny-gold);">Modificadores de Sorte</h3>
+                <div class="sentiments-grid" id="sentiments-container">
+                    <!-- Sentimentos base serão gerados -->
                 </div>
             </div>
         </section>
-    </div>
 
-    <!-- RODAPÉ -->
-    <footer class="border-t border-border-color py-4 text-center text-sm" style="color: var(--text-secondary);">
-        Sistema de Status - Grimório Digital v3.0 | Integrado com Core System
-    </footer>
-
-    <!-- MODAL DE CONFIGURAÇÕES -->
-    <div id="modal-config" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <i data-lucide="settings"></i>
-                    Configurações do Sistema
-                </h3>
-                <button onclick="fecharModal('modal-config')" class="modal-close">
-                    <i data-lucide="x"></i>
+        <!-- CONTROLES FINAIS -->
+        <section class="section-panel text-center">
+            <h2 class="mb-4" style="color: var(--accent-blue);">Controles do Sistema</h2>
+            <div class="flex gap-3 justify-center flex-wrap">
+                <button onclick="saveAll()" class="btn btn-success btn-lg">
+                    <i data-lucide="save-all"></i>
+                    Salvar Tudo no Storage
                 </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="form-group">
-                    <label class="form-label">Limite Máximo por Atributo</label>
-                    <input type="number" id="config-limite-atributo" class="form-input" value="100" min="5" max="500">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Pontos Ganhos por Nível</label>
-                    <input type="number" id="config-pontos-nivel" class="form-input" value="2" min="0" max="1000">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Mínimo para Sorteio Aleatório</label>
-                    <input type="number" id="config-minimo-aleatorio" class="form-input" value="5" min="0" max="200">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Mínimo para Distribuição</label>
-                    <input type="number" id="config-minimo-distribuicao" class="form-input" value="5" min="0" max="50">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Rolagens de Destino Máximas</label>
-                    <input type="number" id="config-rolagens-maximas" class="form-input" max ="1000" value="0" min="0">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Dificuldade do Destino</label>
-                    <select style="color: var(--accent-white); background: rgba(255,255,255,0.1);" id="config-dificuldade-destino" class="form-input">
-                        <option value="1">Fácil</option>
-                        <option value="2" selected>Normal</option>
-                        <option value="3">Difícil</option>
-                        <option value="4">Muito Difícil</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div class="flex gap-3 mt-6">
-                <button onclick="fecharModal('modal-config')" class="btn w-full" style="background: rgba(255,255,255,0.1);">
-                    Cancelar
+                <button onclick="exportToTXT()" class="btn btn-primary btn-lg">
+                    <i data-lucide="file-text"></i>
+                    Exportar Ficha (TXT)
                 </button>
-                <button onclick="salvarConfiguracoes()" class="btn btn-success w-full">
-                    <i data-lucide="save"></i>
-                    Salvar Configurações
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE EXPORTAÇÃO -->
-    <div id="modal-export" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
+                <button onclick="generateVisualSheet()" class="btn btn-purple btn-lg">
                     <i data-lucide="download"></i>
-                    Exportar Dados
-                </h3>
-                <button onclick="fecharModal('modal-export')" class="modal-close">
-                    <i data-lucide="x"></i>
+                    Baixar Ficha Visual
                 </button>
             </div>
+        </section>
+    </div>
+
+    <!-- MODAL: ADICIONAR CATEGORIA -->
+    <div id="modal-category" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Adicionar Categoria</h3>
             
-            <div class="space-y-4">
-                <div class="form-group">
-                    <label class="form-label">Formato de Exportação</label>
-                    <select id="export-format" class="form-input">
-                        <option value="json">JSON (Completo)</option>
-                        <option value="txt">Texto (Simplificado)</option>
-                        <option value="csv">CSV (Planilha)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">O que exportar</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="export-status" checked class="rounded">
-                            <span class="text-sm">Status Atual</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="export-grimorio" checked class="rounded">
-                            <span class="text-sm">Dados do Grimorio</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="export-config" checked class="rounded">
-                            <span class="text-sm">Configurações</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div id="export-preview" class="form-group">
-                    <label class="form-label">Pré-visualização</label>
-                    <textarea id="export-content" class="form-input" rows="8" readonly style="font-family: monospace; font-size: 0.75rem; resize: none;"></textarea>
-                </div>
+            <div class="form-group">
+                <label class="form-label">Nome da Categoria</label>
+                <input type="text" id="category-name" class="form-input" placeholder="Ex: Saúde Mental">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Inicial</label>
+                <input type="number" id="category-value" class="form-input" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Máximo</label>
+                <input type="number" id="category-max" class="form-input" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Cor</label>
+                <select id="category-color" class="form-select">
+                    <option value="vida">Vermelho (Vida)</option>
+                    <option value="mana">Azul (Mana)</option>
+                    <option value="estamina">Verde (Estamina)</option>
+                    <option value="psicologico">Roxo (Psicológico)</option>
+                    <option value="espiritual">Dourado (Espiritual)</option>
+                </select>
             </div>
             
             <div class="flex gap-3 mt-6">
-                <button onclick="fecharModal('modal-export')" class="btn w-full" style="background: rgba(255,255,255,0.1);">
+                <button onclick="closeModal('modal-category')" class="btn flex-1">
                     Cancelar
                 </button>
-                <button onclick="executarExportacao()" class="btn btn-success w-full">
-                    <i data-lucide="download"></i>
-                    Exportar Arquivo
+                <button onclick="addCategory()" class="btn btn-success flex-1">
+                    Adicionar
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE IMPORTAÇÃO -->
-    <div id="modal-import" class="modal">
+    <!-- MODAL: ADICIONAR ATRIBUTO -->
+    <div id="modal-attribute" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <i data-lucide="upload"></i>
-                    Importar Dados
-                </h3>
-                <button onclick="fecharModal('modal-import')" class="modal-close">
-                    <i data-lucide="x"></i>
-                </button>
+            <h3 class="modal-title">Adicionar Atributo</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Nome do Atributo</label>
+                <input type="text" id="attribute-name" class="form-input" placeholder="Ex: Força">
             </div>
             
-            <div class="space-y-4">
-                <div class="form-group">
-                    <label class="form-label">Selecionar Arquivo</label>
-                    <input type="file" id="import-file" class="form-input" accept=".json,.txt,.csv">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Tipo de Arquivo</label>
-                    <select id="import-type" class="form-input">
-                        <option value="auto">Detectar Automaticamente</option>
-                        <option value="json">JSON (Grimorio)</option>
-                        <option value="txt">Texto (Status)</option>
-                        <option value="csv">CSV (Planilha)</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">O que importar</label>
-                    <div class="space-y-2">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="import-status" checked class="rounded">
-                            <span class="text-sm">Status Atual</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="import-grimorio" checked class="rounded">
-                            <span class="text-sm">Dados do Grimorio</span>
-                        </label>
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" id="import-config" class="rounded">
-                            <span class="text-sm">Configurações</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <div id="import-preview" class="form-group" style="display: none;">
-                    <label class="form-label">Pré-visualização</label>
-                    <textarea id="import-content" class="form-input" rows="6" readonly style="font-family: monospace; font-size: 0.75rem; resize: none;"></textarea>
+            <div class="form-group">
+                <label class="form-label">Valor Inicial</label>
+                <input type="number" id="attribute-value" class="form-input" value="0" min="0" max="100">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Máximo</label>
+                <input type="number" id="attribute-max" class="form-input" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-attribute')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="addAttribute()" class="btn btn-success flex-1">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADICIONAR DERIVADO -->
+    <div id="modal-derived" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Adicionar Atributo Derivado</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Nome</label>
+                <input type="text" id="derived-name" class="form-input" placeholder="Ex: Dano Crítico">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Atributo Base</label>
+                <select id="derived-base" class="form-select">
+                    <!-- Opções serão preenchidas dinamicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Operação</label>
+                <select id="derived-operation" class="form-select">
+                    <option value="+">Somar (+)</option>
+                    <option value="-">Subtrair (-)</option>
+                    <option value="*">Multiplicar (*)</option>
+                    <option value="/">Dividir (/)</option>
+                    <option value="%">Porcentagem (%)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor</label>
+                <input type="number" id="derived-modifier" class="form-input" value="0" step="0.1">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Fórmula Completa</label>
+                <input type="text" id="derived-formula" class="form-input" 
+                       placeholder="Ex: Força * 1.5 + Destreza * 0.5" readonly>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-derived')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="addDerived()" class="btn btn-success flex-1">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURAR SENTIMENTO -->
+    <div id="modal-sentiment" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Configurar Sentimento</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Sentimento</label>
+                <select id="sentiment-type" class="form-select">
+                    <option value="alegria">Alegria</option>
+                    <option value="tristeza">Tristeza</option>
+                    <option value="raiva">Raiva</option>
+                    <option value="medo">Medo</option>
+                    <option value="indiferenca">Indiferença</option>
+                    <option value="amor">Amor</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="custom-sentiment-group" style="display: none;">
+                <label class="form-label">Nome Personalizado</label>
+                <input type="text" id="custom-sentiment-name" class="form-input" placeholder="Nome do sentimento">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Efeito</label>
+                <select id="sentiment-effect" class="form-select">
+                    <option value="buff">Buff (Aumenta sorte)</option>
+                    <option value="debuff">Debuff (Reduz sorte)</option>
+                    <option value="neutral">Neutro (Não interfere)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Intensidade (0.0 a 1.0)</label>
+                <input type="range" id="sentiment-intensity" min="0" max="10" value="5" step="0.1" class="w-full">
+                <div class="flex justify-between text-sm">
+                    <span>0.0</span>
+                    <span id="intensity-value">0.5</span>
+                    <span>1.0</span>
                 </div>
             </div>
             
             <div class="flex gap-3 mt-6">
-                <button onclick="fecharModal('modal-import')" class="btn w-full" style="background: rgba(255,255,255,0.1);">
+                <button onclick="closeModal('modal-sentiment')" class="btn flex-1">
                     Cancelar
                 </button>
-                <button onclick="executarImportacao()" class="btn btn-success w-full">
-                    <i data-lucide="upload"></i>
-                    Importar Dados
+                <button onclick="saveSentimentConfig()" class="btn btn-success flex-1">
+                    Salvar
                 </button>
             </div>
         </div>
     </div>
 
     <script>
-    // Inicializar ícones Lucide
-    lucide.createIcons();
-    
-    // Sistema de notificações
-    function mostrarNotificacao(mensagem, tipo = 'info', duracao = 3000) {
-        const notification = document.createElement('div');
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 0.75rem 1rem;
-            border-radius: 0.5rem;
-            background: ${tipo === 'success' ? 'rgba(34, 197, 94, 0.9)' : 
-                         tipo === 'error' ? 'rgba(220, 38, 38, 0.9)' : 
-                         tipo === 'warning' ? 'rgba(245, 158, 11, 0.9)' : 
-                         'rgba(59, 130, 246, 0.9)'};
-            color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
-            z-index: 1000;
-            animation: slideIn 0.3s ease-out;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        `;
+    // =========== SISTEMA DE DADOS ===========
+    const systemData = {
+        // Categorias (máx 8)
+        categories: [
+            { id: 1, name: "Vida", value: 100, max: 100, color: "vida", active: true, locked: false },
+            { id: 2, name: "Mana", value: 100, max: 100, color: "mana", active: true, locked: false },
+            { id: 3, name: "Estamina", value: 100, max: 100, color: "estamina", active: true, locked: false }
+        ],
         
-        notification.innerHTML = `
-            <i data-lucide="${tipo === 'success' ? 'check-circle' : 
-                            tipo === 'error' ? 'x-circle' : 
-                            tipo === 'warning' ? 'alert-triangle' : 'info'}"></i>
-            <span>${mensagem}</span>
-        `;
+        // Atributos (máx 8)
+        attributes: [
+            { id: 1, name: "Força", value: 0, max: 100, locked: false, active: true },
+            { id: 2, name: "Destreza", value: 0, max: 100, locked: false, active: true },
+            { id: 3, name: "Constituição", value: 0, max: 100, locked: false, active: true },
+            { id: 4, name: "Inteligência", value: 0, max: 100, locked: false, active: true },
+            { id: 5, name: "Sabedoria", value: 0, max: 100, locked: false, active: true },
+            { id: 6, name: "Carisma", value: 0, max: 100, locked: false, active: true }
+        ],
         
-        document.body.appendChild(notification);
-        lucide.createIcons();
+        // Atributos derivados (máx 8)
+        derived: [
+            { 
+                id: 1, 
+                name: "Dano Físico", 
+                formula: "Força * 1.5", 
+                value: 0,
+                operation: "*",
+                modifier: 1.5,
+                baseAttr: "forca",
+                active: true 
+            },
+            { 
+                id: 2, 
+                name: "Defesa", 
+                formula: "Constituição * 2 + Força * 0.5", 
+                value: 0,
+                operation: "+",
+                modifier: 0.5,
+                baseAttr: "constituicao",
+                active: true 
+            }
+        ],
         
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = 'translateX(100%)';
-            notification.style.transition = 'opacity 0.3s, transform 0.3s';
-            setTimeout(() => notification.remove(), 300);
-        }, duracao);
+        // Sistema de sorte
+        luck: {
+            value: 50,
+            rollHistory: [],
+            sentiments: [
+                { type: "alegria", effect: "buff", intensity: 0.7, active: true },
+                { type: "tristeza", effect: "debuff", intensity: 0.3, active: true },
+                { type: "raiva", effect: "buff", intensity: 0.5, active: true },
+                { type: "medo", effect: "debuff", intensity: 0.4, active: true },
+                { type: "indiferenca", effect: "neutral", intensity: 0.0, active: true },
+                { type: "amor", effect: "buff", intensity: 0.8, active: true }
+            ]
+        },
         
-        return notification;
-    }
-    
-    // Dados do sistema
-    let statusData = {
-        recursos: {
-            vida: { atual: 100, max: 100 },
-            mana: { atual: 100, max: 100 },
-            estamina: { atual: 100, max: 100 }
-        },
-        atributos: {
-            forca: 0,
-            destreza: 0,
-            constituicao: 0,
-            inteligencia: 0,
-            sabedoria: 0,
-            carisma: 0
-        },
-        sorte: {
-            dado1: 0,
-            dado2: 0,
-            dado3: 0,
-            indice: 0,
-            status: 'Não definido',
-            rolagens: 0,
-            fixado: false
-        },
-        pontos: {
-            disponiveis: 18,
-            gastos: 0
-        },
         config: {
-            limiteAtributo: 100,
+            maxCategories: 8,
+            maxAttributes: 8,
+            maxDerived: 8,
+            maxSentiments: 8
         }
     };
     
-    let progressBars = [];
+    // =========== FUNÇÕES DE UTILIDADE ===========
+    function showNotification(message, type = "info") {
+        const notification = document.createElement("div");
+        notification.className = `alert alert-${type}`;
+        notification.innerHTML = `
+            <i data-lucide="${type === 'success' ? 'check-circle' : 
+                           type === 'error' ? 'x-circle' : 
+                           type === 'warning' ? 'alert-triangle' : 'info'}"></i>
+            <span>${message}</span>
+        `;
+        
+        document.querySelector(".container").prepend(notification);
+        lucide.createIcons();
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
     
-    // Controles de progress bar
-    class ProgressBarControl {
-        constructor(element) {
-            this.bar = element;
-            this.fill = element.querySelector('.progress-fill');
-            this.handle = element.querySelector('.progress-handle');
-            this.statId = element.dataset.stat;
-            this.max = parseInt(element.dataset.max) || 100;
-            this.isDragging = false;
-            
-            if (!this.bar || !this.fill || !this.handle) {
-                console.warn('Elementos da progress bar não encontrados:', element);
-                return;
-            }
-            
-            this.init();
+    function openModal(id) {
+        document.getElementById(id).classList.add("active");
+    }
+    
+    function closeModal(id) {
+        document.getElementById(id).classList.remove("active");
+    }
+    
+    // =========== SISTEMA DE CATEGORIAS ===========
+    function openCategoryModal() {
+        if (systemData.categories.length >= systemData.config.maxCategories) {
+            showNotification(`Limite de ${systemData.config.maxCategories} categorias atingido!`, "error");
+            return;
+        }
+        openModal("modal-category");
+    }
+    
+    function addCategory() {
+        const name = document.getElementById("category-name").value;
+        const value = parseInt(document.getElementById("category-value").value);
+        const max = parseInt(document.getElementById("category-max").value);
+        const color = document.getElementById("category-color").value;
+        
+        if (!name || isNaN(value) || isNaN(max)) {
+            showNotification("Preencha todos os campos corretamente!", "error");
+            return;
         }
         
-        init() {
-            try {
-                this.bar.addEventListener('click', (e) => this.handleClick(e));
-                this.handle.addEventListener('mousedown', (e) => this.startDrag(e));
-                document.addEventListener('mousemove', (e) => this.drag(e));
-                document.addEventListener('mouseup', () => this.stopDrag());
-                
-                // Touch events para mobile
-                this.bar.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.handleClick(e.touches[0]);
-                }, { passive: false });
-                
-                this.handle.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.startDrag(e.touches[0]);
-                }, { passive: false });
-                
-                document.addEventListener('touchmove', (e) => {
-                    if (this.isDragging) {
-                        e.preventDefault();
-                        this.drag(e.touches[0]);
-                    }
-                }, { passive: false });
-                
-                document.addEventListener('touchend', () => this.stopDrag());
-            } catch (error) {
-                console.error('Erro ao inicializar progress bar:', error);
-            }
+        const newCategory = {
+            id: Date.now(),
+            name,
+            value,
+            max,
+            color,
+            active: true,
+            locked: false
+        };
+        
+        systemData.categories.push(newCategory);
+        renderCategories();
+        closeModal("modal-category");
+        showNotification(`Categoria "${name}" adicionada!`, "success");
+    }
+    
+    function toggleCategory(categoryId, action) {
+        const category = systemData.categories.find(c => c.id === categoryId);
+        if (!category) return;
+        
+        switch(action) {
+            case "active":
+                category.active = !category.active;
+                break;
+            case "lock":
+                category.locked = !category.locked;
+                break;
+            case "delete":
+                systemData.categories = systemData.categories.filter(c => c.id !== categoryId);
+                break;
         }
         
-        getCurrentValue() {
-            const valueElement = document.getElementById(this.statId);
-            return valueElement ? parseInt(valueElement.textContent) || 0 : 0;
+        renderCategories();
+        saveToStorage();
+    }
+    
+    function updateCategoryValue(categoryId, newValue) {
+        const category = systemData.categories.find(c => c.id === categoryId);
+        if (category && !category.locked) {
+            category.value = Math.max(0, Math.min(category.max, newValue));
+            renderCategories();
+            saveToStorage();
         }
+    }
+    
+    function renderCategories() {
+        const container = document.getElementById("categories-container");
+        container.innerHTML = "";
         
-        setValue(value, skipSave = false) {
-            const clampedValue = Math.max(0, Math.min(this.max, value));
-            const percentage = (clampedValue / this.max) * 100;
+        systemData.categories.forEach(category => {
+            const card = document.createElement("div");
+            card.className = `category-card ${category.active ? "active" : "inactive"} ${category.locked ? "locked" : ""}`;
             
-            this.fill.style.width = `${percentage}%`;
+            const colorClass = `color-${category.color}`;
+            const bgClass = `bg-${category.color}`;
             
-            const valueElement = document.getElementById(this.statId);
-            if (valueElement) {
-                valueElement.textContent = clampedValue;
-            }
-            
-            // Atualizar dados
-            this.updateData(clampedValue, skipSave);
-            
-            return clampedValue;
-        }
-        
-        updateData(value, skipSave = false) {
-            // Recursos
-            if (this.statId.includes('-atual')) {
-                const resource = this.statId.split('-')[0];
-                if (statusData.recursos[resource]) {
-                    statusData.recursos[resource].atual = value;
+            card.innerHTML = `
+                <div class="category-header">
+                    <div class="category-icon ${bgClass}">
+                        <i data-lucide="heart" class="${colorClass}"></i>
+                    </div>
+                    <div class="category-info">
+                        <div class="category-name ${colorClass}">${category.name}</div>
+                        <div class="text-sm">${category.active ? "Ativo" : "Inativo"} | ${category.locked ? "Trancado" : "Destrancado"}</div>
+                    </div>
+                </div>
+                
+                <div class="category-value ${colorClass}">${category.value}/${category.max}</div>
+                
+                <input type="range" min="0" max="${category.max}" value="${category.value}" 
+                       ${category.locked ? "disabled" : ""} 
+                       onchange="updateCategoryValue(${category.id}, parseInt(this.value))"
+                       class="w-full">
+                
+                <div class="category-controls">
+                    <button onclick="toggleCategory(${category.id}, 'active')" 
+                            class="control-btn ${category.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${category.active ? 'pause' : 'play'}"></i>
+                        ${category.active ? "Desativar" : "Ativar"}
+                    </button>
                     
-                    // Atualizar máximo se necessário
-                    const maxElement = document.getElementById(`${resource}-maxima`);
-                    if (maxElement && statusData.recursos[resource].max) {
-                        maxElement.textContent = statusData.recursos[resource].max;
-                    }
-                }
-            }
-            // Atributos
-            else if (statusData.atributos[this.statId] !== undefined) {
-                statusData.atributos[this.statId] = value;
-            }
+                    <button onclick="toggleCategory(${category.id}, 'lock')" 
+                            class="control-btn ${category.locked ? 'btn-unlock' : 'btn-lock'}">
+                        <i data-lucide="${category.locked ? 'unlock' : 'lock'}"></i>
+                        ${category.locked ? "Destrancar" : "Trancar"}
+                    </button>
+                    
+                    <button onclick="toggleCategory(${category.id}, 'delete')" 
+                            class="control-btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Remover
+                    </button>
+                </div>
+            `;
             
-            if (!skipSave) {
-                salvarDados();
-                updateDerivedStats();
-                salvarNoGrimorio();
-            }
-        }
-        
-        handleClick(e) {
-            if (this.isDragging) return;
-            
-            try {
-                const rect = this.bar.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                const value = Math.round((percentage / 100) * this.max);
-                
-                this.setValue(value);
-            } catch (error) {
-                console.error('Erro no handleClick:', error);
-            }
-        }
-        
-        startDrag(e) {
-            this.isDragging = true;
-            e.preventDefault();
-        }
-        
-        drag(e) {
-            if (!this.isDragging) return;
-            
-            try {
-                const rect = this.bar.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-                const value = Math.round((percentage / 100) * this.max);
-                
-                this.setValue(value);
-            } catch (error) {
-                console.error('Erro no drag:', error);
-            }
-        }
-        
-        stopDrag() {
-            this.isDragging = false;
-        }
-    }
-    
-    // Inicializar todas as progress bars
-    function inicializarProgressBars() {
-        progressBars = [];
-        const bars = document.querySelectorAll('.progress-bar');
-        
-        bars.forEach(bar => {
-            try {
-                const pb = new ProgressBarControl(bar);
-                if (pb.bar) {
-                    progressBars.push(pb);
-                }
-            } catch (error) {
-                console.error('Erro ao criar progress bar:', error);
-            }
-        });
-    }
-    
-    // SISTEMA DE DESTINO SIMPLIFICADO
-    function rolarSorte() {
-        if (statusData.sorte.fixado) {
-            mostrarNotificacao('Destino já foi fixado!', 'warning');
-            return;
-        }
-
-        
-        // Sistema mais difícil
-        const dado1 = Math.floor(Math.random() * 100) + 1;
-        const dado2 = Math.floor(Math.random() * 100) + 1;
-        const dado3 = Math.floor(Math.random() * 100) + 1;
-        
-        // Fórmula difícil de chegar a 100%
-        const resultado = Math.max(1, Math.min(100, Math.round(
-            ((dado1 * 0.6 + dado3 * 0.4) - dado2 * 0.7) * 0.9
-        )));
-        
-        statusData.sorte.dado1 = dado1;
-        statusData.sorte.dado2 = dado2;
-        statusData.sorte.dado3 = dado3;
-        statusData.sorte.indice = resultado;
-        statusData.sorte.rolagens++;
-        
-        // Atualizar display
-        document.getElementById('dado-fe').textContent = dado1;
-        document.getElementById('dado-sorte').textContent = dado2;
-        document.getElementById('dado-destino').textContent = dado3;
-        document.getElementById('indice-sorte').textContent = `${resultado}%`;
-        
-        // Barra de progresso
-        const destinyFill = document.querySelector('.destiny-section .progress-fill');
-        if (destinyFill) {
-            destinyFill.style.width = `${resultado}%`;
-        }
-        
-        // Status
-        let status = 'Neutro';
-        let statusColor = 'var(--destiny-gold)';
-        
-        if (resultado > 85) {
-            status = 'SORTE LENDÁRIA';
-            statusColor = '#FFD700';
-        } else if (resultado > 70) {
-            status = 'Sorte Excelente';
-            statusColor = '#22c55e';
-        } else if (resultado > 60) {
-            status = 'Sortudo';
-            statusColor = '#4a9eff';
-        } else if (resultado < 15) {
-            status = 'AZAR EXTREMO';
-            statusColor = '#ff4757';
-        } else if (resultado < 30) {
-            status = 'Azar Crítico';
-            statusColor = '#f59e0b';
-        } else if (resultado < 40) {
-            status = 'Azarado';
-            statusColor = '#a0a0a0';
-        }
-        
-        statusData.sorte.status = status;
-        const statusElement = document.getElementById('status-sorte');
-        if (statusElement) {
-            statusElement.textContent = status;
-            statusElement.style.color = statusColor;
-        }
-        
-        // Rolagens restantes
-        const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
-        const rollsInfo = document.getElementById('rolls-info');
-        if (rollsInfo) {
-            rollsInfo.textContent = `Rolagens restantes: ${restantes}`;
-        }
-        
-        mostrarNotificacao(`Destino: ${resultado}% (${status})`, resultado > 50 ? 'success' : 'warning');
-        salvarDados();
-    }
-    
-    function fixarSorte() {
-        if (statusData.sorte.indice === 0) {
-            mostrarNotificacao('Role o destino primeiro!', 'warning');
-            return;
-        }
-        
-        if (statusData.sorte.fixado) {
-            mostrarNotificacao('Destino já está fixado!', 'info');
-            return;
-        }
-
-        statusData.sorte.fixado = true;
-        mostrarNotificacao(`Destino fixado em ${statusData.sorte.indice}%!`, 'success');
-        document.getElementById('rolls-info').textContent = 'Destino fixado - Imutável';
-        salvarDados();
-
-        if (statusData.sorte.fixado) {
-            mostrarNotificacao('Destino em aberto!', 'info');
-            return;
-        }
-
-        statusData.sorte.fixado = false;
-        mostrarNotificacao(`Destino desfixado em ${statusData.sorte.indice}%!`, 'success');
-        document.getElementById('rolls-info').textContent = 'Role novamente quando quiser.';
-        salvarDados();
-    }
-    
-    // SISTEMA DE PONTOS - SORTEIO ALEATÓRIO SIMPLIFICADO
-    function sortearPontos() {
-        const input = document.getElementById('input-pontos-sorteio');
-        const pontosParaSortear = parseInt(input.value);
-        
-        if (!pontosParaSortear || pontosParaSortear <= 0) {
-            mostrarNotificacao('Digite um número válido de pontos!', 'warning');
-            input.focus();
-            return;
-        }
-        
-        if (pontosParaSortear > 1000) {
-            mostrarNotificacao('Máximo de 1000 pontos por sorteio!', 'warning');
-            input.value = 1000;
-            input.focus();
-            return;
-        }
-        
-        // Verificar se tem pontos suficientes
-        if (statusData.pontos.disponiveis < pontosParaSortear) {
-            const faltam = pontosParaSortear - statusData.pontos.disponiveis;
-            mostrarNotificacao(`Faltam ${faltam} pontos! Adicione mais pontos primeiro.`, 'error');
-            input.focus();
-            return;
-        }
-        
-        // Array de atributos
-        const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
-        
-        // Registrar valores antes do sorteio
-        const valoresAntes = {};
-        atributos.forEach(attr => {
-            valoresAntes[attr] = statusData.atributos[attr];
+            container.appendChild(card);
         });
         
-        // Distribuir pontos aleatoriamente
-        let pontosDistribuidos = 0;
-        const distribuicoes = {};
+        lucide.createIcons();
+    }
+    
+    // =========== SISTEMA DE ATRIBUTOS ===========
+    function openAttributeModal() {
+        if (systemData.attributes.length >= systemData.config.maxAttributes) {
+            showNotification(`Limite de ${systemData.config.maxAttributes} atributos atingido!`, "error");
+            return;
+        }
+        openModal("modal-attribute");
+    }
+    
+    function addAttribute() {
+        const name = document.getElementById("attribute-name").value;
+        const value = parseInt(document.getElementById("attribute-value").value);
+        const max = parseInt(document.getElementById("attribute-max").value);
         
-        while (pontosDistribuidos < pontosParaSortear) {
-            // Sortear atributo aleatório
-            const randomIndex = Math.floor(Math.random() * atributos.length);
-            const atributoSorteado = atributos[randomIndex];
+        if (!name || isNaN(value) || isNaN(max)) {
+            showNotification("Preencha todos os campos corretamente!", "error");
+            return;
+        }
+        
+        const newAttribute = {
+            id: Date.now(),
+            name,
+            value,
+            max,
+            locked: false,
+            active: true
+        };
+        
+        systemData.attributes.push(newAttribute);
+        renderAttributes();
+        closeModal("modal-attribute");
+        showNotification(`Atributo "${name}" adicionado!`, "success");
+    }
+    
+    function distributeRandom() {
+        const totalPoints = parseInt(document.getElementById("total-points").value);
+        if (!totalPoints || totalPoints <= 0) {
+            showNotification("Digite um número válido de pontos!", "error");
+            return;
+        }
+        
+        const activeAttributes = systemData.attributes.filter(attr => attr.active);
+        if (activeAttributes.length === 0) {
+            showNotification("Nenhum atributo ativo para distribuir!", "error");
+            return;
+        }
+        
+        // Distribuir aleatoriamente
+        let pointsLeft = totalPoints;
+        const distribution = {};
+        
+        while (pointsLeft > 0) {
+            const randomIndex = Math.floor(Math.random() * activeAttributes.length);
+            const attr = activeAttributes[randomIndex];
             
-            // Verificar se pode adicionar (não ultrapassar limite)
-            if (statusData.atributos[atributoSorteado] < statusData.config.limiteAtributo) {
-                statusData.atributos[atributoSorteado]++;
-                pontosDistribuidos++;
+            if (!attr.locked && attr.value < attr.max) {
+                if (!distribution[attr.id]) distribution[attr.id] = 0;
                 
-                // Contar distribuição
-                if (!distribuicoes[atributoSorteado]) {
-                    distribuicoes[atributoSorteado] = 0;
-                }
-                distribuicoes[atributoSorteado]++;
+                distribution[attr.id]++;
+                attr.value = Math.min(attr.max, attr.value + 1);
+                pointsLeft--;
+            }
+        }
+        
+        renderAttributes();
+        updateDerivedAttributes();
+        saveToStorage();
+        
+        const summary = activeAttributes.map(attr => 
+            `${attr.name}: ${attr.value}`
+        ).join(", ");
+        
+        showNotification(`${totalPoints} pontos distribuídos: ${summary}`, "success");
+    }
+    
+    function distributeWithMin() {
+        const minValue = parseInt(document.getElementById("min-value").value);
+        if (isNaN(minValue) || minValue < 0) {
+            showNotification("Digite um valor mínimo válido!", "error");
+            return;
+        }
+        
+        const activeAttributes = systemData.attributes.filter(attr => attr.active);
+        let totalNeeded = 0;
+        
+        // Primeiro, garantir o mínimo para todos
+        activeAttributes.forEach(attr => {
+            if (!attr.locked && attr.value < minValue) {
+                const needed = minValue - attr.value;
+                attr.value = minValue;
+                totalNeeded += needed;
+            }
+        });
+        
+        // Distribuir o restante aleatoriamente
+        const remainingPoints = 100 - (activeAttributes.length * minValue);
+        if (remainingPoints > 0) {
+            let pointsLeft = remainingPoints;
+            while (pointsLeft > 0) {
+                const randomIndex = Math.floor(Math.random() * activeAttributes.length);
+                const attr = activeAttributes[randomIndex];
                 
-                // Atualizar visual imediatamente
-                const progressBar = progressBars.find(pb => pb.statId === atributoSorteado);
-                if (progressBar) {
-                    progressBar.setValue(statusData.atributos[atributoSorteado]);
+                if (!attr.locked && attr.value < attr.max) {
+                    attr.value = Math.min(attr.max, attr.value + 1);
+                    pointsLeft--;
                 }
             }
         }
         
-        // Gastar os pontos
-        statusData.pontos.disponiveis -= pontosParaSortear;
-        statusData.pontos.gastos += pontosParaSortear;
+        renderAttributes();
+        updateDerivedAttributes();
+        saveToStorage();
         
-        // Atualizar displays
-        atualizarDisplayPontos();
-        
-        // Mostrar resumo da distribuição
-        const resumo = Object.keys(distribuicoes)
-            .map(attr => {
-                const nome = attr.charAt(0).toUpperCase() + attr.slice(1);
-                return `${nome}: +${distribuicoes[attr]}`;
-            })
-            .join(', ');
-        
-        mostrarNotificacao(
-            `${pontosParaSortear} pontos sorteados! ${resumo}`,
-            'success'
-        );
-        
-        // Atualizar tudo
-        salvarDados();
-        updateDerivedStats();
-        salvarNoGrimorio();
-        
-        // Resetar input para próximo uso
-        input.value = '';
-        input.focus();
+        showNotification(`Distribuído com mínimo de ${minValue} para todos os atributos!`, "success");
     }
     
-    // Adicionar pontos ao total disponível
-    function adicionarPontos() {
-        const input = document.getElementById('input-adicionar-pontos');
-        const quantidade = parseInt(input.value);
-        
-        if (!quantidade || quantidade <= 0) {
-            mostrarNotificacao('Digite um valor válido!', 'warning');
-            return;
-        }
-        
-        if (quantidade > 1000) {
-            mostrarNotificacao('Máximo de 1000 pontos por vez!', 'warning');
-            input.value = 1000;
-            return;
-        }
-        
-        statusData.pontos.disponiveis += quantidade;
-        atualizarDisplayPontos();
-        
-        mostrarNotificacao(`+${quantidade} pontos adicionados! Total: ${statusData.pontos.disponiveis}`, 'success');
-        salvarDados();
-        
-        // Limpar input
-        input.value = '';
-        input.focus();
+    function saveAttributes() {
+        // Salvar os valores atuais dos atributos
+        saveToStorage();
+        showNotification("Atributos salvos com sucesso!", "success");
     }
     
-    // Atualizar display de pontos
-    function atualizarDisplayPontos() {
-        const pontosElement = document.getElementById('pontos-disponiveis');
-        const gastosElement = document.getElementById('pontos-gastos');
-        
-        if (pontosElement) {
-            pontosElement.textContent = statusData.pontos.disponiveis;
-        }
-        if (gastosElement) {
-            gastosElement.textContent = statusData.pontos.gastos;
-        }
-    }
-    
-    // Resetar atributos e devolver pontos
-    function resetarAtributos() {
-        if (confirm('Resetar todos os atributos para 0? Os pontos gastos serão devolvidos.')) {
-            const atributos = ['forca', 'destreza', 'constituicao', 'inteligencia', 'sabedoria', 'carisma'];
-            let pontosDevolvidos = 0;
-            
-            atributos.forEach(attr => {
-                pontosDevolvidos += statusData.atributos[attr];
-                statusData.atributos[attr] = 0;
-                
-                const progressBar = progressBars.find(pb => pb.statId === attr);
-                if (progressBar) {
-                    progressBar.setValue(0);
+    function resetAttributes() {
+        if (confirm("Resetar todos os atributos para 0? Isso não pode ser desfeito.")) {
+            systemData.attributes.forEach(attr => {
+                if (!attr.locked) {
+                    attr.value = 0;
                 }
             });
             
-            // Devolver pontos
-            statusData.pontos.disponiveis += pontosDevolvidos;
-            statusData.pontos.gastos -= pontosDevolvidos;
-            
-            atualizarDisplayPontos();
-            updateDerivedStats();
-            salvarDados();
-            salvarNoGrimorio();
-            
-            mostrarNotificacao(`Atributos resetados! ${pontosDevolvidos} pontos devolvidos.`, 'info');
+            renderAttributes();
+            updateDerivedAttributes();
+            saveToStorage();
+            showNotification("Atributos resetados!", "info");
         }
     }
     
-    function restaurarRecursos() {
-        ['vida', 'mana', 'estamina'].forEach(resource => {
-            statusData.recursos[resource].atual = statusData.recursos[resource].max;
-            
-            const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
-            if (progressBar) {
-                progressBar.setValue(statusData.recursos[resource].atual);
-            }
-        });
+    function toggleAttribute(attrId, action) {
+        const attr = systemData.attributes.find(a => a.id === attrId);
+        if (!attr) return;
         
-        mostrarNotificacao('Recursos restaurados!', 'success');
-        salvarDados();
-        salvarNoGrimorio();
+        switch(action) {
+            case "active":
+                attr.active = !attr.active;
+                break;
+            case "lock":
+                attr.locked = !attr.locked;
+                break;
+            case "delete":
+                systemData.attributes = systemData.attributes.filter(a => a.id !== attrId);
+                break;
+        }
+        
+        renderAttributes();
+        updateDerivedAttributes();
+        saveToStorage();
     }
     
-    // ESTATÍSTICAS DERIVADAS
-    function updateDerivedStats() {
-        const { forca, destreza, constituicao, inteligencia, sabedoria } = statusData.atributos;
+    function updateAttributeValue(attrId, newValue) {
+        const attr = systemData.attributes.find(a => a.id === attrId);
+        if (attr && !attr.locked) {
+            attr.value = Math.max(0, Math.min(attr.max, newValue));
+            renderAttributes();
+            updateDerivedAttributes();
+            saveToStorage();
+        }
+    }
+    
+    function renderAttributes() {
+        const container = document.getElementById("attributes-container");
+        container.innerHTML = "";
         
-        const blindagem = Math.floor((constituicao * 0.7) + (forca * 0.3));
-        const velocidade = Math.floor((destreza * 0.6) + (constituicao * 0.4));
-        const iniciativa = Math.floor((destreza * 0.5) + (sabedoria * 0.3) + (inteligencia * 0.2));
-        const percepcao = Math.floor((sabedoria * 0.8) + (inteligencia * 0.2));
+        systemData.attributes.forEach(attr => {
+            const card = document.createElement("div");
+            card.className = `attribute-card ${attr.active ? "active" : "inactive"} ${attr.locked ? "locked" : ""}`;
+            
+            card.innerHTML = `
+                <div class="attribute-header">
+                    <div class="attribute-name">${attr.name}</div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleAttribute(${attr.id}, 'lock')" 
+                                class="control-btn control-btn-small ${attr.locked ? 'btn-unlock' : 'btn-lock'}">
+                            <i data-lucide="${attr.locked ? 'unlock' : 'lock'}"></i>
+                        </button>
+                        
+                        <button onclick="toggleAttribute(${attr.id}, 'active')" 
+                                class="control-btn control-btn-small ${attr.active ? 'btn-inactive' : 'btn-active'}">
+                            <i data-lucide="${attr.active ? 'pause' : 'play'}"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="attribute-value">${attr.value}</div>
+                
+                <input type="range" min="0" max="${attr.max}" value="${attr.value}" 
+                       ${attr.locked ? "disabled" : ""} 
+                       onchange="updateAttributeValue(${attr.id}, parseInt(this.value))"
+                       class="w-full">
+                
+                <div class="flex gap-2 mt-2">
+                    <input type="number" min="0" max="${attr.max}" value="${attr.value}" 
+                           ${attr.locked ? "disabled" : ""}
+                           onchange="updateAttributeValue(${attr.id}, parseInt(this.value))"
+                           class="attribute-input">
+                    
+                    <button onclick="toggleAttribute(${attr.id}, 'delete')" 
+                            class="control-btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
         
-        // Baseado nas fórmulas do Grimorio
-        const vidaMax = Math.max(10, constituicao * 5);
-        const manaMax = inteligencia * 2;
-        const estaminaMax = Math.max(20, (constituicao + destreza) * 2);
+        lucide.createIcons();
+    }
+    
+    // =========== ATRIBUTOS DERIVADOS ===========
+    function openDerivedModal() {
+        if (systemData.derived.length >= systemData.config.maxDerived) {
+            showNotification(`Limite de ${systemData.config.maxDerived} atributos derivados atingido!`, "error");
+            return;
+        }
         
-        // Atualizar elementos
-        const elements = {
-            'calc-blindagem': blindagem,
-            'calc-velocidade': velocidade,
-            'calc-iniciativa': iniciativa,
-            'calc-percepcao': percepcao,
-            'calc-vida-max': vidaMax,
-            'calc-mana-max': manaMax,
-            'calc-estamina-max': estaminaMax
+        // Preencher opções de atributos base
+        const baseSelect = document.getElementById("derived-base");
+        baseSelect.innerHTML = "";
+        
+        systemData.attributes.forEach(attr => {
+            const option = document.createElement("option");
+            option.value = attr.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            option.textContent = attr.name;
+            baseSelect.appendChild(option);
+        });
+        
+        openModal("modal-derived");
+    }
+    
+    function addDerived() {
+        const name = document.getElementById("derived-name").value;
+        const baseAttr = document.getElementById("derived-base").value;
+        const operation = document.getElementById("derived-operation").value;
+        const modifier = parseFloat(document.getElementById("derived-modifier").value);
+        
+        if (!name || !baseAttr || isNaN(modifier)) {
+            showNotification("Preencha todos os campos corretamente!", "error");
+            return;
+        }
+        
+        const formula = `${getAttributeName(baseAttr)} ${operation} ${modifier}`;
+        
+        const newDerived = {
+            id: Date.now(),
+            name,
+            formula,
+            value: 0,
+            operation,
+            modifier,
+            baseAttr,
+            active: true
         };
         
-        Object.entries(elements).forEach(([id, value]) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.textContent = value;
+        systemData.derived.push(newDerived);
+        updateDerivedAttributes();
+        renderDerived();
+        closeModal("modal-derived");
+        showNotification(`Atributo derivado "${name}" adicionado!`, "success");
+    }
+    
+    function getAttributeName(key) {
+        const attr = systemData.attributes.find(a => 
+            a.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === key
+        );
+        return attr ? attr.name : key;
+    }
+    
+    function updateDerivedAttributes() {
+        systemData.derived.forEach(derived => {
+            if (!derived.active) return;
+            
+            const baseAttr = systemData.attributes.find(a => 
+                a.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === derived.baseAttr
+            );
+            
+            if (!baseAttr) {
+                derived.value = 0;
+                return;
+            }
+            
+            let result = 0;
+            const baseValue = baseAttr.value;
+            
+            switch(derived.operation) {
+                case "+":
+                    result = baseValue + derived.modifier;
+                    break;
+                case "-":
+                    result = baseValue - derived.modifier;
+                    break;
+                case "*":
+                    result = baseValue * derived.modifier;
+                    break;
+                case "/":
+                    result = derived.modifier !== 0 ? baseValue / derived.modifier : 0;
+                    break;
+                case "%":
+                    result = (baseValue * derived.modifier) / 100;
+                    break;
+            }
+            
+            derived.value = Math.round(result * 100) / 100;
+        });
+        
+        renderDerived();
+    }
+    
+    function toggleDerived(derivedId, action) {
+        const derived = systemData.derived.find(d => d.id === derivedId);
+        if (!derived) return;
+        
+        switch(action) {
+            case "active":
+                derived.active = !derived.active;
+                break;
+            case "delete":
+                systemData.derived = systemData.derived.filter(d => d.id !== derivedId);
+                break;
+        }
+        
+        renderDerived();
+        saveToStorage();
+    }
+    
+    function renderDerived() {
+        const container = document.getElementById("derived-container");
+        container.innerHTML = "";
+        
+        systemData.derived.forEach(derived => {
+            const card = document.createElement("div");
+            card.className = `derived-card ${derived.active ? "active" : "inactive"}`;
+            
+            card.innerHTML = `
+                <div class="category-header">
+                    <div class="category-icon" style="background: rgba(139, 92, 246, 0.2);">
+                        <i data-lucide="function" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div class="category-info">
+                        <div class="category-name" style="color: #8b5cf6;">${derived.name}</div>
+                        <div class="text-sm">${derived.active ? "Ativo" : "Inativo"}</div>
+                    </div>
+                </div>
+                
+                <div class="category-value" style="color: #8b5cf6;">${derived.value}</div>
+                
+                <div class="derived-formula">
+                    Fórmula: ${derived.formula}
+                </div>
+                
+                <div class="category-controls">
+                    <button onclick="toggleDerived(${derived.id}, 'active')" 
+                            class="control-btn ${derived.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${derived.active ? 'pause' : 'play'}"></i>
+                        ${derived.active ? "Desativar" : "Ativar"}
+                    </button>
+                    
+                    <button onclick="toggleDerived(${derived.id}, 'delete')" 
+                            class="control-btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Remover
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        lucide.createIcons();
+    }
+    
+    // =========== SISTEMA DE SORTE ===========
+    function addSentiment() {
+        if (systemData.luck.sentiments.length >= systemData.config.maxSentiments) {
+            showNotification(`Limite de ${systemData.config.maxSentiments} sentimentos atingido!`, "error");
+            return;
+        }
+        
+        document.getElementById("intensity-value").textContent = "0.5";
+        document.getElementById("sentiment-intensity").value = 5;
+        openModal("modal-sentiment");
+    }
+    
+    function saveSentimentConfig() {
+        const type = document.getElementById("sentiment-type").value;
+        const effect = document.getElementById("sentiment-effect").value;
+        const intensity = parseFloat(document.getElementById("sentiment-intensity").value) / 10;
+        
+        let name = type;
+        if (type === "custom") {
+            name = document.getElementById("custom-sentiment-name").value || "Personalizado";
+        }
+        
+        const newSentiment = {
+            type: name,
+            effect,
+            intensity,
+            active: true
+        };
+        
+        systemData.luck.sentiments.push(newSentiment);
+        renderSentiments();
+        closeModal("modal-sentiment");
+        showNotification(`Sentimento "${name}" configurado!`, "success");
+    }
+    
+    function rollLuck() {
+        // Sorte base aleatória 1-100
+        const baseLuck = Math.floor(Math.random() * 100) + 1;
+        
+        // Aplicar modificadores dos sentimentos ativos
+        let finalLuck = baseLuck;
+        let modifiersText = [];
+        
+        systemData.luck.sentiments.forEach(sentiment => {
+            if (!sentiment.active || sentiment.effect === "neutral") return;
+            
+            const modifier = sentiment.intensity * 20; // Convert 0-1 para 0-20
+            if (sentiment.effect === "buff") {
+                finalLuck += modifier;
+                modifiersText.push(`+${modifier.toFixed(1)} (${sentiment.type})`);
+            } else if (sentiment.effect === "debuff") {
+                finalLuck -= modifier;
+                modifiersText.push(`-${modifier.toFixed(1)} (${sentiment.type})`);
             }
         });
-    }
-    
-    // Sincronizar com Grimorio System
-    function sincronizarComGrimorio() {
-        if (window.GrimorioSystem) {
-            try {
-                const personagem = GrimorioSystem.carregarPersonagem();
-                
-                // Converter atributos de 0-30 para 0-100
-                Object.keys(personagem.atributos).forEach(attr => {
-                    if (statusData.atributos[attr] !== undefined) {
-                        const valorConvertido = Math.round((personagem.atributos[attr] / 30) * 100);
-                        statusData.atributos[attr] = Math.min(100, Math.max(0, valorConvertido));
-                    }
-                });
-                
-                // Sincronizar recursos
-                statusData.recursos.vida.atual = personagem.recursos.vidaAtual || 100;
-                statusData.recursos.vida.max = personagem.recursos.vidaMaxima || 100;
-                statusData.recursos.mana.atual = personagem.recursos.manaAtual || 100;
-                statusData.recursos.mana.max = personagem.recursos.manaMaxima || 100;
-                statusData.recursos.estamina.atual = personagem.recursos.estaminaAtual || 100;
-                statusData.recursos.estamina.max = personagem.recursos.estaminaMaxima || 100;
-                
-                console.log('[Status] Dados sincronizados com Grimorio System');
-                return true;
-            } catch (error) {
-                console.error('[Status] Erro ao sincronizar com Grimorio:', error);
-                return false;
-            }
+        
+        // Garantir limites 1-100
+        finalLuck = Math.max(1, Math.min(100, Math.round(finalLuck)));
+        
+        // Salvar no histórico
+        systemData.luck.rollHistory.push({
+            base: baseLuck,
+            final: finalLuck,
+            modifiers: modifiersText,
+            timestamp: new Date().toLocaleString()
+        });
+        
+        // Atualizar display
+        systemData.luck.value = finalLuck;
+        document.getElementById("luck-value").textContent = finalLuck;
+        
+        // Mostrar resultado
+        let message = `Sorte: ${finalLuck}%`;
+        if (modifiersText.length > 0) {
+            message += `\nModificadores: ${modifiersText.join(", ")}`;
         }
-        return false;
+        
+        showNotification(message, finalLuck > 50 ? "success" : "warning");
+        saveToStorage();
     }
     
-    function salvarNoGrimorio() {
-        if (window.GrimorioSystem) {
-            try {
-                const personagem = GrimorioSystem.carregarPersonagem();
-                
-                // Converter atributos de 0-100 para 0-30
-                Object.keys(statusData.atributos).forEach(attr => {
-                    if (personagem.atributos[attr] !== undefined) {
-                        const valorConvertido = Math.round((statusData.atributos[attr] / 100) * 30);
-                        personagem.atributos[attr] = Math.min(30, Math.max(0, valorConvertido));
-                    }
-                });
-                
-                // Sincronizar recursos
-                personagem.recursos.vidaAtual = statusData.recursos.vida.atual;
-                personagem.recursos.vidaMaxima = statusData.recursos.vida.max;
-                personagem.recursos.manaAtual = statusData.recursos.mana.atual;
-                personagem.recursos.manaMaxima = statusData.recursos.mana.max;
-                personagem.recursos.estaminaAtual = statusData.recursos.estamina.atual;
-                personagem.recursos.estaminaMaxima = statusData.recursos.estamina.max;
-                
-                GrimorioSystem.salvarPersonagem(personagem);
-                console.log('[Status] Dados salvos no Grimorio System');
-                return true;
-            } catch (error) {
-                console.error('[Status] Erro ao salvar no Grimorio:', error);
-                return false;
-            }
+    function saveLuck() {
+        // Salvar configurações de sorte
+        saveToStorage();
+        showNotification("Configurações de sorte salvas!", "success");
+    }
+    
+    function toggleSentiment(index, action) {
+        if (index < 0 || index >= systemData.luck.sentiments.length) return;
+        
+        const sentiment = systemData.luck.sentiments[index];
+        
+        switch(action) {
+            case "active":
+                sentiment.active = !sentiment.active;
+                break;
+            case "delete":
+                systemData.luck.sentiments.splice(index, 1);
+                break;
         }
-        return false;
+        
+        renderSentiments();
+        saveToStorage();
     }
     
-    function carregarDadosNaInterface() {
-        // Recursos
-        ['vida', 'mana', 'estamina'].forEach(resource => {
-            const value = statusData.recursos[resource]?.atual || 100;
-            const max = statusData.recursos[resource]?.max || 100;
+    function renderSentiments() {
+        const container = document.getElementById("sentiments-container");
+        container.innerHTML = "";
+        
+        systemData.luck.sentiments.forEach((sentiment, index) => {
+            const card = document.createElement("div");
+            card.className = `sentiment-card ${sentiment.active ? "active" : "inactive"}`;
             
-            const valueElement = document.getElementById(`${resource}-atual`);
-            const maxElement = document.getElementById(`${resource}-maxima`);
+            const effectColor = sentiment.effect === "buff" ? "#22c55e" : 
+                              sentiment.effect === "debuff" ? "#ff4757" : "#a0a0a0";
             
-            if (valueElement) valueElement.textContent = value;
-            if (maxElement) maxElement.textContent = max;
+            card.innerHTML = `
+                <div class="category-name" style="color: ${effectColor};">
+                    ${sentiment.type}
+                </div>
+                
+                <div class="text-sm mb-2">
+                    Efeito: ${sentiment.effect === "buff" ? "Buff" : 
+                            sentiment.effect === "debuff" ? "Debuff" : "Neutro"} 
+                    | Intensidade: ${sentiment.intensity.toFixed(1)}
+                </div>
+                
+                <div class="sentiment-controls">
+                    <button onclick="toggleSentiment(${index}, 'active')" 
+                            class="control-btn ${sentiment.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${sentiment.active ? 'pause' : 'play'}"></i>
+                        ${sentiment.active ? "Desativar" : "Ativar"}
+                    </button>
+                    
+                    <button onclick="toggleSentiment(${index}, 'delete')" 
+                            class="control-btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                        Remover
+                    </button>
+                </div>
+            `;
             
-            const progressBar = progressBars.find(pb => pb.statId === `${resource}-atual`);
-            if (progressBar) {
-                progressBar.setValue(value, true);
+            container.appendChild(card);
+        });
+        
+        lucide.createIcons();
+    }
+    
+    // =========== CONTROLES GERAIS ===========
+    function saveAll() {
+        saveToStorage();
+        showNotification("Todos os dados foram salvos no storage!", "success");
+    }
+    
+    function exportToTXT() {
+        let txtContent = "=== FICHA DO PERSONAGEM ===\n";
+        txtContent += `Gerado em: ${new Date().toLocaleString()}\n\n`;
+        
+        // Categorias
+        txtContent += "--- CATEGORIAS ---\n";
+        systemData.categories.forEach(cat => {
+            if (cat.active) {
+                txtContent += `${cat.name}: ${cat.value}/${cat.max} ${cat.locked ? "(Trancado)" : ""}\n`;
             }
         });
         
         // Atributos
-        Object.keys(statusData.atributos).forEach(attr => {
-            const value = statusData.atributos[attr] || 0;
-            const element = document.getElementById(attr);
-            if (element) {
-                element.textContent = value;
+        txtContent += "\n--- ATRIBUTOS ---\n";
+        systemData.attributes.forEach(attr => {
+            if (attr.active) {
+                txtContent += `${attr.name}: ${attr.value}/${attr.max} ${attr.locked ? "(Trancado)" : ""}\n`;
             }
-            
-            const progressBar = progressBars.find(pb => pb.statId === attr);
-            if (progressBar) {
-                progressBar.setValue(value, true);
+        });
+        
+        // Derivados
+        txtContent += "\n--- ATRIBUTOS DERIVADOS ---\n";
+        systemData.derived.forEach(derived => {
+            if (derived.active) {
+                txtContent += `${derived.name}: ${derived.value}\n`;
+                txtContent += `  Fórmula: ${derived.formula}\n`;
             }
         });
         
         // Sorte
-        if (statusData.sorte.indice > 0) {
-            document.getElementById('dado-fe').textContent = statusData.sorte.dado1;
-            document.getElementById('dado-sorte').textContent = statusData.sorte.dado2;
-            document.getElementById('dado-destino').textContent = statusData.sorte.dado3;
-            document.getElementById('indice-sorte').textContent = `${statusData.sorte.indice}%`;
-            document.getElementById('status-sorte').textContent = statusData.sorte.status;
-            
-            const destinyFill = document.querySelector('.destiny-section .progress-fill');
-            if (destinyFill) {
-                destinyFill.style.width = `${statusData.sorte.indice}%`;
+        txtContent += "\n--- SISTEMA DE SORTE ---\n";
+        txtContent += `Sorte Atual: ${systemData.luck.value}%\n`;
+        txtContent += "Modificadores Ativos:\n";
+        systemData.luck.sentiments.forEach(sent => {
+            if (sent.active) {
+                txtContent += `  ${sent.type}: ${sent.effect} (${sent.intensity.toFixed(1)})\n`;
             }
-            
-            const restantes = statusData.config.rolagensMaximas - statusData.sorte.rolagens;
-            document.getElementById('rolls-info').textContent = 
-                statusData.sorte.fixado ? 'Destino fixado' : `Rolagens restantes: ${restantes}`;
+        });
+        
+        // Histórico
+        if (systemData.luck.rollHistory.length > 0) {
+            txtContent += "\nÚltimas Rolagens:\n";
+            const lastRolls = systemData.luck.rollHistory.slice(-3);
+            lastRolls.forEach(roll => {
+                txtContent += `  ${roll.timestamp}: ${roll.final}% (Base: ${roll.base}%)\n`;
+            });
         }
         
-        // Pontos
-        atualizarDisplayPontos();
-        updateDerivedStats();
+        // Criar e baixar arquivo
+        const blob = new Blob([txtContent], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "ficha_personagem.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification("Ficha exportada como TXT!", "success");
     }
     
-    // PERSISTÊNCIA
-    function salvarDados() {
+    function generateVisualSheet() {
+        showNotification("Funcionalidade em desenvolvimento - Em breve!", "warning");
+        // Aqui seria implementada a geração de uma ficha visual em PDF/HTML
+    }
+    
+    // =========== PERSISTÊNCIA ===========
+    function saveToStorage() {
         try {
-            localStorage.setItem('grimorio_status_simple', JSON.stringify(statusData));
+            localStorage.setItem("grimorio_advanced_status", JSON.stringify(systemData));
+            console.log("Dados salvos no localStorage");
         } catch (error) {
-            console.error('Erro ao salvar:', error);
+            console.error("Erro ao salvar:", error);
         }
     }
     
-    function carregarDados() {
+    function loadFromStorage() {
         try {
-            const dados = localStorage.getItem('grimorio_status_simple');
-            if (dados) {
-                const parsed = JSON.parse(dados);
-                statusData = { ...statusData, ...parsed };
-                carregarDadosNaInterface();
+            const saved = localStorage.getItem("grimorio_advanced_status");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                Object.assign(systemData, parsed);
+                console.log("Dados carregados do localStorage");
             }
         } catch (error) {
-            console.error('Erro ao carregar:', error);
+            console.error("Erro ao carregar:", error);
         }
     }
     
-    // INICIALIZAÇÃO
-    document.addEventListener('DOMContentLoaded', function() {
+    // =========== INICIALIZAÇÃO ===========
+    document.addEventListener("DOMContentLoaded", function() {
         // Inicializar ícones
         lucide.createIcons();
         
-        // Inicializar progress bars
-        setTimeout(() => {
-            inicializarProgressBars();
-            
-            // Carregar dados
-            setTimeout(() => {
-                sincronizarComGrimorio();
-                carregarDados();
-                
-                // Configurar eventos de Enter nos inputs
-                const inputSorteio = document.getElementById('input-pontos-sorteio');
-                if (inputSorteio) {
-                    inputSorteio.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            sortearPontos();
-                        }
-                    });
-                    
-                    // Focar no input ao carregar
-                    inputSorteio.focus();
-                }
-                
-                console.log('[Status] Sistema inicializado com sucesso!');
-                mostrarNotificacao('Sistema de Status carregado!', 'success', 2000);
-            }, 100);
-        }, 100);
+        // Carregar dados salvos
+        loadFromStorage();
+        
+        // Renderizar todos os componentes
+        renderCategories();
+        renderAttributes();
+        updateDerivedAttributes();
+        renderDerived();
+        renderSentiments();
+        
+        // Atualizar display da sorte
+        document.getElementById("luck-value").textContent = systemData.luck.value;
+        
+        // Configurar eventos
+        document.getElementById("btn-save-all").addEventListener("click", saveAll);
+        document.getElementById("btn-import").addEventListener("click", () => {
+            showNotification("Importação em desenvolvimento", "warning");
+        });
+        document.getElementById("btn-export").addEventListener("click", exportToTXT);
+        
+        // Configurar slider de intensidade
+        const intensitySlider = document.getElementById("sentiment-intensity");
+        const intensityValue = document.getElementById("intensity-value");
+        
+        intensitySlider.addEventListener("input", function() {
+            intensityValue.textContent = (this.value / 10).toFixed(1);
+        });
+        
+        // Configurar campo personalizado
+        const sentimentType = document.getElementById("sentiment-type");
+        sentimentType.addEventListener("change", function() {
+            const customGroup = document.getElementById("custom-sentiment-group");
+            customGroup.style.display = this.value === "custom" ? "block" : "none";
+        });
+        
+        console.log("Sistema de Status Avançado carregado!");
+        showNotification("Sistema carregado com sucesso!", "success");
     });
     
-    // Fechar modal com ESC (se houver modais)
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            const modais = document.querySelectorAll('.modal.active');
-            modais.forEach(modal => {
-                modal.classList.remove('active');
+    // =========== EVENT LISTENERS ADICIONAIS ===========
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            document.querySelectorAll(".modal.active").forEach(modal => {
+                modal.classList.remove("active");
             });
         }
     });
-</script>
+    </script>
 </body>
 </html>
