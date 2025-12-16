@@ -1573,9 +1573,24 @@
             return;
         }
         
+        if (statusData.sorte.fixado) {
+            mostrarNotificacao('Destino já está fixado!', 'info');
+            return;
+        }
+
         statusData.sorte.fixado = true;
         mostrarNotificacao(`Destino fixado em ${statusData.sorte.indice}%!`, 'success');
         document.getElementById('rolls-info').textContent = 'Destino fixado - Imutável';
+        salvarDados();
+
+        if (statusData.sorte.fixado) {
+            mostrarNotificacao('Destino em aberto!', 'info');
+            return;
+        }
+
+        statusData.sorte.fixado = false;
+        mostrarNotificacao(`Destino desfixado em ${statusData.sorte.indice}%!`, 'success');
+        document.getElementById('rolls-info').textContent = 'Role novamente quando quiser.';
         salvarDados();
     }
     
