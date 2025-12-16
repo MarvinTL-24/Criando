@@ -25,6 +25,10 @@
             --accent-purple: #8b5cf6;
             --accent-yellow: #f59e0b;
             --accent-pink: #ec4899;
+            --accent-orange: #ff6b35;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-indigo: #6366f1;
             --destiny-gold: #d4a76a;
             --status-active: rgba(34, 197, 94, 0.2);
             --status-inactive: rgba(255, 71, 87, 0.2);
@@ -172,8 +176,7 @@
         }
         
         .category-card.active {
-            border-color: var(--accent-green);
-            background: var(--status-active);
+            border-width: 2px;
         }
         
         .category-card.inactive {
@@ -500,6 +503,15 @@
             border-radius: 0.5rem;
             color: var(--text-primary);
             font-size: 0.875rem;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        .form-select option {
+            background: var(--bg-panel);
+            color: var(--text-primary);
+            padding: 0.5rem;
         }
         
         /* ALERTAS */
@@ -517,6 +529,40 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
             color: var(--accent-yellow);
         }
+        
+        /* CORES PARA CATEGORIAS */
+        .color-red { color: var(--accent-red); }
+        .color-blue { color: var(--accent-blue); }
+        .color-green { color: var(--accent-green); }
+        .color-purple { color: var(--accent-purple); }
+        .color-yellow { color: var(--accent-yellow); }
+        .color-pink { color: var(--accent-pink); }
+        .color-orange { color: var(--accent-orange); }
+        .color-cyan { color: var(--accent-cyan); }
+        .color-emerald { color: var(--accent-emerald); }
+        .color-indigo { color: var(--accent-indigo); }
+        
+        .bg-red { background: rgba(255, 71, 87, 0.2); }
+        .bg-blue { background: rgba(74, 158, 255, 0.2); }
+        .bg-green { background: rgba(34, 197, 94, 0.2); }
+        .bg-purple { background: rgba(139, 92, 246, 0.2); }
+        .bg-yellow { background: rgba(245, 158, 11, 0.2); }
+        .bg-pink { background: rgba(236, 72, 153, 0.2); }
+        .bg-orange { background: rgba(255, 107, 53, 0.2); }
+        .bg-cyan { background: rgba(6, 182, 212, 0.2); }
+        .bg-emerald { background: rgba(16, 185, 129, 0.2); }
+        .bg-indigo { background: rgba(99, 102, 241, 0.2); }
+        
+        .border-red { border-color: var(--accent-red); }
+        .border-blue { border-color: var(--accent-blue); }
+        .border-green { border-color: var(--accent-green); }
+        .border-purple { border-color: var(--accent-purple); }
+        .border-yellow { border-color: var(--accent-yellow); }
+        .border-pink { border-color: var(--accent-pink); }
+        .border-orange { border-color: var(--accent-orange); }
+        .border-cyan { border-color: var(--accent-cyan); }
+        .border-emerald { border-color: var(--accent-emerald); }
+        .border-indigo { border-color: var(--accent-indigo); }
         
         /* RESPONSIVO */
         @media (max-width: 768px) {
@@ -629,28 +675,16 @@
                         <h4 class="mb-2">1. Sorteio Aleatório</h4>
                         <div class="flex gap-2 mb-2">
                             <input type="number" id="total-points" placeholder="Total de pontos" 
-                                   class="form-input" min="1" max="1000">
+                                   class="form-input" min="1" max="1000" value="100">
                             <button onclick="distributeRandom()" class="btn btn-success">
                                 Sortear
                             </button>
                         </div>
                     </div>
                     
-                    <!-- Opção 2: Valor Mínimo -->
+                    <!-- Opção 2: Valor Manual -->
                     <div class="mb-4">
-                        <h4 class="mb-2">2. Valor Mínimo</h4>
-                        <div class="flex gap-2 mb-2">
-                            <input type="number" id="min-value" placeholder="Valor mínimo" 
-                                   class="form-input" min="0" max="100">
-                            <button onclick="distributeWithMin()" class="btn btn-warning">
-                                Distribuir
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Opção 3: Valor Manual -->
-                    <div class="mb-4">
-                        <h4 class="mb-2">3. Valor Manual</h4>
+                        <h4 class="mb-2">2. Valor Manual</h4>
                         <div class="text-sm mb-2">
                             Defina manualmente e use o cadeado para fixar
                         </div>
@@ -776,12 +810,17 @@
             
             <div class="form-group">
                 <label class="form-label">Cor</label>
-                <select style="color: #ffffff; font-style:var(--text-primary) ;" id="category-color" class="form-select">
-                    <option value="vida">Vermelho (Vida)</option>
-                    <option value="mana">Azul (Mana)</option>
-                    <option value="estamina">Verde (Estamina)</option>
-                    <option value="psicologico">Roxo (Psicológico)</option>
-                    <option value="espiritual">Dourado (Espiritual)</option>
+                <select id="category-color" class="form-select">
+                    <option value="red">Vermelho (Vida)</option>
+                    <option value="blue">Azul (Mana)</option>
+                    <option value="green">Verde (Estamina)</option>
+                    <option value="purple">Roxo (Psicológico)</option>
+                    <option value="yellow">Amarelo (Espiritual)</option>
+                    <option value="pink">Rosa (Energia)</option>
+                    <option value="orange">Laranja (Vitalidade)</option>
+                    <option value="cyan">Ciano (Aura)</option>
+                    <option value="emerald">Esmeralda (Chi)</option>
+                    <option value="indigo">Índigo (Psíquico)</option>
                 </select>
             </div>
             
@@ -798,7 +837,7 @@
 
     <!-- MODAL: ADICIONAR ATRIBUTO -->
     <div id="modal-attribute" class="modal">
-        <div class="modal-content" style="color: #ffffff; font-style:var(--text-primary) ;">
+        <div class="modal-content">
             <h3 class="modal-title">Adicionar Atributo</h3>
             
             <div class="form-group">
@@ -829,7 +868,7 @@
 
     <!-- MODAL: ADICIONAR DERIVADO -->
     <div id="modal-derived" class="modal">
-        <div class="modal-content" style="color: #ffffff; font-style:var(--text-primary) ;">
+        <div class="modal-content">
             <h3 class="modal-title">Adicionar Atributo Derivado</h3>
             
             <div class="form-group">
@@ -846,7 +885,7 @@
             
             <div class="form-group">
                 <label class="form-label">Operação</label>
-                <select id="derived-operation" class="form-select" style="color: #fdfdff; font-style:var(--text-primary) ;">
+                <select id="derived-operation" class="form-select">
                     <option value="+">Somar (+)</option>
                     <option value="-">Subtrair (-)</option>
                     <option value="*">Multiplicar (*)</option>
@@ -882,7 +921,7 @@
         <div class="modal-content">
             <h3 class="modal-title">Configurar Sentimento</h3>
             
-            <div class="form-group" style="color: #0a0a0c; font-style:var(--text-primary) ;">
+            <div class="form-group">
                 <label class="form-label">Sentimento</label>
                 <select id="sentiment-type" class="form-select">
                     <option value="alegria">Alegria</option>
@@ -900,7 +939,7 @@
                 <input type="text" id="custom-sentiment-name" class="form-input" placeholder="Nome do sentimento">
             </div>
             
-            <div class="form-group" style="color: #0a0a0c; font-style:var(--text-primary) ;">
+            <div class="form-group">
                 <label class="form-label">Efeito</label>
                 <select id="sentiment-effect" class="form-select">
                     <option value="buff">Buff (Aumenta sorte)</option>
@@ -930,14 +969,46 @@
         </div>
     </div>
 
+    <!-- MODAL: IMPORTAR DADOS -->
+    <div id="modal-import" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Importar Dados</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Cole os dados no formato:</label>
+                <textarea id="import-data" class="form-input" rows="10" placeholder="Exemplo:
+Vida: 85/100
+Mana: 65/100
+Força: 15
+Destreza: 12
+Inteligência: 18
+..."></textarea>
+            </div>
+            
+            <div class="alert alert-warning mb-4">
+                <i data-lucide="alert-circle"></i>
+                O sistema tentará mapear automaticamente os valores para as categorias e atributos existentes.
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-import')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="processImport()" class="btn btn-success flex-1">
+                    Importar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
     // =========== SISTEMA DE DADOS ===========
     const systemData = {
         // Categorias (máx 8)
         categories: [
-            { id: 1, name: "Vida", value: 100, max: 100, color: "vida", active: true, locked: false },
-            { id: 2, name: "Mana", value: 100, max: 100, color: "mana", active: true, locked: false },
-            { id: 3, name: "Estamina", value: 100, max: 100, color: "estamina", active: true, locked: false }
+            { id: 1, name: "Vida", value: 100, max: 100, color: "red", active: true, locked: false },
+            { id: 2, name: "Mana", value: 100, max: 100, color: "blue", active: true, locked: false },
+            { id: 3, name: "Estamina", value: 100, max: 100, color: "green", active: true, locked: false }
         ],
         
         // Atributos (máx 8)
@@ -1092,23 +1163,21 @@
         
         systemData.categories.forEach(category => {
             const card = document.createElement("div");
-            card.className = `category-card ${category.active ? "active" : "inactive"} ${category.locked ? "locked" : ""}`;
-            
-            const colorClass = `color-${category.color}`;
-            const bgClass = `bg-${category.color}`;
+            card.className = `category-card ${category.active ? "active" : "inactive"} ${category.locked ? "locked" : ""} border-${category.color}`;
+            card.style.borderColor = `var(--accent-${category.color})`;
             
             card.innerHTML = `
                 <div class="category-header">
-                    <div class="category-icon ${bgClass}">
-                        <i data-lucide="heart" class="${colorClass}"></i>
+                    <div class="category-icon bg-${category.color}">
+                        <i data-lucide="heart" class="color-${category.color}"></i>
                     </div>
                     <div class="category-info">
-                        <div class="category-name ${colorClass}">${category.name}</div>
+                        <div class="category-name color-${category.color}">${category.name}</div>
                         <div class="text-sm">${category.active ? "Ativo" : "Inativo"} | ${category.locked ? "Trancado" : "Destrancado"}</div>
                     </div>
                 </div>
                 
-                <div class="category-value ${colorClass}">${category.value}/${category.max}</div>
+                <div class="category-value color-${category.color}">${category.value}/${category.max}</div>
                 
                 <input type="range" min="0" max="${category.max}" value="${category.value}" 
                        ${category.locked ? "disabled" : ""} 
@@ -1189,21 +1258,41 @@
             return;
         }
         
+        // Resetar valores
+        activeAttributes.forEach(attr => {
+            if (!attr.locked) {
+                attr.value = 0;
+            }
+        });
+        
         // Distribuir aleatoriamente
         let pointsLeft = totalPoints;
         const distribution = {};
         
-        while (pointsLeft > 0) {
-            const randomIndex = Math.floor(Math.random() * activeAttributes.length);
-            const attr = activeAttributes[randomIndex];
+        // Primeiro, distribuir para atributos destrancados
+        const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
+        
+        while (pointsLeft > 0 && unlockedAttributes.length > 0) {
+            const randomIndex = Math.floor(Math.random() * unlockedAttributes.length);
+            const attr = unlockedAttributes[randomIndex];
             
-            if (!attr.locked && attr.value < attr.max) {
+            if (attr.value < attr.max) {
                 if (!distribution[attr.id]) distribution[attr.id] = 0;
                 
                 distribution[attr.id]++;
                 attr.value = Math.min(attr.max, attr.value + 1);
                 pointsLeft--;
+                
+                // Se atingiu o máximo, remover da lista
+                if (attr.value >= attr.max) {
+                    unlockedAttributes.splice(randomIndex, 1);
+                }
             }
+        }
+        
+        // Se ainda sobraram pontos, mostrar aviso
+        if (pointsLeft > 0) {
+            showNotification(`${pointsLeft} pontos não puderam ser distribuídos (limites máximos atingidos)`, "warning");
         }
         
         renderAttributes();
@@ -1225,28 +1314,51 @@
         }
         
         const activeAttributes = systemData.attributes.filter(attr => attr.active);
-        let totalNeeded = 0;
+        const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
         
-        // Primeiro, garantir o mínimo para todos
-        activeAttributes.forEach(attr => {
-            if (!attr.locked && attr.value < minValue) {
-                const needed = minValue - attr.value;
-                attr.value = minValue;
-                totalNeeded += needed;
+        if (unlockedAttributes.length === 0) {
+            showNotification("Nenhum atributo destrancado para distribuir!", "error");
+            return;
+        }
+        
+        // Calcular pontos necessários para o mínimo
+        let pointsNeeded = 0;
+        unlockedAttributes.forEach(attr => {
+            if (attr.value < minValue) {
+                pointsNeeded += (minValue - attr.value);
             }
         });
         
-        // Distribuir o restante aleatoriamente
-        const remainingPoints = 100 - (activeAttributes.length * minValue);
-        if (remainingPoints > 0) {
-            let pointsLeft = remainingPoints;
-            while (pointsLeft > 0) {
-                const randomIndex = Math.floor(Math.random() * activeAttributes.length);
-                const attr = activeAttributes[randomIndex];
+        // Verificar se há pontos suficientes (considerando máximo 100 por atributo)
+        const maxPossiblePoints = unlockedAttributes.length * 100;
+        if (minValue * unlockedAttributes.length > maxPossiblePoints) {
+            showNotification(`Valor mínimo muito alto para ${unlockedAttributes.length} atributos!`, "error");
+            return;
+        }
+        
+        // Aplicar mínimo primeiro
+        unlockedAttributes.forEach(attr => {
+            if (attr.value < minValue) {
+                attr.value = minValue;
+            }
+        });
+        
+        // Calcular pontos restantes para distribuição aleatória
+        const currentTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.value, 0);
+        const maxTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.max, 0);
+        const remainingCapacity = maxTotal - currentTotal;
+        
+        if (remainingCapacity > 0) {
+            // Distribuir pontos aleatórios extras
+            let extraPoints = Math.floor(remainingCapacity * 0.3); // 30% da capacidade restante
+            
+            while (extraPoints > 0) {
+                const randomIndex = Math.floor(Math.random() * unlockedAttributes.length);
+                const attr = unlockedAttributes[randomIndex];
                 
-                if (!attr.locked && attr.value < attr.max) {
-                    attr.value = Math.min(attr.max, attr.value + 1);
-                    pointsLeft--;
+                if (attr.value < attr.max) {
+                    attr.value++;
+                    extraPoints--;
                 }
             }
         }
@@ -1255,7 +1367,11 @@
         updateDerivedAttributes();
         saveToStorage();
         
-        showNotification(`Distribuído com mínimo de ${minValue} para todos os atributos!`, "success");
+        const summary = unlockedAttributes.map(attr => 
+            `${attr.name}: ${attr.value}`
+        ).join(", ");
+        
+        showNotification(`Distribuído com mínimo de ${minValue}: ${summary}`, "success");
     }
     
     function saveAttributes() {
@@ -1670,6 +1786,139 @@
         lucide.createIcons();
     }
     
+    // =========== SISTEMA DE IMPORTAR ===========
+    function openImportModal() {
+        openModal("modal-import");
+    }
+    
+    function normalizeText(text) {
+        return text.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]/g, "");
+    }
+    
+    function findBestMatch(value, items, getNameFn) {
+        const normalizedValue = normalizeText(value);
+        let bestMatch = null;
+        let bestScore = 0;
+        
+        items.forEach(item => {
+            const itemName = getNameFn(item);
+            const normalizedItemName = normalizeText(itemName);
+            
+            // Verificar correspondência exata
+            if (normalizedItemName === normalizedValue) {
+                bestMatch = item;
+                bestScore = 100;
+                return;
+            }
+            
+            // Verificar se contém
+            if (normalizedValue.includes(normalizedItemName) || normalizedItemName.includes(normalizedValue)) {
+                const score = Math.min(normalizedValue.length, normalizedItemName.length) / 
+                             Math.max(normalizedValue.length, normalizedItemName.length) * 100;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = item;
+                }
+            }
+        });
+        
+        // Aceitar se score for maior que 60%
+        return bestScore > 60 ? bestMatch : null;
+    }
+    
+    function processImport() {
+        const importText = document.getElementById("import-data").value;
+        if (!importText.trim()) {
+            showNotification("Digite os dados para importar!", "error");
+            return;
+        }
+        
+        const lines = importText.split('\n');
+        let importedCount = 0;
+        let notFoundItems = [];
+        
+        lines.forEach(line => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return;
+            
+            // Procurar padrões como "Nome: Valor" ou "Nome: Valor/Max"
+            const match = trimmedLine.match(/^([^:]+):\s*(.+)$/);
+            if (!match) return;
+            
+            const name = match[1].trim();
+            const valuePart = match[2].trim();
+            
+            // Tentar extrair valor (e possível máximo)
+            let value = 0;
+            let max = null;
+            
+            // Padrão: "85/100"
+            const valueMaxMatch = valuePart.match(/^(\d+)\s*\/\s*(\d+)$/);
+            if (valueMaxMatch) {
+                value = parseInt(valueMaxMatch[1]);
+                max = parseInt(valueMaxMatch[2]);
+            } else {
+                // Apenas valor
+                const numMatch = valuePart.match(/^(\d+)$/);
+                if (numMatch) {
+                    value = parseInt(numMatch[1]);
+                }
+            }
+            
+            if (isNaN(value)) return;
+            
+            // Primeiro, tentar encontrar em categorias
+            let matchedItem = findBestMatch(name, systemData.categories, item => item.name);
+            
+            if (matchedItem) {
+                // Atualizar categoria
+                matchedItem.value = Math.min(value, matchedItem.max);
+                if (max !== null && max > 0) {
+                    matchedItem.max = max;
+                }
+                importedCount++;
+                return;
+            }
+            
+            // Tentar em atributos
+            matchedItem = findBestMatch(name, systemData.attributes, item => item.name);
+            
+            if (matchedItem) {
+                // Atualizar atributo
+                matchedItem.value = Math.min(value, matchedItem.max);
+                if (max !== null && max > 0) {
+                    matchedItem.max = max;
+                }
+                importedCount++;
+                return;
+            }
+            
+            // Se não encontrou, adicionar à lista de não encontrados
+            notFoundItems.push(name);
+        });
+        
+        // Atualizar visualizações
+        renderCategories();
+        renderAttributes();
+        updateDerivedAttributes();
+        renderDerived();
+        saveToStorage();
+        
+        // Fechar modal
+        closeModal("modal-import");
+        
+        // Mostrar resultado
+        let message = `${importedCount} valores importados com sucesso!`;
+        if (notFoundItems.length > 0) {
+            message += `\nNão encontrados: ${notFoundItems.join(", ")}`;
+        }
+        
+        showNotification(message, importedCount > 0 ? "success" : "warning");
+    }
+    
     // =========== CONTROLES GERAIS ===========
     function saveAll() {
         saveToStorage();
@@ -1786,9 +2035,7 @@
         
         // Configurar eventos
         document.getElementById("btn-save-all").addEventListener("click", saveAll);
-        document.getElementById("btn-import").addEventListener("click", () => {
-            showNotification("Importação em desenvolvimento", "warning");
-        });
+        document.getElementById("btn-import").addEventListener("click", openImportModal);
         document.getElementById("btn-export").addEventListener("click", exportToTXT);
         
         // Configurar slider de intensidade
