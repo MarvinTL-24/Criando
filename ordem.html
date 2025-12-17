@@ -1,0 +1,2483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimório Digital - Ordem Paranormal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a0a0c;
+            --bg-secondary: #111114;
+            --bg-card: #1a1a1f;
+            --bg-input: #242429;
+            --border-color: #2d2d35;
+            --border-light: #3a3a44;
+            --text-primary: #f0f0f0;
+            --text-secondary: #b0b0b8;
+            --text-muted: #888892;
+            --accent-blue: #4a6bff;
+            --accent-red: #ff4757;
+            --accent-green: #2ecc71;
+            --accent-purple: #9b59b6;
+            --accent-orange: #ff9f43;
+            --accent-cyan: #1dd1a1;
+            --accent-pink: #ff6b8b;
+            --accent-gold: #feca57;
+            --danger: #ff6b6b;
+            --warning: #feca57;
+            --success: #1dd1a1;
+            --info: #54a0ff;
+            --orcamento-red: #ff3838;
+            --orcamento-blue: #17c0eb;
+            --orcamento-green: #32ff7e;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+            --radius: 8px;
+            --radius-sm: 4px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* FONTE ESTILIZADA PARA TÍTULOS */
+        .font-arcane {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* SCROLLBAR PERSONALIZADA */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-light);
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #15151a 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-title {
+            font-size: 1.5rem;
+            color: var(--accent-blue);
+            text-shadow: 0 0 10px rgba(74, 107, 255, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            background: var(--bg-input);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .nav-btn-save {
+            background: var(--accent-green);
+            color: white;
+            border-color: var(--accent-green);
+        }
+
+        .nav-btn-export {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .nav-btn-import {
+            background: var(--accent-purple);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+
+        .nav-btn-new {
+            background: var(--accent-orange);
+            color: white;
+            border-color: var(--accent-orange);
+        }
+
+        /* CONTAINER PRINCIPAL */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* LAYOUT EM GRID */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1100px) {
+            .grid-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* CARTÕES */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--border-light);
+            box-shadow: var(--shadow);
+        }
+
+        .card-header {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        /* INFORMAÇÕES BÁSICAS */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(74, 107, 255, 0.1);
+        }
+
+        /* ATRIBUTOS E RECURSOS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 1.5rem 1rem;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.2));
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-controls {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .stat-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: bold;
+        }
+
+        .stat-btn:hover {
+            background: var(--border-light);
+            transform: scale(1.1);
+        }
+
+        .stat-input {
+            width: 80px;
+            padding: 0.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* CATEGORIAS DE STATUS */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .status-card {
+            padding: 1rem;
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .status-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .status-values {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .status-value {
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .status-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* PERÍCIAS */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .skill-item:hover {
+            border-color: var(--accent-blue);
+            background: rgba(74, 107, 255, 0.05);
+        }
+
+        .skill-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .skill-value {
+            width: 60px;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            text-align: center;
+            font-weight: 600;
+        }
+
+        /* INVENTÁRIO E RITUAIS */
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .item-card {
+            padding: 1rem;
+            border-radius: var(--radius);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .item-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .item-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: var(--bg-input);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .icon-btn:hover {
+            background: var(--border-color);
+        }
+
+        .icon-btn-edit:hover {
+            color: var(--accent-blue);
+        }
+
+        .icon-btn-delete:hover {
+            color: var(--accent-red);
+        }
+
+        /* TABELA DE RITUAIS */
+        .rituals-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .rituals-table th {
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rituals-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .rituals-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* BOTÕES DE AÇÃO */
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-warning {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-purple {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        /* MODAIS */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-lg);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--accent-red);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* ALERTAS */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 1px solid transparent;
+        }
+
+        .alert-success {
+            background: rgba(46, 204, 113, 0.15);
+            border-color: rgba(46, 204, 113, 0.3);
+            color: var(--accent-green);
+        }
+
+        .alert-warning {
+            background: rgba(255, 159, 67, 0.15);
+            border-color: rgba(255, 159, 67, 0.3);
+            color: var(--accent-orange);
+        }
+
+        .alert-danger {
+            background: rgba(255, 71, 87, 0.15);
+            border-color: rgba(255, 71, 87, 0.3);
+            color: var(--accent-red);
+        }
+
+        .alert-info {
+            background: rgba(84, 160, 255, 0.15);
+            border-color: rgba(84, 160, 255, 0.3);
+            color: var(--accent-blue);
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-blue);
+            border-bottom-color: var(--accent-blue);
+        }
+
+        .tab-btn:hover:not(.active) {
+            color: var(--text-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .container {
+                padding: 1.5rem 1rem;
+            }
+            
+            .nav-buttons {
+                gap: 0.5rem;
+            }
+            
+            .nav-btn span:not(.icon) {
+                display: none;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem;
+            }
+        }
+
+        /* UTILITÁRIOS */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mt-3 { margin-top: 1.5rem; }
+        .mt-4 { margin-top: 2rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .mb-3 { margin-bottom: 1.5rem; }
+        .mb-4 { margin-bottom: 2rem; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .w-full { width: 100%; }
+        .d-flex { display: flex; }
+        .align-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-1 { gap: 0.5rem; }
+        .gap-2 { gap: 1rem; }
+        .gap-3 { gap: 1.5rem; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <h1 class="nav-title font-arcane">Ordem Paranormal - Ficha Digital</h1>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn nav-btn-new" id="btn-new-character">
+                    <i class="fas fa-plus"></i>
+                    <span>Nova Ficha</span>
+                </button>
+                <button class="nav-btn nav-btn-import" id="btn-import">
+                    <i class="fas fa-upload"></i>
+                    <span>Importar</span>
+                </button>
+                <button class="nav-btn nav-btn-export" id="btn-export">
+                    <i class="fas fa-download"></i>
+                    <span>Exportar</span>
+                </button>
+                <button class="nav-btn nav-btn-save" id="btn-save">
+                    <i class="fas fa-save"></i>
+                    <span>Salvar</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CONTAINER PRINCIPAL -->
+    <div class="container">
+        <!-- ALERTAS -->
+        <div id="alert-container"></div>
+
+        <!-- LAYOUT EM GRID -->
+        <div class="grid-layout">
+            <!-- SIDEBAR ESQUERDA -->
+            <div class="sidebar">
+                <!-- INFORMAÇÕES DO PERSONAGEM -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-user"></i>
+                            Informações do Personagem
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-grid">
+                            <div class="form-group">
+                                <label class="form-label">Nome</label>
+                                <input type="text" class="form-input" id="character-name" placeholder="Nome do Personagem">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Jogador</label>
+                                <input type="text" class="form-input" id="player-name" placeholder="Nome do Jogador">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Classe</label>
+                                <select class="form-select" id="character-class">
+                                    <option value="">Selecione uma classe</option>
+                                    <option value="combatente">Combatente</option>
+                                    <option value="especialista">Especialista</option>
+                                    <option value="ocultista">Ocultista</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Origem</label>
+                                <input type="text" class="form-input" id="character-origin" placeholder="Origem do Personagem">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">NEX (%)</label>
+                                <input type="number" class="form-input" id="character-nex" min="0" max="99" value="5">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Idade</label>
+                                <input type="number" class="form-input" id="character-age" min="1" max="150">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Nacionalidade</label>
+                                <input type="text" class="form-input" id="character-nationality" placeholder="Brasileira">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Patente</label>
+                                <select class="form-select" id="character-rank">
+                                    <option value="">Selecione uma patente</option>
+                                    <option value="recruta">Recruta</option>
+                                    <option value="operador">Operador</option>
+                                    <option value="agente">Agente Especial</option>
+                                    <option value="oficial">Oficial de Operações</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ATRIBUTOS PRIMÁRIOS -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-brain"></i>
+                            Atributos
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="stats-grid">
+                            <!-- FORÇA -->
+                            <div class="stat-card">
+                                <div class="stat-name">Força</div>
+                                <div class="stat-value" id="attr-forca">0</div>
+                                <div class="stat-controls">
+                                    <button class="stat-btn" data-attr="forca" data-action="decrease">-</button>
+                                    <input type="number" class="stat-input" id="input-forca" value="0" min="0" max="5">
+                                    <button class="stat-btn" data-attr="forca" data-action="increase">+</button>
+                                </div>
+                            </div>
+                            <!-- AGILIDADE -->
+                            <div class="stat-card">
+                                <div class="stat-name">Agilidade</div>
+                                <div class="stat-value" id="attr-agilidade">0</div>
+                                <div class="stat-controls">
+                                    <button class="stat-btn" data-attr="agilidade" data-action="decrease">-</button>
+                                    <input type="number" class="stat-input" id="input-agilidade" value="0" min="0" max="5">
+                                    <button class="stat-btn" data-attr="agilidade" data-action="increase">+</button>
+                                </div>
+                            </div>
+                            <!-- INTELECTO -->
+                            <div class="stat-card">
+                                <div class="stat-name">Intelecto</div>
+                                <div class="stat-value" id="attr-intelecto">0</div>
+                                <div class="stat-controls">
+                                    <button class="stat-btn" data-attr="intelecto" data-action="decrease">-</button>
+                                    <input type="number" class="stat-input" id="input-intelecto" value="0" min="0" max="5">
+                                    <button class="stat-btn" data-attr="intelecto" data-action="increase">+</button>
+                                </div>
+                            </div>
+                            <!-- VIGOR -->
+                            <div class="stat-card">
+                                <div class="stat-name">Vigor</div>
+                                <div class="stat-value" id="attr-vigor">0</div>
+                                <div class="stat-controls">
+                                    <button class="stat-btn" data-attr="vigor" data-action="decrease">-</button>
+                                    <input type="number" class="stat-input" id="input-vigor" value="0" min="0" max="5">
+                                    <button class="stat-btn" data-attr="vigor" data-action="increase">+</button>
+                                </div>
+                            </div>
+                            <!-- PRESENÇA -->
+                            <div class="stat-card">
+                                <div class="stat-name">Presença</div>
+                                <div class="stat-value" id="attr-presenca">0</div>
+                                <div class="stat-controls">
+                                    <button class="stat-btn" data-attr="presenca" data-action="decrease">-</button>
+                                    <input type="number" class="stat-input" id="input-presenca" value="0" min="0" max="5">
+                                    <button class="stat-btn" data-attr="presenca" data-action="increase">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RECURSOS -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-heart"></i>
+                            Recursos
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="status-grid">
+                            <!-- VIDA -->
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <div class="status-title">Vida</div>
+                                    <div class="status-number" id="vida-total">20</div>
+                                </div>
+                                <div class="status-values">
+                                    <div class="status-value">
+                                        <div class="status-label">Atual</div>
+                                        <input type="number" class="form-input" id="vida-atual" value="20" min="0" max="100">
+                                    </div>
+                                    <div class="status-value">
+                                        <div class="status-label">Máximo</div>
+                                        <div class="status-number" id="vida-max">20</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- SANIDADE -->
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <div class="status-title">Sanidade</div>
+                                    <div class="status-number" id="sanidade-total">16</div>
+                                </div>
+                                <div class="status-values">
+                                    <div class="status-value">
+                                        <div class="status-label">Atual</div>
+                                        <input type="number" class="form-input" id="sanidade-atual" value="16" min="0" max="100">
+                                    </div>
+                                    <div class="status-value">
+                                        <div class="status-label">Máximo</div>
+                                        <div class="status-number" id="sanidade-max">16</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- ESFORÇO -->
+                            <div class="status-card">
+                                <div class="status-header">
+                                    <div class="status-title">Esforço</div>
+                                    <div class="status-number" id="esforco-total">4</div>
+                                </div>
+                                <div class="status-values">
+                                    <div class="status-value">
+                                        <div class="status-label">Atual</div>
+                                        <input type="number" class="form-input" id="esforco-atual" value="4" min="0" max="20">
+                                    </div>
+                                    <div class="status-value">
+                                        <div class="status-label">Máximo</div>
+                                        <div class="status-number" id="esforco-max">4</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTEÚDO PRINCIPAL -->
+            <div class="main-content">
+                <!-- TABS DE NAVEGAÇÃO -->
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="pericias">Perícias</button>
+                    <button class="tab-btn" data-tab="inventario">Inventário</button>
+                    <button class="tab-btn" data-tab="rituais">Rituais</button>
+                    <button class="tab-btn" data-tab="defesas">Defesas</button>
+                    <button class="tab-btn" data-tab="outros">Outros</button>
+                </div>
+
+                <!-- CONTEÚDO DAS TABS -->
+                <div id="tab-pericias" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-tasks"></i>
+                                Perícias
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="skills-grid" id="skills-container">
+                                <!-- Perícias serão geradas aqui pelo JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-inventario" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-backpack"></i>
+                                Inventário
+                            </h3>
+                            <button class="btn btn-primary btn-sm" id="btn-add-item">
+                                <i class="fas fa-plus"></i> Adicionar Item
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="inventory-grid" id="inventory-container">
+                                <!-- Itens do inventário serão gerados aqui -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-gun"></i>
+                                Armas
+                            </h3>
+                            <button class="btn btn-primary btn-sm" id="btn-add-weapon">
+                                <i class="fas fa-plus"></i> Adicionar Arma
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div class="inventory-grid" id="weapons-container">
+                                <!-- Armas serão geradas aqui -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-rituais" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-book-dead"></i>
+                                Rituais
+                            </h3>
+                            <button class="btn btn-purple btn-sm" id="btn-add-ritual">
+                                <i class="fas fa-plus"></i> Adicionar Ritual
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <table class="rituals-table">
+                                <thead>
+                                    <tr>
+                                        <th>Nome</th>
+                                        <th>Elemento</th>
+                                        <th>Nível</th>
+                                        <th>Execução</th>
+                                        <th>Alcance</th>
+                                        <th>Duração</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rituals-container">
+                                    <!-- Rituais serão gerados aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-defesas" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-shield-alt"></i>
+                                Defesas e Resistências
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="info-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Defesa</label>
+                                    <input type="number" class="form-input" id="defesa" value="10" min="0" max="50">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Bloqueio</label>
+                                    <input type="number" class="form-input" id="bloqueio" value="0" min="0" max="20">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Esquiva</label>
+                                    <input type="number" class="form-input" id="esquiva" value="0" min="0" max="20">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <h4 class="card-title mb-2">Resistências a Elementos</h4>
+                                <div class="skills-grid">
+                                    <!-- Resistências serão geradas aqui -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-outros" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <i class="fas fa-file-alt"></i>
+                                Descrições e Histórico
+                            </h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Aparência</label>
+                                <textarea class="form-input" id="aparencia" rows="3" placeholder="Descreva a aparência do personagem"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Personalidade</label>
+                                <textarea class="form-input" id="personalidade" rows="3" placeholder="Descreva a personalidade do personagem"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">História</label>
+                                <textarea class="form-input" id="historia" rows="5" placeholder="Descreva a história do personagem"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Primeiro Encontro Paranormal</label>
+                                <textarea class="form-input" id="primeiro-encontro" rows="3" placeholder="Descreva o primeiro encontro paranormal do personagem"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Doenças, Fobias e Manias</label>
+                                <textarea class="form-input" id="fobias-manias" rows="3" placeholder="Liste doenças, fobias e manias do personagem"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Favoritos (pessoas, itens, etc.)</label>
+                                <textarea class="form-input" id="favoritos" rows="3" placeholder="Liste os favoritos do personagem"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA ADICIONAR ITEM -->
+    <div class="modal" id="modal-item">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Adicionar Item</h3>
+                <button class="modal-close" id="close-item-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nome do Item</label>
+                    <input type="text" class="form-input" id="item-name" placeholder="Ex: Kit de Medicina">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea class="form-input" id="item-description" rows="3" placeholder="Descreva o item"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Quantidade</label>
+                    <input type="number" class="form-input" id="item-quantity" value="1" min="1">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancel-item">Cancelar</button>
+                <button class="btn btn-success" id="save-item">Salvar Item</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA ADICIONAR ARMA -->
+    <div class="modal" id="modal-weapon">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Adicionar Arma</h3>
+                <button class="modal-close" id="close-weapon-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nome da Arma</label>
+                    <input type="text" class="form-input" id="weapon-name" placeholder="Ex: Pistola 9mm">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo</label>
+                    <select class="form-select" id="weapon-type">
+                        <option value="corpo-a-corpo">Corpo a Corpo</option>
+                        <option value="arremesso">Arremesso</option>
+                        <option value="fogo">Fogo</option>
+                        <option value="especial">Especial</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dano</label>
+                    <input type="text" class="form-input" id="weapon-damage" placeholder="Ex: 1d6 + 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alcance</label>
+                    <input type="text" class="form-input" id="weapon-range" placeholder="Ex: Curto (9m)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Crítico</label>
+                    <input type="text" class="form-input" id="weapon-critical" placeholder="Ex: 19-20/x2">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea class="form-input" id="weapon-description" rows="3" placeholder="Descreva a arma"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancel-weapon">Cancelar</button>
+                <button class="btn btn-success" id="save-weapon">Salvar Arma</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL PARA ADICIONAR RITUAL -->
+    <div class="modal" id="modal-ritual">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Adicionar Ritual</h3>
+                <button class="modal-close" id="close-ritual-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nome do Ritual</label>
+                    <input type="text" class="form-input" id="ritual-name" placeholder="Ex: Amaldiçoar Arma">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Elemento</label>
+                    <select class="form-select" id="ritual-element">
+                        <option value="sangue">Sangue</option>
+                        <option value="morte">Morte</option>
+                        <option value="conhecimento">Conhecimento</option>
+                        <option value="energia">Energia</option>
+                        <option value="medo">Medo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Nível</label>
+                    <select class="form-select" id="ritual-level">
+                        <option value="1">1º Círculo</option>
+                        <option value="2">2º Círculo</option>
+                        <option value="3">3º Círculo</option>
+                        <option value="4">4º Círculo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Execução</label>
+                    <input type="text" class="form-input" id="ritual-execution" placeholder="Ex: Ação Padrão">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alcance</label>
+                    <input type="text" class="form-input" id="ritual-range" placeholder="Ex: Toque">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Alvo</label>
+                    <input type="text" class="form-input" id="ritual-target" placeholder="Ex: 1 arma">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Duração</label>
+                    <input type="text" class="form-input" id="ritual-duration" placeholder="Ex: Cena">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Resistência</label>
+                    <input type="text" class="form-input" id="ritual-resistance" placeholder="Ex: Nenhuma">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descrição</label>
+                    <textarea class="form-input" id="ritual-description" rows="4" placeholder="Descreva o ritual"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="cancel-ritual">Cancelar</button>
+                <button class="btn btn-success" id="save-ritual">Salvar Ritual</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE IMPORTAÇÃO/EXPORTAÇÃO -->
+    <div class="modal" id="modal-import-export">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Importar/Exportar Ficha</h3>
+                <button class="modal-close" id="close-import-export-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="tabs">
+                    <button class="tab-btn active" data-modal-tab="export">Exportar</button>
+                    <button class="tab-btn" data-modal-tab="import">Importar</button>
+                </div>
+                
+                <div id="modal-export" class="tab-content active">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        Copie o código abaixo para salvar sua ficha. Você pode colar este código posteriormente para importar.
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Código da Ficha</label>
+                        <textarea class="form-input" id="export-code" rows="8" readonly></textarea>
+                    </div>
+                    <button class="btn btn-primary w-full" id="copy-export">
+                        <i class="fas fa-copy"></i> Copiar para Área de Transferência
+                    </button>
+                </div>
+                
+                <div id="modal-import" class="tab-content">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Importar uma ficha substituirá todos os dados atuais. Certifique-se de ter salvo antes de importar.
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cole o código da ficha</label>
+                        <textarea class="form-input" id="import-code" rows="8" placeholder="Cole o código da ficha aqui"></textarea>
+                    </div>
+                    <button class="btn btn-danger w-full" id="confirm-import">
+                        <i class="fas fa-upload"></i> Importar Ficha
+                    </button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="close-modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dados do sistema
+        const systemData = {
+            // Perícias do sistema Ordem Paranormal
+            skills: [
+                "Acrobacia", "Adestramento", "Artes", "Atletismo", "Atualidades",
+                "Ciências", "Crime", "Diplomacia", "Enganação", "Fortitude",
+                "Furtividade", "Iniciativa", "Intimidação", "Intuição", "Investigação",
+                "Luta", "Medicina", "Ocultismo", "Percepção", "Pilotagem",
+                "Pontaria", "Profissão", "Reflexos", "Religião", "Sobrevivência",
+                "Tática", "Tecnologia", "Vontade"
+            ],
+            
+            // Elementos para rituais
+            elements: ["Sangue", "Morte", "Conhecimento", "Energia", "Medo"],
+            
+            // Classes disponíveis
+            classes: [
+                { id: "combatente", name: "Combatente", color: "#ff4757" },
+                { id: "especialista", name: "Especialista", color: "#4a6bff" },
+                { id: "ocultista", name: "Ocultista", color: "#9b59b6" }
+            ],
+            
+            // Patentes
+            ranks: ["Recruta", "Operador", "Agente Especial", "Oficial de Operações", "Oficial Executivo"]
+        };
+
+        // Estado da aplicação
+        let appState = {
+            character: {
+                name: "",
+                player: "",
+                class: "",
+                origin: "",
+                nex: 5,
+                age: 25,
+                nationality: "",
+                rank: "",
+                appearance: "",
+                personality: "",
+                history: "",
+                firstEncounter: "",
+                phobias: "",
+                favorites: ""
+            },
+            attributes: {
+                forca: 0,
+                agilidade: 0,
+                intelecto: 0,
+                vigor: 0,
+                presenca: 0
+            },
+            resources: {
+                vida: { current: 20, max: 20 },
+                sanidade: { current: 16, max: 16 },
+                esforco: { current: 4, max: 4 }
+            },
+            skills: {},
+            inventory: [],
+            weapons: [],
+            rituals: [],
+            defenses: {
+                defesa: 10,
+                bloqueio: 0,
+                esquiva: 0
+            },
+            resistances: {}
+        };
+
+        // Inicialização da aplicação
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+            setupEventListeners();
+            loadDefaultData();
+        });
+
+        // Inicializa a aplicação
+        function initializeApp() {
+            // Inicializa perícias
+            systemData.skills.forEach(skill => {
+                appState.skills[skill] = 0;
+            });
+            
+            // Inicializa resistências
+            systemData.elements.forEach(element => {
+                appState.resistances[element] = 0;
+            });
+            
+            // Renderiza componentes
+            renderSkills();
+            renderInventory();
+            renderWeapons();
+            renderRituals();
+            updateCalculatedValues();
+        }
+
+        // Configura event listeners
+        function setupEventListeners() {
+            // Botões de navegação
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // Botões de atributos
+            document.querySelectorAll('.stat-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const attr = this.getAttribute('data-attr');
+                    const action = this.getAttribute('data-action');
+                    modifyAttribute(attr, action);
+                });
+            });
+            
+            // Inputs de atributos
+            document.querySelectorAll('.stat-input').forEach(input => {
+                input.addEventListener('change', function() {
+                    const attr = this.id.replace('input-', '');
+                    const value = parseInt(this.value) || 0;
+                    setAttribute(attr, value);
+                });
+            });
+            
+            // Botões de recursos
+            document.getElementById('vida-atual').addEventListener('change', updateVida);
+            document.getElementById('sanidade-atual').addEventListener('change', updateSanidade);
+            document.getElementById('esforco-atual').addEventListener('change', updateEsforco);
+            
+            // Botões da navbar
+            document.getElementById('btn-save').addEventListener('click', saveCharacter);
+            document.getElementById('btn-export').addEventListener('click', showExportModal);
+            document.getElementById('btn-import').addEventListener('click', showImportExportModal);
+            document.getElementById('btn-new-character').addEventListener('click', newCharacter);
+            
+            // Botões de adição
+            document.getElementById('btn-add-item').addEventListener('click', () => showModal('modal-item'));
+            document.getElementById('btn-add-weapon').addEventListener('click', () => showModal('modal-weapon'));
+            document.getElementById('btn-add-ritual').addEventListener('click', () => showModal('modal-ritual'));
+            
+            // Fechar modais
+            document.querySelectorAll('.modal-close, .btn-danger[id^="cancel"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modalId = this.closest('.modal').id;
+                    hideModal(modalId);
+                });
+            });
+            
+            // Salvar nos modais
+            document.getElementById('save-item').addEventListener('click', saveItem);
+            document.getElementById('save-weapon').addEventListener('click', saveWeapon);
+            document.getElementById('save-ritual').addEventListener('click', saveRitual);
+            
+            // Importar/Exportar
+            document.getElementById('copy-export').addEventListener('click', copyExportCode);
+            document.getElementById('confirm-import').addEventListener('click', importCharacter);
+            document.getElementById('close-modal').addEventListener('click', () => hideModal('modal-import-export'));
+            
+            // Tabs do modal de importação/exportação
+            document.querySelectorAll('[data-modal-tab]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-modal-tab');
+                    switchModalTab(tabId);
+                });
+            });
+            
+            // Inputs de informações do personagem
+            document.querySelectorAll('#character-name, #player-name, #character-origin, #character-nex, #character-age, #character-nationality, #character-class, #character-rank').forEach(input => {
+                input.addEventListener('change', updateCharacterInfo);
+            });
+            
+            // Inputs de descrições
+            document.querySelectorAll('#aparencia, #personalidade, #historia, #primeiro-encontro, #fobias-manias, #favoritos').forEach(input => {
+                input.addEventListener('change', updateCharacterDescription);
+            });
+            
+            // Inputs de defesas
+            document.querySelectorAll('#defesa, #bloqueio, #esquiva').forEach(input => {
+                input.addEventListener('change', updateDefenses);
+            });
+        }
+
+        // Carrega dados padrão
+        function loadDefaultData() {
+            // Define valores iniciais baseados nas imagens fornecidas
+            appState.character.nex = 5;
+            appState.character.age = 25;
+            
+            // Atributos iniciais (exemplo)
+            appState.attributes = {
+                forca: 1,
+                agilidade: 2,
+                intelecto: 3,
+                vigor: 2,
+                presenca: 1
+            };
+            
+            // Atualiza a UI
+            updateAttributesUI();
+            updateCharacterInfo();
+        }
+
+        // Renderiza perícias
+        function renderSkills() {
+            const container = document.getElementById('skills-container');
+            container.innerHTML = '';
+            
+            systemData.skills.forEach(skill => {
+                const skillItem = document.createElement('div');
+                skillItem.className = 'skill-item';
+                skillItem.innerHTML = `
+                    <span class="skill-name">${skill}</span>
+                    <input type="number" class="skill-value" 
+                           id="skill-${skill.toLowerCase()}" 
+                           value="${appState.skills[skill] || 0}" 
+                           min="-5" max="10">
+                `;
+                container.appendChild(skillItem);
+                
+                // Adiciona event listener
+                const input = skillItem.querySelector('input');
+                input.addEventListener('change', function() {
+                    appState.skills[skill] = parseInt(this.value) || 0;
+                });
+            });
+        }
+
+        // Renderiza inventário
+        function renderInventory() {
+            const container = document.getElementById('inventory-container');
+            container.innerHTML = '';
+            
+            if (appState.inventory.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); grid-column: 1 / -1;">Nenhum item no inventário</p>';
+                return;
+            }
+            
+            appState.inventory.forEach((item, index) => {
+                const itemCard = document.createElement('div');
+                itemCard.className = 'item-card';
+                itemCard.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${item.name} (x${item.quantity})</div>
+                        <div class="item-desc">${item.description || 'Sem descrição'}</div>
+                    </div>
+                    <div class="item-controls">
+                        <button class="icon-btn icon-btn-edit" data-index="${index}" data-type="item">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn icon-btn-delete" data-index="${index}" data-type="item">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(itemCard);
+            });
+            
+            // Adiciona event listeners aos botões
+            document.querySelectorAll('[data-type="item"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    if (this.classList.contains('icon-btn-edit')) {
+                        editItem(index);
+                    } else {
+                        deleteItem(index);
+                    }
+                });
+            });
+        }
+
+        // Renderiza armas
+        function renderWeapons() {
+            const container = document.getElementById('weapons-container');
+            container.innerHTML = '';
+            
+            if (appState.weapons.length === 0) {
+                container.innerHTML = '<p class="text-center" style="color: var(--text-secondary); grid-column: 1 / -1;">Nenhuma arma adicionada</p>';
+                return;
+            }
+            
+            appState.weapons.forEach((weapon, index) => {
+                const weaponCard = document.createElement('div');
+                weaponCard.className = 'item-card';
+                weaponCard.innerHTML = `
+                    <div class="item-info">
+                        <div class="item-name">${weapon.name}</div>
+                        <div class="item-desc">
+                            <strong>Dano:</strong> ${weapon.damage} | 
+                            <strong>Alcance:</strong> ${weapon.range} | 
+                            <strong>Crítico:</strong> ${weapon.critical}
+                        </div>
+                    </div>
+                    <div class="item-controls">
+                        <button class="icon-btn icon-btn-edit" data-index="${index}" data-type="weapon">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn icon-btn-delete" data-index="${index}" data-type="weapon">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(weaponCard);
+            });
+            
+            // Adiciona event listeners aos botões
+            document.querySelectorAll('[data-type="weapon"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    if (this.classList.contains('icon-btn-edit')) {
+                        editWeapon(index);
+                    } else {
+                        deleteWeapon(index);
+                    }
+                });
+            });
+        }
+
+        // Renderiza rituais
+        function renderRituals() {
+            const container = document.getElementById('rituals-container');
+            container.innerHTML = '';
+            
+            if (appState.rituals.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center" style="color: var(--text-secondary);">
+                            Nenhum ritual adicionado
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            appState.rituals.forEach((ritual, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${ritual.name}</td>
+                    <td>${ritual.element}</td>
+                    <td>${ritual.level}º Círculo</td>
+                    <td>${ritual.execution}</td>
+                    <td>${ritual.range}</td>
+                    <td>${ritual.duration}</td>
+                    <td>
+                        <button class="icon-btn icon-btn-edit" data-index="${index}" data-type="ritual">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="icon-btn icon-btn-delete" data-index="${index}" data-type="ritual">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+            
+            // Adiciona event listeners aos botões
+            document.querySelectorAll('[data-type="ritual"]').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    if (this.classList.contains('icon-btn-edit')) {
+                        editRitual(index);
+                    } else {
+                        deleteRitual(index);
+                    }
+                });
+            });
+        }
+
+        // Modifica atributo
+        function modifyAttribute(attr, action) {
+            let value = appState.attributes[attr] || 0;
+            
+            if (action === 'increase' && value < 5) {
+                value++;
+            } else if (action === 'decrease' && value > 0) {
+                value--;
+            }
+            
+            setAttribute(attr, value);
+        }
+
+        // Define atributo
+        function setAttribute(attr, value) {
+            // Limita valor entre 0 e 5
+            value = Math.max(0, Math.min(5, value));
+            
+            appState.attributes[attr] = value;
+            
+            // Atualiza UI
+            document.getElementById(`attr-${attr}`).textContent = value;
+            document.getElementById(`input-${attr}`).value = value;
+            
+            // Atualiza valores calculados
+            updateCalculatedValues();
+        }
+
+        // Atualiza valores calculados
+        function updateCalculatedValues() {
+            // Vida baseada em Vigor
+            const vigor = appState.attributes.vigor || 0;
+            const vidaMax = 20 + (vigor * 5);
+            
+            // Sanidade baseada em Presença
+            const presenca = appState.attributes.presenca || 0;
+            const sanidadeMax = 16 + (presenca * 3);
+            
+            // Esforço baseado em NEX (simplificado)
+            const nex = appState.character.nex || 5;
+            const esforcoMax = 4 + Math.floor(nex / 15);
+            
+            // Atualiza valores máximos
+            appState.resources.vida.max = vidaMax;
+            appState.resources.sanidade.max = sanidadeMax;
+            appState.resources.esforco.max = esforcoMax;
+            
+            // Atualiza UI
+            document.getElementById('vida-max').textContent = vidaMax;
+            document.getElementById('sanidade-max').textContent = sanidadeMax;
+            document.getElementById('esforco-max').textContent = esforcoMax;
+            
+            document.getElementById('vida-total').textContent = vidaMax;
+            document.getElementById('sanidade-total').textContent = sanidadeMax;
+            document.getElementById('esforco-total').textContent = esforcoMax;
+            
+            // Ajusta valores atuais se necessário
+            if (appState.resources.vida.current > vidaMax) {
+                appState.resources.vida.current = vidaMax;
+                document.getElementById('vida-atual').value = vidaMax;
+            }
+            
+            if (appState.resources.sanidade.current > sanidadeMax) {
+                appState.resources.sanidade.current = sanidadeMax;
+                document.getElementById('sanidade-atual').value = sanidadeMax;
+            }
+            
+            if (appState.resources.esforco.current > esforcoMax) {
+                appState.resources.esforco.current = esforcoMax;
+                document.getElementById('esforco-atual').value = esforcoMax;
+            }
+        }
+
+        // Atualiza vida
+        function updateVida() {
+            const value = parseInt(document.getElementById('vida-atual').value) || 0;
+            const max = appState.resources.vida.max;
+            appState.resources.vida.current = Math.min(Math.max(value, 0), max);
+            document.getElementById('vida-atual').value = appState.resources.vida.current;
+        }
+
+        // Atualiza sanidade
+        function updateSanidade() {
+            const value = parseInt(document.getElementById('sanidade-atual').value) || 0;
+            const max = appState.resources.sanidade.max;
+            appState.resources.sanidade.current = Math.min(Math.max(value, 0), max);
+            document.getElementById('sanidade-atual').value = appState.resources.sanidade.current;
+        }
+
+        // Atualiza esforço
+        function updateEsforco() {
+            const value = parseInt(document.getElementById('esforco-atual').value) || 0;
+            const max = appState.resources.esforco.max;
+            appState.resources.esforco.current = Math.min(Math.max(value, 0), max);
+            document.getElementById('esforco-atual').value = appState.resources.esforco.current;
+        }
+
+        // Atualiza informações do personagem
+        function updateCharacterInfo() {
+            appState.character.name = document.getElementById('character-name').value;
+            appState.character.player = document.getElementById('player-name').value;
+            appState.character.class = document.getElementById('character-class').value;
+            appState.character.origin = document.getElementById('character-origin').value;
+            appState.character.nex = parseInt(document.getElementById('character-nex').value) || 5;
+            appState.character.age = parseInt(document.getElementById('character-age').value) || 25;
+            appState.character.nationality = document.getElementById('character-nationality').value;
+            appState.character.rank = document.getElementById('character-rank').value;
+            
+            // Atualiza valores calculados
+            updateCalculatedValues();
+        }
+
+        // Atualiza descrições do personagem
+        function updateCharacterDescription() {
+            appState.character.appearance = document.getElementById('aparencia').value;
+            appState.character.personality = document.getElementById('personalidade').value;
+            appState.character.history = document.getElementById('historia').value;
+            appState.character.firstEncounter = document.getElementById('primeiro-encontro').value;
+            appState.character.phobias = document.getElementById('fobias-manias').value;
+            appState.character.favorites = document.getElementById('favoritos').value;
+        }
+
+        // Atualiza defesas
+        function updateDefenses() {
+            appState.defenses.defesa = parseInt(document.getElementById('defesa').value) || 10;
+            appState.defenses.bloqueio = parseInt(document.getElementById('bloqueio').value) || 0;
+            appState.defenses.esquiva = parseInt(document.getElementById('esquiva').value) || 0;
+        }
+
+        // Atualiza UI dos atributos
+        function updateAttributesUI() {
+            for (const attr in appState.attributes) {
+                document.getElementById(`attr-${attr}`).textContent = appState.attributes[attr];
+                document.getElementById(`input-${attr}`).value = appState.attributes[attr];
+            }
+        }
+
+        // Salva item
+        function saveItem() {
+            const name = document.getElementById('item-name').value.trim();
+            const description = document.getElementById('item-description').value.trim();
+            const quantity = parseInt(document.getElementById('item-quantity').value) || 1;
+            
+            if (!name) {
+                showAlert('Por favor, insira um nome para o item', 'warning');
+                return;
+            }
+            
+            const newItem = {
+                name,
+                description,
+                quantity
+            };
+            
+            appState.inventory.push(newItem);
+            renderInventory();
+            hideModal('modal-item');
+            showAlert('Item adicionado com sucesso!', 'success');
+            
+            // Limpa formulário
+            document.getElementById('item-name').value = '';
+            document.getElementById('item-description').value = '';
+            document.getElementById('item-quantity').value = 1;
+        }
+
+        // Salva arma
+        function saveWeapon() {
+            const name = document.getElementById('weapon-name').value.trim();
+            const type = document.getElementById('weapon-type').value;
+            const damage = document.getElementById('weapon-damage').value.trim();
+            const range = document.getElementById('weapon-range').value.trim();
+            const critical = document.getElementById('weapon-critical').value.trim();
+            const description = document.getElementById('weapon-description').value.trim();
+            
+            if (!name) {
+                showAlert('Por favor, insira um nome para a arma', 'warning');
+                return;
+            }
+            
+            const newWeapon = {
+                name,
+                type,
+                damage,
+                range,
+                critical,
+                description
+            };
+            
+            appState.weapons.push(newWeapon);
+            renderWeapons();
+            hideModal('modal-weapon');
+            showAlert('Arma adicionada com sucesso!', 'success');
+            
+            // Limpa formulário
+            document.getElementById('weapon-name').value = '';
+            document.getElementById('weapon-damage').value = '';
+            document.getElementById('weapon-range').value = '';
+            document.getElementById('weapon-critical').value = '';
+            document.getElementById('weapon-description').value = '';
+        }
+
+        // Salva ritual
+        function saveRitual() {
+            const name = document.getElementById('ritual-name').value.trim();
+            const element = document.getElementById('ritual-element').value;
+            const level = document.getElementById('ritual-level').value;
+            const execution = document.getElementById('ritual-execution').value.trim();
+            const range = document.getElementById('ritual-range').value.trim();
+            const target = document.getElementById('ritual-target').value.trim();
+            const duration = document.getElementById('ritual-duration').value.trim();
+            const resistance = document.getElementById('ritual-resistance').value.trim();
+            const description = document.getElementById('ritual-description').value.trim();
+            
+            if (!name) {
+                showAlert('Por favor, insira um nome para o ritual', 'warning');
+                return;
+            }
+            
+            const newRitual = {
+                name,
+                element,
+                level,
+                execution,
+                range,
+                target,
+                duration,
+                resistance,
+                description
+            };
+            
+            appState.rituals.push(newRitual);
+            renderRituals();
+            hideModal('modal-ritual');
+            showAlert('Ritual adicionado com sucesso!', 'success');
+            
+            // Limpa formulário
+            document.getElementById('ritual-name').value = '';
+            document.getElementById('ritual-execution').value = '';
+            document.getElementById('ritual-range').value = '';
+            document.getElementById('ritual-target').value = '';
+            document.getElementById('ritual-duration').value = '';
+            document.getElementById('ritual-resistance').value = '';
+            document.getElementById('ritual-description').value = '';
+        }
+
+        // Edita item
+        function editItem(index) {
+            const item = appState.inventory[index];
+            if (!item) return;
+            
+            // Preenche modal com dados do item
+            document.getElementById('item-name').value = item.name;
+            document.getElementById('item-description').value = item.description;
+            document.getElementById('item-quantity').value = item.quantity;
+            
+            // Mostra modal e configura para edição
+            showModal('modal-item');
+            
+            // Modifica botão de salvar para editar
+            const saveBtn = document.getElementById('save-item');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Atualizar Item';
+            
+            // Configura evento temporário
+            const updateHandler = () => {
+                // Atualiza item
+                item.name = document.getElementById('item-name').value.trim();
+                item.description = document.getElementById('item-description').value.trim();
+                item.quantity = parseInt(document.getElementById('item-quantity').value) || 1;
+                
+                // Renderiza novamente
+                renderInventory();
+                hideModal('modal-item');
+                showAlert('Item atualizado com sucesso!', 'success');
+                
+                // Restaura botão
+                saveBtn.textContent = originalText;
+                saveBtn.removeEventListener('click', updateHandler);
+                saveBtn.addEventListener('click', saveItem);
+            };
+            
+            saveBtn.removeEventListener('click', saveItem);
+            saveBtn.addEventListener('click', updateHandler);
+        }
+
+        // Edita arma
+        function editWeapon(index) {
+            const weapon = appState.weapons[index];
+            if (!weapon) return;
+            
+            // Preenche modal com dados da arma
+            document.getElementById('weapon-name').value = weapon.name;
+            document.getElementById('weapon-type').value = weapon.type;
+            document.getElementById('weapon-damage').value = weapon.damage;
+            document.getElementById('weapon-range').value = weapon.range;
+            document.getElementById('weapon-critical').value = weapon.critical;
+            document.getElementById('weapon-description').value = weapon.description;
+            
+            // Mostra modal e configura para edição
+            showModal('modal-weapon');
+            
+            // Modifica botão de salvar para editar
+            const saveBtn = document.getElementById('save-weapon');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Atualizar Arma';
+            
+            // Configura evento temporário
+            const updateHandler = () => {
+                // Atualiza arma
+                weapon.name = document.getElementById('weapon-name').value.trim();
+                weapon.type = document.getElementById('weapon-type').value;
+                weapon.damage = document.getElementById('weapon-damage').value.trim();
+                weapon.range = document.getElementById('weapon-range').value.trim();
+                weapon.critical = document.getElementById('weapon-critical').value.trim();
+                weapon.description = document.getElementById('weapon-description').value.trim();
+                
+                // Renderiza novamente
+                renderWeapons();
+                hideModal('modal-weapon');
+                showAlert('Arma atualizada com sucesso!', 'success');
+                
+                // Restaura botão
+                saveBtn.textContent = originalText;
+                saveBtn.removeEventListener('click', updateHandler);
+                saveBtn.addEventListener('click', saveWeapon);
+            };
+            
+            saveBtn.removeEventListener('click', saveWeapon);
+            saveBtn.addEventListener('click', updateHandler);
+        }
+
+        // Edita ritual
+        function editRitual(index) {
+            const ritual = appState.rituals[index];
+            if (!ritual) return;
+            
+            // Preenche modal com dados do ritual
+            document.getElementById('ritual-name').value = ritual.name;
+            document.getElementById('ritual-element').value = ritual.element;
+            document.getElementById('ritual-level').value = ritual.level;
+            document.getElementById('ritual-execution').value = ritual.execution;
+            document.getElementById('ritual-range').value = ritual.range;
+            document.getElementById('ritual-target').value = ritual.target;
+            document.getElementById('ritual-duration').value = ritual.duration;
+            document.getElementById('ritual-resistance').value = ritual.resistance;
+            document.getElementById('ritual-description').value = ritual.description;
+            
+            // Mostra modal e configura para edição
+            showModal('modal-ritual');
+            
+            // Modifica botão de salvar para editar
+            const saveBtn = document.getElementById('save-ritual');
+            const originalText = saveBtn.textContent;
+            saveBtn.textContent = 'Atualizar Ritual';
+            
+            // Configura evento temporário
+            const updateHandler = () => {
+                // Atualiza ritual
+                ritual.name = document.getElementById('ritual-name').value.trim();
+                ritual.element = document.getElementById('ritual-element').value;
+                ritual.level = document.getElementById('ritual-level').value;
+                ritual.execution = document.getElementById('ritual-execution').value.trim();
+                ritual.range = document.getElementById('ritual-range').value.trim();
+                ritual.target = document.getElementById('ritual-target').value.trim();
+                ritual.duration = document.getElementById('ritual-duration').value.trim();
+                ritual.resistance = document.getElementById('ritual-resistance').value.trim();
+                ritual.description = document.getElementById('ritual-description').value.trim();
+                
+                // Renderiza novamente
+                renderRituals();
+                hideModal('modal-ritual');
+                showAlert('Ritual atualizado com sucesso!', 'success');
+                
+                // Restaura botão
+                saveBtn.textContent = originalText;
+                saveBtn.removeEventListener('click', updateHandler);
+                saveBtn.addEventListener('click', saveRitual);
+            };
+            
+            saveBtn.removeEventListener('click', saveRitual);
+            saveBtn.addEventListener('click', updateHandler);
+        }
+
+        // Deleta item
+        function deleteItem(index) {
+            if (confirm('Tem certeza que deseja remover este item?')) {
+                appState.inventory.splice(index, 1);
+                renderInventory();
+                showAlert('Item removido com sucesso!', 'success');
+            }
+        }
+
+        // Deleta arma
+        function deleteWeapon(index) {
+            if (confirm('Tem certeza que deseja remover esta arma?')) {
+                appState.weapons.splice(index, 1);
+                renderWeapons();
+                showAlert('Arma removida com sucesso!', 'success');
+            }
+        }
+
+        // Deleta ritual
+        function deleteRitual(index) {
+            if (confirm('Tem certeza que deseja remover este ritual?')) {
+                appState.rituals.splice(index, 1);
+                renderRituals();
+                showAlert('Ritual removido com sucesso!', 'success');
+            }
+        }
+
+        // Troca de tab
+        function switchTab(tabId) {
+            // Remove classe active de todas as tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Adiciona classe active à tab selecionada
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        // Troca de tab no modal
+        function switchModalTab(tabId) {
+            // Remove classe active de todas as tabs
+            document.querySelectorAll('[data-modal-tab]').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            document.querySelectorAll('#modal-import-export .tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Adiciona classe active à tab selecionada
+            document.querySelector(`[data-modal-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`modal-${tabId}`).classList.add('active');
+            
+            // Se for a tab de exportação, gera o código
+            if (tabId === 'export') {
+                generateExportCode();
+            }
+        }
+
+        // Mostra modal
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // Esconde modal
+        function hideModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Mostra alerta
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : type === 'danger' ? 'times-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            alertContainer.appendChild(alert);
+            
+            // Remove alerta após 5 segundos
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Salva personagem
+        function saveCharacter() {
+            // Atualiza todos os dados antes de salvar
+            updateCharacterInfo();
+            updateCharacterDescription();
+            updateDefenses();
+            
+            // Salva no localStorage
+            try {
+                const characterData = JSON.stringify(appState);
+                localStorage.setItem('ordemParanormalCharacter', characterData);
+                showAlert('Personagem salvo com sucesso!', 'success');
+            } catch (error) {
+                showAlert('Erro ao salvar personagem: ' + error.message, 'danger');
+            }
+        }
+
+        // Gera código de exportação
+        function generateExportCode() {
+            // Atualiza todos os dados antes de exportar
+            updateCharacterInfo();
+            updateCharacterDescription();
+            updateDefenses();
+            
+            // Gera código compacto
+            const exportData = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                data: appState
+            };
+            
+            const exportCode = JSON.stringify(exportData, null, 2);
+            document.getElementById('export-code').value = exportCode;
+        }
+
+        // Copia código de exportação
+        function copyExportCode() {
+            const exportCode = document.getElementById('export-code');
+            exportCode.select();
+            exportCode.setSelectionRange(0, 99999); // Para dispositivos móveis
+            
+            try {
+                navigator.clipboard.writeText(exportCode.value);
+                showAlert('Código copiado para a área de transferência!', 'success');
+            } catch (error) {
+                // Fallback para navegadores mais antigos
+                document.execCommand('copy');
+                showAlert('Código copiado para a área de transferência!', 'success');
+            }
+        }
+
+        // Mostra modal de importação/exportação
+        function showImportExportModal() {
+            showModal('modal-import-export');
+            switchModalTab('export');
+        }
+
+        // Importa personagem
+        function importCharacter() {
+            const importCode = document.getElementById('import-code').value.trim();
+            
+            if (!importCode) {
+                showAlert('Por favor, cole o código da ficha', 'warning');
+                return;
+            }
+            
+            try {
+                const importData = JSON.parse(importCode);
+                
+                // Verifica se é uma versão compatível
+                if (!importData.version || !importData.data) {
+                    showAlert('Código de importação inválido', 'danger');
+                    return;
+                }
+                
+                // Substitui o estado atual
+                appState = importData.data;
+                
+                // Atualiza UI
+                updateUIFromState();
+                showAlert('Ficha importada com sucesso!', 'success');
+                hideModal('modal-import-export');
+                
+                // Limpa campo de importação
+                document.getElementById('import-code').value = '';
+                
+            } catch (error) {
+                showAlert('Erro ao importar ficha: ' + error.message, 'danger');
+            }
+        }
+
+        // Atualiza UI a partir do estado
+        function updateUIFromState() {
+            // Informações do personagem
+            document.getElementById('character-name').value = appState.character.name || '';
+            document.getElementById('player-name').value = appState.character.player || '';
+            document.getElementById('character-class').value = appState.character.class || '';
+            document.getElementById('character-origin').value = appState.character.origin || '';
+            document.getElementById('character-nex').value = appState.character.nex || 5;
+            document.getElementById('character-age').value = appState.character.age || 25;
+            document.getElementById('character-nationality').value = appState.character.nationality || '';
+            document.getElementById('character-rank').value = appState.character.rank || '';
+            
+            // Atributos
+            updateAttributesUI();
+            
+            // Recursos
+            document.getElementById('vida-atual').value = appState.resources.vida.current;
+            document.getElementById('sanidade-atual').value = appState.resources.sanidade.current;
+            document.getElementById('esforco-atual').value = appState.resources.esforco.current;
+            
+            // Descrições
+            document.getElementById('aparencia').value = appState.character.appearance || '';
+            document.getElementById('personalidade').value = appState.character.personality || '';
+            document.getElementById('historia').value = appState.character.history || '';
+            document.getElementById('primeiro-encontro').value = appState.character.firstEncounter || '';
+            document.getElementById('fobias-manias').value = appState.character.phobias || '';
+            document.getElementById('favoritos').value = appState.character.favorites || '';
+            
+            // Defesas
+            document.getElementById('defesa').value = appState.defenses.defesa || 10;
+            document.getElementById('bloqueio').value = appState.defenses.bloqueio || 0;
+            document.getElementById('esquiva').value = appState.defenses.esquiva || 0;
+            
+            // Atualiza valores calculados
+            updateCalculatedValues();
+            
+            // Renderiza componentes
+            renderSkills();
+            renderInventory();
+            renderWeapons();
+            renderRituals();
+        }
+
+        // Cria novo personagem
+        function newCharacter() {
+            if (confirm('Tem certeza que deseja criar um novo personagem? Todos os dados não salvos serão perdidos.')) {
+                // Reseta estado
+                appState = {
+                    character: {
+                        name: "",
+                        player: "",
+                        class: "",
+                        origin: "",
+                        nex: 5,
+                        age: 25,
+                        nationality: "",
+                        rank: "",
+                        appearance: "",
+                        personality: "",
+                        history: "",
+                        firstEncounter: "",
+                        phobias: "",
+                        favorites: ""
+                    },
+                    attributes: {
+                        forca: 0,
+                        agilidade: 0,
+                        intelecto: 0,
+                        vigor: 0,
+                        presenca: 0
+                    },
+                    resources: {
+                        vida: { current: 20, max: 20 },
+                        sanidade: { current: 16, max: 16 },
+                        esforco: { current: 4, max: 4 }
+                    },
+                    skills: {},
+                    inventory: [],
+                    weapons: [],
+                    rituals: [],
+                    defenses: {
+                        defesa: 10,
+                        bloqueio: 0,
+                        esquiva: 0
+                    },
+                    resistances: {}
+                };
+                
+                // Inicializa perícias
+                systemData.skills.forEach(skill => {
+                    appState.skills[skill] = 0;
+                });
+                
+                // Inicializa resistências
+                systemData.elements.forEach(element => {
+                    appState.resistances[element] = 0;
+                });
+                
+                // Atualiza UI
+                updateUIFromState();
+                showAlert('Novo personagem criado!', 'success');
+            }
+        }
+
+        // Exporta para TXT
+        function exportToTxt() {
+            updateCharacterInfo();
+            updateCharacterDescription();
+            updateDefenses();
+            
+            let txtContent = `FICHA DE PERSONAGEM - ORDEM PARANORMAL\n`;
+            txtContent += `========================================\n\n`;
+            
+            // Informações básicas
+            txtContent += `INFORMAÇÕES BÁSICAS:\n`;
+            txtContent += `Nome: ${appState.character.name}\n`;
+            txtContent += `Jogador: ${appState.character.player}\n`;
+            txtContent += `Classe: ${appState.character.class}\n`;
+            txtContent += `Origem: ${appState.character.origin}\n`;
+            txtContent += `NEX: ${appState.character.nex}%\n`;
+            txtContent += `Idade: ${appState.character.age}\n`;
+            txtContent += `Nacionalidade: ${appState.character.nationality}\n`;
+            txtContent += `Patente: ${appState.character.rank}\n\n`;
+            
+            // Atributos
+            txtContent += `ATRIBUTOS:\n`;
+            for (const attr in appState.attributes) {
+                const name = attr.charAt(0).toUpperCase() + attr.slice(1);
+                txtContent += `${name}: ${appState.attributes[attr]}\n`;
+            }
+            txtContent += `\n`;
+            
+            // Recursos
+            txtContent += `RECURSOS:\n`;
+            txtContent += `Vida: ${appState.resources.vida.current}/${appState.resources.vida.max}\n`;
+            txtContent += `Sanidade: ${appState.resources.sanidade.current}/${appState.resources.sanidade.max}\n`;
+            txtContent += `Esforço: ${appState.resources.esforco.current}/${appState.resources.esforco.max}\n\n`;
+            
+            // Defesas
+            txtContent += `DEFESAS:\n`;
+            txtContent += `Defesa: ${appState.defenses.defesa}\n`;
+            txtContent += `Bloqueio: ${appState.defenses.bloqueio}\n`;
+            txtContent += `Esquiva: ${appState.defenses.esquiva}\n\n`;
+            
+            // Inventário
+            txtContent += `INVENTÁRIO:\n`;
+            if (appState.inventory.length > 0) {
+                appState.inventory.forEach(item => {
+                    txtContent += `- ${item.name} (x${item.quantity}): ${item.description}\n`;
+                });
+            } else {
+                txtContent += `Nenhum item\n`;
+            }
+            txtContent += `\n`;
+            
+            // Armas
+            txtContent += `ARMAS:\n`;
+            if (appState.weapons.length > 0) {
+                appState.weapons.forEach(weapon => {
+                    txtContent += `- ${weapon.name}: Dano ${weapon.damage}, Alcance ${weapon.range}, Crítico ${weapon.critical}\n`;
+                });
+            } else {
+                txtContent += `Nenhuma arma\n`;
+            }
+            txtContent += `\n`;
+            
+            // Rituais
+            txtContent += `RITUAIS:\n`;
+            if (appState.rituals.length > 0) {
+                appState.rituals.forEach(ritual => {
+                    txtContent += `- ${ritual.name} (${ritual.element}, ${ritual.level}º Círculo): ${ritual.execution}, ${ritual.range}, ${ritual.duration}\n`;
+                });
+            } else {
+                txtContent += `Nenhum ritual\n`;
+            }
+            
+            // Cria blob e download
+            const blob = new Blob([txtContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ficha_${appState.character.name || 'personagem'}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showAlert('Ficha exportada como TXT!', 'success');
+        }
+
+        // Adiciona botão de exportar TXT
+        document.getElementById('btn-export').addEventListener('click', exportToTxt);
+    </script>
+</body>
+</html>
