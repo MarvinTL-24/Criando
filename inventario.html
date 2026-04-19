@@ -11,31 +11,12 @@
     <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/tailwind-config.js"></script>
+    <link rel="stylesheet" href="css/global.css">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            muted: '#606060',
-                            blue: '#4a9eff',
-                        }
-                    }
-                }
-            }
-        }
         // Verificar se há perfil ativo
         window.addEventListener('load', function() {
             if (window.hasActiveProfile && window.hasActiveProfile()) {
@@ -67,143 +48,113 @@
         }
     </script>
 
-    <style>
-        body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Animações */
-        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* Modal Transitions */
-        #modal-overlay { transition: opacity 0.3s ease; }
-        #modal-overlay.hidden { pointer-events: none; opacity: 0; }
-        #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
-
-        /* Scrollbar */
-        textarea::-webkit-scrollbar { width: 6px; }
-        textarea::-webkit-scrollbar-track { background: #0f0f12; }
-        textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
-        
-        /* Estilos para cards de item */
-        .item-card {
-            border-left: 3px solid;
-            transition: all 0.3s ease;
-        }
-        
-        .item-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Barra de progresso personalizada */
-        .progress-bar {
-            transition: width 0.5s ease;
-            border-radius: 9999px;
-        }
-        
-        .progress-bar-danger { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
-        .progress-bar-warning { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
-        .progress-bar-safe { background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%); }
-    </style>
+    </script>
 </head>
-<body class="min-h-screen font-sans pb-12">
+<body class="font-sans flex flex-col min-h-screen pb-12">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-blue transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-yellow-600">Grimório Digital</span>
+    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
+        <div class="container-adaptive flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-yellow-600/10 border border-yellow-600/30 rounded-lg text-yellow-600 font-medium transition-all hover:bg-yellow-600/20 shadow-[0_0_15px_rgba(202,138,4,0.1)]">
+                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
+                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center">
+                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-yellow-600 drop-shadow-md">Grimório Digital</span>
+            </div>
+            
+            <div class="w-24"></div> <!-- Spacer for alignment -->
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-yellow-600 to-transparent"></div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-yellow-600/50 to-transparent"></div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
+    <div class="container-adaptive max-w-7xl 2xl:max-w-[2000px] flex-grow space-y-6">
 
-        <header class="flex items-center gap-4 mb-6 anim-entry">
-            <div class="p-3 rounded-lg bg-yellow-600/10 border border-yellow-600/20">
-                <i data-lucide="backpack" class="w-8 h-8 text-yellow-600"></i>
+        <header class="flex items-center justify-center md:justify-start gap-4 mb-6 2xl:mb-10 anim-entry drop-shadow-xl text-center md:text-left">
+            <div class="p-4 rounded-xl bg-yellow-600/10 border border-yellow-600/30 shadow-[0_0_20px_rgba(202,138,4,0.15)] flex-shrink-0">
+                <i data-lucide="backpack" class="w-8 h-8 2xl:w-12 2xl:h-12 text-yellow-600"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Inventário</h1>
-                <p class="text-gray-400">Seus pertences e recursos</p>
+                <h1 class="text-3xl 2xl:text-5xl font-cinzel font-bold text-white tracking-wide">Inventário</h1>
+                <p class="text-theme-muted 2xl:text-lg mt-1 2xl:mt-2">Seus pertences e recursos armazenados</p>
             </div>
         </header>
 
         <!-- Estatísticas Rápidas -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.1s;">
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="package" class="w-8 h-8 text-theme-blue"></i>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 2xl:gap-8 anim-entry" style="animation-delay: 0.1s;">
+            <div class="section-panel p-4 2xl:p-6 flex items-center gap-3 2xl:gap-4 rounded z-10 border-t-2 border-t-blue-500 shadow-glass">
+                <i data-lucide="package" class="w-8 h-8 2xl:w-12 2xl:h-12 text-theme-blue"></i>
                 <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Itens</p>
-                    <p id="stat-total-itens" class="text-2xl font-bold text-white">0</p>
+                    <p class="text-xs 2xl:text-sm text-theme-muted uppercase tracking-wide">Itens</p>
+                    <p id="stat-total-itens" class="text-2xl 2xl:text-4xl font-bold text-white">0</p>
                 </div>
             </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="weight" class="w-8 h-8 text-orange-500"></i>
+            <div class="section-panel p-4 2xl:p-6 flex items-center gap-3 2xl:gap-4 rounded z-10 border-t-2 border-t-orange-500 shadow-glass">
+                <i data-lucide="weight" class="w-8 h-8 2xl:w-12 2xl:h-12 text-orange-500"></i>
                 <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Peso</p>
-                    <p id="stat-peso-total" class="text-2xl font-bold text-white">0.0 kg</p>
+                    <p class="text-xs 2xl:text-sm text-theme-muted uppercase tracking-wide">Peso</p>
+                    <p id="stat-peso-total" class="text-2xl 2xl:text-4xl font-bold text-white">0.0 kg</p>
                 </div>
             </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="coins" class="w-8 h-8 text-yellow-500"></i>
+            <div class="section-panel p-4 2xl:p-6 flex items-center gap-3 2xl:gap-4 rounded z-10 border-t-2 border-t-yellow-500 shadow-glass">
+                <i data-lucide="coins" class="w-8 h-8 2xl:w-12 2xl:h-12 text-yellow-500"></i>
                 <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Ouro</p>
-                    <p id="stat-ouro" class="text-2xl font-bold text-white">0</p>
+                    <p class="text-xs 2xl:text-sm text-theme-muted uppercase tracking-wide">Ouro</p>
+                    <p id="stat-ouro" class="text-2xl 2xl:text-4xl font-bold text-white">0</p>
                 </div>
             </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+            <div class="section-panel p-4 2xl:p-6 flex items-center gap-3 2xl:gap-4 rounded z-10 border-t-2 border-t-red-500 shadow-glass">
+                <i data-lucide="alert-triangle" class="w-8 h-8 2xl:w-12 2xl:h-12 text-red-500"></i>
                 <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Limite</p>
-                    <p id="stat-limite" class="text-2xl font-bold text-white">0%</p>
+                    <p class="text-xs 2xl:text-sm text-theme-muted uppercase tracking-wide">Limite</p>
+                    <p id="stat-limite" class="text-2xl 2xl:text-4xl font-bold text-white">0%</p>
                 </div>
             </div>
         </div>
 
         <!-- Barra de Progresso do Peso -->
-        <div class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry" style="animation-delay: 0.15s;">
-            <div class="flex justify-between items-center mb-2">
+        <div class="section-panel p-4 2xl:p-6 rounded-lg anim-entry" style="animation-delay: 0.15s;">
+            <div class="flex justify-between items-center mb-2 2xl:mb-4">
                 <div class="flex items-center gap-2">
-                    <i data-lucide="weight" class="w-4 h-4 text-orange-500"></i>
-                    <span class="text-sm font-medium">Capacidade do Inventário</span>
+                    <i data-lucide="weight" class="w-4 h-4 2xl:w-6 2xl:h-6 text-orange-500"></i>
+                    <span class="text-sm 2xl:text-lg font-medium">Capacidade do Inventário</span>
                 </div>
-                <span class="text-sm font-mono" id="weight-display">
+                <span class="text-sm 2xl:text-lg font-mono" id="weight-display">
                     <span id="current-weight">0.0</span>/<span id="max-weight">50.0</span> kg
                 </span>
             </div>
-            <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden">
-                <div id="weight-progress" class="h-full progress-bar" style="width: 0%"></div>
+            <div class="h-3 2xl:h-4 bg-[#0a0a0c] rounded-full overflow-hidden border border-theme-border/50 shadow-inner">
+                <div id="weight-progress" class="h-full progress-bar shadow-[0_0_10px_rgba(255,255,255,0.3)]" style="width: 0%"></div>
             </div>
-            <div class="flex justify-end mt-2">
-                <button onclick="openConfigModal()" class="text-xs text-theme-blue hover:text-blue-400 flex items-center gap-1">
-                    <i data-lucide="settings" class="w-3 h-3"></i>
+            <div class="flex justify-end mt-2 2xl:mt-4">
+                <button onclick="openConfigModal()" class="text-xs 2xl:text-sm text-theme-blue hover:text-blue-400 flex items-center gap-1 transition-colors">
+                    <i data-lucide="settings" class="w-3 h-3 2xl:w-4 2xl:h-4"></i>
                     Configurar Limite
                 </button>
             </div>
         </div>
 
         <!-- Filtros de Categorias -->
-        <div id="filter-container" class="flex flex-wrap gap-2 anim-entry" style="animation-delay: 0.2s;">
+        <div id="filter-container" class="flex flex-wrap gap-2 2xl:gap-3 anim-entry" style="animation-delay: 0.2s;">
             <!-- Filtros serão renderizados aqui -->
         </div>
 
         <!-- Alertas de Limite -->
-        <div id="alerts-container" class="space-y-2 anim-entry" style="animation-delay: 0.25s;">
+        <div id="alerts-container" class="space-y-2 2xl:space-y-4 anim-entry" style="animation-delay: 0.25s;">
             <!-- Alertas serão renderizados aqui -->
         </div>
 
         <!-- Grid de Itens -->
-        <div id="items-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry p-2" style="animation-delay: 0.3s;">
+        <div id="items-grid" class="grid md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 2xl:gap-6 anim-entry py-2" style="animation-delay: 0.3s;">
             <!-- Itens serão renderizados aqui -->
         </div>
 
         <!-- Carteira -->
-        <div class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.35s;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-yellow-500 mb-4">
-                <i data-lucide="coins" class="w-4 h-4"></i> Carteira
+        <div class="section-panel p-6 2xl:p-8 rounded-lg anim-entry border-t-2 border-t-yellow-600" style="animation-delay: 0.35s;">
+            <h3 class="flex items-center gap-2 font-cinzel text-lg 2xl:text-2xl font-semibold text-yellow-500 mb-4 2xl:mb-6">
+                <i data-lucide="coins" class="w-5 h-5 2xl:w-8 2xl:h-8"></i> Carteira
             </h3>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
