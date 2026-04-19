@@ -97,6 +97,7 @@ body {
     outline: none;
     box-shadow: 0 0 0 1px var(--accent-blue), 0 0 15px rgba(74, 158, 255, 0.4);
     background: #ffffff !important;
+    color: #000000 !important;
 }
 
 /* Utilidades Responsivas */
