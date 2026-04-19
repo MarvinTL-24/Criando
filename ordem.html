@@ -398,76 +398,78 @@
         </div>
 
         <!-- SEÇÃO 4: PERÍCIAS E RITUAIS -->
-        <div>
-            <div class="main-tabs">
-                <button class="main-tab active" data-tab="skills">Perícias</button>
-                <button class="main-tab" data-tab="rituals">Rituais</button>
-                <button class="main-tab" data-tab="inventory">Inventário & Armas</button>
+        <div class="flex flex-col flex-grow">
+            <div class="flex border-b border-theme-border/50 mb-6 font-cinzel">
+                <button class="main-tab active px-6 py-3 2xl:px-8 2xl:py-4 text-theme-muted font-bold hover:text-theme-text transition-colors border-b-2 border-transparent" data-tab="skills">Perícias</button>
+                <button class="main-tab px-6 py-3 2xl:px-8 2xl:py-4 text-theme-muted font-bold hover:text-theme-text transition-colors border-b-2 border-transparent" data-tab="rituals">Rituais</button>
+                <button class="main-tab px-6 py-3 2xl:px-8 2xl:py-4 text-theme-muted font-bold hover:text-theme-text transition-colors border-b-2 border-transparent" data-tab="inventory">Inventário & Armas</button>
             </div>
 
             <!-- PERÍCIAS -->
-            <div id="tab-skills" class="main-content active">
-                <div class="skills-container" id="skills-list">
-                    <!-- Perícias serão geradas por JavaScript -->
+            <div id="tab-skills" class="main-content active flex-grow">
+                <div class="section-panel shadow-glass h-full">
+                    <div id="skills-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 2xl:gap-6">
+                        <!-- Perícias serão geradas por JavaScript -->
+                    </div>
                 </div>
             </div>
 
             <!-- RITUAIS -->
-            <div id="tab-rituals" class="main-content">
-                <div class="rituals-container">
-                    <h3 class="d-flex align-center mb-2">
-                        <i class="fas fa-book-dead" style="margin-right: 0.5rem;"></i>
+            <div id="tab-rituals" class="main-content hidden flex-grow">
+                <div class="section-panel shadow-glass h-full">
+                    <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-purple mb-6 pb-2 border-b border-theme-border/50">
+                        <i data-lucide="book-open" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                         Rituais Conhecidos
-                        <button class="btn btn-purple btn-sm" onclick="showModal('ritual-modal')">
-                            <i data-lucide="plus"></i> Adicionar Ritual
+                        <button class="ml-4 flex items-center justify-center gap-2 px-3 py-1.5 2xl:py-2 bg-theme-purple text-white rounded-lg text-sm 2xl:text-base font-medium hover:bg-opacity-90 transition-colors" onclick="showModal('ritual-modal')">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
                         </button>
-                        <button class="help-btn" onclick="showHelp('rituals-help')">
-                            <i data-lucide="help-circle"></i>
+                        <button class="ml-auto text-theme-muted hover:text-theme-purple transition-colors" onclick="showHelp('rituals-help')">
+                            <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         </button>
                     </h3>
                     
-                    <div id="rituals-list">
-                        <p style="color: var(--text-secondary); text-align: center;">Nenhum ritual adicionado</p>
+                    <div id="rituals-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-6">
+                        <p class="col-span-full text-center text-theme-muted py-8">Nenhum ritual adicionado</p>
                     </div>
                 </div>
             </div>
 
             <!-- INVENTÁRIO E ARMAS -->
-            <div id="tab-inventory" class="main-content">
-                <div class="rituals-container mb-3">
-                    <h3 class="d-flex align-center mb-2">
-                        <i class="fas fa-backpack" style="margin-right: 0.5rem;"></i>
+            <div id="tab-inventory" class="main-content hidden flex-grow space-y-6 2xl:space-y-8">
+                <div class="section-panel shadow-glass">
+                    <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-4 pb-2 border-b border-theme-border/50">
+                        <i data-lucide="backpack" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                         Inventário
-                        <button class="btn btn-primary btn-sm" onclick="showModal('item-modal')">
-                            <i data-lucide="plus"></i> Adicionar Item
+                        <button class="ml-4 flex items-center justify-center gap-2 px-3 py-1.5 2xl:py-2 bg-theme-blue text-white rounded-lg text-sm 2xl:text-base font-medium hover:bg-theme-blue/90 transition-colors" onclick="showModal('item-modal')">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
                         </button>
-                        <button class="help-btn" onclick="showHelp('inventory-help')">
-                            <i data-lucide="help-circle"></i>
+                        <button class="ml-auto text-theme-muted hover:text-theme-blue transition-colors" onclick="showHelp('inventory-help')">
+                            <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         </button>
                     </h3>
                     
-                    <div id="inventory-counter" class="mb-2" style="color: var(--text-secondary); font-size: 0.9rem;">
-                        Itens: <span id="item-count">0</span>/5
+                    <div id="inventory-counter" class="mb-6 text-sm 2xl:text-base text-theme-muted font-medium bg-theme-bg/50 inline-block px-3 py-1.5 rounded-lg border border-theme-border">
+                        Espaço Ocupado: <span id="item-count" class="text-white">0</span> / 5
                     </div>
                     
-                    <div class="inventory-section" id="inventory-list">
+                    <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-6">
                         <!-- Itens serão gerados por JavaScript -->
                     </div>
                 </div>
 
-                <div class="rituals-container">
-                    <h3 class="d-flex align-center mb-2">
-                        <i class="fas fa-gun" style="margin-right: 0.5rem;"></i>
+                <div class="section-panel shadow-glass">
+                    <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-orange mb-6 pb-2 border-b border-theme-border/50">
+                        <i data-lucide="sword" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                         Armas
-                        <button class="btn btn-danger btn-sm" onclick="showModal('weapon-modal')">
-                            <i data-lucide="plus"></i> Adicionar Arma
+                        <button class="ml-4 flex items-center justify-center gap-2 px-3 py-1.5 2xl:py-2 bg-theme-orange text-white rounded-lg text-sm 2xl:text-base font-medium hover:bg-theme-orange/90 transition-colors" onclick="showModal('weapon-modal')">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Adicionar
                         </button>
-                        <button class="help-btn" onclick="showHelp('weapons-help')">
-                            <i data-lucide="help-circle"></i>
+                        <button class="ml-auto text-theme-muted hover:text-theme-orange transition-colors" onclick="showHelp('weapons-help')">
+                            <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         </button>
                     </h3>
                     
-                    <div class="inventory-section" id="weapons-list">
+                    <div id="weapons-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 2xl:gap-6">
                         <!-- Armas serão geradas por JavaScript -->
                     </div>
                 </div>
