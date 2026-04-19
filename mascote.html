@@ -374,36 +374,31 @@
                         </div>
                     </div>
                     
-                    <!-- Tipo de Criatura -->
+                    <!-- Tipo e Elemento -->
                     <div>
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-400">Tipo de Criatura</label>
-                            <div id="tipo-criaturas" class="grid grid-cols-3 gap-3 mt-2">
-                                <div class="type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer opacity-70 hover:opacity-100"
-                                     onclick="selectTipoCriatura('canino')"
-                                     style="background: #0a0a0c; border-color: #f59e0b;">
-                                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: #f59e0b40; color: #f59e0b">
-                                        <i data-lucide="dog" class="w-5 h-5"></i>
-                                    </div>
-                                    <span class="text-xs text-center" style="color: #f59e0b">Canino</span>
-                                </div>
-                                <div class="type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer opacity-70 hover:opacity-100"
-                                     onclick="selectTipoCriatura('felino')"
-                                     style="background: #0a0a0c; border-color: #8b5cf6;">
-                                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: #8b5cf640; color: #8b5cf6">
-                                        <i data-lucide="cat" class="w-5 h-5"></i>
-                                    </div>
-                                    <span class="text-xs text-center" style="color: #8b5cf6">Felino</span>
-                                </div>
-                                <div class="type-card flex flex-col items-center justify-center p-3 rounded-lg cursor-pointer opacity-70 hover:opacity-100"
-                                     onclick="selectTipoCriatura('ave')"
-                                     style="background: #0a0a0c; border-color: #4a9eff;">
-                                    <div class="w-10 h-10 rounded-full mb-2 flex items-center justify-center" style="background: #4a9eff40; color: #4a9eff">
-                                        <i data-lucide="bird" class="w-5 h-5"></i>
-                                    </div>
-                                    <span class="text-xs text-center" style="color: #4a9eff">Ave</span>
-                                </div>
-                            </div>
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Tipo / Espécie (Ex: Pokémon, Dragão)</label>
+                            <input type="text" id="mascote-tipo" placeholder="Ex: Cão Mágico, Gato Alado..." 
+                                class="w-full px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 focus:border-theme-pink focus:outline-none">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-400 mb-2">Elemento Principal</label>
+                            <select id="mascote-elemento" class="w-full px-4 py-3 bg-theme-bg border border-theme-border rounded-lg text-white placeholder-gray-500 focus:border-theme-pink focus:outline-none focus:bg-[#0a0a0c] bg-transparent">
+                                <option value="" class="bg-[#0f0f12] text-gray-400">Nenhum / Neutro</option>
+                                <option value="Fogo" class="bg-[#0f0f12]">Fogo</option>
+                                <option value="Água" class="bg-[#0f0f12]">Água</option>
+                                <option value="Terra" class="bg-[#0f0f12]">Terra</option>
+                                <option value="Ar/Vento" class="bg-[#0f0f12]">Ar / Vento</option>
+                                <option value="Elétrico" class="bg-[#0f0f12]">Elétrico / Raio</option>
+                                <option value="Gelo" class="bg-[#0f0f12]">Gelo</option>
+                                <option value="Luz/Divino" class="bg-[#0f0f12]">Luz / Divino</option>
+                                <option value="Trevas/Sombra" class="bg-[#0f0f12]">Trevas / Sombra</option>
+                                <option value="Natureza/Planta" class="bg-[#0f0f12]">Natureza / Planta</option>
+                                <option value="Psíquico" class="bg-[#0f0f12]">Psíquico</option>
+                                <option value="Veneno" class="bg-[#0f0f12]">Veneno</option>
+                                <option value="Metal" class="bg-[#0f0f12]">Metal</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -588,7 +583,6 @@
         // DADOS GLOBAIS
         // ====================================================================
         let mascoteData = {
-            tipoSelecionado: 'canino',
             skills: [],
             lastAutoSave: null,
             imageData: null
@@ -600,21 +594,6 @@
         // ====================================================================
         // FUNÇÕES BÁSICAS
         // ====================================================================
-        function selectTipoCriatura(tipo) {
-            mascoteData.tipoSelecionado = tipo;
-            document.querySelectorAll('.type-card').forEach(card => {
-                card.classList.remove('selected');
-                card.style.opacity = '0.7';
-            });
-            
-            const selectedCard = document.querySelector(`[onclick="selectTipoCriatura('${tipo}')"]`);
-            if (selectedCard) {
-                selectedCard.classList.add('selected');
-                selectedCard.style.opacity = '1';
-            }
-            
-            autoSave();
-        }
 
         function updateVida() {
             const atual = parseInt(document.getElementById('vida-atual').value) || 0;
@@ -897,7 +876,8 @@
                         switch(currentSection) {
                             case 'informações básicas':
                                 if (key.trim() === 'Nome') data.nome = value;
-                                if (key.trim() === 'Tipo') data.tipo = value;
+                                if (key.trim() === 'Tipo/Espécie' || key.trim() === 'Tipo') data.tipo = value;
+                                if (key.trim() === 'Elemento') data.elemento = value;
                                 if (key.trim() === 'Nível') data.nivel = parseInt(value);
                                 break;
                                 
@@ -956,17 +936,6 @@
                         custo: h.custo || 0
                     }));
                 }
-                
-                // Mapear tipo
-                if (data.tipo) {
-                    const tipoMap = {
-                        'Canino': 'canino',
-                        'Felino': 'felino',
-                        'Ave': 'ave'
-                    };
-                    data.tipoSelecionado = tipoMap[data.tipo] || 'canino';
-                }
-                
                 loadMascoteData(data);
                 closeImportModal();
                 mostrarFeedback('Mascote importado com sucesso!', 'success');
@@ -984,7 +953,8 @@
             // Informações básicas
             txtContent += '=== INFORMAÇÕES BÁSICAS ===\n\n';
             txtContent += `Nome: ${data.nome || 'Sem nome'}\n`;
-            txtContent += `Tipo: ${getTipoNome(data.tipoSelecionado)}\n`;
+            txtContent += `Tipo/Espécie: ${data.tipo || 'Não definido'}\n`;
+            txtContent += `Elemento: ${data.elemento || 'Nenhum'}\n`;
             txtContent += `Nível: ${data.nivel}\n\n`;
             
             // Status
@@ -1037,22 +1007,14 @@
             mostrarFeedback('Ficha exportada como TXT!', 'success');
         }
 
-        function getTipoNome(tipoId) {
-            const tipos = {
-                'canino': 'Canino',
-                'felino': 'Felino',
-                'ave': 'Ave'
-            };
-            return tipos[tipoId] || 'Desconhecido';
-        }
-
         // ====================================================================
         // SISTEMA DE PERSISTÊNCIA
         // ====================================================================
         function getMascoteData() {
             return {
                 nome: document.getElementById('mascote-nome').value,
-                tipoSelecionado: mascoteData.tipoSelecionado,
+                tipo: document.getElementById('mascote-tipo').value,
+                elemento: document.getElementById('mascote-elemento').value,
                 nivel: parseInt(document.getElementById('mascote-nivel').value) || 1,
                 vidaAtual: parseInt(document.getElementById('vida-atual').value) || 50,
                 vidaMax: parseInt(document.getElementById('vida-max').value) || 50,
@@ -1114,11 +1076,9 @@
             if (data.personalidade) document.getElementById('mascote-personalidade').value = data.personalidade;
             if (data.historia) document.getElementById('mascote-historia').value = data.historia;
             
-            // Carregar tipo
-            if (data.tipoSelecionado) {
-                mascoteData.tipoSelecionado = data.tipoSelecionado;
-                selectTipoCriatura(data.tipoSelecionado);
-            }
+            // Carregar tipo e elemento
+            if (data.tipo !== undefined) document.getElementById('mascote-tipo').value = data.tipo;
+            if (data.elemento !== undefined) document.getElementById('mascote-elemento').value = data.elemento;
             
             // Carregar habilidades
             if (data.habilidades) {
@@ -1203,6 +1163,8 @@
         // ====================================================================
         function resetToDefault() {
             document.getElementById('mascote-nome').value = '';
+            document.getElementById('mascote-tipo').value = '';
+            document.getElementById('mascote-elemento').value = '';
             document.getElementById('mascote-nivel').value = 1;
             document.getElementById('vida-atual').value = 50;
             document.getElementById('vida-max').value = 50;
@@ -1217,9 +1179,7 @@
             
             mascoteData.skills = [];
             renderSkills();
-            
-            mascoteData.tipoSelecionado = 'canino';
-            selectTipoCriatura('canino');
+
             
             mascoteData.imageData = null;
             const mainImage = document.getElementById('mascote-image');
@@ -1298,7 +1258,7 @@
             
             // Auto-save nos campos
             const autoSaveFields = [
-                'mascote-nome', 'mascote-nivel', 'vida-atual', 'vida-max',
+                'mascote-nome', 'mascote-tipo', 'mascote-elemento', 'mascote-nivel', 'vida-atual', 'vida-max',
                 'input-lealdade', 'input-agilidade', 'input-forca',
                 'input-percepcao', 'input-defesa', 'mascote-aparencia',
                 'mascote-personalidade', 'mascote-historia'

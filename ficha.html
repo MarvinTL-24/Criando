@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Ficha</title>
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"
+        rel="stylesheet">
     <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,18 +45,41 @@
     </script>
 
     <style>
-        body { background-color: #0a0a0c; color: #e8e4dc; }
-        
+        body {
+            background-color: #0a0a0c;
+            color: #e8e4dc;
+        }
+
         /* Animações */
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .anim-entry { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        
+
+        .anim-entry {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.3s;
+        }
+
         /* Inputs */
         .custom-input {
             width: 100%;
@@ -64,13 +90,17 @@
             transition: all 0.3s;
             font-family: 'Inter', sans-serif;
         }
-        .custom-input:focus { 
-            border-bottom-color: #4a9eff; 
-            outline: none; 
+
+        .custom-input:focus {
+            border-bottom-color: #4a9eff;
+            outline: none;
             box-shadow: 0 1px 0 0 #4a9eff;
         }
-        .custom-input.orange:focus { border-bottom-color: #ff6b35; }
-        
+
+        .custom-input.orange:focus {
+            border-bottom-color: #ff6b35;
+        }
+
         .custom-textarea {
             width: 100%;
             background: #0a0a0c;
@@ -84,12 +114,16 @@
             font-family: 'Inter', sans-serif;
             line-height: 1.5;
         }
-        .custom-textarea:focus { 
-            border-color: #4a9eff; 
+
+        .custom-textarea:focus {
+            border-color: #4a9eff;
             outline: none;
             box-shadow: 0 0 0 1px rgba(74, 158, 255, 0.1);
         }
-        .custom-textarea.orange:focus { border-color: #ff6b35; }
+
+        .custom-textarea.orange:focus {
+            border-color: #ff6b35;
+        }
 
         /* Avatar Upload */
         .avatar-upload {
@@ -98,33 +132,44 @@
             background-repeat: no-repeat;
             transition: all 0.3s;
         }
+
         .avatar-upload:hover {
             transform: scale(1.02);
             border-color: #4a9eff;
         }
-        .avatar-placeholder { 
+
+        .avatar-placeholder {
             transition: all 0.3s;
             backdrop-filter: blur(2px);
         }
-        .avatar-upload:hover .avatar-placeholder { 
-            background-color: rgba(0, 0, 0, 0.7); 
+
+        .avatar-upload:hover .avatar-placeholder {
+            background-color: rgba(0, 0, 0, 0.7);
         }
-        
+
         /* Feedback */
         .feedback-success {
             animation: slideInRight 0.3s ease-out;
         }
-        
+
         @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
         }
-        
+
         /* Cards especiais */
         .card-highlight {
             position: relative;
             overflow: hidden;
         }
+
         .card-highlight::before {
             content: '';
             position: absolute;
@@ -136,6 +181,7 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen font-sans pb-20">
 
     <!-- NAVEGAÇÃO -->
@@ -144,25 +190,27 @@
             <div class="flex items-center justify-between gap-4 py-4">
                 <!-- Voltar para Hub -->
                 <a href="index.html" class="flex items-center gap-3 group">
-                    <div class="p-2 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20 group-hover:bg-[#4a9eff]/20 transition-colors">
+                    <div
+                        class="p-2 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20 group-hover:bg-[#4a9eff]/20 transition-colors">
                         <i data-lucide="arrow-left" class="w-5 h-5 text-theme-blue"></i>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-theme-text group-hover:text-theme-blue transition-colors">Voltar ao Hub</div>
+                        <div class="text-sm font-medium text-theme-text group-hover:text-theme-blue transition-colors">
+                            Voltar ao Hub</div>
                         <div class="text-xs text-[#606060]">Grimório Digital</div>
                     </div>
                 </a>
-                
+
                 <!-- Botões principais -->
                 <div class="flex items-center gap-2">
-                    <button onclick="salvarEAplicar()" 
-                            id="btn-salvar-aplicar"
-                            class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all active:scale-95">
+                    <button onclick="salvarEAplicar()" id="btn-salvar-aplicar"
+                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all active:scale-95">
                         <i data-lucide="save" class="w-4 h-4"></i>
                         <span>Salvar no Perfil</span>
                     </button>
-                    
-                    <a href="status.html" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-orange to-orange-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all">
+
+                    <a href="status.html"
+                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-orange to-orange-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all">
                         <i data-lucide="zap" class="w-4 h-4"></i>
                         <span>Ir para Status</span>
                     </a>
@@ -184,7 +232,8 @@
                     <div class="flex-1">
                         <h3 class="font-cinzel font-semibold text-white mb-1">Informações do Perfil Ativo</h3>
                         <p class="text-sm text-[#a0a0a0]">
-                            Esta ficha será salva diretamente no <span class="text-theme-blue font-medium">Perfil Ativo</span>. 
+                            Esta ficha será salva diretamente no <span class="text-theme-blue font-medium">Perfil
+                                Ativo</span>.
                             Tudo que você preencher aqui aparecerá automaticamente no Hub Central.
                         </p>
                         <div class="mt-3 flex items-center gap-4 text-sm">
@@ -214,7 +263,7 @@
         <!-- SEÇÃO 1: IDENTIDADE E AVATAR -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
-                <i data-lucide="user" class="w-5 h-5"></i> 
+                <i data-lucide="user" class="w-5 h-5"></i>
                 <span>Identidade & Avatar</span>
                 <span class="text-xs font-normal text-[#606060] ml-auto">(Salva automaticamente)</span>
             </h3>
@@ -223,21 +272,25 @@
                 <!-- Avatar -->
                 <div class="flex-shrink-0 w-full md:w-48">
                     <div class="sticky top-32">
-                        <div class="relative w-full aspect-square rounded-lg border-2 border-dashed border-theme-border hover:border-theme-blue cursor-pointer overflow-hidden group avatar-upload bg-[#0a0a0c]" 
-                             id="avatar-container"
-                             onclick="document.getElementById('file-upload').click()">
-                            
-                            <input type="file" id="file-upload" class="hidden" accept="image/*" onchange="previewImage(event)">
-                            
-                            <div class="avatar-placeholder absolute inset-0 flex flex-col items-center justify-center text-center p-4">
-                                <i data-lucide="camera" class="w-10 h-10 text-[#606060] mb-3 group-hover:text-theme-blue transition-colors"></i>
-                                <span class="text-sm text-[#808080] group-hover:text-theme-blue">Clique para adicionar imagem</span>
+                        <div class="relative w-full aspect-square rounded-lg border-2 border-dashed border-theme-border hover:border-theme-blue cursor-pointer overflow-hidden group avatar-upload bg-[#0a0a0c]"
+                            id="avatar-container" onclick="document.getElementById('file-upload').click()">
+
+                            <input type="file" id="file-upload" class="hidden" accept="image/*"
+                                onchange="previewImage(event)">
+
+                            <div
+                                class="avatar-placeholder absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                                <i data-lucide="camera"
+                                    class="w-10 h-10 text-[#606060] mb-3 group-hover:text-theme-blue transition-colors"></i>
+                                <span class="text-sm text-[#808080] group-hover:text-theme-blue">Clique para adicionar
+                                    imagem</span>
                                 <span class="text-xs text-[#404040] mt-1">Recomendado: 400x400px</span>
                             </div>
                         </div>
-                        
+
                         <div class="mt-3 flex justify-center gap-2">
-                            <button onclick="removerAvatar()" class="text-xs text-[#808080] hover:text-red-400 transition-colors">
+                            <button onclick="removerAvatar()"
+                                class="text-xs text-[#808080] hover:text-red-400 transition-colors">
                                 <i data-lucide="x" class="w-3 h-3 inline mr-1"></i> Remover
                             </button>
                         </div>
@@ -248,48 +301,66 @@
                 <div class="flex-grow">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Nome do Personagem *</label>
-                            <input type="text" id="inp-nome" placeholder="Ex: Aelarion" class="custom-input data-field" required>
+                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Nome
+                                do Personagem *</label>
+                            <input type="text" id="inp-nome" placeholder="Ex: Aelarion" class="custom-input data-field"
+                                required>
                         </div>
-                        
+
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Título / Epíteto</label>
-                            <input type="text" id="inp-titulo" placeholder="Ex: O Guardião das Sombras" class="custom-input data-field">
+                            <label
+                                class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Título /
+                                Epíteto</label>
+                            <input type="text" id="inp-titulo" placeholder="Ex: O Guardião das Sombras"
+                                class="custom-input data-field">
                         </div>
-                        
+
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Nível</label>
-                            <input type="number" id="inp-nivel" min="1" max="20" value="1" class="custom-input data-field">
+                            <label
+                                class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Nível</label>
+                            <input type="number" id="inp-nivel" min="1" max="20" value="1"
+                                class="custom-input data-field">
                         </div>
-                        
+
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Idade</label>
-                            <input type="text" id="inp-idade" placeholder="Ex: 25 anos, 150 anos..." class="custom-input data-field">
+                            <label
+                                class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Idade</label>
+                            <input type="text" id="inp-idade" placeholder="Ex: 25 anos, 150 anos..."
+                                class="custom-input data-field">
                         </div>
-                        
+
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Altura</label>
-                            <input type="text" id="inp-altura" placeholder="Ex: 1.75m, 6'2''..." class="custom-input data-field">
+                            <label
+                                class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Altura</label>
+                            <input type="text" id="inp-altura" placeholder="Ex: 1.75m, 6'2''..."
+                                class="custom-input data-field">
                         </div>
-                        
+
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Peso</label>
-                            <input type="text" id="inp-peso" placeholder="Ex: 70kg, 154lbs..." class="custom-input data-field">
+                            <label
+                                class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Peso</label>
+                            <input type="text" id="inp-peso" placeholder="Ex: 70kg, 154lbs..."
+                                class="custom-input data-field">
                         </div>
-                        
+
                         <div>
-                            <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Raça</label>
-                            <input type="text" id="inp-raca" placeholder="Ex: Humano, Elfo, Anão..." class="custom-input data-field">
+                            <label
+                                class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Raça</label>
+                            <input type="text" id="inp-raca" placeholder="Ex: Humano, Elfo, Anão..."
+                                class="custom-input data-field">
                         </div>
-                        
+
                         <div>
                             <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">
                                 Classe
-                                <span class="text-[#10b981] text-xs font-normal normal-case">(Escolha livre ou pegue de uma classe pronta)</span>
+                                <span class="text-[#10b981] text-xs font-normal normal-case">(Escolha livre ou pegue de
+                                    uma classe pronta)</span>
                             </label>
                             <div class="flex gap-2">
-                                <input type="text" id="inp-classe" placeholder="Ex: Guerreiro, Mago, Ladino..." class="custom-input data-field flex-1">
-                                <a href="classe.html" class="flex items-center gap-1 px-3 py-2 text-xs bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20 rounded hover:bg-[#10b981]/20 transition-colors">
+                                <input type="text" id="inp-classe" placeholder="Ex: Guerreiro, Mago, Ladino..."
+                                    class="custom-input data-field flex-1">
+                                <a href="classe.html"
+                                    class="flex items-center gap-1 px-3 py-2 text-xs bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20 rounded hover:bg-[#10b981]/20 transition-colors">
                                     <i data-lucide="swords" class="w-3 h-3"></i>
                                     Ver Classes
                                 </a>
@@ -303,32 +374,40 @@
         <!-- SEÇÃO 2: APARÊNCIA FÍSICA -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
-                <i data-lucide="palette" class="w-5 h-5"></i> 
+                <i data-lucide="palette" class="w-5 h-5"></i>
                 <span>Aparência Física</span>
             </h3>
 
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Cabeça / Rosto</label>
-                        <textarea id="inp-cabeca" class="custom-textarea orange h-32 data-field" placeholder="Formato do rosto, cabelo, olhos, expressão..."></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Cabeça /
+                            Rosto</label>
+                        <textarea id="inp-cabeca" class="custom-textarea orange h-32 data-field"
+                            placeholder="Formato do rosto, cabelo, olhos, expressão..."></textarea>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Torso</label>
-                        <textarea id="inp-torso" class="custom-textarea orange h-32 data-field" placeholder="Constituição física, ombros, peito..."></textarea>
+                        <label
+                            class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Torso</label>
+                        <textarea id="inp-torso" class="custom-textarea orange h-32 data-field"
+                            placeholder="Constituição física, ombros, peito..."></textarea>
                     </div>
                 </div>
-                
+
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Braços / Mãos</label>
-                        <textarea id="inp-bracos" class="custom-textarea orange h-32 data-field" placeholder="Força aparente, cicatrizes, tatuagens..."></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Braços /
+                            Mãos</label>
+                        <textarea id="inp-bracos" class="custom-textarea orange h-32 data-field"
+                            placeholder="Força aparente, cicatrizes, tatuagens..."></textarea>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Pernas / Pés</label>
-                        <textarea id="inp-pernas" class="custom-textarea orange h-32 data-field" placeholder="Postura, marcha, calçados..."></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#606060] font-cinzel mb-2">Pernas /
+                            Pés</label>
+                        <textarea id="inp-pernas" class="custom-textarea orange h-32 data-field"
+                            placeholder="Postura, marcha, calçados..."></textarea>
                     </div>
                 </div>
             </div>
@@ -337,25 +416,31 @@
         <!-- SEÇÃO 3: HISTÓRIA -->
         <section class="bg-[#0f120f] border border-[#1a3d1a] p-6 rounded-lg anim-entry delay-2 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#32cd32] mb-6">
-                <i data-lucide="book-open" class="w-5 h-5"></i> 
+                <i data-lucide="book-open" class="w-5 h-5"></i>
                 <span>História & Passado</span>
             </h3>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#82ff82] font-cinzel mb-2">História de Fundo</label>
-                    <textarea id="inp-historia" class="custom-textarea min-h-[200px] data-field border border-[#2a5f2a]" placeholder="Conte sua história desde o início..."></textarea>
+                    <label class="block text-xs uppercase tracking-widest text-[#82ff82] font-cinzel mb-2">História de
+                        Fundo</label>
+                    <textarea id="inp-historia" class="custom-textarea min-h-[200px] data-field border border-[#2a5f2a]"
+                        placeholder="Conte sua história desde o início..."></textarea>
                 </div>
-                
+
                 <div class="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#82ff82] font-cinzel mb-2">Motivações</label>
-                        <textarea id="inp-motivacoes" class="custom-textarea h-32 data-field border border-[#2a5f2a]" placeholder="O que o move? O que deseja alcançar?"></textarea>
+                        <label
+                            class="block text-xs uppercase tracking-widest text-[#82ff82] font-cinzel mb-2">Motivações</label>
+                        <textarea id="inp-motivacoes" class="custom-textarea h-32 data-field border border-[#2a5f2a]"
+                            placeholder="O que o move? O que deseja alcançar?"></textarea>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#82ff82] font-cinzel mb-2">Medos / Traumas</label>
-                        <textarea id="inp-medos" class="custom-textarea h-32 data-field border border-[#2a5f2a]" placeholder="O que teme? Que traumas carrega?"></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#82ff82] font-cinzel mb-2">Medos /
+                            Traumas</label>
+                        <textarea id="inp-medos" class="custom-textarea h-32 data-field border border-[#2a5f2a]"
+                            placeholder="O que teme? Que traumas carrega?"></textarea>
                     </div>
                 </div>
             </div>
@@ -364,32 +449,41 @@
         <!-- SEÇÃO 4: PERSONALIDADE -->
         <section class="bg-[#141307] border border-[#4d4300] p-6 rounded-lg anim-entry delay-3 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#ffd700] mb-6">
-                <i data-lucide="heart" class="w-5 h-5"></i> 
+                <i data-lucide="heart" class="w-5 h-5"></i>
                 <span>Personalidade & Comportamento</span>
             </h3>
 
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Traços de Personalidade</label>
-                        <textarea id="inp-personalidade" class="custom-textarea h-32 data-field border border-[#7a6a00]" placeholder="Como age normalmente? Como reage ao estresse?"></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Traços de
+                            Personalidade</label>
+                        <textarea id="inp-personalidade" class="custom-textarea h-32 data-field border border-[#7a6a00]"
+                            placeholder="Como age normalmente? Como reage ao estresse?"></textarea>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Ideais & Valores</label>
-                        <textarea id="inp-ideais" class="custom-textarea h-32 data-field border border-[#7a6a00]" placeholder="Em que acredita? Que princípios segue?"></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Ideais &
+                            Valores</label>
+                        <textarea id="inp-ideais" class="custom-textarea h-32 data-field border border-[#7a6a00]"
+                            placeholder="Em que acredita? Que princípios segue?"></textarea>
                     </div>
                 </div>
-                
+
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Defeitos & Fraquezas</label>
-                        <textarea id="inp-defeitos" class="custom-textarea h-32 data-field border border-[#7a6a00]" placeholder="Vícios, orgulho excessivo, medos irracionais..."></textarea>
+                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Defeitos
+                            & Fraquezas</label>
+                        <textarea id="inp-defeitos" class="custom-textarea h-32 data-field border border-[#7a6a00]"
+                            placeholder="Vícios, orgulho excessivo, medos irracionais..."></textarea>
                     </div>
-                    
+
                     <div>
-                        <label class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Maneirismos & Hábitos</label>
-                        <textarea id="inp-habitos" class="custom-textarea h-32 data-field border border-[#7a6a00]" placeholder="Tiques, frases repetidas, costumes..."></textarea>
+                        <label
+                            class="block text-xs uppercase tracking-widest text-[#c8ad32] font-cinzel mb-2">Maneirismos
+                            & Hábitos</label>
+                        <textarea id="inp-habitos" class="custom-textarea h-32 data-field border border-[#7a6a00]"
+                            placeholder="Tiques, frases repetidas, costumes..."></textarea>
                     </div>
                 </div>
             </div>
@@ -398,49 +492,58 @@
         <!-- SEÇÃO 5: RELAÇÕES -->
         <section class="bg-[#120f1a] border border-[#3d1a3d] p-6 rounded-lg anim-entry delay-3 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#d32cd3] mb-6">
-                <i data-lucide="users" class="w-5 h-5"></i> 
+                <i data-lucide="users" class="w-5 h-5"></i>
                 <span>Relações & Conexões</span>
             </h3>
 
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#d082ff] font-cinzel mb-2">Aliados & Amigos</label>
-                    <textarea id="inp-aliados" class="custom-textarea h-40 data-field border border-[#5f2a5f]" placeholder="Quem são seus companheiros? Quem confia?"></textarea>
+                    <label class="block text-xs uppercase tracking-widest text-[#d082ff] font-cinzel mb-2">Aliados &
+                        Amigos</label>
+                    <textarea id="inp-aliados" class="custom-textarea h-40 data-field border border-[#5f2a5f]"
+                        placeholder="Quem são seus companheiros? Quem confia?"></textarea>
                 </div>
-                
+
                 <div>
-                    <label class="block text-xs uppercase tracking-widest text-[#d082ff] font-cinzel mb-2">Inimigos & Rivalidades</label>
-                    <textarea id="inp-inimigos" class="custom-textarea h-40 data-field border border-[#5f2a5f]" placeholder="Quem o odeia? Com quem tem conflitos?"></textarea>
+                    <label class="block text-xs uppercase tracking-widest text-[#d082ff] font-cinzel mb-2">Inimigos &
+                        Rivalidades</label>
+                    <textarea id="inp-inimigos" class="custom-textarea h-40 data-field border border-[#5f2a5f]"
+                        placeholder="Quem o odeia? Com quem tem conflitos?"></textarea>
                 </div>
             </div>
         </section>
 
         <!-- BOTÕES DE AÇÃO INFERIORES -->
-        <div class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/95 to-transparent pt-8 pb-4 z-40">
+        <div
+            class="fixed bottom-0 left-0 right-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/95 to-transparent pt-8 pb-4 z-40">
             <div class="max-w-6xl mx-auto px-4">
                 <div class="flex flex-col md:flex-row justify-between items-center gap-4">
                     <div class="text-sm text-[#606060]">
                         <i data-lucide="info" class="w-4 h-4 inline mr-2"></i>
                         <span>Todos os dados são salvos automaticamente no perfil ativo</span>
                     </div>
-                    
+
                     <div class="flex gap-3">
-                        <button onclick="limparFicha()" class="flex items-center gap-2 px-5 py-2.5 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
+                        <button onclick="limparFicha()"
+                            class="flex items-center gap-2 px-5 py-2.5 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
                             <i data-lucide="trash-2" class="w-4 h-4"></i>
                             Limpar
                         </button>
-                        
-                        <button onclick="exportarTXT()" class="flex items-center gap-2 px-5 py-2.5 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
+
+                        <button onclick="exportarTXT()"
+                            class="flex items-center gap-2 px-5 py-2.5 border border-theme-border rounded-lg text-theme-text hover:bg-white/5 transition-colors">
                             <i data-lucide="file-text" class="w-4 h-4"></i>
                             Exportar TXT
                         </button>
-                        
-                        <button onclick="exportarWord()" class="flex items-center gap-2 px-5 py-2.5 bg-blue-900/30 border border-theme-blue/30 rounded-lg text-theme-blue hover:bg-blue-900/50 transition-colors">
+
+                        <button onclick="exportarWord()"
+                            class="flex items-center gap-2 px-5 py-2.5 bg-blue-900/30 border border-theme-blue/30 rounded-lg text-theme-blue hover:bg-blue-900/50 transition-colors">
                             <i data-lucide="file-down" class="w-4 h-4"></i>
                             Exportar Word
                         </button>
-                        
-                        <button onclick="salvarEAplicar()" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-medium hover:opacity-90 transition-all active:scale-95">
+
+                        <button onclick="salvarEAplicar()"
+                            class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-medium hover:opacity-90 transition-all active:scale-95">
                             <i data-lucide="save" class="w-4 h-4"></i>
                             Salvar e Aplicar
                         </button>
@@ -466,7 +569,7 @@
 
     <script>
         // 1. INICIALIZAÇÃO
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             lucide.createIcons();
             inicializarFicha();
             configurarAutoSave();
@@ -481,7 +584,7 @@
         function inicializarFicha() {
             // Verificar se há perfil ativo
             const perfilAtivo = getActiveProfile();
-            
+
             if (!perfilAtivo) {
                 showFeedback('⚠️ Nenhum perfil ativo!', 'Você será redirecionado para criar um perfil.', 'warning');
                 setTimeout(() => {
@@ -489,44 +592,44 @@
                 }, 3000);
                 return;
             }
-            
+
             // Atualizar informação do perfil
             atualizarInfoPerfil(perfilAtivo);
-            
+
             // Carregar dados da ficha se existirem
             if (perfilAtivo.ficha) {
                 carregarDadosFicha(perfilAtivo.ficha);
             }
-            
+
             // Verificar classe pré-definida
             if (perfilAtivo.classe && perfilAtivo.classe !== 'Escolha livre') {
                 document.getElementById('inp-classe').value = perfilAtivo.classe;
             }
-            
+
             // Chama detalhes de fallback global
             inicializarFichaAvancada();
         }
 
         function atualizarInfoPerfil(perfil) {
             document.getElementById('profile-name').textContent = perfil.nome || 'Novo Personagem';
-            
+
             if (perfil.ultimaAtualizacao) {
                 const data = new Date(perfil.ultimaAtualizacao);
                 const agora = new Date();
                 const diffMs = agora - data;
                 const diffMin = Math.floor(diffMs / (1000 * 60));
-                
+
                 let texto = '';
                 if (diffMin < 1) {
                     texto = 'Atualizado agora';
                 } else if (diffMin < 60) {
                     texto = `Atualizado há ${diffMin} min`;
                 } else if (diffMin < 1440) {
-                    texto = `Atualizado hoje às ${data.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}`;
+                    texto = `Atualizado hoje às ${data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
                 } else {
                     texto = `Atualizado em ${data.toLocaleDateString('pt-BR')}`;
                 }
-                
+
                 document.getElementById('profile-last-update').textContent = texto;
             }
         }
@@ -534,7 +637,7 @@
         function salvarEAplicar() {
             try {
                 console.log('Iniciando salvamento...');
-                
+
                 // Coletar dados básicos
                 const dadosBasicos = {
                     nome: document.getElementById('inp-nome').value.trim(),
@@ -546,25 +649,25 @@
                     raca: document.getElementById('inp-raca').value.trim(),
                     classe: document.getElementById('inp-classe').value.trim()
                 };
-                
+
                 // Validar
                 if (!dadosBasicos.nome) {
                     showFeedback('⚠️ Atenção', 'O nome do personagem é obrigatório!', 'warning');
                     return;
                 }
-                
+
                 // Salvar dados básicos
                 GrimorioSystem.salvarDadosBasicos(dadosBasicos);
-                
+
                 // Salvar avatar se existir
                 if (currentAvatar) {
                     GrimorioSystem.salvarAvatar(currentAvatar);
                 }
-                
+
                 // Salvar ficha completa em localStorage no cache padrao
                 const fichaCompleta = coletarTodosDados();
                 localStorage.setItem('grimorio_ficha_completa', JSON.stringify(fichaCompleta));
-                
+
                 // Salvar no perfil ativo para garantir que os dados não se percam
                 const perfilAtivo = getActiveProfile();
                 if (perfilAtivo) {
@@ -573,7 +676,7 @@
                     perfilAtivo.classe = dadosBasicos.classe;
                     perfilAtivo.ultimaAtualizacao = new Date().toISOString();
                     localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(perfilAtivo));
-                    
+
                     const todosPerfis = localStorage.getItem('grimorio_perfis');
                     if (todosPerfis) {
                         try {
@@ -583,21 +686,21 @@
                                 pObj[index] = perfilAtivo;
                                 localStorage.setItem('grimorio_perfis', JSON.stringify(pObj));
                             }
-                        } catch (e) {}
+                        } catch (e) { }
                     }
                 }
-                
+
                 // Atualizar last update label
-                atualizarInfoPerfil(perfilAtivo || {ultimaAtualizacao: new Date().toISOString(), nome: dadosBasicos.nome});
-                
+                atualizarInfoPerfil(perfilAtivo || { ultimaAtualizacao: new Date().toISOString(), nome: dadosBasicos.nome });
+
                 // Feedback
                 showFeedback('✅ Sucesso!', 'Ficha salva em todos os sistemas e no cache do site!', 'success');
-                
+
                 // Atualizar estado
                 hasUnsavedChanges = false;
-                
+
                 console.log('Salvamento concluído com sucesso');
-                
+
             } catch (error) {
                 console.error('Erro completo ao salvar:', error);
                 showFeedback('❌ Erro', 'Erro ao salvar: ' + error.message, 'error');
@@ -617,31 +720,31 @@
                 raca: document.getElementById('inp-raca').value.trim(),
                 classe: document.getElementById('inp-classe').value.trim(),
                 origem: document.getElementById('inp-origem') ? document.getElementById('inp-origem').value.trim() : '',
-                
+
                 // Aparência
                 cabeca: document.getElementById('inp-cabeca').value.trim(),
                 torso: document.getElementById('inp-torso').value.trim(),
                 bracos: document.getElementById('inp-bracos').value.trim(),
                 pernas: document.getElementById('inp-pernas').value.trim(),
-                
+
                 // História
                 historia: document.getElementById('inp-historia').value.trim(),
                 motivacoes: document.getElementById('inp-motivacoes').value.trim(),
                 medos: document.getElementById('inp-medos').value.trim(),
-                
+
                 // Personalidade
                 personalidade: document.getElementById('inp-personalidade').value.trim(),
                 ideais: document.getElementById('inp-ideais').value.trim(),
                 defeitos: document.getElementById('inp-defeitos').value.trim(),
                 habitos: document.getElementById('inp-habitos').value.trim(),
-                
+
                 // Relações
                 aliados: document.getElementById('inp-aliados').value.trim(),
                 inimigos: document.getElementById('inp-inimigos').value.trim(),
-                
+
                 // Avatar
                 avatar: currentAvatar || '',
-                
+
                 // Metadados
                 dataSalvamento: new Date().toISOString(),
                 versao: '2.0'
@@ -652,21 +755,21 @@
         function carregarAvatarDoGrimorio() {
             try {
                 const personagem = GrimorioSystem.carregarPersonagem();
-                
+
                 if (personagem.avatar && personagem.avatar.trim() !== '') {
                     currentAvatar = personagem.avatar;
-                    
+
                     const container = document.getElementById('avatar-container');
                     if (container) {
                         container.style.backgroundImage = `url('${personagem.avatar}')`;
                         container.style.backgroundSize = 'cover';
                         container.style.backgroundPosition = 'center';
-                        
+
                         const placeholder = container.querySelector('.avatar-placeholder');
                         if (placeholder) {
                             placeholder.style.opacity = '0';
                         }
-                        
+
                         console.log('Avatar carregado do Grimorio');
                     }
                 }
@@ -681,13 +784,13 @@
                 if (window.lucide) {
                     lucide.createIcons();
                 }
-                
+
                 // 2. Tentar carregar dados do GrimorioSystem global também
                 const personagem = GrimorioSystem.carregarPersonagem();
                 if (personagem) {
                     // Carregar avatar do GrimorioSystem global se existir
                     carregarAvatarDoGrimorio();
-                    
+
                     // Se não for o padrão, carrega os dados básicos extras
                     if (personagem.nome !== 'Novo Aventureiro') {
                         if (!document.getElementById('inp-nome').value) document.getElementById('inp-nome').value = personagem.nome || '';
@@ -700,7 +803,7 @@
                         if (!document.getElementById('inp-classe').value) document.getElementById('inp-classe').value = personagem.classe || '';
                     }
                 }
-                
+
                 // Tenta carregar do cache estático adicional como fallback
                 const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
                 if (fichaCompleta) {
@@ -711,10 +814,10 @@
                             carregarDadosFicha(dados);
                         }
                     } catch (e) {
-                         console.error('Erro ao carregar ficha completa (fallback):', e);
+                        console.error('Erro ao carregar ficha completa (fallback):', e);
                     }
                 }
-                
+
                 console.log('Ficha estendida inicializada.');
             } catch (error) {
                 console.error('Erro ao inicializar detalhes estendidos:', error);
@@ -733,28 +836,28 @@
             if (dados.peso) document.getElementById('inp-peso').value = dados.peso;
             if (dados.raca) document.getElementById('inp-raca').value = dados.raca;
             if (dados.classe) document.getElementById('inp-classe').value = dados.classe;
-            
+
             // Aparência
             if (dados.cabeca) document.getElementById('inp-cabeca').value = dados.cabeca;
             if (dados.torso) document.getElementById('inp-torso').value = dados.torso;
             if (dados.bracos) document.getElementById('inp-bracos').value = dados.bracos;
             if (dados.pernas) document.getElementById('inp-pernas').value = dados.pernas;
-            
+
             // História
             if (dados.historia) document.getElementById('inp-historia').value = dados.historia;
             if (dados.motivacoes) document.getElementById('inp-motivacoes').value = dados.motivacoes;
             if (dados.medos) document.getElementById('inp-medos').value = dados.medos;
-            
+
             // Personalidade
             if (dados.personalidade) document.getElementById('inp-personalidade').value = dados.personalidade;
             if (dados.ideais) document.getElementById('inp-ideais').value = dados.ideais;
             if (dados.defeitos) document.getElementById('inp-defeitos').value = dados.defeitos;
             if (dados.habitos) document.getElementById('inp-habitos').value = dados.habitos;
-            
+
             // Relações
             if (dados.aliados) document.getElementById('inp-aliados').value = dados.aliados;
             if (dados.inimigos) document.getElementById('inp-inimigos').value = dados.inimigos;
-            
+
             // Avatar
             if (dados.avatar) {
                 currentAvatar = dados.avatar;
@@ -768,32 +871,32 @@
         function previewImage(event) {
             const file = event.target.files[0];
             if (!file) return;
-            
+
             // Validar tipo e tamanho
             if (!file.type.match('image.*')) {
                 showFeedback('❌ Erro', 'Por favor, selecione uma imagem válida.', 'error');
                 return;
             }
-            
+
             if (file.size > 5 * 1024 * 1024) {
                 showFeedback('⚠️ Tamanho excessivo', 'A imagem deve ter menos de 5MB.', 'warning');
                 return;
             }
-            
+
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 // Comprimir imagem
-                comprimirImagem(e.target.result, 400, function(imagemComprimida) {
+                comprimirImagem(e.target.result, 400, function (imagemComprimida) {
                     currentAvatar = imagemComprimida;
-                    
+
                     // Aplicar ao container
                     const container = document.getElementById('avatar-container');
                     container.style.backgroundImage = `url('${imagemComprimida}')`;
                     container.querySelector('.avatar-placeholder').style.opacity = '0';
-                    
+
                     // Marcar como não salvo
                     hasUnsavedChanges = true;
-                    
+
                     showFeedback('📷 Avatar carregado', 'Clique em "Salvar e Aplicar" para gravar.', 'info');
                 });
             };
@@ -803,12 +906,12 @@
         function comprimirImagem(base64, tamanhoMax, callback) {
             const img = new Image();
             img.src = base64;
-            
-            img.onload = function() {
+
+            img.onload = function () {
                 const canvas = document.createElement('canvas');
                 let width = img.width;
                 let height = img.height;
-                
+
                 // Redimensionar mantendo proporção
                 if (width > height) {
                     if (width > tamanhoMax) {
@@ -821,13 +924,13 @@
                         height = tamanhoMax;
                     }
                 }
-                
+
                 canvas.width = width;
                 canvas.height = height;
-                
+
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
-                
+
                 // Converter para JPEG com 85% de qualidade
                 const imagemComprimida = canvas.toDataURL('image/jpeg', 0.85);
                 callback(imagemComprimida);
@@ -839,7 +942,7 @@
             const container = document.getElementById('avatar-container');
             container.style.backgroundImage = '';
             container.querySelector('.avatar-placeholder').style.opacity = '1';
-            
+
             hasUnsavedChanges = true;
             showFeedback('🗑️ Avatar removido', 'Clique em "Salvar e Aplicar" para atualizar.', 'info');
         }
@@ -853,22 +956,22 @@
         function configurarAutoSave() {
             // Configurar salvamento automático após 30 segundos de inatividade
             const campos = document.querySelectorAll('.data-field');
-            
+
             campos.forEach(campo => {
-                campo.addEventListener('input', function() {
+                campo.addEventListener('input', function () {
                     hasUnsavedChanges = true;
-                    
+
                     clearTimeout(autoSaveTimer);
-                    autoSaveTimer = setTimeout(function() {
+                    autoSaveTimer = setTimeout(function () {
                         if (hasUnsavedChanges && confirm('Salvar alterações automaticamente?')) {
                             salvarEAplicar();
                         }
                     }, 30000); // 30 segundos
                 });
             });
-            
+
             // Alertar antes de sair se houver alterações não salvas
-            window.addEventListener('beforeunload', function(e) {
+            window.addEventListener('beforeunload', function (e) {
                 if (hasUnsavedChanges) {
                     e.preventDefault();
                     e.returnValue = 'Você tem alterações não salvas. Deseja realmente sair?';
@@ -881,11 +984,11 @@
             const icon = document.getElementById('feedback-icon');
             const titleEl = document.getElementById('feedback-title');
             const messageEl = document.getElementById('feedback-message');
-            
+
             // Configurar cores
             let corBg, corBorda, corTexto, icone;
-            
-            switch(tipo) {
+
+            switch (tipo) {
                 case 'success':
                     corBg = 'bg-green-900/20';
                     corBorda = 'border-green-700';
@@ -910,21 +1013,21 @@
                     corTexto = 'text-blue-300';
                     icone = 'info';
             }
-            
+
             // Atualizar conteúdo
             icon.innerHTML = `<i data-lucide="${icone}" class="w-5 h-5"></i>`;
             titleEl.textContent = titulo;
             messageEl.textContent = mensagem;
-            
+
             // Atualizar classes
             toast.className = `fixed top-4 right-4 z-50 feedback-success ${corBg} ${corBorda} ${corTexto}`;
-            
+
             // Mostrar
             toast.classList.remove('hidden');
-            
+
             // Recriar ícones
             lucide.createIcons();
-            
+
             // Esconder após 5 segundos
             setTimeout(() => {
                 toast.classList.add('hidden');
@@ -936,7 +1039,7 @@
             if (!confirm('Tem certeza que deseja limpar toda a ficha? Esta ação não pode ser desfeita.')) {
                 return;
             }
-            
+
             const campos = document.querySelectorAll('.data-field');
             campos.forEach(campo => {
                 if (campo.type === 'number') {
@@ -945,10 +1048,10 @@
                     campo.value = '';
                 }
             });
-            
+
             removerAvatar();
             hasUnsavedChanges = true;
-            
+
             showFeedback('🧹 Ficha limpa', 'Todos os campos foram resetados.', 'info');
         }
 
@@ -981,19 +1084,19 @@
         function exportarTXT() {
             const dados = coletarTodosDados();
             const campos = getCamposFicha(dados);
-            
+
             const texto = campos.map(c => `${c.t} - ${c.v || 'Não preenchido'}`).join('\n\n===============================================================\n\n');
-            
+
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.txt`;
-            
+
             link.href = URL.createObjectURL(blob);
             link.download = nomeArquivo;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             showFeedback('📄 Exportado!', 'Ficha salva como arquivo TXT limpo.', 'success');
         }
 
@@ -1001,9 +1104,9 @@
             const dados = coletarTodosDados();
             const campos = getCamposFicha(dados);
             const formatString = (str) => (str || 'Não preenchido').replace(/\n/g, '<br/>');
-            
+
             const corpoHtml = campos.map(c => `<span><strong>${c.t}</strong> - ${formatString(c.v)}</span>`).join('<br/><br/>=====<br/><br/>');
-            
+
             let html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
                 <head>
@@ -1018,17 +1121,17 @@
                 </body>
                 </html>
             `;
-            
+
             const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
             const link = document.createElement('a');
             const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.doc`;
-            
+
             link.href = URL.createObjectURL(blob);
             link.download = nomeArquivo;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
-            
+
             showFeedback('📄 Exportado!', 'Ficha salva como arquivo Word limpo.', 'success');
         }
 
@@ -1041,11 +1144,11 @@
         window.removerAvatar = removerAvatar;
 
         // 9. FUNÇÃO ESPECIAL PARA PÁGINA DE CLASSES USAR
-        window.aplicarClasse = function(dadosClasse) {
+        window.aplicarClasse = function (dadosClasse) {
             if (dadosClasse.nome) {
                 document.getElementById('inp-classe').value = dadosClasse.nome;
                 showFeedback('🎯 Classe aplicada!', `Classe "${dadosClasse.nome}" foi adicionada à ficha.`, 'success');
-                
+
                 // Salvar automaticamente se houver perfil ativo
                 const perfil = getActiveProfile();
                 if (perfil) {
@@ -1059,24 +1162,24 @@
             try {
                 // Coletar todos os dados da ficha
                 const dadosFicha = coletarTodosDados();
-                
+
                 // Carregar perfil ativo
                 const perfis = localStorage.getItem('rpg_sistema_perfis');
                 const perfilAtivoId = localStorage.getItem('perfil_ativo');
-                
+
                 if (!perfis || !perfilAtivoId) {
                     console.error('Nenhum perfil ativo encontrado');
                     return false;
                 }
-                
+
                 const perfisObj = JSON.parse(perfis);
                 const perfilAtivo = perfisObj[perfilAtivoId];
-                
+
                 if (!perfilAtivo) {
                     console.error('Perfil ativo não encontrado');
                     return false;
                 }
-                
+
                 // Estrutura completa dos dados
                 const dadosCompletos = {
                     // Dados básicos
@@ -1090,7 +1193,7 @@
                         peso: document.getElementById('input-peso')?.value || '',
                         alinhamento: document.getElementById('alinhamento-select')?.value || ''
                     },
-                    
+
                     // Atributos (do status.html)
                     atributos: {
                         forca: document.getElementById('attr-forca')?.value || 0,
@@ -1100,7 +1203,7 @@
                         sabedoria: document.getElementById('attr-sabedoria')?.value || 0,
                         carisma: document.getElementById('attr-carisma')?.value || 0
                     },
-                    
+
                     // Recursos (do status.html)
                     recursos: {
                         vida_atual: document.getElementById('input-vida-atual')?.value || 0,
@@ -1113,36 +1216,36 @@
                         estamina_max: document.getElementById('input-estamina-max')?.value || 0,
                         estamina_base: 80
                     },
-                    
+
                     // Progressão (do status.html)
                     progressao: {
                         nivel: document.getElementById('input-nivel')?.value || 1,
                         xp_atual: document.getElementById('input-xp-acumulado')?.value || 0,
                         xp_proximo: 1000
                     },
-                    
+
                     // Destino (do status.html)
                     destino: JSON.parse(localStorage.getItem('grimorio_sorte')) || {
                         valor: null,
                         dados: [0, 0, 0],
                         fixada: false
                     },
-                    
+
                     // Dados da ficha completa
                     ficha: dadosFicha
                 };
-                
+
                 // Salvar no perfil
                 perfilAtivo.dados = dadosCompletos;
                 perfisObj[perfilAtivoId] = perfilAtivo;
                 localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
-                
+
                 // Salvar também localmente (backup)
                 localStorage.setItem('grimorio_perfil_completo', JSON.stringify(dadosCompletos));
-                
+
                 console.log('Dados salvos no perfil:', perfilAtivoId);
                 return true;
-                
+
             } catch (error) {
                 console.error('Erro ao salvar no perfil:', error);
                 return false;
@@ -1152,10 +1255,10 @@
         // Chame esta função sempre que salvar na ficha
         function saveFicha() {
             // ... seu código atual de salvar ...
-            
+
             // Depois de salvar localmente, salvar no perfil
             saveAllToProfile();
-            
+
             mostrarFeedback("Ficha salva no perfil!", "success");
         }
         // shared.js - Coloque em todas as páginas
@@ -1164,32 +1267,32 @@
                 localStorage.setItem('grimorio_character_data', JSON.stringify(data));
                 this.notifyUpdate('character');
             }
-            
+
             static saveMascot(data) {
                 localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
                 this.notifyUpdate('mascot');
             }
-            
+
             static saveItems(data) {
                 localStorage.setItem('grimorio_items_data', JSON.stringify(data));
                 this.notifyUpdate('items');
             }
-            
+
             static loadCharacter() {
                 const data = localStorage.getItem('grimorio_character_data');
                 return data ? JSON.parse(data) : null;
             }
-            
+
             static loadMascot() {
                 const data = localStorage.getItem('grimorio_mascot_data');
                 return data ? JSON.parse(data) : null;
             }
-            
+
             static loadItems() {
                 const data = localStorage.getItem('grimorio_items_data');
                 return data ? JSON.parse(data) : [];
             }
-            
+
             static notifyUpdate(type) {
                 // Dispara evento customizado
                 const event = new CustomEvent('grimorio-update', {
@@ -1197,7 +1300,7 @@
                 });
                 window.dispatchEvent(event);
             }
-            
+
             static exportAll() {
                 const allData = {
                     character: this.loadCharacter(),
@@ -1206,14 +1309,14 @@
                     version: '2.0',
                     exportDate: new Date().toISOString()
                 };
-                
+
                 return JSON.stringify(allData, null, 2);
             }
-            
+
             static importAll(jsonString) {
                 try {
                     const data = JSON.parse(jsonString);
-                    
+
                     if (data.character) {
                         this.saveCharacter(data.character);
                     }
@@ -1223,7 +1326,7 @@
                     if (data.items) {
                         this.saveItems(data.items);
                     }
-                    
+
                     return true;
                 } catch (error) {
                     console.error('Erro ao importar:', error);
@@ -1233,18 +1336,19 @@
         }
 
         // Listener para atualizações em tempo real
-        window.addEventListener('grimorio-update', function(event) {
+        window.addEventListener('grimorio-update', function (event) {
             console.log('Dados atualizados:', event.detail.type);
             // Atualiza a página atual com os novos dados
             refreshCurrentPage();
         });
 
         // Função para detectar mudanças no localStorage de outras abas
-        window.addEventListener('storage', function(event) {
+        window.addEventListener('storage', function (event) {
             if (event.key.startsWith('grimorio_')) {
                 location.reload(); // Recarrega para mostrar dados atualizados
             }
         });
     </script>
 </body>
+
 </html>
