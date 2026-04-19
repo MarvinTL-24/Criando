@@ -435,6 +435,11 @@
                             Exportar TXT
                         </button>
                         
+                        <button onclick="exportarWord()" class="flex items-center gap-2 px-5 py-2.5 bg-blue-900/30 border border-theme-blue/30 rounded-lg text-theme-blue hover:bg-blue-900/50 transition-colors">
+                            <i data-lucide="file-down" class="w-4 h-4"></i>
+                            Exportar Word
+                        </button>
+                        
                         <button onclick="salvarEAplicar()" class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white font-medium hover:opacity-90 transition-all active:scale-95">
                             <i data-lucide="save" class="w-4 h-4"></i>
                             Salvar e Aplicar
@@ -554,12 +559,37 @@
                     GrimorioSystem.salvarAvatar(currentAvatar);
                 }
                 
-                // Salvar ficha completa em localStorage
+                // Salvar ficha completa em localStorage no cache padrao
                 const fichaCompleta = coletarTodosDados();
                 localStorage.setItem('grimorio_ficha_completa', JSON.stringify(fichaCompleta));
                 
+                // Salvar no perfil ativo para garantir que os dados não se percam
+                const perfilAtivo = getActiveProfile();
+                if (perfilAtivo) {
+                    perfilAtivo.ficha = fichaCompleta;
+                    perfilAtivo.nome = dadosBasicos.nome;
+                    perfilAtivo.classe = dadosBasicos.classe;
+                    perfilAtivo.ultimaAtualizacao = new Date().toISOString();
+                    localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(perfilAtivo));
+                    
+                    const todosPerfis = localStorage.getItem('grimorio_perfis');
+                    if (todosPerfis) {
+                        try {
+                            const pObj = JSON.parse(todosPerfis);
+                            const index = pObj.findIndex(p => p.id === perfilAtivo.id);
+                            if (index !== -1) {
+                                pObj[index] = perfilAtivo;
+                                localStorage.setItem('grimorio_perfis', JSON.stringify(pObj));
+                            }
+                        } catch (e) {}
+                    }
+                }
+                
+                // Atualizar last update label
+                atualizarInfoPerfil(perfilAtivo || {ultimaAtualizacao: new Date().toISOString(), nome: dadosBasicos.nome});
+                
                 // Feedback
-                showFeedback('✅ Sucesso!', 'Ficha salva em todos os sistemas!', 'success');
+                showFeedback('✅ Sucesso!', 'Ficha salva em todos os sistemas e no cache do site!', 'success');
                 
                 // Atualizar estado
                 hasUnsavedChanges = false;
@@ -700,44 +730,7 @@
             }
         }
 
-        function coletarTodosDados() {
-            return {
-                // Identidade
-                nome: document.getElementById('inp-nome').value,
-                titulo: document.getElementById('inp-titulo').value,
-                nivel: parseInt(document.getElementById('inp-nivel').value) || 1,
-                idade: document.getElementById('inp-idade').value,
-                altura: document.getElementById('inp-altura').value,
-                peso: document.getElementById('inp-peso').value,
-                raca: document.getElementById('inp-raca').value,
-                classe: document.getElementById('inp-classe').value,
-                
-                // Aparência
-                cabeca: document.getElementById('inp-cabeca').value,
-                torso: document.getElementById('inp-torso').value,
-                bracos: document.getElementById('inp-bracos').value,
-                pernas: document.getElementById('inp-pernas').value,
-                
-                // História
-                historia: document.getElementById('inp-historia').value,
-                motivacoes: document.getElementById('inp-motivacoes').value,
-                medos: document.getElementById('inp-medos').value,
-                
-                // Personalidade
-                personalidade: document.getElementById('inp-personalidade').value,
-                ideais: document.getElementById('inp-ideais').value,
-                defeitos: document.getElementById('inp-defeitos').value,
-                habitos: document.getElementById('inp-habitos').value,
-                
-                // Relações
-                aliados: document.getElementById('inp-aliados').value,
-                inimigos: document.getElementById('inp-inimigos').value,
-                
-                // Metadados
-                dataSalvamento: new Date().toISOString(),
-                versao: '1.0'
-            };
-        }
+
 
         function carregarDadosFicha(dados) {
             // Identidade
@@ -1035,10 +1028,89 @@
             showFeedback('📄 Exportado!', 'Ficha salva como arquivo TXT.', 'success');
         }
 
+        function exportarWord() {
+            const dados = coletarTodosDados();
+            const formatString = (str) => (str || 'Não preenchido').replace(/\n/g, '<br/>');
+            
+            let html = `
+                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+                <head>
+                    <meta charset='utf-8'>
+                    <title>Ficha Personagem</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }
+                        h1 { color: #1a365d; text-align: center; border-bottom: 2px solid #3182ce; padding-bottom: 10px; margin-bottom: 20px;}
+                        h2 { color: #2b6cb0; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-top: 30px; }
+                        strong { color: #2d3748; }
+                        .secao { margin-bottom: 25px; background: #f7fafc; padding: 15px; border-radius: 8px; }
+                        p { margin: 8px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h1>Ficha de Personagem - Grimório Digital</h1>
+                    
+                    <div class="secao">
+                        <h2>Identidade</h2>
+                        <p><strong>Nome:</strong> ${dados.nome || 'Não definido'}</p>
+                        <p><strong>Título:</strong> ${dados.titulo || 'Não definido'}</p>
+                        <p><strong>Nível:</strong> ${dados.nivel || '1'}</p>
+                        <p><strong>Idade:</strong> ${dados.idade || 'Não definida'}</p>
+                        <p><strong>Altura:</strong> ${dados.altura || 'Não definida'}</p>
+                        <p><strong>Peso:</strong> ${dados.peso || 'Não definido'}</p>
+                        <p><strong>Raça:</strong> ${dados.raca || 'Não definida'}</p>
+                        <p><strong>Classe:</strong> ${dados.classe || 'Escolha livre'}</p>
+                    </div>
+                    
+                    <div class="secao">
+                        <h2>Aparência Física</h2>
+                        <p><strong>Cabeça/Rosto:</strong><br/>${formatString(dados.cabeca)}</p>
+                        <p><strong>Torso:</strong><br/>${formatString(dados.torso)}</p>
+                        <p><strong>Braços/Mãos:</strong><br/>${formatString(dados.bracos)}</p>
+                        <p><strong>Pernas/Pés:</strong><br/>${formatString(dados.pernas)}</p>
+                    </div>
+
+                    <div class="secao">
+                        <h2>História & Passado</h2>
+                        <p><strong>História de Fundo:</strong><br/>${formatString(dados.historia)}</p>
+                        <p><strong>Motivações:</strong><br/>${formatString(dados.motivacoes)}</p>
+                        <p><strong>Medos/Traumas:</strong><br/>${formatString(dados.medos)}</p>
+                    </div>
+
+                    <div class="secao">
+                        <h2>Personalidade</h2>
+                        <p><strong>Traços de Personalidade:</strong><br/>${formatString(dados.personalidade)}</p>
+                        <p><strong>Ideais & Valores:</strong><br/>${formatString(dados.ideais)}</p>
+                        <p><strong>Defeitos & Fraquezas:</strong><br/>${formatString(dados.defeitos)}</p>
+                        <p><strong>Maneirismos & Hábitos:</strong><br/>${formatString(dados.habitos)}</p>
+                    </div>
+
+                    <div class="secao">
+                        <h2>Relações</h2>
+                        <p><strong>Aliados & Amigos:</strong><br/>${formatString(dados.aliados)}</p>
+                        <p><strong>Inimigos & Rivalidades:</strong><br/>${formatString(dados.inimigos)}</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+            const link = document.createElement('a');
+            const nomeArquivo = \`ficha_\${(dados.nome || 'personagem').toLowerCase().replace(/\\s+/g, '_')}.doc\`;
+            
+            link.href = URL.createObjectURL(blob);
+            link.download = nomeArquivo;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showFeedback('📄 Exportado!', 'Ficha salva como arquivo Word (.doc).', 'success');
+        }
+
         // 8. EXPORTAR FUNÇÕES PARA O GLOBAL
         window.salvarEAplicar = salvarEAplicar;
         window.limparFicha = limparFicha;
         window.exportarTXT = exportarTXT;
+        window.exportarWord = exportarWord;
         window.previewImage = previewImage;
         window.removerAvatar = removerAvatar;
 
@@ -1060,7 +1132,7 @@
         function saveAllToProfile() {
             try {
                 // Coletar todos os dados da ficha
-                const dadosFicha = coletarDadosDaFicha(); // Sua função existente
+                const dadosFicha = coletarTodosDados();
                 
                 // Carregar perfil ativo
                 const perfis = localStorage.getItem('rpg_sistema_perfis');
