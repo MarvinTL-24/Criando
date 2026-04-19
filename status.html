@@ -690,22 +690,22 @@ Inteligência: 18
                        onchange="updateCategoryValue(${category.id}, parseInt(this.value))"
                        class="w-full">
                 
-                <div class="category-controls">
+                <div class="category-controls flex flex-wrap gap-2">
                     <button onclick="toggleCategory(${category.id}, 'active')" 
-                            class="control-btn ${category.active ? 'btn-inactive' : 'btn-active'}">
-                        <i data-lucide="${category.active ? 'pause' : 'play'}"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${category.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${category.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
                         ${category.active ? "Desativar" : "Ativar"}
                     </button>
                     
                     <button onclick="toggleCategory(${category.id}, 'lock')" 
-                            class="control-btn ${category.locked ? 'btn-unlock' : 'btn-lock'}">
-                        <i data-lucide="${category.locked ? 'unlock' : 'lock'}"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${category.locked ? 'btn-unlock' : 'btn-lock'}">
+                        <i data-lucide="${category.locked ? 'unlock' : 'lock'}" class="w-4 h-4 mr-1"></i>
                         ${category.locked ? "Destrancar" : "Trancar"}
                     </button>
                     
                     <button onclick="toggleCategory(${category.id}, 'delete')" 
-                            class="control-btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
                         Remover
                     </button>
                 </div>
