@@ -137,7 +137,7 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1.5rem;
+            padding: 2rem;
         }
         
         .section-title {
@@ -154,9 +154,11 @@
         .section-panel {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         
         /* CONTROLE DE CATEGORIAS */
@@ -783,9 +785,19 @@
                     <div>
                         <h3 class="mb-4" style="color: var(--accent-blue);">Configuração da Rolagem</h3>
                         
-                        <div class="form-group flex items-center gap-4">
-                            <label class="form-label mb-0">Tipo de Dado: 1D</label>
-                            <input type="number" id="dice-type" class="form-input text-xl font-bold w-24 text-center py-2" value="20" min="2" max="1000" onchange="saveDiceConfig()">
+                        <div class="form-group mb-6">
+                            <label class="form-label mb-3 text-gray-300">Quantidade e Lados do Dado</label>
+                            <div class="flex items-center gap-3">
+                                <select id="dice-quantity" class="form-select w-24 text-center font-bold text-2xl py-3 bg-black/40 border-blue-900/50 text-white" onchange="saveDiceConfig()">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                                <span class="font-cinzel text-3xl text-accent-blue font-bold tracking-widest drop-shadow-md">D</span>
+                                <input type="number" id="dice-type" class="form-input text-2xl font-bold w-full text-center py-3 bg-black/40 border-blue-900/50 text-white" value="20" min="2" max="1000" onchange="saveDiceConfig()">
+                            </div>
                         </div>
                         
                         <div class="mt-6 space-y-4 flex flex-col gap-3">
@@ -824,9 +836,11 @@
                     <div class="flex flex-col">
                         <h3 class="mb-4" style="color: var(--accent-blue);">Último Resultado</h3>
                         
-                        <div class="flex-1 flex flex-col items-center justify-center bg-black/40 rounded-xl border border-blue-900/50 p-6 relative shadow-[0_0_15px_rgba(74,158,255,0.1)]">
-                            <div id="dice-result-value" class="text-7xl font-black font-cinzel text-white mb-4 drop-shadow-lg">-</div>
-                            <div id="dice-result-details" class="text-sm text-gray-400 text-center min-h-[60px] whitespace-pre-line">Role os dados para ver o resultado</div>
+                        <div class="flex-1 flex flex-col items-center justify-center bg-black/40 rounded-xl border border-blue-900/50 p-6 relative shadow-[0_0_20px_rgba(74,158,255,0.15)] my-auto w-full">
+                            <div id="dice-result-value" class="text-8xl font-black font-cinzel text-transparent bg-clip-text bg-gradient-to-b from-white to-blue-200 mb-6 drop-shadow-2xl">-</div>
+                            <div id="dice-result-details" class="w-full text-sm text-gray-300 flex flex-col gap-2 min-h-[60px]">
+                                <div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1132,12 +1146,13 @@ Inteligência: 18
         },
         
         diceSystem: {
+            quantity: 1,
             type: 20,
             useStatus: true,
             useMascot: false,
             useLuck: true,
             lastResult: null,
-            lastString: "Role os dados para ver o resultado"
+            lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
         }
     };
     
@@ -1864,7 +1879,9 @@ Inteligência: 18
     function saveDiceConfig() {
         if (!systemData.diceSystem) return;
         const typeMatch = parseInt(document.getElementById("dice-type").value);
+        const qtyMatch = parseInt(document.getElementById("dice-quantity").value);
         if(!isNaN(typeMatch)) systemData.diceSystem.type = typeMatch;
+        if(!isNaN(qtyMatch)) systemData.diceSystem.quantity = qtyMatch;
         systemData.diceSystem.useStatus = document.getElementById("dice-use-status").checked;
         systemData.diceSystem.useMascot = document.getElementById("dice-use-mascot").checked;
         systemData.diceSystem.useLuck = document.getElementById("dice-use-luck").checked;
@@ -1874,24 +1891,39 @@ Inteligência: 18
     function initDiceSystem() {
         if (!systemData.diceSystem) {
             systemData.diceSystem = {
-                type: 20, useStatus: true, useMascot: false, useLuck: true,
-                lastResult: "-", lastString: "Role os dados para ver o resultado"
+                quantity: 1, type: 20, useStatus: true, useMascot: false, useLuck: true,
+                lastResult: "-", lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
             };
         }
+        document.getElementById("dice-quantity").value = systemData.diceSystem.quantity || 1;
         document.getElementById("dice-type").value = systemData.diceSystem.type;
         document.getElementById("dice-use-status").checked = systemData.diceSystem.useStatus;
         document.getElementById("dice-use-mascot").checked = systemData.diceSystem.useMascot;
         document.getElementById("dice-use-luck").checked = systemData.diceSystem.useLuck;
         document.getElementById("dice-result-value").textContent = systemData.diceSystem.lastResult || "-";
-        document.getElementById("dice-result-details").textContent = systemData.diceSystem.lastString || "Role os dados para ver o resultado";
+        document.getElementById("dice-result-details").innerHTML = systemData.diceSystem.lastString || "";
     }
 
     function rollCustomDice() {
+        const qty = systemData.diceSystem.quantity || 1;
         const maxDice = systemData.diceSystem.type;
-        const baseRoll = Math.floor(Math.random() * maxDice) + 1;
         
-        let totalVal = baseRoll;
-        let details = `🎲 Rolagem Base (1D${maxDice}): ${baseRoll}`;
+        let baseRollTotal = 0;
+        let rollsValues = [];
+        
+        for(let i=0; i<qty; i++) {
+            const roll = Math.floor(Math.random() * maxDice) + 1;
+            rollsValues.push(roll);
+            baseRollTotal += roll;
+        }
+        
+        let totalVal = baseRollTotal;
+        let detailsHtml = `
+            <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-blue-900/30">
+                <span class="font-bold text-gray-300">🎲 Dados Rolados (${qty}D${maxDice}):</span>
+                <span class="font-mono text-blue-300 tracking-wider">[ ${rollsValues.join(' | ')} ] = <b class="text-white">${baseRollTotal}</b></span>
+            </div>
+        `;
         
         // 1. Modificadores de Status
         if (systemData.diceSystem.useStatus) {
@@ -1902,7 +1934,12 @@ Inteligência: 18
                 const mod = Math.floor(mediaStatus / 10); 
                 if (mod > 0) {
                     totalVal += mod;
-                    details += `\n🏅 Mod. Atributos (Média: ${mediaStatus}): +${mod}`;
+                    detailsHtml += `
+                        <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-green-900/30 mt-1">
+                            <span class="text-green-300 opacity-90"><i data-lucide="activity" class="inline w-3 h-3 mr-1"></i> Atributos Status (Média ${mediaStatus})</span>
+                            <span class="font-bold text-green-400">+${mod}</span>
+                        </div>
+                    `;
                 }
             }
         }
@@ -1917,10 +1954,19 @@ Inteligência: 18
                     const mod = Math.floor(mascotLevel / 5) + 1; 
                     if (mod > 0) {
                         totalVal += mod;
-                        details += `\n🐾 Mod. Mascote (Nv ${mascotLevel}): +${mod}`;
+                        detailsHtml += `
+                            <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-purple-900/30 mt-1">
+                                <span class="text-purple-300 opacity-90"><i data-lucide="cat" class="inline w-3 h-3 mr-1"></i> Auxílio do Mascote (Nv ${mascotLevel})</span>
+                                <span class="font-bold text-purple-400">+${mod}</span>
+                            </div>
+                        `;
                     }
                 } else {
-                    details += `\n🐾 Você não possui nenhum mascote no cache.`;
+                    detailsHtml += `
+                        <div class="flex justify-between items-center bg-red-900/20 p-2 rounded border border-red-900/30 mt-1">
+                            <span class="text-red-400 opacity-90 text-xs text-center w-full">Nenhum Mascote Localizado no Cache</span>
+                        </div>
+                    `;
                 }
             } catch(e) {}
         }
@@ -1929,20 +1975,28 @@ Inteligência: 18
         if (systemData.diceSystem.useLuck) {
             const luckValue = systemData.luck.value; 
             let mod = 0;
-            if(luckValue > 80) mod = Math.floor(maxDice * 0.1) || 1; 
-            else if(luckValue < 20) mod = -(Math.floor(maxDice * 0.1) || 1); 
+            if(luckValue > 80) mod = Math.floor(maxDice * qty * 0.1) || 1; 
+            else if(luckValue < 20) mod = -(Math.floor(maxDice * qty * 0.1) || 1); 
             
             if(mod !== 0) {
                 totalVal += mod;
-                details += `\n🍀 Mod. Sorte (${luckValue}%): ${mod > 0 ? '+'+mod : mod}`;
+                const luckColor = mod > 0 ? "yellow" : "red";
+                detailsHtml += `
+                    <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-${luckColor}-900/30 mt-1">
+                        <span class="text-${luckColor}-300 opacity-90"><i data-lucide="clover" class="inline w-3 h-3 mr-1"></i> Sorte/Sentimento (${luckValue}%)</span>
+                        <span class="font-bold text-${luckColor}-400">${mod > 0 ? '+'+mod : mod}</span>
+                    </div>
+                `;
             }
         }
         
+        // Update DOM
         document.getElementById("dice-result-value").textContent = totalVal;
-        document.getElementById("dice-result-details").textContent = details;
+        document.getElementById("dice-result-details").innerHTML = detailsHtml;
+        lucide.createIcons();
         
         systemData.diceSystem.lastResult = totalVal;
-        systemData.diceSystem.lastString = details;
+        systemData.diceSystem.lastString = detailsHtml;
         saveToStorage();
     }
 
@@ -2136,11 +2190,11 @@ Inteligência: 18
         // Configurações do Dado
         if (systemData.diceSystem) {
             txtContent += `\n--- SISTEMA DE ROLAGEM ---\n`;
-            txtContent += `Tipo de Dado: 1D${systemData.diceSystem.type}\n`;
+            txtContent += `Tipo de Dado: ${systemData.diceSystem.quantity}D${systemData.diceSystem.type}\n`;
             txtContent += `Usa Status: ${systemData.diceSystem.useStatus ? "Sim" : "Não"}\n`;
             txtContent += `Usa Mascote: ${systemData.diceSystem.useMascot ? "Sim" : "Não"}\n`;
             txtContent += `Usa Condições/Sorte: ${systemData.diceSystem.useLuck ? "Sim" : "Não"}\n`;
-            txtContent += `Última Rolagem: ${systemData.diceSystem.lastResult}\n`;
+            txtContent += `Último Resultado Exato (Total): ${systemData.diceSystem.lastResult}\n`;
         }
         
         // Criar e baixar arquivo
