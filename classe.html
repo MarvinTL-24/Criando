@@ -377,33 +377,34 @@
     </div>
 
     <!-- Barra de Navegação -->
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-4">
-                    <a href="index.html" class="flex items-center gap-2 text-theme-text hover:text-theme-blue transition-colors">
-                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                        <span class="font-cinzel font-semibold">Voltar ao Hub</span>
-                    </a>
-                </div>
-                
-                <div class="flex items-center gap-4">
-                    <span class="font-cinzel text-lg font-bold text-theme-blue">Sistema de Classes</span>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                    <button onclick="abrirModalNovaClasse()" 
-                            class="px-4 py-2 bg-gradient-to-r from-theme-purple to-purple-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
-                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-                        Nova Classe
-                    </button>
-                    <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar" 
-                            class="px-4 py-2 bg-theme-blue text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors opacity-0">
-                        Confirmar Classe
-                    </button>
-                </div>
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
+        <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-theme-blue/10 border border-theme-blue/30 rounded-lg text-theme-blue font-medium transition-all hover:bg-theme-blue/20 shadow-[0_0_15px_rgba(74,158,255,0.1)]">
+                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
+                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center flex-col sm:flex-row">
+                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-theme-blue drop-shadow-md uppercase tracking-wider">Grimório Digital</span>
+                <div class="h-6 w-[1px] bg-theme-border mx-4 hidden sm:block"></div>
+                <span class="text-sm 2xl:text-base text-theme-muted font-medium uppercase">Sistema de Classes</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="abrirModalNovaClasse()" 
+                        class="px-4 py-2 bg-gradient-to-r from-theme-purple to-purple-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-glass whitespace-nowrap">
+                    <i data-lucide="plus-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
+                    <span class="hidden sm:inline">Nova Classe</span>
+                </button>
+                <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar" 
+                        class="px-4 py-2 bg-theme-blue text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors opacity-0 shadow-glass whitespace-nowrap">
+                    Confirmar
+                </button>
             </div>
         </div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
     </nav>
 
     <!-- Conteúdo Principal -->

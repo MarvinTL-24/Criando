@@ -185,33 +185,26 @@
 <body class="min-h-screen font-sans pb-20">
 
     <!-- NAVEGAÇÃO -->
-    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass">
-        <div class="container-adaptive">
-            <div class="flex flex-wrap md:flex-row items-center justify-between gap-4 py-4">
-                <!-- Voltar para Hub -->
-                <a href="index.html" class="flex items-center gap-3 group w-full md:w-auto mt-2 md:mt-0">
-                    <div class="p-2 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20 group-hover:bg-[#4a9eff]/20 transition-colors shadow-[0_0_15px_rgba(74,158,255,0.1)]">
-                        <i data-lucide="arrow-left" class="w-5 h-5 text-theme-blue"></i>
-                    </div>
-                    <div>
-                        <div class="text-sm font-medium text-theme-text group-hover:text-theme-blue transition-colors">
-                            Voltar ao Hub</div>
-                        <div class="text-xs text-[#606060]">Grimório Digital</div>
-                    </div>
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
+        <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-[#4a9eff]/10 border border-[#4a9eff]/30 rounded-lg text-theme-blue font-medium transition-all hover:bg-[#4a9eff]/20 shadow-[0_0_15px_rgba(74,158,255,0.1)]">
+                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
+                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
                 </a>
-
-                <!-- Botões principais -->
-                <div class="flex flex-wrap md:flex-nowrap items-center justify-end gap-2 w-full md:w-auto">
-                    <button onclick="salvarEAplicar()" id="btn-salvar-aplicar" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm 2xl:text-base font-medium hover:opacity-90 transition-all active:scale-95 shadow-glass whitespace-nowrap min-w-[150px]">
-                        <i data-lucide="save" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
-                        <span>Salvar no Perfil</span>
-                    </button>
-
-                    <a href="status.html" class="flex-1 md:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-orange to-orange-600 rounded-lg text-white text-sm 2xl:text-base font-medium hover:opacity-90 transition-all shadow-glass whitespace-nowrap min-w-[150px]">
-                        <i data-lucide="zap" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
-                        <span>Ir para Status</span>
-                    </a>
-                </div>
+            </div>
+            
+            <div class="flex items-center flex-col sm:flex-row">
+                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-theme-blue drop-shadow-md uppercase tracking-wider">Grimório Digital</span>
+                <div class="h-6 w-[1px] bg-theme-border mx-4 hidden sm:block"></div>
+                <span class="text-sm 2xl:text-base text-theme-muted font-medium">FICHA DO PERSONAGEM</span>
+            </div>
+            
+            <div class="flex items-center gap-2 2xl:gap-3">
+                <button onclick="salvarEAplicar()" id="btn-salvar-aplicar" class="px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm 2xl:text-base font-medium hover:opacity-90 transition-all active:scale-95 shadow-glass whitespace-nowrap">
+                    <i data-lucide="save" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
+                    <span class="hidden sm:inline">Salvar no Perfil</span>
+                </button>
             </div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>

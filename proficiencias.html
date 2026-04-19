@@ -99,13 +99,22 @@
 </head>
 <body class="min-h-screen font-sans pb-20">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-orange transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-orange">Grimório Digital</span>
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
+        <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-theme-orange/10 border border-theme-orange/30 rounded-lg text-theme-orange font-medium transition-all hover:bg-theme-orange/20 shadow-[0_0_15px_rgba(255,107,53,0.1)]">
+                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
+                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center flex-col sm:flex-row">
+                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-theme-orange drop-shadow-md uppercase tracking-wider">Grimório Digital</span>
+                <div class="h-6 w-[1px] bg-theme-border mx-4 hidden sm:block"></div>
+                <span class="text-sm 2xl:text-base text-theme-muted font-medium uppercase">Proficiências & Magias</span>
+            </div>
+            
+            <div class="w-24 hidden sm:block"></div>
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
     </nav>
