@@ -478,80 +478,86 @@
     </div>
 
     <!-- MODAL DE RESISTÊNCIAS -->
-    <div class="modal" id="resistances-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Resistências a Elementos</h3>
-                <button class="modal-close" onclick="hideModal('resistances-modal')">&times;</button>
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="resistances-modal">
+        <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
+                <h3 class="text-lg font-cinzel text-white font-bold">Resistências a Elementos</h3>
+                <button class="text-theme-muted hover:text-white transition-colors" onclick="hideModal('resistances-modal')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Sangue</label>
-                    <input type="number" class="form-input" id="resist-sangue" value="0" min="0" max="10">
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Sangue</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-red transition-colors" id="resist-sangue" value="0" min="0" max="10">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Morte</label>
-                    <input type="number" class="form-input" id="resist-morte" value="0" min="0" max="10">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Morte</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="resist-morte" value="0" min="0" max="10">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Conhecimento</label>
-                    <input type="number" class="form-input" id="resist-conhecimento" value="0" min="0" max="10">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Conhecimento</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-gold transition-colors" id="resist-conhecimento" value="0" min="0" max="10">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Energia</label>
-                    <input type="number" class="form-input" id="resist-energia" value="0" min="0" max="10">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Energia</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-blue transition-colors" id="resist-energia" value="0" min="0" max="10">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Medo</label>
-                    <input type="number" class="form-input" id="resist-medo" value="0" min="0" max="10">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Medo</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-white transition-colors" id="resist-medo" value="0" min="0" max="10">
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="hideModal('resistances-modal')">Cancelar</button>
-                <button class="btn btn-success" onclick="saveResistances()">Salvar</button>
+            <div class="p-4 border-t border-theme-border bg-theme-bg/50 flex justify-end gap-3">
+                <button class="px-4 py-2 text-theme-muted hover:text-white transition-colors font-medium" onclick="hideModal('resistances-modal')">Cancelar</button>
+                <button class="px-4 py-2 bg-theme-green text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="saveResistances()">Salvar</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE AJUDA -->
-    <div class="modal" id="help-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="help-title">Ajuda</h3>
-                <button class="modal-close" onclick="hideModal('help-modal')">&times;</button>
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="help-modal">
+        <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
+                <h3 class="text-lg font-cinzel text-theme-blue font-bold" id="help-title">Ajuda</h3>
+                <button class="text-theme-muted hover:text-white transition-colors" onclick="hideModal('help-modal')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <div class="modal-body" id="help-content">
+            <div class="p-6 text-theme-muted space-y-3 leading-relaxed" id="help-content">
                 <!-- Conteúdo será preenchido por JavaScript -->
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="hideModal('help-modal')">Entendi</button>
+            <div class="p-4 border-t border-theme-border bg-theme-bg/50 flex justify-end">
+                <button class="px-6 py-2 bg-theme-blue text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="hideModal('help-modal')">Entendi</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE ITEM -->
-    <div class="modal" id="item-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Adicionar Item ao Inventário</h3>
-                <button class="modal-close" onclick="hideModal('item-modal')">&times;</button>
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="item-modal">
+        <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
+                <h3 class="text-lg font-cinzel text-theme-blue font-bold">Adicionar Item ao Inventário</h3>
+                <button class="text-theme-muted hover:text-white transition-colors" onclick="hideModal('item-modal')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Nome do Item</label>
-                    <input type="text" class="form-input" id="item-name" placeholder="Ex: Kit de Medicina">
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Nome do Item</label>
+                    <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-blue transition-colors" id="item-name" placeholder="Ex: Kit de Medicina">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Descrição</label>
-                    <textarea class="form-input" id="item-description" rows="3" placeholder="Descreva o item e suas funcionalidades"></textarea>
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Descrição</label>
+                    <textarea class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-blue transition-colors" id="item-description" rows="3" placeholder="Descreva o item e suas funcionalidades"></textarea>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Quantidade</label>
-                    <input type="number" class="form-input" id="item-quantity" value="1" min="1" max="99">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Quantidade</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-blue transition-colors" id="item-quantity" value="1" min="1" max="99">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Usabilidade</label>
-                    <select class="form-select" id="item-usability">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Usabilidade</label>
+                    <select class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-blue transition-colors appearance-none" id="item-usability">
                         <option value="combate">Combate</option>
                         <option value="utilidade">Utilidade</option>
                         <option value="cura">Cura</option>
@@ -559,122 +565,136 @@
                         <option value="protecao">Proteção</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Munição/Usos (se aplicável)</label>
-                    <input type="number" class="form-input" id="item-ammo" value="0" min="0">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Munição/Usos (se aplicável)</label>
+                    <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-blue transition-colors" id="item-ammo" value="0" min="0">
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="hideModal('item-modal')">Cancelar</button>
-                <button class="btn btn-success" onclick="addItem()">Adicionar Item</button>
+            <div class="p-4 border-t border-theme-border bg-theme-bg/50 flex justify-end gap-3">
+                <button class="px-4 py-2 text-theme-muted hover:text-white transition-colors font-medium" onclick="hideModal('item-modal')">Cancelar</button>
+                <button class="px-4 py-2 bg-theme-blue text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="addItem()">Adicionar Item</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE ARMA -->
-    <div class="modal" id="weapon-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Adicionar Arma</h3>
-                <button class="modal-close" onclick="hideModal('weapon-modal')">&times;</button>
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="weapon-modal">
+        <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
+                <h3 class="text-lg font-cinzel text-theme-orange font-bold">Adicionar Arma</h3>
+                <button class="text-theme-muted hover:text-white transition-colors" onclick="hideModal('weapon-modal')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Nome da Arma</label>
-                    <input type="text" class="form-input" id="weapon-name" placeholder="Ex: Pistola 9mm">
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Nome da Arma</label>
+                    <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors" id="weapon-name" placeholder="Ex: Pistola 9mm">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Tipo</label>
-                    <select class="form-select" id="weapon-type">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Tipo</label>
+                    <select class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors appearance-none" id="weapon-type">
                         <option value="corpo-a-corpo">Corpo a Corpo</option>
                         <option value="arremesso">Arremesso</option>
                         <option value="fogo">Fogo</option>
                         <option value="especial">Especial</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Dano</label>
-                    <input type="text" class="form-input" id="weapon-damage" placeholder="Ex: 1d6 + 1">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Dano</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors" id="weapon-damage" placeholder="Ex: 1d6+1">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Alcance</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors" id="weapon-range" placeholder="Ex: Curto">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Alcance</label>
-                    <input type="text" class="form-input" id="weapon-range" placeholder="Ex: Curto (9m)">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Crítico</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors" id="weapon-critical" placeholder="Ex: 19/x2">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Munição</label>
+                        <input type="number" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors" id="weapon-ammo" value="0" min="0">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Crítico</label>
-                    <input type="text" class="form-input" id="weapon-critical" placeholder="Ex: 19-20/x2">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Munição</label>
-                    <input type="number" class="form-input" id="weapon-ammo" value="0" min="0" placeholder="Quantidade de munição">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Descrição</label>
-                    <textarea class="form-input" id="weapon-description" rows="3" placeholder="Descreva a arma"></textarea>
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Descrição</label>
+                    <textarea class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-orange transition-colors" id="weapon-description" rows="3" placeholder="Efeitos especiais da arma..."></textarea>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="hideModal('weapon-modal')">Cancelar</button>
-                <button class="btn btn-success" onclick="addWeapon()">Adicionar Arma</button>
+            <div class="p-4 border-t border-theme-border bg-theme-bg/50 flex justify-end gap-3">
+                <button class="px-4 py-2 text-theme-muted hover:text-white transition-colors font-medium" onclick="hideModal('weapon-modal')">Cancelar</button>
+                <button class="px-4 py-2 bg-theme-orange text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="addWeapon()">Adicionar Arma</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL DE RITUAL -->
-    <div class="modal" id="ritual-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Adicionar Ritual</h3>
-                <button class="modal-close" onclick="hideModal('ritual-modal')">&times;</button>
+    <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="ritual-modal">
+        <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
+            <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
+                <h3 class="text-lg font-cinzel text-theme-purple font-bold">Adicionar Ritual</h3>
+                <button class="text-theme-muted hover:text-white transition-colors" onclick="hideModal('ritual-modal')">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="form-group">
-                    <label class="form-label">Nome do Ritual</label>
-                    <input type="text" class="form-input" id="ritual-name" placeholder="Ex: Amaldiçoar Arma">
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto custom-scrollbar">
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Nome do Ritual</label>
+                    <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="ritual-name" placeholder="Ex: Decadência">
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Elemento</label>
-                    <select class="form-select" id="ritual-element">
-                        <option value="sangue">Sangue</option>
-                        <option value="morte">Morte</option>
-                        <option value="conhecimento">Conhecimento</option>
-                        <option value="energia">Energia</option>
-                        <option value="medo">Medo</div>
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Elemento</label>
+                        <select class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors appearance-none" id="ritual-element">
+                            <option value="sangue">Sangue</option>
+                            <option value="morte">Morte</option>
+                            <option value="conhecimento">Conhecimento</option>
+                            <option value="energia">Energia</option>
+                            <option value="medo">Medo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Nível (Círculo)</label>
+                        <select class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors appearance-none" id="ritual-level">
+                            <option value="1">1º Círculo</option>
+                            <option value="2">2º Círculo</option>
+                            <option value="3">3º Círculo</option>
+                            <option value="4">4º Círculo</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Nível (Círculo)</label>
-                    <select class="form-select" id="ritual-level">
-                        <option value="1">1º Círculo</option>
-                        <option value="2">2º Círculo</option>
-                        <option value="3">3º Círculo</option>
-                        <option value="4">4º Círculo</option>
-                    </select>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Execução</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="ritual-execution" placeholder="Ex: Padrão">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Alcance</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="ritual-range" placeholder="Ex: Curto">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Execução</label>
-                    <input type="text" class="form-input" id="ritual-execution" placeholder="Ex: Ação Padrão">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Duração</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="ritual-duration" placeholder="Ex: Cena">
+                    </div>
+                    <div>
+                        <label class="block text-sm text-theme-muted mb-1.5 font-medium">Resistência</label>
+                        <input type="text" class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="ritual-resistance" placeholder="Ex: Vontade reduz">
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Alcance</label>
-                    <input type="text" class="form-input" id="ritual-range" placeholder="Ex: Toque">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Duração</label>
-                    <input type="text" class="form-input" id="ritual-duration" placeholder="Ex: Cena">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Resistência</label>
-                    <input type="text" class="form-input" id="ritual-resistance" placeholder="Ex: Nenhuma">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Descrição</label>
-                    <textarea class="form-input" id="ritual-description" rows="4" placeholder="Descreva o efeito do ritual"></textarea>
+                <div>
+                    <label class="block text-sm text-theme-muted mb-1.5 font-medium">Descrição</label>
+                    <textarea class="w-full bg-theme-input border border-theme-border rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-theme-purple transition-colors" id="ritual-description" rows="4" placeholder="Descrição dos efeitos e variações..."></textarea>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" onclick="hideModal('ritual-modal')">Cancelar</button>
-                <button class="btn btn-success" onclick="addRitual()">Adicionar Ritual</button>
+            <div class="p-4 border-t border-theme-border bg-theme-bg/50 flex justify-end gap-3">
+                <button class="px-4 py-2 text-theme-muted hover:text-white transition-colors font-medium" onclick="hideModal('ritual-modal')">Cancelar</button>
+                <button class="px-4 py-2 bg-theme-purple text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="addRitual()">Adicionar Ritual</button>
             </div>
         </div>
     </div>
@@ -1048,10 +1068,10 @@
             
             systemData.skills.forEach(skill => {
                 const skillItem = document.createElement('div');
-                skillItem.className = 'skill-item';
+                skillItem.className = 'flex items-center justify-between p-3 bg-theme-bg/50 border border-theme-border rounded-lg hover:border-theme-blue transition-colors group';
                 skillItem.innerHTML = `
-                    <span class="skill-name">${skill}</span>
-                    <input type="number" class="skill-value" 
+                    <span class="text-sm 2xl:text-base font-medium text-theme-muted group-hover:text-white transition-colors">${skill}</span>
+                    <input type="number" class="w-16 bg-theme-input border border-theme-border rounded text-center text-white focus:outline-none focus:border-theme-blue py-1" 
                            id="skill-${skill}" 
                            value="${appState.skills[skill] || 0}" 
                            min="-5" max="10">
@@ -1187,25 +1207,27 @@
             container.innerHTML = '';
             
             if (appState.inventory.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; grid-column: 1 / -1;">Nenhum item no inventário</p>';
+                container.innerHTML = '<p class="col-span-full text-center text-theme-muted py-8">Nenhum item no inventário</p>';
                 return;
             }
             
             appState.inventory.forEach((item, index) => {
                 const itemCard = document.createElement('div');
-                itemCard.className = 'item-card';
+                itemCard.className = 'bg-theme-bg/50 border border-theme-border rounded-xl p-4 flex flex-col justify-between hover:border-theme-blue transition-colors group shadow-glass relative overflow-hidden';
                 itemCard.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-name">${item.name} (x${item.quantity})</div>
-                        <div class="item-desc">${item.description}</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                            Usabilidade: ${item.usability} | Munição: ${item.ammo}
+                    <div class="absolute top-0 left-0 w-1 h-full bg-theme-blue opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="mb-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-white text-lg">${item.name} <span class="text-theme-blue text-sm">x${item.quantity}</span></h4>
+                            <button class="text-theme-muted hover:text-theme-red transition-colors" onclick="removeItem(${index})" title="Remover Item">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
                         </div>
+                        <p class="text-sm text-theme-muted/80 line-clamp-2">${item.description}</p>
                     </div>
-                    <div class="item-controls">
-                        <button class="btn btn-danger btn-sm" onclick="removeItem(${index})">
-                            <i data-lucide="trash-2"></i>
-                        </button>
+                    <div class="flex items-center gap-3 text-xs text-theme-muted border-t border-theme-border/50 pt-3">
+                        <span class="bg-theme-input px-2 py-1 rounded-md">Uso: <span class="text-white capitalize">${item.usability}</span></span>
+                        ${item.ammo > 0 ? `<span class="bg-theme-input px-2 py-1 rounded-md">Munição: <span class="text-theme-red">${item.ammo}</span></span>` : ''}
                     </div>
                 `;
                 container.appendChild(itemCard);
@@ -1218,31 +1240,50 @@
             container.innerHTML = '';
             
             if (appState.weapons.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center; grid-column: 1 / -1;">Nenhuma arma adicionada</p>';
+                container.innerHTML = '<p class="col-span-full text-center text-theme-muted py-8">Nenhuma arma adicionada</p>';
                 return;
             }
             
             appState.weapons.forEach((weapon, index) => {
                 const weaponCard = document.createElement('div');
-                weaponCard.className = 'item-card';
+                weaponCard.className = 'bg-theme-bg/50 border border-theme-border rounded-xl p-5 hover:border-theme-orange transition-colors group shadow-glass relative overflow-hidden flex flex-col';
                 weaponCard.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-name">${weapon.name}</div>
-                        <div class="item-desc">
-                            <strong>Dano:</strong> ${weapon.damage} | 
-                            <strong>Alcance:</strong> ${weapon.range} | 
-                            <strong>Crítico:</strong> ${weapon.critical}
-                            ${weapon.ammo > 0 ? ` | <strong>Munição:</strong> ${weapon.ammo}` : ''}
+                    <div class="absolute top-0 left-0 w-1 h-full bg-theme-orange opacity-50 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex justify-between items-start mb-3">
+                        <div>
+                            <h4 class="font-bold text-white text-lg flex items-center gap-2">
+                                ${weapon.name}
+                                <span class="bg-theme-input text-theme-orange px-2 py-0.5 rounded text-xs uppercase tracking-wider border border-theme-orange/20">${weapon.type}</span>
+                            </h4>
                         </div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">
-                            ${weapon.description}
-                        </div>
-                    </div>
-                    <div class="item-controls">
-                        <button class="btn btn-danger btn-sm" onclick="removeWeapon(${index})">
-                            <i data-lucide="trash-2"></i>
+                        <button class="text-theme-muted hover:text-theme-red transition-colors" onclick="removeWeapon(${index})" title="Remover Arma">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
+                    
+                    <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                        <div class="bg-theme-input/50 rounded p-2 border border-theme-border/50">
+                            <div class="text-[10px] uppercase text-theme-muted font-bold tracking-wider mb-1">Dano</div>
+                            <div class="text-white font-mono text-sm">${weapon.damage}</div>
+                        </div>
+                        <div class="bg-theme-input/50 rounded p-2 border border-theme-border/50">
+                            <div class="text-[10px] uppercase text-theme-muted font-bold tracking-wider mb-1">Crítico</div>
+                            <div class="text-white font-mono text-sm">${weapon.critical}</div>
+                        </div>
+                        <div class="bg-theme-input/50 rounded p-2 border border-theme-border/50">
+                            <div class="text-[10px] uppercase text-theme-muted font-bold tracking-wider mb-1">Alcance</div>
+                            <div class="text-white break-words text-xs">${weapon.range}</div>
+                        </div>
+                    </div>
+                    
+                    ${weapon.description ? `<p class="text-sm text-theme-muted/80 italic mb-3 flex-grow">${weapon.description}</p>` : '<div class="flex-grow"></div>'}
+                    
+                    ${weapon.ammo > 0 ? `
+                        <div class="mt-auto pt-3 border-t border-theme-border/50 flex justify-between items-center">
+                            <span class="text-xs text-theme-muted font-medium uppercase tracking-wider">Munição</span>
+                            <span class="font-mono text-theme-orange font-bold">${weapon.ammo}</span>
+                        </div>
+                    ` : ''}
                 `;
                 container.appendChild(weaponCard);
                 lucide.createIcons();
@@ -1254,51 +1295,61 @@
             container.innerHTML = '';
             
             if (appState.rituals.length === 0) {
-                container.innerHTML = '<p style="color: var(--text-secondary); text-align: center;">Nenhum ritual adicionado</p>';
+                container.innerHTML = '<p class="col-span-full text-center text-theme-muted py-8">Nenhum ritual adicionado</p>';
                 return;
             }
             
-            const table = document.createElement('table');
-            table.style.width = '100%';
-            table.style.borderCollapse = 'collapse';
-            table.innerHTML = `
-                <thead>
-                    <tr style="background: var(--bg-input);">
-                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color);">Nome</th>
-                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color);">Elemento</th>
-                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color);">Nível</th>
-                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color);">Execução</th>
-                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border-color);">Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="rituals-table-body">
-                </tbody>
-            `;
-            
-            container.appendChild(table);
-            
-            const tbody = document.getElementById('rituals-table-body');
             appState.rituals.forEach((ritual, index) => {
-                const row = document.createElement('tr');
-                row.style.borderBottom = '1px solid var(--border-color)';
-                row.innerHTML = `
-                    <td style="padding: 0.75rem;">
-                        <strong>${ritual.name}</strong><br>
-                        <small style="color: var(--text-secondary);">${ritual.description}</small>
-                    </td>
-                    <td style="padding: 0.75rem;">${ritual.element}</td>
-                    <td style="padding: 0.75rem;">${ritual.level}º Círculo</td>
-                    <td style="padding: 0.75rem;">
-                        ${ritual.execution}<br>
-                        <small style="color: var(--text-secondary);">${ritual.range} | ${ritual.duration}</small>
-                    </td>
-                    <td style="padding: 0.75rem;">
-                        <button class="btn btn-danger btn-sm" onclick="removeRitual(${index})">
-                            <i data-lucide="trash-2"></i>
+                // Determinar cor baseada no elemento
+                let elementColorClass = 'text-theme-purple';
+                if (ritual.element === 'sangue') elementColorClass = 'text-theme-red';
+                if (ritual.element === 'morte') elementColorClass = 'text-theme-muted';
+                if (ritual.element === 'conhecimento') elementColorClass = 'text-theme-gold';
+                if (ritual.element === 'energia') elementColorClass = 'text-theme-blue';
+                if (ritual.element === 'medo') elementColorClass = 'text-white';
+
+                const ritualCard = document.createElement('div');
+                ritualCard.className = 'bg-theme-bg/50 border border-theme-border rounded-xl p-5 hover:border-theme-purple transition-colors group shadow-glass relative overflow-hidden flex flex-col';
+                ritualCard.innerHTML = `
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-theme-purple/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h4 class="font-bold text-white text-lg">${ritual.name}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="bg-theme-input ${elementColorClass} px-2 py-0.5 rounded text-[10px] uppercase tracking-wider border border-theme-border capitalize font-bold">${ritual.element}</span>
+                                <span class="bg-theme-input text-theme-muted px-2 py-0.5 rounded text-[10px] uppercase tracking-wider border border-theme-border">${ritual.level}º Círculo</span>
+                            </div>
+                        </div>
+                        <button class="text-theme-muted hover:text-theme-red transition-colors" onclick="removeRitual(${index})" title="Remover Ritual">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
-                    </td>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-3 mb-4 text-xs">
+                        <div>
+                            <span class="text-theme-muted font-medium">Execução:</span>
+                            <span class="text-white ml-1 font-mono">${ritual.execution}</span>
+                        </div>
+                        <div>
+                            <span class="text-theme-muted font-medium">Alcance:</span>
+                            <span class="text-white ml-1 font-mono">${ritual.range}</span>
+                        </div>
+                        <div>
+                            <span class="text-theme-muted font-medium">Duração:</span>
+                            <span class="text-white ml-1 font-mono">${ritual.duration}</span>
+                        </div>
+                        <div>
+                            <span class="text-theme-muted font-medium">Resistência:</span>
+                            <span class="text-white ml-1 font-mono">${ritual.resistance || 'Nenhuma'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-3 border-t border-theme-border/50 text-sm text-theme-muted/80 leading-relaxed max-h-32 overflow-y-auto custom-scrollbar flex-grow">
+                        ${ritual.description}
+                    </div>
                 `;
-                tbody.appendChild(row);
+                container.appendChild(ritualCard);
                 lucide.createIcons();
             });
         }
@@ -1399,14 +1450,14 @@
                     title = 'Imagens do Personagem';
                     content = `
                         <p>O sistema de imagens muda automaticamente baseado nos recursos do personagem:</p>
-                        <ul>
-                            <li><strong>Normal:</strong> Vida 76-100%</li>
-                            <li><strong>Machucado:</strong> Vida 51-75%</li>
-                            <li><strong>Cansado:</strong> Esforço ≤ 50%</li>
-                            <li><strong>Perdendo a Cabeça:</strong> Sanidade ≤ 50%</li>
-                            <li><strong>Louco/Morto:</strong> Vida ≤ 25% ou Sanidade ≤ 25%</li>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
+                            <li><strong class="text-white font-medium">Normal:</strong> Vida 76-100%</li>
+                            <li><strong class="text-white font-medium">Machucado:</strong> Vida 51-75%</li>
+                            <li><strong class="text-white font-medium">Cansado:</strong> Esforço ≤ 50%</li>
+                            <li><strong class="text-white font-medium">Perdendo a Cabeça:</strong> Sanidade ≤ 50%</li>
+                            <li><strong class="text-white font-medium">Louco/Morto:</strong> Vida ≤ 25% ou Sanidade ≤ 25%</li>
                         </ul>
-                        <p>Clique em qualquer imagem para usá-la como retrato principal.</p>
+                        <p class="mt-3">Clique em qualquer imagem para usá-la como retrato principal.</p>
                     `;
                     break;
                     
@@ -1414,14 +1465,14 @@
                     title = 'Atributos';
                     content = `
                         <p>Os atributos são as características básicas do personagem:</p>
-                        <ul>
-                            <li><strong>Força:</strong> Capacidade física, levantamento de peso, dano corpo a corpo</li>
-                            <li><strong>Agilidade:</strong> Velocidade, reflexos, coordenação motora</li>
-                            <li><strong>Intelecto:</strong> Capacidade mental, conhecimento, raciocínio</li>
-                            <li><strong>Vigor:</strong> Resistência física, saúde, pontos de vida</li>
-                            <li><strong>Presença:</strong> Carisma, força de vontade, sanidade</li>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
+                            <li><strong class="text-white font-medium">Força:</strong> Capacidade física, levantamento de peso, dano corpo a corpo</li>
+                            <li><strong class="text-white font-medium">Agilidade:</strong> Velocidade, reflexos, coordenação motora</li>
+                            <li><strong class="text-white font-medium">Intelecto:</strong> Capacidade mental, conhecimento, raciocínio</li>
+                            <li><strong class="text-white font-medium">Vigor:</strong> Resistência física, saúde, pontos de vida</li>
+                            <li><strong class="text-white font-medium">Presença:</strong> Carisma, força de vontade, sanidade</li>
                         </ul>
-                        <p>Cada ponto de Vigor aumenta a Vida máxima em 5.<br>
+                        <p class="mt-3">Cada ponto de Vigor aumenta a Vida máxima em 5.<br>
                         Cada ponto de Presença aumenta a Sanidade máxima em 3.</p>
                     `;
                     break;
@@ -1430,12 +1481,12 @@
                     title = 'Defesas';
                     content = `
                         <p>As defesas protegem o personagem de ataques:</p>
-                        <ul>
-                            <li><strong>Defesa:</strong> Dificuldade para ser acertado</li>
-                            <li><strong>Bloqueio:</strong> Redução de dano quando se defende</li>
-                            <li><strong>Esquiva:</strong> Chance de evitar completamente um ataque</li>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
+                            <li><strong class="text-white font-medium">Defesa:</strong> Dificuldade para ser acertado</li>
+                            <li><strong class="text-white font-medium">Bloqueio:</strong> Redução de dano quando se defende</li>
+                            <li><strong class="text-white font-medium">Esquiva:</strong> Chance de evitar completamente um ataque</li>
                         </ul>
-                        <p>Use "Adicionar Resistências" para configurar resistências específicas contra elementos paranormais.</p>
+                        <p class="mt-3">Use "Adicionar Resistências" para configurar resistências específicas contra elementos paranormais.</p>
                     `;
                     break;
                     
@@ -1443,12 +1494,12 @@
                     title = 'Vida';
                     content = `
                         <p>A Vida representa a integridade física do personagem:</p>
-                        <ul>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
                             <li>Começa em 20 + (Vigor × 5)</li>
                             <li>Quando chega a 0, o personagem morre</li>
                             <li>A imagem muda baseada na porcentagem de Vida restante</li>
                         </ul>
-                        <p><strong>Importante:</strong> A morte ocorre apenas quando a Vida chega a exatamente 0.</p>
+                        <p class="mt-3"><strong class="text-theme-red font-medium">Importante:</strong> A morte ocorre apenas quando a Vida chega a exatamente 0.</p>
                     `;
                     break;
                     
@@ -1456,12 +1507,12 @@
                     title = 'Sanidade';
                     content = `
                         <p>A Sanidade representa a saúde mental do personagem:</p>
-                        <ul>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
                             <li>Começa em 16 + (Presença × 3)</li>
                             <li>Quando muito baixa, o personagem pode desenvolver transtornos</li>
                             <li>A imagem muda quando a Sanidade está ≤ 50% ou ≤ 25%</li>
                         </ul>
-                        <p><strong>Dica:</strong> Personagens com Sanidade baixa podem sofrer penalidades em testes sociais e mentais.</p>
+                        <p class="mt-3"><strong class="text-theme-blue font-medium">Dica:</strong> Personagens com Sanidade baixa podem sofrer penalidades em testes sociais e mentais.</p>
                     `;
                     break;
                     
@@ -1469,12 +1520,12 @@
                     title = 'Esforço';
                     content = `
                         <p>O Esforço representa a energia para usar habilidades especiais:</p>
-                        <ul>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
                             <li>Começa em 4 + (NEX ÷ 15, arredondado para baixo)</li>
                             <li>É gasto para usar rituais, habilidades de classe, etc.</li>
                             <li>Recupera após descanso adequado</li>
                         </ul>
-                        <p><strong>Lembrete:</strong> Sem Esforço, o personagem não pode usar habilidades especiais.</p>
+                        <p class="mt-3"><strong class="text-theme-gold font-medium">Lembrete:</strong> Sem Esforço, o personagem não pode usar habilidades especiais.</p>
                     `;
                     break;
                     
@@ -1482,13 +1533,13 @@
                     title = 'Rituais';
                     content = `
                         <p>Rituais são poderes paranormais que personagens Ocultistas podem aprender:</p>
-                        <ul>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
                             <li>Cada ritual pertence a um dos 5 elementos</li>
                             <li>Tem um nível de círculo (1º a 4º)</li>
                             <li>Custa Esforço para ser usado</li>
                             <li>Pode exigir componentes ou condições especiais</li>
                         </ul>
-                        <p><strong>Importante:</strong> Só personagens Ocultistas podem aprender rituais.</p>
+                        <p class="mt-3"><strong class="text-theme-purple font-medium">Importante:</strong> Só personagens Ocultistas podem aprender rituais.</p>
                     `;
                     break;
                     
@@ -1496,13 +1547,13 @@
                     title = 'Inventário';
                     content = `
                         <p>O inventário possui regras específicas:</p>
-                        <ul>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
                             <li>Limite de 5 itens (exceto armas)</li>
                             <li>Cada item tem usabilidade específica</li>
                             <li>Itens com munição/uso limitado devem ser repostos</li>
                             <li>Armas não contam no limite do inventário</li>
                         </ul>
-                        <p><strong>Dica:</strong> Organize seu inventário pensando nas situações que pode enfrentar.</p>
+                        <p class="mt-3"><strong class="text-theme-blue font-medium">Dica:</strong> Organize seu inventário pensando nas situações que pode enfrentar.</p>
                     `;
                     break;
                     
@@ -1510,14 +1561,14 @@
                     title = 'Armas';
                     content = `
                         <p>As armas têm características específicas:</p>
-                        <ul>
-                            <li><strong>Tipo:</strong> Define a categoria da arma</li>
-                            <li><strong>Dano:</strong> Quantidade e tipo de dado de dano</li>
-                            <li><strong>Alcance:</strong> Distância efetiva da arma</li>
-                            <li><strong>Crítico:</strong> Chance e multiplicador de crítico</li>
-                            <li><strong>Munição:</strong> Usos restantes (se aplicável)</li>
+                        <ul class="list-disc pl-5 space-y-2 mt-2 text-theme-muted/90">
+                            <li><strong class="text-white font-medium">Tipo:</strong> Define a categoria da arma</li>
+                            <li><strong class="text-white font-medium">Dano:</strong> Quantidade e tipo de dado de dano</li>
+                            <li><strong class="text-white font-medium">Alcance:</strong> Distância efetiva da arma</li>
+                            <li><strong class="text-white font-medium">Crítico:</strong> Chance e multiplicador de crítico</li>
+                            <li><strong class="text-white font-medium">Munição:</strong> Usos restantes (se aplicável)</li>
                         </ul>
-                        <p><strong>Nota:</strong> Armas de fogo normalmente têm munição limitada.</p>
+                        <p class="mt-3"><strong class="text-theme-orange font-medium">Nota:</strong> Armas de fogo normalmente têm munição limitada.</p>
                     `;
                     break;
             }
