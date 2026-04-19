@@ -1123,16 +1123,16 @@ Inteligência: 18
                     Fórmula: ${derived.formula}
                 </div>
                 
-                <div class="category-controls">
+                <div class="category-controls flex flex-wrap gap-2 mt-2">
                     <button onclick="toggleDerived(${derived.id}, 'active')" 
-                            class="control-btn ${derived.active ? 'btn-inactive' : 'btn-active'}">
-                        <i data-lucide="${derived.active ? 'pause' : 'play'}"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${derived.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${derived.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
                         ${derived.active ? "Desativar" : "Ativar"}
                     </button>
                     
                     <button onclick="toggleDerived(${derived.id}, 'delete')" 
-                            class="control-btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
                         Remover
                     </button>
                 </div>
@@ -1271,16 +1271,16 @@ Inteligência: 18
                     | Intensidade: ${sentiment.intensity.toFixed(1)}
                 </div>
                 
-                <div class="sentiment-controls">
+                <div class="sentiment-controls flex flex-wrap gap-2 mt-2">
                     <button onclick="toggleSentiment(${index}, 'active')" 
-                            class="control-btn ${sentiment.active ? 'btn-inactive' : 'btn-active'}">
-                        <i data-lucide="${sentiment.active ? 'pause' : 'play'}"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${sentiment.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${sentiment.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
                         ${sentiment.active ? "Desativar" : "Ativar"}
                     </button>
                     
                     <button onclick="toggleSentiment(${index}, 'delete')" 
-                            class="control-btn btn-danger">
-                        <i data-lucide="trash-2"></i>
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
                         Remover
                     </button>
                 </div>
