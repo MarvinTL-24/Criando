@@ -197,200 +197,202 @@
         </div>
 
         <!-- SEÇÃO 2: ATRIBUTOS E DEFESAS -->
-        <div class="attributes-section">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 2xl:gap-8 mb-8 2xl:mb-12">
             <!-- ATRIBUTOS -->
-            <div>
-                <h3 class="d-flex align-center mb-2">
-                    <i class="fas fa-brain" style="margin-right: 0.5rem;"></i>
+            <div class="lg:col-span-2 section-panel shadow-glass flex flex-col">
+                <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-6 pb-2 border-b border-theme-border/50">
+                    <i data-lucide="brain" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                     Atributos
-                    <button class="help-btn" onclick="showHelp('attributes-help')">
-                        <i data-lucide="help-circle"></i>
+                    <button class="ml-auto text-theme-muted hover:text-theme-blue transition-colors" onclick="showHelp('attributes-help')">
+                        <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                     </button>
                 </h3>
                 
-                <div class="attributes-grid">
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 2xl:gap-6 flex-grow items-center">
                     <!-- FORÇA -->
-                    <div class="attribute-card">
-                        <div class="attribute-name">Força</div>
-                        <div class="attribute-value" id="attr-for">0</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn" data-attr="for" data-action="decrease">-</button>
-                            <input type="number" class="form-input" style="width: 60px; text-align: center;" id="input-for" value="0" min="0" max="5">
-                            <button class="attr-btn" data-attr="for" data-action="increase">+</button>
+                    <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
+                        <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Força</div>
+                        <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-for">0</div>
+                        <div class="flex justify-center gap-2">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="for" data-action="decrease">-</button>
+                            <input type="number" class="w-16 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-blue" id="input-for" value="0" min="0" max="5">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="for" data-action="increase">+</button>
                         </div>
                     </div>
                     <!-- AGILIDADE -->
-                    <div class="attribute-card">
-                        <div class="attribute-name">Agilidade</div>
-                        <div class="attribute-value" id="attr-agi">0</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn" data-attr="agi" data-action="decrease">-</button>
-                            <input type="number" class="form-input" style="width: 60px; text-align: center;" id="input-agi" value="0" min="0" max="5">
-                            <button class="attr-btn" data-attr="agi" data-action="increase">+</button>
+                    <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
+                        <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Agilidade</div>
+                        <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-agi">0</div>
+                        <div class="flex justify-center gap-2">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="agi" data-action="decrease">-</button>
+                            <input type="number" class="w-16 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-blue" id="input-agi" value="0" min="0" max="5">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="agi" data-action="increase">+</button>
                         </div>
                     </div>
                     <!-- INTELECTO -->
-                    <div class="attribute-card">
-                        <div class="attribute-name">Intelecto</div>
-                        <div class="attribute-value" id="attr-int">0</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn" data-attr="int" data-action="decrease">-</button>
-                            <input type="number" class="form-input" style="width: 60px; text-align: center;" id="input-int" value="0" min="0" max="5">
-                            <button class="attr-btn" data-attr="int" data-action="increase">+</button>
+                    <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
+                        <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Intelecto</div>
+                        <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-int">0</div>
+                        <div class="flex justify-center gap-2">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="int" data-action="decrease">-</button>
+                            <input type="number" class="w-16 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-blue" id="input-int" value="0" min="0" max="5">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="int" data-action="increase">+</button>
                         </div>
                     </div>
                     <!-- VIGOR -->
-                    <div class="attribute-card">
-                        <div class="attribute-name">Vigor</div>
-                        <div class="attribute-value" id="attr-vig">0</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn" data-attr="vig" data-action="decrease">-</button>
-                            <input type="number" class="form-input" style="width: 60px; text-align: center;" id="input-vig" value="0" min="0" max="5">
-                            <button class="attr-btn" data-attr="vig" data-action="increase">+</button>
+                    <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
+                        <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Vigor</div>
+                        <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-vig">0</div>
+                        <div class="flex justify-center gap-2">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="vig" data-action="decrease">-</button>
+                            <input type="number" class="w-16 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-blue" id="input-vig" value="0" min="0" max="5">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="vig" data-action="increase">+</button>
                         </div>
                     </div>
                     <!-- PRESENÇA -->
-                    <div class="attribute-card">
-                        <div class="attribute-name">Presença</div>
-                        <div class="attribute-value" id="attr-pre">0</div>
-                        <div class="attribute-controls">
-                            <button class="attr-btn" data-attr="pre" data-action="decrease">-</button>
-                            <input type="number" class="form-input" style="width: 60px; text-align: center;" id="input-pre" value="0" min="0" max="5">
-                            <button class="attr-btn" data-attr="pre" data-action="increase">+</button>
+                    <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center sm:col-span-1 col-span-2">
+                        <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Presença</div>
+                        <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-pre">0</div>
+                        <div class="flex justify-center gap-2">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="pre" data-action="decrease">-</button>
+                            <input type="number" class="w-16 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-blue" id="input-pre" value="0" min="0" max="5">
+                            <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="pre" data-action="increase">+</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- DEFESAS E RESISTÊNCIAS -->
-            <div class="defenses-card">
-                <h3 class="d-flex align-center mb-2">
-                    <i class="fas fa-shield-alt" style="margin-right: 0.5rem;"></i>
+            <div class="section-panel shadow-glass lg:col-span-1">
+                <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-6 pb-2 border-b border-theme-border/50">
+                    <i data-lucide="shield" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                     Defesas
-                    <button class="help-btn" onclick="showHelp('defenses-help')">
-                        <i data-lucide="help-circle"></i>
+                    <button class="ml-auto text-theme-muted hover:text-theme-blue transition-colors" onclick="showHelp('defenses-help')">
+                        <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                     </button>
                 </h3>
                 
-                <div class="form-group">
-                    <label class="form-label">Defesa</label>
-                    <input type="number" class="form-input" id="defense" value="10" min="0" max="50">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Bloqueio</label>
-                    <input type="number" class="form-input" id="block" value="0" min="0" max="20">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Esquiva</label>
-                    <input type="number" class="form-input" id="dodge" value="0" min="0" max="20">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm 2xl:text-base text-theme-muted mb-1.5 font-medium">Defesa</label>
+                        <input type="number" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-2.5 2xl:py-3 text-white focus:outline-none focus:border-theme-blue transition-colors 2xl:text-lg" id="defense" value="10" min="0" max="50">
+                    </div>
+                    <div>
+                        <label class="block text-sm 2xl:text-base text-theme-muted mb-1.5 font-medium">Bloqueio</label>
+                        <input type="number" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-2.5 2xl:py-3 text-white focus:outline-none focus:border-theme-blue transition-colors 2xl:text-lg" id="block" value="0" min="0" max="20">
+                    </div>
+                    <div>
+                        <label class="block text-sm 2xl:text-base text-theme-muted mb-1.5 font-medium">Esquiva</label>
+                        <input type="number" class="w-full bg-theme-bg border border-theme-border rounded-lg px-4 py-2.5 2xl:py-3 text-white focus:outline-none focus:border-theme-blue transition-colors 2xl:text-lg" id="dodge" value="0" min="0" max="20">
+                    </div>
                 </div>
                 
-                <div class="mt-3">
-                    <button class="btn btn-primary w-full" onclick="showModal('resistances-modal')">
-                        <i data-lucide="plus"></i> Adicionar Resistências
+                <div class="mt-6">
+                    <button class="w-full flex items-center justify-center gap-2 px-4 py-2 2xl:py-3 bg-[#9b59b6] text-white rounded-lg font-medium hover:bg-opacity-90 transition-colors 2xl:text-lg" onclick="showModal('resistances-modal')">
+                        <i data-lucide="plus" class="w-4 h-4 2xl:w-5 2xl:h-5"></i> Adicionar Resistências
                     </button>
                 </div>
             </div>
         </div>
 
         <!-- SEÇÃO 3: RECURSOS -->
-        <div class="resources-section">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 2xl:gap-8 mb-8 2xl:mb-12">
             <!-- VIDA -->
-            <div class="resource-card">
-                <div class="resource-header">
-                    <div class="resource-title d-flex align-center">
-                        <i class="fas fa-heart" style="margin-right: 0.5rem;"></i>
+            <div class="section-panel shadow-glass">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-red font-bold">
+                        <i data-lucide="heart" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                         Vida
-                        <button class="help-btn" onclick="showHelp('vida-help')">
-                            <i data-lucide="help-circle"></i>
+                        <button class="ml-2 text-theme-muted hover:text-theme-red transition-colors" onclick="showHelp('vida-help')">
+                            <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         </button>
                     </div>
                 </div>
                 
-                <div class="resource-values">
-                    <div class="resource-display" id="vida-current">20</div>
-                    <div class="resource-total">de <span id="vida-max">20</span></div>
+                <div class="text-center mb-4">
+                    <div class="text-4xl 2xl:text-5xl font-bold text-white mb-1" id="vida-current">20</div>
+                    <div class="text-sm 2xl:text-base text-theme-muted">de <span id="vida-max">20</span></div>
                 </div>
                 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="vida-progress" style="width: 100%"></div>
+                <div class="h-2 2xl:h-3 bg-theme-input rounded-full overflow-hidden mb-6">
+                    <div class="h-full bg-theme-red rounded-full transition-all duration-300" id="vida-progress" style="width: 100%"></div>
                 </div>
                 
-                <div class="resource-controls">
-                    <button class="btn btn-danger" onclick="changeResource('vida', -1)">-1</button>
-                    <input type="number" class="form-input" id="vida-input" value="20" min="0">
-                    <button class="btn btn-success" onclick="changeResource('vida', 1)">+1</button>
+                <div class="flex gap-2 mb-2">
+                    <button class="flex-1 py-2 bg-theme-red/20 text-theme-red hover:bg-theme-red/30 rounded-lg font-medium transition-colors" onclick="changeResource('vida', -1)">-1</button>
+                    <input type="number" class="w-20 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-red" id="vida-input" value="20" min="0">
+                    <button class="flex-1 py-2 bg-theme-green/20 text-theme-green hover:bg-theme-green/30 rounded-lg font-medium transition-colors" onclick="changeResource('vida', 1)">+1</button>
                 </div>
-                <div class="resource-controls mt-1">
-                    <button class="btn btn-danger btn-sm" onclick="changeResource('vida', -5)">-5</button>
-                    <button class="btn btn-warning" onclick="setResource('vida', 'half')">½</button>
-                    <button class="btn btn-success btn-sm" onclick="changeResource('vida', 5)">+5</button>
+                <div class="flex gap-2">
+                    <button class="flex-1 py-1.5 bg-theme-red/20 text-theme-red hover:bg-theme-red/30 rounded-lg text-sm transition-colors" onclick="changeResource('vida', -5)">-5</button>
+                    <button class="flex-1 py-1.5 bg-theme-orange/20 text-theme-orange hover:bg-theme-orange/30 rounded-lg text-sm transition-colors" onclick="setResource('vida', 'half')">½</button>
+                    <button class="flex-1 py-1.5 bg-theme-green/20 text-theme-green hover:bg-theme-green/30 rounded-lg text-sm transition-colors" onclick="changeResource('vida', 5)">+5</button>
                 </div>
             </div>
 
             <!-- SANIDADE -->
-            <div class="resource-card">
-                <div class="resource-header">
-                    <div class="resource-title d-flex align-center">
-                        <i class="fas fa-brain" style="margin-right: 0.5rem;"></i>
+            <div class="section-panel shadow-glass">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue font-bold">
+                        <i data-lucide="brain" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                         Sanidade
-                        <button class="help-btn" onclick="showHelp('sanidade-help')">
-                            <i data-lucide="help-circle"></i>
+                        <button class="ml-2 text-theme-muted hover:text-theme-blue transition-colors" onclick="showHelp('sanidade-help')">
+                            <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         </button>
                     </div>
                 </div>
                 
-                <div class="resource-values">
-                    <div class="resource-display" id="sanidade-current">16</div>
-                    <div class="resource-total">de <span id="sanidade-max">16</span></div>
+                <div class="text-center mb-4">
+                    <div class="text-4xl 2xl:text-5xl font-bold text-white mb-1" id="sanidade-current">16</div>
+                    <div class="text-sm 2xl:text-base text-theme-muted">de <span id="sanidade-max">16</span></div>
                 </div>
                 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="sanidade-progress" style="width: 100%"></div>
+                <div class="h-2 2xl:h-3 bg-theme-input rounded-full overflow-hidden mb-6">
+                    <div class="h-full bg-theme-blue rounded-full transition-all duration-300" id="sanidade-progress" style="width: 100%"></div>
                 </div>
                 
-                <div class="resource-controls">
-                    <button class="btn btn-danger" onclick="changeResource('sanidade', -1)">-1</button>
-                    <input type="number" class="form-input" id="sanidade-input" value="16" min="0">
-                    <button class="btn btn-success" onclick="changeResource('sanidade', 1)">+1</button>
+                <div class="flex gap-2 mb-2">
+                    <button class="flex-1 py-2 bg-theme-red/20 text-theme-red hover:bg-theme-red/30 rounded-lg font-medium transition-colors" onclick="changeResource('sanidade', -1)">-1</button>
+                    <input type="number" class="w-20 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-blue" id="sanidade-input" value="16" min="0">
+                    <button class="flex-1 py-2 bg-theme-green/20 text-theme-green hover:bg-theme-green/30 rounded-lg font-medium transition-colors" onclick="changeResource('sanidade', 1)">+1</button>
                 </div>
-                <div class="resource-controls mt-1">
-                    <button class="btn btn-danger btn-sm" onclick="changeResource('sanidade', -5)">-5</button>
-                    <button class="btn btn-warning" onclick="setResource('sanidade', 'half')">½</button>
-                    <button class="btn btn-success btn-sm" onclick="changeResource('sanidade', 5)">+5</button>
+                <div class="flex gap-2">
+                    <button class="flex-1 py-1.5 bg-theme-red/20 text-theme-red hover:bg-theme-red/30 rounded-lg text-sm transition-colors" onclick="changeResource('sanidade', -5)">-5</button>
+                    <button class="flex-1 py-1.5 bg-theme-orange/20 text-theme-orange hover:bg-theme-orange/30 rounded-lg text-sm transition-colors" onclick="setResource('sanidade', 'half')">½</button>
+                    <button class="flex-1 py-1.5 bg-theme-green/20 text-theme-green hover:bg-theme-green/30 rounded-lg text-sm transition-colors" onclick="changeResource('sanidade', 5)">+5</button>
                 </div>
             </div>
 
             <!-- ESFORÇO -->
-            <div class="resource-card">
-                <div class="resource-header">
-                    <div class="resource-title d-flex align-center">
-                        <i class="fas fa-bolt" style="margin-right: 0.5rem;"></i>
+            <div class="section-panel shadow-glass">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-gold font-bold">
+                        <i data-lucide="zap" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
                         Esforço
-                        <button class="help-btn" onclick="showHelp('esforco-help')">
-                            <i data-lucide="help-circle"></i>
+                        <button class="ml-2 text-theme-muted hover:text-theme-gold transition-colors" onclick="showHelp('esforco-help')">
+                            <i data-lucide="help-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         </button>
                     </div>
                 </div>
                 
-                <div class="resource-values">
-                    <div class="resource-display" id="esforco-current">4</div>
-                    <div class="resource-total">de <span id="esforco-max">4</span></div>
+                <div class="text-center mb-4">
+                    <div class="text-4xl 2xl:text-5xl font-bold text-white mb-1" id="esforco-current">4</div>
+                    <div class="text-sm 2xl:text-base text-theme-muted">de <span id="esforco-max">4</span></div>
                 </div>
                 
-                <div class="progress-bar">
-                    <div class="progress-fill" id="esforco-progress" style="width: 100%"></div>
+                <div class="h-2 2xl:h-3 bg-theme-input rounded-full overflow-hidden mb-6">
+                    <div class="h-full bg-theme-gold rounded-full transition-all duration-300" id="esforco-progress" style="width: 100%"></div>
                 </div>
                 
-                <div class="resource-controls">
-                    <button class="btn btn-danger" onclick="changeResource('esforco', -1)">-1</button>
-                    <input type="number" class="form-input" id="esforco-input" value="4" min="0">
-                    <button class="btn btn-success" onclick="changeResource('esforco', 1)">+1</button>
+                <div class="flex gap-2 mb-2">
+                    <button class="flex-1 py-2 bg-theme-red/20 text-theme-red hover:bg-theme-red/30 rounded-lg font-medium transition-colors" onclick="changeResource('esforco', -1)">-1</button>
+                    <input type="number" class="w-20 bg-theme-input border border-theme-border rounded-lg text-center text-white focus:outline-none focus:border-theme-gold" id="esforco-input" value="4" min="0">
+                    <button class="flex-1 py-2 bg-theme-green/20 text-theme-green hover:bg-theme-green/30 rounded-lg font-medium transition-colors" onclick="changeResource('esforco', 1)">+1</button>
                 </div>
-                <div class="resource-controls mt-1">
-                    <button class="btn btn-danger btn-sm" onclick="changeResource('esforco', -2)">-2</button>
-                    <button class="btn btn-warning" onclick="setResource('esforco', 'half')">½</button>
-                    <button class="btn btn-success btn-sm" onclick="changeResource('esforco', 2)">+2</button>
+                <div class="flex gap-2">
+                    <button class="flex-1 py-1.5 bg-theme-red/20 text-theme-red hover:bg-theme-red/30 rounded-lg text-sm transition-colors" onclick="changeResource('esforco', -2)">-2</button>
+                    <button class="flex-1 py-1.5 bg-theme-orange/20 text-theme-orange hover:bg-theme-orange/30 rounded-lg text-sm transition-colors" onclick="setResource('esforco', 'half')">½</button>
+                    <button class="flex-1 py-1.5 bg-theme-green/20 text-theme-green hover:bg-theme-green/30 rounded-lg text-sm transition-colors" onclick="changeResource('esforco', 2)">+2</button>
                 </div>
             </div>
         </div>
