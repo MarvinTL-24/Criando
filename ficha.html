@@ -952,60 +952,38 @@
             showFeedback('🧹 Ficha limpa', 'Todos os campos foram resetados.', 'info');
         }
 
+        function getCamposFicha(dados) {
+            return [
+                { t: 'Nome', v: dados.nome },
+                { t: 'Título / Epíteto', v: dados.titulo },
+                { t: 'Nível', v: dados.nivel },
+                { t: 'Idade', v: dados.idade },
+                { t: 'Altura', v: dados.altura },
+                { t: 'Peso', v: dados.peso },
+                { t: 'Raça', v: dados.raca },
+                { t: 'Classe', v: dados.classe },
+                { t: 'Cabeça / Rosto', v: dados.cabeca },
+                { t: 'Torso', v: dados.torso },
+                { t: 'Braços / Mãos', v: dados.bracos },
+                { t: 'Pernas / Pés', v: dados.pernas },
+                { t: 'História de Fundo', v: dados.historia },
+                { t: 'Motivações', v: dados.motivacoes },
+                { t: 'Medos / Traumas', v: dados.medos },
+                { t: 'Traços de Personalidade', v: dados.personalidade },
+                { t: 'Ideais & Valores', v: dados.ideais },
+                { t: 'Defeitos & Fraquezas', v: dados.defeitos },
+                { t: 'Maneirismos & Hábitos', v: dados.habitos },
+                { t: 'Aliados & Amigos', v: dados.aliados },
+                { t: 'Inimigos & Rivalidades', v: dados.inimigos }
+            ];
+        }
+
         function exportarTXT() {
             const dados = coletarTodosDados();
-            let texto = '';
+            const campos = getCamposFicha(dados);
             
-            texto += '='.repeat(50) + '\n';
-            texto += 'FICHA DE PERSONAGEM - GRIMÓRIO DIGITAL\n';
-            texto += '='.repeat(50) + '\n\n';
+            const texto = campos.map(c => `${c.t} - ${c.v || 'Não preenchido'}`).join('\n\n=====\n\n');
             
-            // Identidade
-            texto += 'IDENTIDADE\n';
-            texto += '-'.repeat(50) + '\n';
-            texto += `Nome: ${dados.nome || 'Não definido'}\n`;
-            texto += `Título: ${dados.titulo || 'Não definido'}\n`;
-            texto += `Nível: ${dados.nivel || '1'}\n`;
-            texto += `Idade: ${dados.idade || 'Não definida'}\n`;
-            texto += `Altura: ${dados.altura || 'Não definida'}\n`;
-            texto += `Peso: ${dados.peso || 'Não definido'}\n`;
-            texto += `Raça: ${dados.raca || 'Não definida'}\n`;
-            texto += `Classe: ${dados.classe || 'Escolha livre'}\n\n`;
-            
-            // Aparência
-            texto += 'APARÊNCIA FÍSICA\n';
-            texto += '-'.repeat(50) + '\n';
-            texto += `Cabeça/Rosto: ${dados.cabeca || 'Não descrito'}\n\n`;
-            texto += `Torso: ${dados.torso || 'Não descrito'}\n\n`;
-            texto += `Braços/Mãos: ${dados.bracos || 'Não descrito'}\n\n`;
-            texto += `Pernas/Pés: ${dados.pernas || 'Não descrito'}\n\n`;
-            
-            // História
-            texto += 'HISTÓRIA & PASSADO\n';
-            texto += '-'.repeat(50) + '\n';
-            texto += `História de Fundo: ${dados.historia || 'Não escrita'}\n\n`;
-            texto += `Motivações: ${dados.motivacoes || 'Não definidas'}\n\n`;
-            texto += `Medos/Traumas: ${dados.medos || 'Não definidos'}\n\n`;
-            
-            // Personalidade
-            texto += 'PERSONALIDADE\n';
-            texto += '-'.repeat(50) + '\n';
-            texto += `Traços de Personalidade: ${dados.personalidade || 'Não definidos'}\n\n`;
-            texto += `Ideais & Valores: ${dados.ideais || 'Não definidos'}\n\n`;
-            texto += `Defeitos & Fraquezas: ${dados.defeitos || 'Não definidos'}\n\n`;
-            texto += `Maneirismos & Hábitos: ${dados.habitos || 'Não definidos'}\n\n`;
-            
-            // Relações
-            texto += 'RELAÇÕES\n';
-            texto += '-'.repeat(50) + '\n';
-            texto += `Aliados & Amigos: ${dados.aliados || 'Não definidos'}\n\n`;
-            texto += `Inimigos & Rivalidades: ${dados.inimigos || 'Não definidos'}\n\n`;
-            
-            texto += '='.repeat(50) + '\n';
-            texto += `Exportado em: ${new Date().toLocaleString('pt-BR')}\n`;
-            texto += '='.repeat(50) + '\n';
-            
-            // Criar arquivo
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.txt`;
@@ -1016,12 +994,15 @@
             link.click();
             document.body.removeChild(link);
             
-            showFeedback('📄 Exportado!', 'Ficha salva como arquivo TXT.', 'success');
+            showFeedback('📄 Exportado!', 'Ficha salva como arquivo TXT limpo.', 'success');
         }
 
         function exportarWord() {
             const dados = coletarTodosDados();
+            const campos = getCamposFicha(dados);
             const formatString = (str) => (str || 'Não preenchido').replace(/\n/g, '<br/>');
+            
+            const corpoHtml = campos.map(c => `<span><strong>${c.t}</strong> - ${formatString(c.v)}</span>`).join('<br/><br/>=====<br/><br/>');
             
             let html = `
                 <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
@@ -1029,57 +1010,11 @@
                     <meta charset='utf-8'>
                     <title>Ficha Personagem</title>
                     <style>
-                        body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; }
-                        h1 { color: #1a365d; text-align: center; border-bottom: 2px solid #3182ce; padding-bottom: 10px; margin-bottom: 20px;}
-                        h2 { color: #2b6cb0; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px; margin-top: 30px; }
-                        strong { color: #2d3748; }
-                        .secao { margin-bottom: 25px; background: #f7fafc; padding: 15px; border-radius: 8px; }
-                        p { margin: 8px 0; }
+                        body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;}
                     </style>
                 </head>
                 <body>
-                    <h1>Ficha de Personagem - Grimório Digital</h1>
-                    
-                    <div class="secao">
-                        <h2>Identidade</h2>
-                        <p><strong>Nome:</strong> ${dados.nome || 'Não definido'}</p>
-                        <p><strong>Título:</strong> ${dados.titulo || 'Não definido'}</p>
-                        <p><strong>Nível:</strong> ${dados.nivel || '1'}</p>
-                        <p><strong>Idade:</strong> ${dados.idade || 'Não definida'}</p>
-                        <p><strong>Altura:</strong> ${dados.altura || 'Não definida'}</p>
-                        <p><strong>Peso:</strong> ${dados.peso || 'Não definido'}</p>
-                        <p><strong>Raça:</strong> ${dados.raca || 'Não definida'}</p>
-                        <p><strong>Classe:</strong> ${dados.classe || 'Escolha livre'}</p>
-                    </div>
-                    
-                    <div class="secao">
-                        <h2>Aparência Física</h2>
-                        <p><strong>Cabeça/Rosto:</strong><br/>${formatString(dados.cabeca)}</p>
-                        <p><strong>Torso:</strong><br/>${formatString(dados.torso)}</p>
-                        <p><strong>Braços/Mãos:</strong><br/>${formatString(dados.bracos)}</p>
-                        <p><strong>Pernas/Pés:</strong><br/>${formatString(dados.pernas)}</p>
-                    </div>
-
-                    <div class="secao">
-                        <h2>História & Passado</h2>
-                        <p><strong>História de Fundo:</strong><br/>${formatString(dados.historia)}</p>
-                        <p><strong>Motivações:</strong><br/>${formatString(dados.motivacoes)}</p>
-                        <p><strong>Medos/Traumas:</strong><br/>${formatString(dados.medos)}</p>
-                    </div>
-
-                    <div class="secao">
-                        <h2>Personalidade</h2>
-                        <p><strong>Traços de Personalidade:</strong><br/>${formatString(dados.personalidade)}</p>
-                        <p><strong>Ideais & Valores:</strong><br/>${formatString(dados.ideais)}</p>
-                        <p><strong>Defeitos & Fraquezas:</strong><br/>${formatString(dados.defeitos)}</p>
-                        <p><strong>Maneirismos & Hábitos:</strong><br/>${formatString(dados.habitos)}</p>
-                    </div>
-
-                    <div class="secao">
-                        <h2>Relações</h2>
-                        <p><strong>Aliados & Amigos:</strong><br/>${formatString(dados.aliados)}</p>
-                        <p><strong>Inimigos & Rivalidades:</strong><br/>${formatString(dados.inimigos)}</p>
-                    </div>
+                    ${corpoHtml}
                 </body>
                 </html>
             `;
@@ -1094,7 +1029,7 @@
             link.click();
             document.body.removeChild(link);
             
-            showFeedback('📄 Exportado!', 'Ficha salva como arquivo Word (.doc).', 'success');
+            showFeedback('📄 Exportado!', 'Ficha salva como arquivo Word limpo.', 'success');
         }
 
         // 8. EXPORTAR FUNÇÕES PARA O GLOBAL
