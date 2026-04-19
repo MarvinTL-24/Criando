@@ -12,17 +12,123 @@
     <!-- Sistema Grimório -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="js/tailwind-config.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <link rel="stylesheet" href="css/global.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                            red: '#dc2626',
+                            green: '#22c55e',
+                            purple: '#8b5cf6',
+                            yellow: '#f59e0b',
+                            pink: '#ec4899',
+                            gold: '#d4a76a',
+                            copper: '#8b7355'
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            'from': { opacity: '0' },
+                            'to': { opacity: '1' }
+                        },
+                        slideUp: {
+                            'from': { transform: 'translateY(20px)', opacity: '0' },
+                            'to': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 5px rgba(74, 158, 255, 0.5)' },
+                            '50%': { boxShadow: '0 0 20px rgba(74, 158, 255, 0.8)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        /* Scrollbar Customizada */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
+
+        /* Avatar Placeholder */
+        .avatar-placeholder {
+            background: linear-gradient(135deg, #2a2a2e 0%, #1a1a1e 100%);
+            border: 2px dashed #4a9eff;
+        }
+        
+        /* Cards */
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Badges */
+        .badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        .badge-blue { background: rgba(74, 158, 255, 0.15); color: #4a9eff; border: 1px solid rgba(74, 158, 255, 0.3); }
+        .badge-orange { background: rgba(255, 107, 53, 0.15); color: #ff6b35; border: 1px solid rgba(255, 107, 53, 0.3); }
+        .badge-green { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
+        .badge-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
+        
+        /* Seção Explicativa */
+        .feature-card {
+            background: linear-gradient(135deg, rgba(15, 15, 18, 0.8) 0%, rgba(10, 10, 12, 0.9) 100%);
+            border: 1px solid #2a2a2e;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        
+        .feature-card:hover {
+            border-color: #4a9eff;
+            transform: translateY(-3px);
+        }
+        
+        .info-section {
+            background: linear-gradient(135deg, rgba(15, 15, 18, 0.6) 0%, rgba(10, 10, 12, 0.8) 100%);
+            border: 1px solid #2a2a2e;
+            backdrop-filter: blur(10px);
+        }
+    </style>
 </head>
-<body class="font-sans flex flex-col">
+<body class="min-h-screen font-sans flex flex-col">
 
     <!-- Navbar -->
-    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 shadow-glass">
-        <div class="container-adaptive">
-            <div class="flex items-center justify-center lg:justify-start flex-wrap gap-1 md:gap-4" id="nav-container">
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-center flex-wrap" id="nav-container">
                 
                 <!-- Página Atual (Home) -->
                 <a href="index.html" class="flex items-center gap-2 px-5 py-4 text-theme-blue font-medium tracking-wide transition-all duration-300 bg-[#1a1a1e] border-b-2 border-[#4a9eff]">
@@ -95,33 +201,33 @@
             <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent"></div>
             
             <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                <h1 class="font-cinzel text-5xl md:text-7xl 2xl:text-9xl font-bold text-white tracking-widest mb-4 text-center drop-shadow-2xl">
+                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-white tracking-widest mb-4 text-center">
                     GRIMÓRIO DIGITAL
                 </h1>
-                <div class="w-48 2xl:w-96 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
-                <p class="text-[#a0a0a0] mt-3 tracking-[0.3em] text-sm md:text-base 2xl:text-xl font-light uppercase">Hub Central</p>
+                <div class="w-48 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
+                <p class="text-[#a0a0a0] mt-3 tracking-[0.3em] text-sm font-light uppercase">Hub Central</p>
             </div>
         </div>
 
         <!-- SEÇÃO PRINCIPAL: SEU PERSONAGEM -->
-        <div class="container-adaptive py-12">
+        <div class="max-w-7xl mx-auto px-4 py-8">
             <!-- Cabeçalho da Seção -->
-            <div class="flex flex-col sm:flex-row items-center sm:justify-between mb-8 animate-slide-up gap-4 text-center sm:text-left">
+            <div class="flex items-center justify-between mb-6 animate-slide-up">
                 <div>
-                    <h2 class="font-cinzel text-3xl 2xl:text-5xl font-bold text-white flex items-center justify-center sm:justify-start gap-3">
+                    <h2 class="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
                         <i data-lucide="user" class="w-6 h-6 text-theme-blue"></i>
                         Seu Personagem
                     </h2>
                     <p class="text-[#a0a0a0] text-sm">Visualize e gerencie seu personagem</p>
                 </div>
                 
-                <div class="flex flex-wrap justify-center gap-3 w-full sm:w-auto">
-                    <button onclick="window.location.href='ficha.html'" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-theme-blue/90 hover:bg-blue-500 rounded-lg text-white text-sm 2xl:text-lg font-medium transition-all duration-300 shadow-glass border border-blue-400/30">
-                        <i data-lucide="external-link" class="w-5 h-5"></i>
+                <div class="flex gap-3">
+                    <button onclick="window.location.href='ficha.html'" class="flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded-lg text-white text-sm font-medium transition-all duration-300">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
                         Ver ficha Completa
                     </button>
-                    <button onclick="window.location.href='status.html'" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-theme-panel border border-theme-border hover:border-theme-blue rounded-lg text-theme-text text-sm 2xl:text-lg font-medium transition-all duration-300 shadow-glass">
-                        <i data-lucide="edit" class="w-5 h-5"></i>
+                    <button onclick="window.location.href='status.html'" class="flex items-center gap-2 px-4 py-2 bg-theme-panel border border-theme-border hover:border-theme-blue rounded-lg text-theme-text text-sm font-medium transition-all duration-300">
+                        <i data-lucide="edit" class="w-4 h-4"></i>
                         Editar status
                     </button>
                 </div>
@@ -140,9 +246,9 @@
                         
                         <div class="flex flex-col items-center">
                             <!-- Container da Imagem -->
-                            <div id="avatar-container" class="w-32 h-32 md:w-48 md:h-48 2xl:w-72 2xl:h-72 rounded-full avatar-placeholder mb-6 overflow-hidden border-4 border-theme-border flex items-center justify-center shadow-[0_0_30px_rgba(74,158,255,0.15)] transition-all">
+                            <div id="avatar-container" class="w-48 h-48 rounded-full avatar-placeholder mb-4 overflow-hidden border-4 border-theme-border flex items-center justify-center">
                                 <!-- Imagem será carregada aqui -->
-                                <i data-lucide="user" class="w-16 h-16 md:w-20 md:h-20 2xl:w-32 2xl:h-32 text-[#606060]" id="avatar-icon"></i>
+                                <i data-lucide="user" class="w-20 h-20 text-[#606060]" id="avatar-icon"></i>
                             </div>
                             
                             <!-- Nome e Classe -->
@@ -199,14 +305,14 @@
         </div>
 
         <!-- SEÇÃO: Conheça o Sistema -->
-        <div class="container-adaptive pb-16 2xl:pb-24">
+        <div class="max-w-7xl mx-auto px-4 pb-12">
             <div class="animate-slide-up" style="animation-delay: 0.3s">
-                <div class="flex items-center gap-3 mb-8">
-                    <i data-lucide="compass" class="w-6 h-6 2xl:w-10 2xl:h-10 text-theme-purple"></i>
-                    <h3 class="font-cinzel text-2xl 2xl:text-4xl font-semibold text-white">Conheça o Sistema</h3>
+                <div class="flex items-center gap-3 mb-6">
+                    <i data-lucide="compass" class="w-6 h-6 text-theme-purple"></i>
+                    <h3 class="font-cinzel text-lg font-semibold text-white">Conheça o Sistema</h3>
                 </div>
                 
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 2xl:gap-10">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Ficha Completa -->
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
@@ -318,9 +424,9 @@
             </div>
         </div>
             <!-- SEÇÃO: Ordem Paranormal -->
-            <div class="container-adaptive pb-20 2xl:pb-32">
+            <div class="max-w-screen-2xl mx-auto px-6 pb-16">
                 <div class="animate-slide-up flex justify-center" style="animation-delay: 0.5s">
-                    <div class="grid grid-cols-1 gap-8 w-full max-w-4xl 2xl:max-w-6xl">
+                    <div class="grid grid-cols-1 gap-8 w-full max-w-3xl">
                         <div class="feature-card rounded-xl p-8 min-h-[280px] 
                                     flex flex-col items-center text-center">
                             
@@ -353,9 +459,9 @@
 
 
         <!-- SEÇÃO: Ações Rápidas -->
-        <div class="container-adaptive pb-16 2xl:pb-32">
+        <div class="max-w-7xl mx-auto px-4 pb-12">
             <div class="animate-slide-up" style="animation-delay: 0.5s">
-                <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center gap-3 mb-6">
                     <i data-lucide="rocket" class="w-6 h-6 text-theme-orange"></i>
                     <h3 class="font-cinzel text-lg font-semibold text-white">Pronto para Aventurar?</h3>
                 </div>
