@@ -1086,7 +1086,7 @@
             
             const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
             const link = document.createElement('a');
-            const nomeArquivo = \`ficha_\${(dados.nome || 'personagem').toLowerCase().replace(/\\s+/g, '_')}.doc\`;
+            const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.doc`;
             
             link.href = URL.createObjectURL(blob);
             link.download = nomeArquivo;
