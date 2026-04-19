@@ -14,10 +14,113 @@
     <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
 
-    <script src="js/tailwind-config.js"></script>
-    <link rel="stylesheet" href="css/global.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        theme: {
+                            bg: '#0a0a0c',
+                            panel: '#0f0f12',
+                            border: '#2a2a2e',
+                            text: '#e8e4dc',
+                            blue: '#4a9eff',
+                            orange: '#ff6b35',
+                            purple: '#8b5cf6',
+                            red: '#dc2626',
+                            green: '#22c55e',
+                            yellow: '#f59e0b',
+                            cyan: '#06b6d4',
+                            pink: '#ec4899'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        
+        .anim-entry {
+            animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        @keyframes fadeInUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .class-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .class-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .class-card.selected {
+            border-color: #4a9eff;
+            box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
+        }
+        
+        /* Modal estilos */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            position: relative;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        /* Animações de entrada */
+        .slide-in {
+            animation: slideIn 0.3s ease-out forwards;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        /* Tags de classe */
+        .classe-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 4px;
+            margin-bottom: 4px;
+        }
+    </style>
 </head>
-<body class="font-sans flex flex-col min-h-screen">
+<body class="min-h-screen font-sans">
 
     <!-- Modal para Criar Nova Classe -->
     <div id="modal-nova-classe" class="modal-overlay flex items-center justify-center p-4">
@@ -274,54 +377,58 @@
     </div>
 
     <!-- Barra de Navegação -->
-    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
-        <div class="container-adaptive flex flex-col sm:flex-row items-center justify-between py-4">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-theme-blue/10 border border-theme-blue/30 rounded-lg text-theme-blue font-medium transition-all hover:bg-theme-blue/20 shadow-[0_0_15px_rgba(74,158,255,0.1)]">
-                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
-                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
-                </a>
-            </div>
-            
-            <div class="flex items-center mt-3 sm:mt-0">
-                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-theme-blue drop-shadow-md">Sistema de Classes</span>
-            </div>
-            
-            <div class="flex items-center gap-3 mt-3 sm:mt-0">
-                <button onclick="abrirModalNovaClasse()" class="px-4 py-2 bg-gradient-to-r from-theme-purple to-purple-700 text-white rounded-lg text-sm 2xl:text-base font-semibold hover:opacity-90 transition-opacity flex items-center gap-2 shadow-glass">
-                    <i data-lucide="plus-circle" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
-                    Nova Classe
-                </button>
-                <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar" class="px-4 py-2 bg-theme-blue text-white rounded-lg text-sm 2xl:text-base font-semibold hover:bg-blue-600 transition-colors opacity-0 shadow-glass">
-                    Confirmar Classe
-                </button>
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="flex items-center gap-2 text-theme-text hover:text-theme-blue transition-colors">
+                        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                        <span class="font-cinzel font-semibold">Voltar ao Hub</span>
+                    </a>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <span class="font-cinzel text-lg font-bold text-theme-blue">Sistema de Classes</span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <button onclick="abrirModalNovaClasse()" 
+                            class="px-4 py-2 bg-gradient-to-r from-theme-purple to-purple-700 text-white rounded-lg font-semibold hover:opacity-90 transition-opacity flex items-center gap-2">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        Nova Classe
+                    </button>
+                    <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar" 
+                            class="px-4 py-2 bg-theme-blue text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors opacity-0">
+                        Confirmar Classe
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Conteúdo Principal -->
-    <main class="container-adaptive max-w-7xl 2xl:max-w-[2000px] mb-20 flex-grow">
+    <main class="max-w-6xl mx-auto px-4 py-8">
         
         <!-- Cabeçalho -->
-        <div class="text-center mb-12 2xl:mb-20 anim-entry">
-            <h1 class="font-cinzel text-4xl md:text-5xl 2xl:text-7xl font-bold text-white mb-4 drop-shadow-2xl">Sistema Completo de Classes</h1>
-            <p class="text-gray-400 max-w-2xl 2xl:max-w-4xl mx-auto 2xl:text-xl">
+        <div class="text-center mb-12 anim-entry">
+            <h1 class="font-cinzel text-4xl font-bold text-white mb-4">Sistema Completo de Classes</h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">
                 Escolha uma classe padrão ou crie sua própria classe personalizada com habilidades, armas, pactos e elementos únicos.
             </p>
-            <div class="w-32 2xl:w-64 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mx-auto mt-6"></div>
+            <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mx-auto mt-6"></div>
         </div>
         
         <!-- Classes Personalizadas (Salvas) -->
-        <section class="section-panel mb-12 anim-entry border-t-2 border-t-theme-purple" style="animation-delay: 0.1s;" id="secao-classes-personalizadas">
-            <h2 class="font-cinzel text-2xl 2xl:text-4xl font-bold text-white mb-6 flex items-center gap-2">
-                <i data-lucide="sparkles" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-purple"></i>
+        <section class="mb-12 anim-entry" style="animation-delay: 0.1s;" id="secao-classes-personalizadas">
+            <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="sparkles" class="w-6 h-6 text-theme-purple"></i>
                 Minhas Classes Personalizadas
-                <span id="contador-classes" class="px-2 py-1 bg-theme-purple/20 text-theme-purple text-xs 2xl:text-sm rounded-full border border-theme-purple ml-4">
+                <span id="contador-classes" class="px-2 py-1 bg-theme-purple/20 text-theme-purple text-xs rounded-full border border-theme-purple">
                     0 classes
                 </span>
             </h2>
             
-            <div id="container-classes-personalizadas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 2xl:gap-8">
+            <div id="container-classes-personalizadas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Classes personalizadas serão carregadas aqui -->
                 <div class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg">
                     <i data-lucide="folder-plus" class="w-12 h-12 mx-auto mb-4 text-gray-600"></i>
@@ -332,13 +439,13 @@
         </section>
         
         <!-- Classes Padrão -->
-        <section class="section-panel mb-12 anim-entry border-t-2 border-t-theme-blue" style="animation-delay: 0.2s;">
-            <h2 class="font-cinzel text-2xl 2xl:text-4xl font-bold text-white mb-6 flex items-center gap-2">
-                <i data-lucide="shield" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-blue"></i>
+        <section class="mb-12 anim-entry" style="animation-delay: 0.2s;">
+            <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="shield" class="w-6 h-6 text-theme-blue"></i>
                 Classes Principais
             </h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 2xl:gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
                 <!-- Guerreiro -->
                 <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
@@ -430,9 +537,9 @@
         </section>
         
         <!-- Classe Atualmente Selecionada -->
-        <section class="section-panel bg-theme-panel border border-theme-border p-6 2xl:p-10 rounded-xl mb-8 anim-entry border-t-2 border-t-theme-green shadow-glass" style="animation-delay: 0.3s;">
-            <h2 class="font-cinzel text-2xl 2xl:text-4xl font-bold text-white mb-6 flex items-center gap-2">
-                <i data-lucide="check-circle" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-green"></i>
+        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-8 anim-entry" style="animation-delay: 0.3s;">
+            <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                <i data-lucide="check-circle" class="w-6 h-6 text-theme-green"></i>
                 Classe Selecionada
             </h2>
             
