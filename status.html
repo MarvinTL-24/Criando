@@ -588,14 +588,87 @@
             }
         }
         
-        /* ANIMAÇÕES */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* PAINEL DE ROLAGEM PREMIUM */
+        .dice-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: linear-gradient(135deg, rgba(15, 15, 18, 0.8), rgba(20, 20, 25, 0.9));
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
         }
         
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out;
+        .dice-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+            opacity: 0.5;
+        }
+
+        .modifier-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .modifier-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(74, 158, 255, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .modifier-card.active {
+            border-color: var(--accent-blue);
+            background: rgba(74, 158, 255, 0.05);
+        }
+
+        .result-orb-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, rgba(74, 158, 255, 0.1), transparent 70%);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(74, 158, 255, 0.1);
+        }
+
+        .dice-value-display {
+            font-size: 6rem;
+            font-weight: 900;
+            font-family: 'Cinzel', serif;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(74, 158, 255, 0.5), 0 0 40px rgba(74, 158, 255, 0.2);
+            background: linear-gradient(to bottom, #fff, var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 992px) {
+            .dice-dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* ANIMAÇÕES */
+        @keyframes dice-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .animate-dice {
+            animation: dice-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
     </style>
 </head>
@@ -765,7 +838,7 @@
                 <!-- SENTIMENTOS -->
                 <h3 class="mb-3" style="color: var(--destiny-gold);">Modificadores de Sorte</h3>
                 <div class="sentiments-grid" id="sentiments-container">
-                    <!-- Sentimentos base serão gerados -->
+                    <!-- Sentimentos base serao gerados -->
                 </div>
             </div>
         </section>
@@ -774,74 +847,98 @@
         <section class="section-panel" id="dice-system-section">
             <div class="section-title">
                 <div class="flex items-center gap-3">
-                    <i data-lucide="dices"></i>
-                    <h2>Sistema de Rolagem / Testes</h2>
+                    <i data-lucide="dices" class="text-accent-blue"></i>
+                    <h2>Sistema de Rolagem Arcano</h2>
                 </div>
             </div>
             
-            <div class="sorcery-system" style="background: linear-gradient(135deg, rgba(16, 21, 26, 0.9), rgba(24, 32, 42, 0.9)); border-color: rgba(74, 158, 255, 0.3);">
-                <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Configuração do Dado -->
+            <div class="dice-dashboard">
+                <!-- Coluna de Configuracao -->
+                <div class="space-y-6">
                     <div>
-                        <h3 class="mb-4" style="color: var(--accent-blue);">Configuração da Rolagem</h3>
+                        <h3 class="font-cinzel text-sm uppercase tracking-widest text-accent-blue mb-4 opacity-70">Configuracao de Teste</h3>
                         
-                        <div class="form-group mb-6">
-                            <label class="form-label mb-3 text-gray-300">Quantidade e Lados do Dado</label>
-                            <div class="flex items-center gap-3">
-                                <select id="dice-quantity" class="form-select w-24 text-center font-bold text-2xl py-3 bg-black/40 border-blue-900/50 text-white" onchange="saveDiceConfig()">
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="form-group">
+                                <label class="form-label text-xs uppercase opacity-50">Quantidade</label>
+                                <select id="dice-quantity" class="form-select text-center font-bold text-xl py-2 bg-black/40" onchange="saveDiceConfig()">
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
                                     <option value="4">4</option>
                                     <option value="5">5</option>
                                 </select>
-                                <span class="font-cinzel text-3xl text-accent-blue font-bold tracking-widest drop-shadow-md">D</span>
-                                <input type="number" id="dice-type" class="form-input text-2xl font-bold w-full text-center py-3 bg-black/40 border-blue-900/50 text-white" value="20" min="2" max="1000" onchange="saveDiceConfig()">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label text-xs uppercase opacity-50">Tipo de Dado</label>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-cinzel text-xl text-accent-blue opacity-50">D</span>
+                                    <input type="number" id="dice-type" class="form-input font-bold text-xl py-2 bg-black/40" value="20" min="2" max="1000" onchange="saveDiceConfig()">
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="mt-6 space-y-4 flex flex-col gap-3">
-                            <label class="flex items-center gap-3 cursor-pointer p-4 bg-black/20 rounded border border-blue-900/30 hover:bg-black/40 transition">
-                                <input type="checkbox" id="dice-use-status" onchange="saveDiceConfig()" checked class="w-5 h-5 accent-blue-500">
-                                <div class="text-sm">
-                                    <span class="font-bold text-blue-400 block text-base">Atributos do Status</span>
-                                    <span class="text-gray-500 text-xs mt-1">Soma a média de todos os seus atributos físicos/mentais na rolagem base.</span>
+
+                        <div class="space-y-3">
+                            <label class="modifier-card" id="card-use-status">
+                                <input type="checkbox" id="dice-use-status" onchange="saveDiceConfig()" checked class="hidden">
+                                <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                                    <i data-lucide="activity" class="text-emerald-400 w-5 h-5"></i>
                                 </div>
-                            </label>
-                            
-                            <label class="flex items-center gap-3 cursor-pointer p-4 bg-black/20 rounded border border-purple-900/30 hover:bg-black/40 transition">
-                                <input type="checkbox" id="dice-use-mascot" onchange="saveDiceConfig()" class="w-5 h-5 accent-purple-500">
-                                <div class="text-sm">
-                                    <span class="font-bold text-purple-400 block text-base">Atributos do Mascote</span>
-                                    <span class="text-gray-500 text-xs mt-1">Lê seu animal de estimação salvo em cache e adiciona poder proporcional.</span>
+                                <div class="flex-1">
+                                    <span class="block font-bold text-emerald-400">Atributos Base</span>
+                                    <span class="block text-[10px] text-gray-500">Usa a media dos seus atributos atuais</span>
+                                </div>
+                                <div class="check-status w-4 h-4 rounded-full border-2 border-emerald-500/30 flex items-center justify-center">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 opacity-0 transition-opacity checked-inner"></div>
                                 </div>
                             </label>
 
-                            <label class="flex items-center gap-3 cursor-pointer p-4 bg-black/20 rounded border border-yellow-900/30 hover:bg-black/40 transition">
-                                <input type="checkbox" id="dice-use-luck" onchange="saveDiceConfig()" checked class="w-5 h-5 accent-yellow-500">
-                                <div class="text-sm">
-                                    <span class="font-bold text-yellow-400 block text-base">Humor e Ambiente</span>
-                                    <span class="text-gray-500 text-xs mt-1">Sorte, sentimentos e ambiente influenciam fortemente os críticos da jogada.</span>
+                            <label class="modifier-card" id="card-use-mascot">
+                                <input type="checkbox" id="dice-use-mascot" onchange="saveDiceConfig()" class="hidden">
+                                <div class="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                                    <i data-lucide="cat" class="text-purple-400 w-5 h-5"></i>
                                 </div>
+                                <div class="flex-1">
+                                    <span class="block font-bold text-purple-400">Auxilio Mascote</span>
+                                    <span class="block text-[10px] text-gray-500">Soma bonus baseado no nivel do companheiro</span>
+                                </div>
+                                <div class="check-status w-4 h-4 rounded-full border-2 border-purple-500/30"></div>
+                            </label>
+
+                            <label class="modifier-card" id="card-use-luck">
+                                <input type="checkbox" id="dice-use-luck" onchange="saveDiceConfig()" checked class="hidden">
+                                <div class="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                                    <i data-lucide="clover" class="text-yellow-400 w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="block font-bold text-yellow-400">Sorte e Ambiente</span>
+                                    <span class="block text-[10px] text-gray-500">Influencia de sentimentos e sorte atual</span>
+                                </div>
+                                <div class="check-status w-4 h-4 rounded-full border-2 border-yellow-500/30"></div>
                             </label>
                         </div>
                         
-                        <button onclick="rollCustomDice()" class="btn btn-primary w-full mt-6 py-3 text-lg flex justify-center gap-2">
-                            <i data-lucide="dices" class="animate-pulse"></i>
-                            Rolar Dado!
+                        <button onclick="rollCustomDice()" class="btn btn-primary w-full mt-6 py-4 text-lg font-cinzel tracking-widest shadow-[0_0_20px_rgba(74,158,255,0.2)] hover:shadow-[0_0_40px_rgba(74,158,255,0.4)]">
+                            <i data-lucide="sparkles" class="mr-2"></i>
+                            REALIZAR TESTE
                         </button>
                     </div>
+                </div>
+
+                <!-- Coluna de Resultado -->
+                <div class="result-orb-container">
+                    <h3 class="font-cinzel text-sm uppercase tracking-widest text-accent-blue mb-8 opacity-70">Manifestacao do Destino</h3>
                     
-                    <!-- Resultados -->
-                    <div class="flex flex-col">
-                        <h3 class="mb-4" style="color: var(--accent-blue);">Último Resultado</h3>
-                        
-                        <div class="flex-1 flex flex-col items-center justify-center bg-black/40 rounded-xl border border-blue-900/50 p-6 relative shadow-[0_0_20px_rgba(74,158,255,0.15)] my-auto w-full">
-                            <div id="dice-result-value" class="text-8xl font-black font-cinzel text-transparent bg-clip-text bg-gradient-to-b from-white to-blue-200 mb-6 drop-shadow-2xl">-</div>
-                            <div id="dice-result-details" class="w-full text-sm text-gray-300 flex flex-col gap-2 min-h-[60px]">
-                                <div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>
-                            </div>
+                    <div id="dice-result-value" class="dice-value-display">-</div>
+                    
+                    <div id="dice-result-details" class="w-full mt-6 space-y-2">
+                        <div class="text-center italic opacity-40 text-xs py-4">
+                            Prepare sua mente e role os dados para visualizar a performance...
                         </div>
+                    </div>
+
+                    <div id="dice-log" class="w-full mt-8 pt-6 border-t border-white/5 space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Historico rapido aqui -->
                     </div>
                 </div>
             </div>
