@@ -501,8 +501,10 @@
             // Verificar classe pré-definida
             if (perfilAtivo.classe && perfilAtivo.classe !== 'Escolha livre') {
                 document.getElementById('inp-classe').value = perfilAtivo.classe;
-                showFeedback('📋 Classe carregada', `Classe "${perfilAtivo.classe}" aplicada da página de classes.`, 'info');
             }
+            
+            // Chama detalhes de fallback global
+            inicializarFichaAvancada();
         }
 
         function atualizarInfoPerfil(perfil) {
@@ -614,7 +616,7 @@
                 peso: document.getElementById('inp-peso').value.trim(),
                 raca: document.getElementById('inp-raca').value.trim(),
                 classe: document.getElementById('inp-classe').value.trim(),
-                origem: document.getElementById('inp-origem')?.value.trim() || '',
+                origem: document.getElementById('inp-origem') ? document.getElementById('inp-origem').value.trim() : '',
                 
                 // Aparência
                 cabeca: document.getElementById('inp-cabeca').value.trim(),
@@ -673,60 +675,49 @@
             }
         }
 
-        // Atualize a função inicializarFicha():
-        function inicializarFicha() {
+        function inicializarFichaAvancada() {
             try {
                 // 1. Inicializar Lucide
                 if (window.lucide) {
                     lucide.createIcons();
                 }
                 
-                // 2. Carregar dados do GrimorioSystem
+                // 2. Tentar carregar dados do GrimorioSystem global também
                 const personagem = GrimorioSystem.carregarPersonagem();
-                
-                if (!personagem) {
-                    showFeedback('⚠️ Sistema não inicializado', 'O sistema será iniciado automaticamente', 'warning');
-                    GrimorioSystem.inicializarPersonagemPadrao();
-                }
-                
-                // 3. Carregar avatar
-                carregarAvatarDoGrimorio();
-                
-                // 4. Carregar dados básicos nos campos
-                if (personagem.nome !== 'Novo Aventureiro') {
-                    // Identidade
-                    document.getElementById('inp-nome').value = personagem.nome || '';
-                    document.getElementById('inp-titulo').value = personagem.titulo || '';
-                    document.getElementById('inp-nivel').value = personagem.nivel || 1;
-                    document.getElementById('inp-idade').value = personagem.idade || '';
-                    document.getElementById('inp-altura').value = personagem.altura || '';
-                    document.getElementById('inp-peso').value = personagem.peso || '';
-                    document.getElementById('inp-raca').value = personagem.raca || '';
-                    document.getElementById('inp-classe').value = personagem.classe || '';
+                if (personagem) {
+                    // Carregar avatar do GrimorioSystem global se existir
+                    carregarAvatarDoGrimorio();
                     
-                    // Se houver dados de ficha completa, carregar
-                    const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
-                    if (fichaCompleta) {
-                        try {
-                            const dados = JSON.parse(fichaCompleta);
-                            carregarDadosFicha(dados);
-                        } catch (e) {
-                            console.error('Erro ao carregar ficha completa:', e);
-                        }
+                    // Se não for o padrão, carrega os dados básicos extras
+                    if (personagem.nome !== 'Novo Aventureiro') {
+                        if (!document.getElementById('inp-nome').value) document.getElementById('inp-nome').value = personagem.nome || '';
+                        if (!document.getElementById('inp-titulo').value) document.getElementById('inp-titulo').value = personagem.titulo || '';
+                        if (!document.getElementById('inp-nivel').value || document.getElementById('inp-nivel').value === '1') document.getElementById('inp-nivel').value = personagem.nivel || 1;
+                        if (!document.getElementById('inp-idade').value) document.getElementById('inp-idade').value = personagem.idade || '';
+                        if (!document.getElementById('inp-altura').value) document.getElementById('inp-altura').value = personagem.altura || '';
+                        if (!document.getElementById('inp-peso').value) document.getElementById('inp-peso').value = personagem.peso || '';
+                        if (!document.getElementById('inp-raca').value) document.getElementById('inp-raca').value = personagem.raca || '';
+                        if (!document.getElementById('inp-classe').value) document.getElementById('inp-classe').value = personagem.classe || '';
                     }
                 }
                 
-                // 5. Atualizar info do perfil
-                atualizarInfoPerfil(personagem);
+                // Tenta carregar do cache estático adicional como fallback
+                const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
+                if (fichaCompleta) {
+                    try {
+                        const dados = JSON.parse(fichaCompleta);
+                        // Se o campo nome ainda estiver vazio, preenche tudo (fallback). 
+                        if (!document.getElementById('inp-nome').value) {
+                            carregarDadosFicha(dados);
+                        }
+                    } catch (e) {
+                         console.error('Erro ao carregar ficha completa (fallback):', e);
+                    }
+                }
                 
-                // 6. Configurar autosave
-                configurarAutoSave();
-                
-                console.log('Ficha inicializada com sucesso');
-                
+                console.log('Ficha estendida inicializada.');
             } catch (error) {
-                console.error('Erro ao inicializar ficha:', error);
-                showFeedback('❌ Erro', 'Falha na inicialização: ' + error.message, 'error');
+                console.error('Erro ao inicializar detalhes estendidos:', error);
             }
         }
 
