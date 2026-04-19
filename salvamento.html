@@ -8,50 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/global.css">
     <script src="grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/tailwind-config.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            pink: '#ec4899',
-                            red: '#dc2626',
-                            purple: '#8b5cf6',
-                            yellow: '#f59e0b',
-                            blue: '#4a9eff',
-                            green: '#22c55e',
-                            cyan: '#06b6d4',
-                            orange: '#ff6b35',
-                            teal: '#14b8a6',
-                            indigo: '#6366f1',
-                            muted: '#606060'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
     <style>
-        body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Animações */
-        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
         /* Modal */
         .modal-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -63,6 +26,11 @@
             background: #0f0f12; border: 1px solid #2a2a2e;
             border-radius: 12px; width: 100%; max-width: 500px;
             max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02);
+        }
+        
+        @media (min-width: 1536px) {
+            .modal-content { max-width: 700px; }
         }
         
         /* Cards de save */
@@ -73,11 +41,11 @@
         .save-card:hover {
             transform: translateY(-3px);
             border-color: #4a9eff40;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.02);
         }
         .save-card.active {
             border-color: #4a9eff;
-            background: rgba(74, 158, 255, 0.05);
+            background: rgba(74, 158, 255, 0.1);
         }
         
         /* Progress bar */
@@ -90,86 +58,93 @@
         }
     </style>
 </head>
-<body class="min-h-screen font-sans">
+<body class="font-sans flex flex-col min-h-screen pb-20">
 
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4 flex items-center gap-4 py-4">
-            <a href="index.html" class="text-theme-text hover:text-theme-pink transition-colors">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-            </a>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="font-cinzel font-bold text-lg tracking-wide text-theme-pink">Grimório Digital</span>
-            <div class="h-6 w-[1px] bg-theme-border"></div>
-            <span class="text-sm text-theme-muted">Save System</span>
+    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
+        <div class="container-adaptive flex items-center justify-between py-4">
+            <div class="flex items-center gap-4">
+                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-theme-pink/10 border border-theme-pink/30 rounded-lg text-theme-pink font-medium transition-all hover:bg-theme-pink/20 shadow-[0_0_15px_rgba(236,72,153,0.1)]">
+                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
+                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
+                </a>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-theme-pink drop-shadow-md">Grimório Digital</span>
+                <div class="h-6 w-[1px] bg-theme-border hidden sm:block"></div>
+                <span class="text-sm 2xl:text-base text-theme-muted hidden sm:block">Save System</span>
+            </div>
+            
+            <div class="w-24"></div>
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink/50 to-transparent"></div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
+    <div class="container-adaptive max-w-6xl 2xl:max-w-7xl flex-grow space-y-6 2xl:space-y-10">
 
         <!-- Cabeçalho -->
-        <header class="flex items-center gap-4 mb-8 anim-entry">
-            <div class="p-3 rounded-lg bg-gradient-to-br from-theme-blue/20 to-cyan-600/20 border border-theme-blue/30">
-                <i data-lucide="save" class="w-8 h-8 text-theme-blue"></i>
+        <header class="flex items-center gap-4 2xl:gap-6 mb-8 2xl:mb-12 anim-entry drop-shadow-xl text-center md:text-left justify-center md:justify-start">
+            <div class="p-4 2xl:p-5 rounded-xl bg-gradient-to-br from-theme-blue/20 to-cyan-600/20 border border-theme-blue/30 shadow-glass flex-shrink-0">
+                <i data-lucide="save" class="w-10 h-10 2xl:w-14 2xl:h-14 text-theme-blue drop-shadow-[0_0_10px_rgba(74,158,255,0.8)]"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Save</h1>
-                <p class="text-gray-400">Gerencie seus saves de personagem</p>
+                <h1 class="text-3xl 2xl:text-5xl font-cinzel font-bold text-white tracking-wide">Sistema de Save</h1>
+                <p class="text-theme-muted mt-1 2xl:mt-2 2xl:text-xl">Gerencie seus saves de personagem</p>
             </div>
         </header>
 
         <!-- Seção 1: Informações -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #4a9eff;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
-                <i data-lucide="info" class="w-4 h-4"></i> Como Funciona
+        <section class="section-panel border-l border-b border-r border-[#4a9eff]/20 p-6 2xl:p-10 rounded-xl anim-entry shadow-glass relative overflow-hidden" style="animation-delay: 0.1s; border-left: 4px solid #4a9eff;">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-cyan-500/5 pointer-events-none"></div>
+            <h3 class="flex items-center gap-2 2xl:gap-3 font-cinzel text-lg 2xl:text-2xl font-semibold text-theme-blue mb-6 2xl:mb-8 tracking-wide drop-shadow-sm relative">
+                <i data-lucide="info" class="w-5 h-5 2xl:w-6 2xl:h-6"></i> Como Funciona
             </h3>
             
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid md:grid-cols-3 gap-6 2xl:gap-8 relative">
                 <div class="space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-theme-blue/10 flex items-center justify-center">
-                            <i data-lucide="download" class="w-5 h-5 text-theme-blue"></i>
+                    <div class="flex items-center gap-3 2xl:gap-4">
+                        <div class="w-12 h-12 2xl:w-16 2xl:h-16 rounded-xl bg-theme-blue/10 flex items-center justify-center shadow-inner border border-theme-blue/20">
+                            <i data-lucide="download" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-blue"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-white">1. Exportar</h4>
-                            <p class="text-sm text-theme-muted">Gere um arquivo TXT com todos os dados</p>
+                            <h4 class="font-semibold text-white 2xl:text-xl font-cinzel tracking-wide">1. Exportar</h4>
+                            <p class="text-sm 2xl:text-base text-theme-muted">Gere um arquivo TXT com todos os dados</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-theme-green/10 flex items-center justify-center">
-                            <i data-lucide="upload" class="w-5 h-5 text-theme-green"></i>
+                    <div class="flex items-center gap-3 2xl:gap-4">
+                        <div class="w-12 h-12 2xl:w-16 2xl:h-16 rounded-xl bg-theme-green/10 flex items-center justify-center shadow-inner border border-theme-green/20">
+                            <i data-lucide="upload" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-green"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-white">2. Importar</h4>
-                            <p class="text-sm text-theme-muted">Carregue um save anterior para continuar</p>
+                            <h4 class="font-semibold text-white 2xl:text-xl font-cinzel tracking-wide">2. Importar</h4>
+                            <p class="text-sm 2xl:text-base text-theme-muted">Carregue um save anterior para continuar</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-theme-purple/10 flex items-center justify-center">
-                            <i data-lucide="refresh-cw" class="w-5 h-5 text-theme-purple"></i>
+                    <div class="flex items-center gap-3 2xl:gap-4">
+                        <div class="w-12 h-12 2xl:w-16 2xl:h-16 rounded-xl bg-theme-purple/10 flex items-center justify-center shadow-inner border border-theme-purple/20">
+                            <i data-lucide="refresh-cw" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-purple"></i>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-white">3. Atualizar</h4>
-                            <p class="text-sm text-theme-muted">Suba o TXT atualizado após jogar</p>
+                            <h4 class="font-semibold text-white 2xl:text-xl font-cinzel tracking-wide">3. Atualizar</h4>
+                            <p class="text-sm 2xl:text-base text-theme-muted">Suba o TXT atualizado após jogar</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <div class="mt-6 p-4 bg-theme-bg/50 rounded-lg border border-theme-border">
-                <div class="flex items-start gap-3">
-                    <i data-lucide="lightbulb" class="w-5 h-5 text-theme-yellow mt-0.5"></i>
+            <div class="mt-8 p-5 2xl:p-6 bg-theme-bg/50 rounded-xl border border-theme-border/50 shadow-inner relative overflow-hidden">
+                <div class="flex items-start gap-3 2xl:gap-4">
+                    <i data-lucide="lightbulb" class="w-5 h-5 2xl:w-7 2xl:h-7 text-theme-yellow mt-0.5 drop-shadow-[0_0_8px_rgba(245,158,11,0.8)]"></i>
                     <div>
-                        <p class="text-sm text-white">
-                            <span class="font-semibold text-theme-yellow">Dica:</span> 
-                            Salve um arquivo TXT antes de encerrar a sessão. Quando for jogar novamente, 
-                            importe o arquivo para restaurar tudo exatamente como estava.
+                        <p class="text-sm 2xl:text-base text-white/90 leading-relaxed">
+                            <span class="font-bold text-theme-yellow tracking-wide uppercase mr-1 text-xs 2xl:text-sm">Dica:</span> 
+                            Salve um arquivo TXT antes de encerrar a sessão. Quando for jogar novamente, importe o arquivo para restaurar tudo exatamente como estava.
                         </p>
                     </div>
                 </div>
@@ -177,65 +152,67 @@
         </section>
 
         <!-- Seção 2: Saves Locais -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #22c55e;">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green">
-                    <i data-lucide="hard-drive" class="w-4 h-4"></i> Saves Locais
+        <section class="section-panel border-l border-b border-r border-[#22c55e]/20 p-6 2xl:p-10 rounded-xl anim-entry shadow-glass relative" style="animation-delay: 0.2s; border-left: 4px solid #22c55e;">
+            <div class="flex items-center justify-between mb-6 2xl:mb-8">
+                <h3 class="flex items-center gap-2 2xl:gap-3 font-cinzel text-lg 2xl:text-2xl font-semibold text-theme-green drop-shadow-sm">
+                    <i data-lucide="hard-drive" class="w-5 h-5 2xl:w-6 2xl:h-6"></i> Saves Locais
                 </h3>
-                <span class="text-sm text-theme-muted" id="save-count">0 saves</span>
+                <span class="text-sm 2xl:text-base text-theme-muted font-mono bg-theme-bg/50 px-3 py-1 border border-theme-border/30 rounded" id="save-count">0 saves</span>
             </div>
             
-            <div id="saves-container" class="space-y-4">
+            <div id="saves-container" class="space-y-4 2xl:space-y-6">
                 <!-- Saves serão inseridos aqui -->
-                <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
-                    <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
-                    <p class="text-theme-muted">Nenhum save local encontrado</p>
-                    <p class="text-xs text-theme-muted mt-1">Exporte seu personagem para criar um save</p>
+                <div class="text-center py-12 2xl:py-16 border-2 border-dashed border-theme-border/50 rounded-xl bg-theme-bg/20">
+                    <i data-lucide="folder-open" class="w-12 h-12 2xl:w-16 2xl:h-16 mx-auto mb-3 2xl:mb-4 text-theme-muted/50"></i>
+                    <p class="text-theme-muted 2xl:text-xl font-medium tracking-wide">Nenhum save local encontrado</p>
+                    <p class="text-xs 2xl:text-sm text-theme-muted/70 mt-2 uppercase tracking-widest">Exporte seu personagem para criar um save</p>
                 </div>
             </div>
         </section>
 
         <!-- Seção 3: Ações Rápidas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-6">
-                <i data-lucide="zap" class="w-4 h-4"></i> Ações Rápidas
+        <section class="section-panel border-l border-b border-r border-[#f59e0b]/20 p-6 2xl:p-10 rounded-xl anim-entry shadow-glass relative" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
+            <div class="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-yellow-500/5 pointer-events-none"></div>
+            <h3 class="flex items-center gap-2 2xl:gap-3 font-cinzel text-lg 2xl:text-2xl font-semibold text-theme-yellow mb-6 2xl:mb-8 drop-shadow-sm relative">
+                <i data-lucide="zap" class="w-5 h-5 2xl:w-6 2xl:h-6"></i> Ações Rápidas
             </h3>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 2xl:gap-6 relative">
                 <button onclick="exportCurrentCharacter()" 
-                        class="save-card bg-theme-bg border border-theme-border p-5 rounded-lg text-left hover:border-theme-blue transition-colors group">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-12 h-12 rounded-lg bg-theme-blue/10 flex items-center justify-center group-hover:bg-theme-blue/20 transition-colors">
-                            <i data-lucide="download" class="w-6 h-6 text-theme-blue"></i>
+                        class="save-card bg-theme-bg/80 backdrop-blur-sm border border-theme-border/50 p-5 2xl:p-8 rounded-xl text-left hover:border-theme-blue transition-colors group">
+                    <div class="flex items-center justify-between mb-4 2xl:mb-5">
+                        <div class="w-12 h-12 2xl:w-16 2xl:h-16 rounded-xl bg-theme-blue/10 border border-theme-blue/20 flex items-center justify-center group-hover:bg-theme-blue/20 transition-colors shadow-inner">
+                            <i data-lucide="download" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-blue"></i>
                         </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-theme-muted group-hover:text-theme-blue"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 2xl:w-6 2xl:h-6 text-theme-muted group-hover:text-theme-blue transform group-hover:translate-x-1 transition-transform"></i>
                     </div>
-                    <h4 class="font-semibold text-white mb-2">Exportar Personagem Atual</h4>
-                    <p class="text-sm text-theme-muted">Gera TXT com dados atuais da ficha principal</p>
+                    <h4 class="font-bold text-white mb-2 2xl:text-xl font-cinzel tracking-wide">Exportar Personagem</h4>
+                    <p class="text-sm 2xl:text-base text-theme-muted">Gera TXT com dados atuais da ficha principal</p>
                 </button>
                 
                 <button onclick="openImportModal()" 
-                        class="save-card bg-theme-bg border border-theme-border p-5 rounded-lg text-left hover:border-theme-green transition-colors group">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-12 h-12 rounded-lg bg-theme-green/10 flex items-center justify-center group-hover:bg-theme-green/20 transition-colors">
-                            <i data-lucide="upload" class="w-6 h-6 text-theme-green"></i>
+                        class="save-card bg-theme-bg/80 backdrop-blur-sm border border-theme-border/50 p-5 2xl:p-8 rounded-xl text-left hover:border-theme-green transition-colors group">
+                    <div class="flex items-center justify-between mb-4 2xl:mb-5">
+                        <div class="w-12 h-12 2xl:w-16 2xl:h-16 rounded-xl bg-theme-green/10 border border-theme-green/20 flex items-center justify-center group-hover:bg-theme-green/20 transition-colors shadow-inner">
+                            <i data-lucide="upload" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-green"></i>
                         </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-theme-muted group-hover:text-theme-green"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 2xl:w-6 2xl:h-6 text-theme-muted group-hover:text-theme-green transform group-hover:translate-x-1 transition-transform"></i>
                     </div>
-                    <h4 class="font-semibold text-white mb-2">Importar Save</h4>
-                    <p class="text-sm text-theme-muted">Carregue um arquivo TXT salvo anteriormente</p>
+                    <h4 class="font-bold text-white mb-2 2xl:text-xl font-cinzel tracking-wide">Importar Save</h4>
+                    <p class="text-sm 2xl:text-base text-theme-muted">Carregue um arquivo TXT salvo anteriormente</p>
                 </button>
                 
                 <button onclick="exportAllData()" 
-                        class="save-card bg-theme-bg border border-theme-border p-5 rounded-lg text-left hover:border-theme-purple transition-colors group">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-12 h-12 rounded-lg bg-theme-purple/10 flex items-center justify-center group-hover:bg-theme-purple/20 transition-colors">
-                            <i data-lucide="database" class="w-6 h-6 text-theme-purple"></i>
+                        class="save-card bg-theme-bg/80 backdrop-blur-sm border border-theme-border/50 p-5 2xl:p-8 rounded-xl text-left hover:border-theme-purple transition-colors group relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="flex items-center justify-between mb-4 2xl:mb-5 relative">
+                        <div class="w-12 h-12 2xl:w-16 2xl:h-16 rounded-xl bg-theme-purple/10 border border-theme-purple/20 flex items-center justify-center group-hover:bg-theme-purple/20 transition-colors shadow-inner">
+                            <i data-lucide="database" class="w-6 h-6 2xl:w-8 2xl:h-8 text-theme-purple drop-shadow-[0_0_8px_rgba(139,92,246,0.3)]"></i>
                         </div>
-                        <i data-lucide="chevron-right" class="w-5 h-5 text-theme-muted group-hover:text-theme-purple"></i>
+                        <i data-lucide="chevron-right" class="w-5 h-5 2xl:w-6 2xl:h-6 text-theme-muted group-hover:text-theme-purple transform group-hover:translate-x-1 transition-transform"></i>
                     </div>
-                    <h4 class="font-semibold text-white mb-2">Backup Completo</h4>
-                    <p class="text-sm text-theme-muted">Exporta TODOS os dados (ficha + mascote)</p>
+                    <h4 class="font-bold text-white mb-2 2xl:text-xl font-cinzel tracking-wide relative text-shadow-glow">Backup Completo</h4>
+                    <p class="text-sm 2xl:text-base text-theme-muted relative">Exporta TODOS os dados (ficha + mascote)</p>
                 </button>
             </div>
         </section>
