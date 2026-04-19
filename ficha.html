@@ -14,204 +14,38 @@
     <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="js/tailwind-config.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            blue: '#4a9eff',
-                            orange: '#ff6b35',
-                            green: '#10b981',
-                            purple: '#8b5cf6',
-                            pink: '#ec4899',
-                            yellow: '#f59e0b'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body {
-            background-color: #0a0a0c;
-            color: #e8e4dc;
-        }
-
-        /* Animações */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .anim-entry {
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-        }
-
-        .delay-1 {
-            animation-delay: 0.1s;
-        }
-
-        .delay-2 {
-            animation-delay: 0.2s;
-        }
-
-        .delay-3 {
-            animation-delay: 0.3s;
-        }
-
-        /* Inputs */
-        .custom-input {
-            width: 100%;
-            background: transparent;
-            border-bottom: 1px solid #2a2a2e;
-            color: #e8e4dc;
-            padding: 0.5rem 0;
-            transition: all 0.3s;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .custom-input:focus {
-            border-bottom-color: #4a9eff;
-            outline: none;
-            box-shadow: 0 1px 0 0 #4a9eff;
-        }
-
-        .custom-input.orange:focus {
-            border-bottom-color: #ff6b35;
-        }
-
-        .custom-textarea {
-            width: 100%;
-            background: #0a0a0c;
-            border: 1px solid #2a2a2e;
-            color: #e8e4dc;
-            padding: 0.75rem;
-            border-radius: 0.375rem;
-            resize: vertical;
-            min-height: 100px;
-            transition: all 0.3s;
-            font-family: 'Inter', sans-serif;
-            line-height: 1.5;
-        }
-
-        .custom-textarea:focus {
-            border-color: #4a9eff;
-            outline: none;
-            box-shadow: 0 0 0 1px rgba(74, 158, 255, 0.1);
-        }
-
-        .custom-textarea.orange:focus {
-            border-color: #ff6b35;
-        }
-
-        /* Avatar Upload */
-        .avatar-upload {
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            transition: all 0.3s;
-        }
-
-        .avatar-upload:hover {
-            transform: scale(1.02);
-            border-color: #4a9eff;
-        }
-
-        .avatar-placeholder {
-            transition: all 0.3s;
-            backdrop-filter: blur(2px);
-        }
-
-        .avatar-upload:hover .avatar-placeholder {
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        /* Feedback */
-        .feedback-success {
-            animation: slideInRight 0.3s ease-out;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        /* Cards especiais */
-        .card-highlight {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card-highlight::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, currentColor, transparent);
-        }
-    </style>
+    <link rel="stylesheet" href="css/global.css">
 </head>
 
 <body class="min-h-screen font-sans pb-20">
 
     <!-- NAVEGAÇÃO -->
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-between gap-4 py-4">
+    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass">
+        <div class="container-adaptive">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-4">
                 <!-- Voltar para Hub -->
                 <a href="index.html" class="flex items-center gap-3 group">
-                    <div
-                        class="p-2 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20 group-hover:bg-[#4a9eff]/20 transition-colors">
+                    <div class="p-2 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20 group-hover:bg-[#4a9eff]/20 transition-colors shadow-[0_0_15px_rgba(74,158,255,0.1)]">
                         <i data-lucide="arrow-left" class="w-5 h-5 text-theme-blue"></i>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-theme-text group-hover:text-theme-blue transition-colors">
-                            Voltar ao Hub</div>
-                        <div class="text-xs text-[#606060]">Grimório Digital</div>
+                        <div class="text-sm 2xl:text-base font-medium text-theme-text group-hover:text-theme-blue transition-colors">Voltar ao Hub</div>
+                        <div class="text-xs 2xl:text-sm text-[#606060]">Grimório Digital</div>
                     </div>
                 </a>
 
                 <!-- Botões principais -->
                 <div class="flex items-center gap-2">
-                    <button onclick="salvarEAplicar()" id="btn-salvar-aplicar"
-                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all active:scale-95">
-                        <i data-lucide="save" class="w-4 h-4"></i>
+                    <button onclick="salvarEAplicar()" id="btn-salvar-aplicar" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-blue to-cyan-600 rounded-lg text-white text-sm 2xl:text-base font-medium hover:opacity-90 transition-all active:scale-95 shadow-glass">
+                        <i data-lucide="save" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         <span>Salvar no Perfil</span>
                     </button>
 
-                    <a href="status.html"
-                        class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-orange to-orange-600 rounded-lg text-white text-sm font-medium hover:opacity-90 transition-all">
-                        <i data-lucide="zap" class="w-4 h-4"></i>
+                    <a href="status.html" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-orange to-orange-600 rounded-lg text-white text-sm 2xl:text-base font-medium hover:opacity-90 transition-all shadow-glass">
+                        <i data-lucide="zap" class="w-4 h-4 2xl:w-5 2xl:h-5"></i>
                         <span>Ir para Status</span>
                     </a>
                 </div>
@@ -220,29 +54,28 @@
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
+    <div class="container-adaptive max-w-5xl 2xl:max-w-7xl mx-auto space-y-6 2xl:space-y-10">
 
         <!-- CABEÇALHO COM AVISO -->
-        <div class="anim-entry">
-            <div class="bg-gradient-to-r from-[#0f0f12] to-[#0f0f12] border border-theme-border p-4 rounded-lg">
-                <div class="flex items-start gap-3">
-                    <div class="p-2 rounded-lg bg-[#4a9eff]/10">
-                        <i data-lucide="info" class="w-5 h-5 text-theme-blue"></i>
+        <div class="animate-fade-in">
+            <div class="bg-gradient-to-r from-[#0f0f12] to-[#0f0f12] border border-theme-border p-4 2xl:p-6 rounded-lg glass-panel">
+                <div class="flex items-start gap-3 2xl:gap-5">
+                    <div class="p-2 2xl:p-3 rounded-lg bg-[#4a9eff]/10">
+                        <i data-lucide="info" class="w-5 h-5 2xl:w-6 2xl:h-6 text-theme-blue"></i>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-cinzel font-semibold text-white mb-1">Informações do Perfil Ativo</h3>
-                        <p class="text-sm text-[#a0a0a0]">
-                            Esta ficha será salva diretamente no <span class="text-theme-blue font-medium">Perfil
-                                Ativo</span>.
+                        <h3 class="font-cinzel font-semibold text-white mb-1 2xl:text-xl">Informações do Perfil Ativo</h3>
+                        <p class="text-sm 2xl:text-base text-[#a0a0a0]">
+                            Esta ficha será salva diretamente no <span class="text-theme-blue font-medium">Perfil Ativo</span>.
                             Tudo que você preencher aqui aparecerá automaticamente no Hub Central.
                         </p>
-                        <div class="mt-3 flex items-center gap-4 text-sm">
+                        <div class="mt-3 flex flex-wrap items-center gap-2 2xl:gap-4 text-sm 2xl:text-base">
                             <div id="profile-status" class="flex items-center gap-2">
                                 <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                                 <span class="text-[#a0a0a0]" id="profile-name">Carregando...</span>
                             </div>
-                            <div class="text-xs text-[#606060]">•</div>
-                            <div class="text-xs text-[#606060]" id="profile-last-update">Última atualização: -</div>
+                            <div class="text-xs 2xl:text-sm text-[#606060] hidden sm:block">•</div>
+                            <div class="text-xs 2xl:text-sm text-[#606060]" id="profile-last-update">Última atualização: -</div>
                         </div>
                     </div>
                 </div>
@@ -250,29 +83,29 @@
         </div>
 
         <!-- TÍTULO DA FICHA -->
-        <header class="flex items-center gap-4 mb-8 anim-entry delay-1">
-            <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
-                <i data-lucide="scroll-text" class="w-8 h-8 text-theme-blue"></i>
+        <header class="flex items-center gap-4 mb-8 2xl:mb-12 animate-slide-in-right">
+            <div class="p-3 2xl:p-4 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20 shadow-[0_0_15px_rgba(74,158,255,0.15)]">
+                <i data-lucide="scroll-text" class="w-8 h-8 2xl:w-12 2xl:h-12 text-theme-blue"></i>
             </div>
             <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Ficha do Personagem</h1>
-                <p class="text-gray-400">Preencha sua ficha completa - Tudo será salvo automaticamente</p>
+                <h1 class="text-3xl 2xl:text-5xl font-cinzel font-bold text-white drop-shadow-md">Ficha do Personagem</h1>
+                <p class="text-gray-400 2xl:text-lg">Preencha sua ficha completa - Tudo será salvo automaticamente</p>
             </div>
         </header>
 
         <!-- SEÇÃO 1: IDENTIDADE E AVATAR -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 card-highlight">
+        <section class="section-panel animate-fade-in delay-100 text-theme-blue border-t-2 border-t-theme-blue">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
                 <i data-lucide="user" class="w-5 h-5"></i>
                 <span>Identidade & Avatar</span>
                 <span class="text-xs font-normal text-[#606060] ml-auto">(Salva automaticamente)</span>
             </h3>
 
-            <div class="flex flex-col md:flex-row gap-8">
+            <div class="flex flex-col md:flex-row gap-8 2xl:gap-12">
                 <!-- Avatar -->
-                <div class="flex-shrink-0 w-full md:w-48">
+                <div class="flex-shrink-0 w-full md:w-56 2xl:w-72">
                     <div class="sticky top-32">
-                        <div class="relative w-full aspect-square rounded-lg border-2 border-dashed border-theme-border hover:border-theme-blue cursor-pointer overflow-hidden group avatar-upload bg-[#0a0a0c]"
+                        <div class="relative w-full aspect-square rounded-2xl border-2 border-dashed border-theme-border hover:border-theme-blue cursor-pointer overflow-hidden group avatar-placeholder bg-[#0a0a0c]"
                             id="avatar-container" onclick="document.getElementById('file-upload').click()">
 
                             <input type="file" id="file-upload" class="hidden" accept="image/*"
