@@ -57,29 +57,7 @@
         </div>
     </div>
     <script>
-<<<<<<< HEAD
-        const q = s => document.querySelector(s);
-        let user = Core.load();
-        function render() {
-            q('#skills-grid').innerHTML = user.skills.map(s => `
-                <div class="bg-theme-panel border border-theme-border p-4 rounded group">
-                    <div class="flex justify-between items-center mb-2"><h4 class="text-white font-medium">${s.nome}</h4><button onclick="del('${s.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="trash" class="w-4 h-4"></i></button></div>
-                    <p class="text-xs text-gray-500">${s.desc || 'Sem descrição'}</p>
-                </div>
-            `).join("");
-            lucide.createIcons();
-        }
-        function addSkill() { q('#form-skill').reset(); q('#skill-id').value = ""; q('#modal-overlay').classList.remove('hidden'); }
-        function closeModal() { q('#modal-overlay').classList.add('hidden'); }
-        function saveSkill(e) {
-            e.preventDefault();
-            const id = Date.now();
-            user.skills.push({ id, nome: q('#skill-nome').value, desc: q('#skill-desc').value });
-            Core.save(user); closeModal(); render();
-        }
-        function del(id) { if (confirm('Excluir?')) { user.skills = user.skills.filter(s => s.id != id); Core.save(user); render(); } }
-        document.addEventListener('DOMContentLoaded', render);
-=======
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -460,7 +438,7 @@
             location.reload(); // Recarrega para mostrar dados atualizados
         }
     });
->>>>>>> parent of 069c538 (a)
+
     </script>
 </body>
 </html>
