@@ -727,23 +727,50 @@
 
         function saveToSheet() {
             if (!selected) return notify('Selecione uma classe!', 'error');
-            Core.player.classe = selected;
-            if (type === 'custom') {
-                Core.player.status = Core.player.status || {};
-                Core.player.pontos = (Core.player.pontos || 0) + 2;
-                Core.player.classDetails = customData;
+            
+            const user = Core.load();
+            user.class = selected;
+            
+            // Se for padrão, definir bônus fixos
+            if (type === 'padrao') {
+                const b = {
+                    'Guerreiro': { str: 5, con: 5, skills: ["Golpe Esmagador", "Grito de Guerra"] },
+                    'Mago': { int: 5, wis: 5, skills: ["Bola de Fogo", "Meditação"] },
+                    'Arqueiro': { dex: 5, cha: 5, skills: ["Tiro Certeiro", "Passos Leves"] }
+                }[selected] || { str:0, skills:[] };
+                
+                // Aplicar bônus nos atributos dinâmicos
+                user.status.attrs.forEach(a => {
+                    if (a.name === 'Força' && b.str) a.val += b.str;
+                    if (a.name === 'Constituição' && b.con) a.val += b.con;
+                    if (a.name === 'Inteligência' && b.int) a.val += b.int;
+                    if (a.name === 'Sabedoria' && b.wis) a.val += b.wis;
+                    if (a.name === 'Destreza' && b.dex) a.val += b.dex;
+                    if (a.name === 'Carisma' && b.cha) a.val += b.cha;
+                });
+                
+                // Adicionar habilidades se não as tiver
+                b.skills.forEach(s => {
+                    if (!user.skills.find(sk => sk.nome === s)) {
+                        user.skills.push({ id: Date.now() + Math.random(), nome: s, tipo: 'utilidade', custoMana: 10, cooldown: 0, descricao: 'Habilidade de classe.', nivel: 1 });
+                    }
+                });
+            } else if (type === 'custom' && customData) {
+                user.points += customData.bonusPontos || 2;
+                customData.habilidades.forEach(h => {
+                    if (h.nome && !user.skills.find(sk => sk.nome === h.nome)) {
+                        user.skills.push({ id: Date.now() + Math.random(), nome: h.nome, tipo: 'utilidade', custoMana: h.custo || 10, cooldown: 0, descricao: 'Habilidade personalizada.', nivel: 1 });
+                    }
+                });
             }
-            Core.save();
-            notify('Classe salva!', 'success');
-            setTimeout(() => window.location.href = 'index.html', 1000);
+            
+            Core.save(user);
+            notify(`Classe ${selected} aplicada com sucesso!`, 'success');
+            setTimeout(() => window.location.href = 'index.html', 1500);
         }
 
         function notify(msg, type = 'info') {
-            const div = document.createElement('div');
-            div.className = `fixed top-4 right-4 p-4 border rounded-lg z-50 bg-black text-white ${type === 'error' ? 'border-red-500' : 'border-blue-500'}`;
-            div.textContent = msg;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 2500);
+            Core.notify(msg, type);
         }
 
         function openModal(id) { q('#' + id).style.display = 'flex'; }
@@ -752,7 +779,6 @@
         q('#form-nova-classe').onsubmit = createClass;
         q('#nova-classe-arma').onchange = (e) => q('#arma-personalizada-container').classList.toggle('hidden', e.target.value !== 'outra');
 
-        // Global functions for inline onclicks
         window.selecionarClasse = selectPadrao;
         window.selecionarClassePersonalizada = selectCustom;
         window.removerClassePersonalizada = removeCustom;
@@ -761,13 +787,6 @@
         window.salvarClasseNoPersonagem = saveToSheet;
 
         document.addEventListener('DOMContentLoaded', init);
-    </script>
-.classList.add('hidden');
-                }
-            });
-            
-            inicializarSistema();
-        });
     </script>
 </body>
 </html>

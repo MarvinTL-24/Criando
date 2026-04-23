@@ -1,3 +1,4 @@
+@ -1,1343 +1,682 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -662,22 +663,39 @@
 
         function exportTXT() {
             const data = collect();
-            const text = Object.entries(fields).map(([id, key]) => `${key.toUpperCase()}: ${data[key] || '-'}`).join('\n\n');
+            let text = `FICHA DE PERSONAGEM: ${data.name || 'Herói'}\n`;
+            text += `==============================////==============================\n\n`;
+            Object.entries(fields).forEach(([id, key]) => {
+                text += `${key.toUpperCase()}: ${data[key] || '-'}\n`;
+            });
             const blob = new Blob([text], { type: 'text/plain' });
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = `ficha_${data.name || 'player'}.txt`;
+            a.download = `ficha_${data.name || 'personagem'}.txt`;
+            a.click();
+        }
+
+        function exportWord() {
+            const data = collect();
+            let html = `<html><body><h1>Ficha: ${data.name || 'Personagem'}</h1>`;
+            Object.entries(fields).forEach(([id, key]) => {
+                html += `<p><b>${key.toUpperCase()}:</b> ${data[key] || '-'}</p>`;
+            });
+            html += `</body></html>`;
+            const blob = new Blob([html], { type: 'application/msword' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `ficha_${data.name || 'personagem'}.doc`;
             a.click();
         }
 
         window.salvarEAplicar = save;
         window.limparFicha = clearSheet;
         window.exportarTXT = exportTXT;
+        window.exportarWord = exportWord;
         window.previewImage = previewImage;
         window.removerAvatar = removeAvatar;
 
 /* ==============================////============================== */
     </script>
 </body>
-
-</html>
