@@ -3,149 +3,2391 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Status & Atributos</title>
+    <title>Grimório Digital - Sistema de Status Avançado</title>
     <script src="js/grimorio-core.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { cinzel: ['Cinzel', 'serif'], sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', blue: '#4a9eff', red: '#ef4444', green: '#22c55e', yellow: '#f59e0b', purple: '#818cf8', gray: '#94a3b8' } }
-                }
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0c;
+            --bg-panel: #0f0f12;
+            --border-color: #2a2a2e;
+            --text-primary: #e8e4dc;
+            --text-secondary: #a0a0a0;
+            --accent-blue: #4a9eff;
+            --accent-red: #ff4757;
+            --accent-green: #22c55e;
+            --accent-purple: #8b5cf6;
+            --accent-yellow: #f59e0b;
+            --accent-pink: #ec4899;
+            --accent-orange: #ff6b35;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-indigo: #6366f1;
+            --destiny-gold: #d4a76a;
+            --status-active: rgba(34, 197, 94, 0.2);
+            --status-inactive: rgba(255, 71, 87, 0.2);
+            --status-locked: rgba(245, 158, 11, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .font-cinzel { 
+            font-family: 'Cinzel', serif; 
+            font-weight: 600;
+        }
+        
+        /* NAVBAR */
+        .navbar {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            text-decoration: none;
+        }
+        
+        .back-button {
+            padding: 0.5rem 0.75rem;
+            background: rgba(74, 158, 255, 0.1);
+            color: var(--accent-blue);
+            border: 1px solid rgba(74, 158, 255, 0.3);
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .nav-button {
+            padding: 0.5rem 0.75rem;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-1px);
+            filter: brightness(110%);
+        }
+        
+        .nav-button-save {
+            background: var(--accent-green);
+        }
+        
+        .nav-button-import {
+            background: var(--accent-blue);
+        }
+        
+        .nav-button-export {
+            background: var(--accent-purple);
+        }
+        
+        /* LAYOUT PRINCIPAL */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            color: var(--accent-blue);
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+        }
+        
+        /* SESSÕES */
+        .section-panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        
+        /* CONTROLE DE CATEGORIAS */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            position: relative;
+        }
+        
+        .category-card.active {
+            border-width: 2px;
+        }
+        
+        .category-card.inactive {
+            border-color: var(--accent-red);
+            background: var(--status-inactive);
+        }
+        
+        .category-card.locked {
+            border-color: var(--accent-yellow);
+            background: var(--status-locked);
+        }
+        
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .category-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .category-info {
+            flex: 1;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+        
+        .category-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        
+        .category-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .control-btn {
+            padding: 0.25rem 0.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .control-btn-small {
+            padding: 0.125rem 0.25rem;
+            font-size: 0.625rem;
+        }
+        
+        .btn-active { background: var(--accent-green); color: white; }
+        .btn-inactive { background: var(--accent-red); color: white; }
+        .btn-lock { background: var(--accent-yellow); color: white; }
+        .btn-unlock { background: var(--accent-blue); color: white; }
+        
+        /* SISTEMA DE ATRIBUTOS */
+        .attributes-section {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 1.5rem;
+        }
+        
+        @media (max-width: 1024px) {
+            .attributes-section {
+                grid-template-columns: 1fr;
             }
         }
-    </script>
-    <style>
-        body { background-color: #0a0a0c; color: #e2e8f0; scroll-behavior: smooth; }
-        .glass { background: rgba(15, 15, 18, 0.6); backdrop-blur: 10px; border: 1px solid rgba(42, 42, 46, 0.5); }
-        .input-bare { background: transparent; border: none; outline: none; width: 100%; color: inherit; font-family: inherit; }
-        .progress-bar { height: 6px; border-radius: 3px; background: #1a1a1e; overflow: hidden; position: relative; }
-        .progress-fill { height: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .attr-card { transition: all 0.23s ease; border: 1px solid #2a2a2e; }
-        .attr-card:hover { border-color: #4a9eff; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+        
+        .attributes-controls {
+            background: rgba(74, 158, 255, 0.1);
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+        
+        .attributes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .attribute-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+        
+        .attribute-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .attribute-name {
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .attribute-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 0.5rem 0;
+        }
+        
+        .attribute-input {
+            width: 100%;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            color: var(--text-primary);
+            text-align: center;
+            font-size: 1rem;
+        }
+        
+        /* DERIVADOS */
+        .derived-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+        
+        .derived-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+        
+        .derived-formula {
+            font-family: monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.25rem;
+        }
+        
+        /* SISTEMA DE SORTE */
+        .sorcery-system {
+            background: linear-gradient(135deg, rgba(26, 21, 16, 0.9), rgba(42, 35, 24, 0.9));
+            border: 1px solid rgba(212, 167, 106, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+        }
+        
+        .sorcery-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--destiny-gold);
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .sentiments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .sentiment-card {
+            background: rgba(26, 21, 16, 0.5);
+            border: 1px solid rgba(212, 167, 106, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+        }
+        
+        .sentiment-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* UTILITIES */
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .mb-3 { margin-bottom: 0.75rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-3 { margin-top: 0.75rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .w-full { width: 100%; }
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; }
+        .text-lg { font-size: 1.125rem; }
+        
+        /* BOTÕES */
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+        
+        .btn-primary {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--accent-red);
+            color: white;
+        }
+        
+        .btn-warning {
+            background: var(--accent-yellow);
+            color: white;
+        }
+        
+        .btn-purple {
+            background: var(--accent-purple);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-1px);
+            filter: brightness(110%);
+        }
+        
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: var(--bg-panel);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem;
+            color: var(--accent-blue);
+            margin-bottom: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        .form-select option {
+            background: var(--bg-panel);
+            color: var(--text-primary);
+            padding: 0.5rem;
+        }
+        
+        /* ALERTAS */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .alert-warning {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            color: var(--accent-yellow);
+        }
+        
+        /* CORES PARA CATEGORIAS */
+        .color-red { color: var(--accent-red); }
+        .color-blue { color: var(--accent-blue); }
+        .color-green { color: var(--accent-green); }
+        .color-purple { color: var(--accent-purple); }
+        .color-yellow { color: var(--accent-yellow); }
+        .color-pink { color: var(--accent-pink); }
+        .color-orange { color: var(--accent-orange); }
+        .color-cyan { color: var(--accent-cyan); }
+        .color-emerald { color: var(--accent-emerald); }
+        .color-indigo { color: var(--accent-indigo); }
+        
+        .bg-red { background: rgba(255, 71, 87, 0.2); }
+        .bg-blue { background: rgba(74, 158, 255, 0.2); }
+        .bg-green { background: rgba(34, 197, 94, 0.2); }
+        .bg-purple { background: rgba(139, 92, 246, 0.2); }
+        .bg-yellow { background: rgba(245, 158, 11, 0.2); }
+        .bg-pink { background: rgba(236, 72, 153, 0.2); }
+        .bg-orange { background: rgba(255, 107, 53, 0.2); }
+        .bg-cyan { background: rgba(6, 182, 212, 0.2); }
+        .bg-emerald { background: rgba(16, 185, 129, 0.2); }
+        .bg-indigo { background: rgba(99, 102, 241, 0.2); }
+        
+        .border-red { border-color: var(--accent-red); }
+        .border-blue { border-color: var(--accent-blue); }
+        .border-green { border-color: var(--accent-green); }
+        .border-purple { border-color: var(--accent-purple); }
+        .border-yellow { border-color: var(--accent-yellow); }
+        .border-pink { border-color: var(--accent-pink); }
+        .border-orange { border-color: var(--accent-orange); }
+        .border-cyan { border-color: var(--accent-cyan); }
+        .border-emerald { border-color: var(--accent-emerald); }
+        .border-indigo { border-color: var(--accent-indigo); }
+        
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .categories-grid,
+            .attributes-grid,
+            .derived-grid,
+            .sentiments-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-buttons {
+                gap: 0.25rem;
+            }
+            
+            .nav-button span {
+                display: none;
+            }
+        }
+        
+        /* PAINEL DE ROLAGEM PREMIUM */
+        .dice-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            background: linear-gradient(135deg, rgba(15, 15, 18, 0.8), rgba(20, 20, 25, 0.9));
+            border: 1px solid rgba(74, 158, 255, 0.2);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .dice-dashboard::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+            opacity: 0.5;
+        }
+
+        .modifier-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1rem;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .modifier-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(74, 158, 255, 0.3);
+            transform: translateX(5px);
+        }
+        
+        .modifier-card.active {
+            border-color: var(--accent-blue);
+            background: rgba(74, 158, 255, 0.05);
+        }
+
+        .result-orb-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, rgba(74, 158, 255, 0.1), transparent 70%);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 1px solid rgba(74, 158, 255, 0.1);
+        }
+
+        .dice-value-display {
+            font-size: 6rem;
+            font-weight: 900;
+            font-family: 'Cinzel', serif;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(74, 158, 255, 0.5), 0 0 40px rgba(74, 158, 255, 0.2);
+            background: linear-gradient(to bottom, #fff, var(--accent-blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 992px) {
+            .dice-dashboard { grid-template-columns: 1fr; }
+        }
+
+        /* ANIMAÇÕES */
+        @keyframes dice-pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .animate-dice {
+            animation: dice-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
     </style>
 </head>
-<body class="min-h-screen pb-20">
-    <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="p-2 hover:bg-white/5 rounded-lg transition-colors text-theme-gray hover:text-white"><i data-lucide="arrow-left" class="w-5 h-5"></i></a>
-                <h1 class="font-cinzel text-xl font-bold tracking-widest text-white uppercase italic">Status <span class="text-theme-blue">&</span> Atributos</h1>
-            </div>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="nav-container">
             <div class="flex items-center gap-3">
-                <button onclick="save()" class="flex items-center gap-2 px-4 py-2 bg-theme-blue/10 border border-theme-blue/30 text-theme-blue rounded-lg text-sm font-semibold hover:bg-theme-blue/20 transition-all">
-                    <i data-lucide="save" class="w-4 h-4"></i> SALVAR
+                <a href="index.html" class="back-button">
+                    <i data-lucide="arrow-left"></i>
+                    <span class="font-cinzel">Voltar</span>
+                </a>
+                <h1 class="font-cinzel" style="color: var(--accent-blue);">Sistema de Status Avançado</h1>
+            </div>
+            
+            <div class="nav-buttons">
+                <button id="btn-save-all" class="nav-button nav-button-save">
+                    <i data-lucide="save"></i>
+                    <span>Salvar Tudo</span>
+                </button>
+                <button id="btn-import" class="nav-button nav-button-import">
+                    <i data-lucide="upload"></i>
+                    <span>Importar</span>
+                </button>
+                <button id="btn-export" class="nav-button nav-button-export">
+                    <i data-lucide="download"></i>
+                    <span>Exportar</span>
                 </button>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        <div class="lg:col-span-4 space-y-6">
-            <section class="glass rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="font-cinzel font-bold text-theme-blue flex items-center gap-2"><i data-lucide="heart" class="w-5 h-5"></i> VITAIS</h2>
-                </div>
-                <div id="vitals-list" class="space-y-6"></div>
-            </section>
-
-            <section class="glass rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="font-cinzel font-bold text-theme-yellow flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i> SORTE & DESTINO</h2>
-                </div>
-                <div class="space-y-4">
-                    <div class="bg-black/40 p-4 rounded-xl border border-theme-border flex items-center justify-between">
-                        <span class="text-sm font-medium text-theme-gray">Índice de Sorte</span>
-                        <input type="number" id="luck-val" class="w-16 bg-transparent text-right font-mono text-xl text-theme-yellow" onchange="updateLuck()">
-                    </div>
-                    <button onclick="rollLuck()" class="w-full py-3 bg-theme-yellow/10 border border-theme-yellow/30 text-theme-yellow rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-theme-yellow/20 transition-all">Testar Destino</button>
-                </div>
-            </section>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <div class="container">
+        <!-- ALERTA DE INFORMAÇÃO -->
+        <div class="alert alert-warning mb-6">
+            <i data-lucide="alert-triangle"></i>
+            Sistema em desenvolvimento - Algumas funcionalidades podem estar em incremento
         </div>
 
-        <div class="lg:col-span-8 space-y-6">
-            <section class="glass rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-8">
-                    <h2 class="font-cinzel font-bold text-white flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5"></i> ATRIBUTOS BASE</h2>
+        <!-- 1. CATEGORIAS DE CONTROLE -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="heart-pulse"></i>
+                    <h2>Categorias de Controle (Máx: 8)</h2>
                 </div>
-                <div id="attrs-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
-            </section>
+                <button onclick="openCategoryModal()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar
+                </button>
+            </div>
+            
+            <div class="categories-grid" id="categories-container">
+                <!-- Categorias serão geradas dinamicamente -->
+            </div>
+        </section>
 
-            <section class="glass rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-6">
-                    <h2 class="font-cinzel font-bold text-theme-purple flex items-center gap-2"><i data-lucide="dices" class="w-5 h-5"></i> ROLAGEM DE DADOS</h2>
+        <!-- 2. SISTEMA DE ATRIBUTOS -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="activity"></i>
+                    <h2>Atributos Principais (Máx: 8)</h2>
                 </div>
-                <div class="bg-black/40 p-6 rounded-xl border border-theme-border">
-                    <div class="flex items-center gap-4 mb-6">
-                        <input type="number" id="roll-qty" value="1" class="w-16 bg-theme-panel border border-theme-border rounded-lg p-2 text-center font-mono">
-                        <span class="text-theme-gray font-mono">d</span>
-                        <select id="roll-type" class="flex-grow bg-theme-panel border border-theme-border rounded-lg p-2 font-mono">
-                            <option value="4">4</option><option value="6">6</option><option value="8">8</option>
-                            <option value="10">10</option><option value="12">12</option><option value="20" selected>20</option>
-                            <option value="100">100</option>
-                        </select>
-                        <button onclick="roll()" class="px-8 py-2 bg-theme-purple text-white rounded-lg font-bold hover:brightness-110 transition-all shadow-lg shadow-theme-purple/20">ROLAR</button>
-                    </div>
-                    <div id="roll-result" class="h-24 bg-black/60 rounded-xl border border-white/5 flex flex-col items-center justify-center">
-                        <span class="text-gray-600 text-[10px] uppercase font-mono mb-1">Último Resultado</span>
-                        <span id="last-roll" class="text-4xl font-mono font-bold text-theme-purple">-</span>
-                    </div>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <script>
-        let p = Core.load();
-        const colors = { red: '#ef4444', blue: '#4a9eff', green: '#22c55e', yellow: '#f59e0b', purple: '#818cf8' };
-
-        function render() {
-            const vit = document.getElementById('vitals-list');
-            vit.innerHTML = p.status.cats.map((c, i) => `
-                <div class="space-y-2">
-                    <div class="flex justify-between items-end">
-                        <span class="text-[11px] font-bold uppercase tracking-wider text-theme-gray">${c.name}</span>
-                        <div class="flex items-center gap-2">
-                            <input type="number" value="${c.val}" onchange="updateCat(${i}, 'val', this.value)" class="w-12 bg-transparent text-right font-mono text-lg font-bold" style="color: ${colors[c.color]}">
-                            <span class="text-xs text-gray-600 font-mono">/</span>
-                            <input type="number" value="${c.max}" onchange="updateCat(${i}, 'max', this.value)" class="w-12 bg-transparent text-gray-500 font-mono text-sm">
+                <button onclick="openAttributeModal()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar
+                </button>
+            </div>
+            
+            <div class="attributes-section">
+                <!-- CONTROLES DE DISTRIBUIÇÃO -->
+                <div class="attributes-controls">
+                    <h3 class="mb-4" style="color: var(--accent-blue);">Opções de Distribuição</h3>
+                    
+                    <!-- Opção 1: Sorteio Aleatório -->
+                    <div class="mb-4">
+                        <h4 class="mb-2">1. Sorteio Aleatório</h4>
+                        <div class="flex gap-2 mb-2">
+                            <input type="number" id="total-points" placeholder="Total de pontos" 
+                                   class="form-input" min="1" max="1000" value="100">
+                            <button onclick="distributeRandom()" class="btn btn-success">
+                                Sortear
+                            </button>
                         </div>
                     </div>
-                    <div class="progress-bar"><div class="progress-fill" style="width: ${(c.val/c.max)*100}%; background: ${colors[c.color]}"></div></div>
+                    
+                    <!-- Opção 2: Valor Manual -->
+                    <div class="mb-4">
+                        <h4 class="mb-2">2. Valor Manual</h4>
+                        <div class="text-sm mb-2">
+                            Defina manualmente e use o cadeado para fixar
+                        </div>
+                    </div>
+                    
+                    <!-- Controles Gerais -->
+                    <div class="mt-6">
+                        <div class="flex gap-2">
+                            <button onclick="saveAttributes()" class="btn btn-success flex-1">
+                                <i data-lucide="save"></i>
+                                Salvar Atributos
+                            </button>
+                            <button onclick="resetAttributes()" class="btn btn-danger">
+                                <i data-lucide="trash-2"></i>
+                                Resetar
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            `).join('');
-
-            const grid = document.getElementById('attrs-grid');
-            grid.innerHTML = p.status.attrs.map((a, i) => `
-                <div class="attr-card bg-theme-panel/40 p-4 rounded-xl group">
-                    <p class="text-[10px] text-theme-gray uppercase font-bold mb-1 group-hover:text-theme-blue transition-colors">${a.name}</p>
-                    <input type="number" value="${a.val}" onchange="updateAttr(${i}, this.value)" class="input-bare text-2xl font-mono font-bold">
+                
+                <!-- LISTA DE ATRIBUTOS -->
+                <div class="attributes-grid" id="attributes-container">
+                    <!-- Atributos serão gerados dinamicamente -->
                 </div>
-            `).join('');
+            </div>
+        </section>
 
-            document.getElementById('luck-val').value = p.status.luck.val;
-            document.getElementById('last-roll').innerText = p.status.dice.last;
-            lucide.createIcons();
+        <!-- 3. ATRIBUTOS DERIVADOS -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="layers"></i>
+                    <h2>Atributos Derivados (Máx: 8)</h2>
+                </div>
+                <button onclick="openDerivedModal()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar
+                </button>
+            </div>
+            
+            <div class="derived-grid" id="derived-container">
+                <!-- Derivados serão gerados dinamicamente -->
+            </div>
+        </section>
+
+        <!-- 4. SISTEMA DE SORTE -->
+        <section class="section-panel">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="clover"></i>
+                    <h2>Sistema de Sorte (Máx: 8 sentimentos)</h2>
+                </div>
+                <button onclick="addSentiment()" class="btn btn-primary">
+                    <i data-lucide="plus"></i>
+                    Adicionar Sentimento
+                </button>
+            </div>
+            
+            <div class="sorcery-system">
+                <!-- DISPLAY DA SORTE -->
+                <div class="text-center mb-6">
+                    <div class="text-lg mb-2">Sorte Atual</div>
+                    <div class="sorcery-display" id="luck-value">50</div>
+                    <div class="flex justify-center gap-3 mt-4">
+                        <button onclick="rollLuck()" class="btn btn-warning">
+                            <i data-lucide="dice-5"></i>
+                            Rolar Sorte
+                        </button>
+                        <button onclick="saveLuck()" class="btn btn-success">
+                            <i data-lucide="save"></i>
+                            Salvar Sorte
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- SENTIMENTOS -->
+                <h3 class="mb-3" style="color: var(--destiny-gold);">Modificadores de Sorte</h3>
+                <div class="sentiments-grid" id="sentiments-container">
+                    <!-- Sentimentos base serao gerados -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. SISTEMA DE ROLAGEM DE DADOS -->
+        <section class="section-panel" id="dice-system-section">
+            <div class="section-title">
+                <div class="flex items-center gap-3">
+                    <i data-lucide="dices" class="text-accent-blue"></i>
+                    <h2>Sistema de Rolagem Arcano</h2>
+                </div>
+            </div>
+            
+            <div class="dice-dashboard">
+                <!-- Coluna de Configuracao -->
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="font-cinzel text-sm uppercase tracking-widest text-accent-blue mb-4 opacity-70">Configuracao de Teste</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="form-group">
+                                <label class="form-label text-xs uppercase opacity-50">Quantidade</label>
+                                <select id="dice-quantity" class="form-select text-center font-bold text-xl py-2 bg-black/40" onchange="saveDiceConfig()">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label text-xs uppercase opacity-50">Tipo de Dado</label>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-cinzel text-xl text-accent-blue opacity-50">D</span>
+                                    <input type="number" id="dice-type" class="form-input font-bold text-xl py-2 bg-black/40" value="20" min="2" max="1000" onchange="saveDiceConfig()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <label class="modifier-card" id="card-use-status">
+                                <input type="checkbox" id="dice-use-status" onchange="saveDiceConfig()" checked class="hidden">
+                                <div class="p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                                    <i data-lucide="activity" class="text-emerald-400 w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="block font-bold text-emerald-400">Atributos Base</span>
+                                    <span class="block text-[10px] text-gray-500">Usa a media dos seus atributos atuais</span>
+                                </div>
+                                <div class="check-status w-4 h-4 rounded-full border-2 border-emerald-500/30 flex items-center justify-center">
+                                    <div class="w-2 h-2 rounded-full bg-emerald-500 opacity-0 transition-opacity checked-inner"></div>
+                                </div>
+                            </label>
+
+                            <label class="modifier-card" id="card-use-mascot">
+                                <input type="checkbox" id="dice-use-mascot" onchange="saveDiceConfig()" class="hidden">
+                                <div class="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                                    <i data-lucide="cat" class="text-purple-400 w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="block font-bold text-purple-400">Auxilio Mascote</span>
+                                    <span class="block text-[10px] text-gray-500">Soma bonus baseado no nivel do companheiro</span>
+                                </div>
+                                <div class="check-status w-4 h-4 rounded-full border-2 border-purple-500/30"></div>
+                            </label>
+
+                            <label class="modifier-card" id="card-use-luck">
+                                <input type="checkbox" id="dice-use-luck" onchange="saveDiceConfig()" checked class="hidden">
+                                <div class="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                                    <i data-lucide="clover" class="text-yellow-400 w-5 h-5"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="block font-bold text-yellow-400">Sorte e Ambiente</span>
+                                    <span class="block text-[10px] text-gray-500">Influencia de sentimentos e sorte atual</span>
+                                </div>
+                                <div class="check-status w-4 h-4 rounded-full border-2 border-yellow-500/30"></div>
+                            </label>
+                        </div>
+                        
+                        <button onclick="rollCustomDice()" class="btn btn-primary w-full mt-6 py-4 text-lg font-cinzel tracking-widest shadow-[0_0_20px_rgba(74,158,255,0.2)] hover:shadow-[0_0_40px_rgba(74,158,255,0.4)]">
+                            <i data-lucide="sparkles" class="mr-2"></i>
+                            REALIZAR TESTE
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Coluna de Resultado -->
+                <div class="result-orb-container">
+                    <h3 class="font-cinzel text-sm uppercase tracking-widest text-accent-blue mb-8 opacity-70">Manifestacao do Destino</h3>
+                    
+                    <div id="dice-result-value" class="dice-value-display">-</div>
+                    
+                    <div id="dice-result-details" class="w-full mt-6 space-y-2">
+                        <div class="text-center italic opacity-40 text-xs py-4">
+                            Prepare sua mente e role os dados para visualizar a performance...
+                        </div>
+                    </div>
+
+                    <div id="dice-log" class="w-full mt-8 pt-6 border-t border-white/5 space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Historico rapido aqui -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTROLES FINAIS -->
+        <section class="section-panel text-center">
+            <h2 class="mb-4" style="color: var(--accent-blue);">Controles do Sistema</h2>
+            <div class="flex gap-3 justify-center flex-wrap">
+                <button onclick="saveAll()" class="btn btn-success btn-lg">
+                    <i data-lucide="save-all"></i>
+                    Salvar Tudo no Storage
+                </button>
+                <button onclick="exportToTXT()" class="btn btn-primary btn-lg">
+                    <i data-lucide="file-text"></i>
+                    Exportar Ficha (TXT)
+                </button>
+                <button onclick="generateVisualSheet()" class="btn btn-purple btn-lg">
+                    <i data-lucide="download"></i>
+                    Baixar Ficha Visual
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- MODAL: ADICIONAR CATEGORIA -->
+    <div id="modal-category" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Adicionar Categoria</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Nome da Categoria</label>
+                <input type="text" id="category-name" class="form-input" placeholder="Ex: Saúde Mental">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Inicial</label>
+                <input type="number" id="category-value" class="form-input" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Máximo</label>
+                <input type="number" id="category-max" class="form-input" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Cor</label>
+                <select id="category-color" class="form-select">
+                    <option value="red">Vermelho (Vida)</option>
+                    <option value="blue">Azul (Mana)</option>
+                    <option value="green">Verde (Estamina)</option>
+                    <option value="purple">Roxo (Psicológico)</option>
+                    <option value="yellow">Amarelo (Espiritual)</option>
+                    <option value="pink">Rosa (Energia)</option>
+                    <option value="orange">Laranja (Vitalidade)</option>
+                    <option value="cyan">Ciano (Aura)</option>
+                    <option value="emerald">Esmeralda (Chi)</option>
+                    <option value="indigo">Índigo (Psíquico)</option>
+                </select>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-category')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="addCategory()" class="btn btn-success flex-1">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADICIONAR ATRIBUTO -->
+    <div id="modal-attribute" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Adicionar Atributo</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Nome do Atributo</label>
+                <input type="text" id="attribute-name" class="form-input" placeholder="Ex: Força">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Inicial</label>
+                <input type="number" id="attribute-value" class="form-input" value="0" min="0" max="100">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor Máximo</label>
+                <input type="number" id="attribute-max" class="form-input" value="100" min="0" max="1000">
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-attribute')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="addAttribute()" class="btn btn-success flex-1">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADICIONAR DERIVADO -->
+    <div id="modal-derived" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Adicionar Atributo Derivado</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Nome</label>
+                <input type="text" id="derived-name" class="form-input" placeholder="Ex: Dano Crítico">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Atributo Base</label>
+                <select id="derived-base" class="form-select">
+                    <!-- Opções serão preenchidas dinamicamente -->
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Operação</label>
+                <select id="derived-operation" class="form-select">
+                    <option value="+">Somar (+)</option>
+                    <option value="-">Subtrair (-)</option>
+                    <option value="*">Multiplicar (*)</option>
+                    <option value="/">Dividir (/)</option>
+                    <option value="%">Porcentagem (%)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Valor</label>
+                <input type="number" id="derived-modifier" class="form-input" value="0" step="0.1">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Fórmula Completa</label>
+                <input type="text" id="derived-formula" class="form-input" 
+                       placeholder="Ex: Força * 1.5 + Destreza * 0.5" readonly>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-derived')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="addDerived()" class="btn btn-success flex-1">
+                    Adicionar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: CONFIGURAR SENTIMENTO -->
+    <div id="modal-sentiment" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Configurar Sentimento</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Sentimento</label>
+                <select id="sentiment-type" class="form-select">
+                    <option value="alegria">Alegria</option>
+                    <option value="tristeza">Tristeza</option>
+                    <option value="raiva">Raiva</option>
+                    <option value="medo">Medo</option>
+                    <option value="indiferenca">Indiferença</option>
+                    <option value="amor">Amor</option>
+                    <option value="custom">Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="form-group" id="custom-sentiment-group" style="display: none;">
+                <label class="form-label">Nome Personalizado</label>
+                <input type="text" id="custom-sentiment-name" class="form-input" placeholder="Nome do sentimento">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Efeito</label>
+                <select id="sentiment-effect" class="form-select">
+                    <option value="buff">Buff (Aumenta sorte)</option>
+                    <option value="debuff">Debuff (Reduz sorte)</option>
+                    <option value="neutral">Neutro (Não interfere)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Intensidade (0.0 a 1.0)</label>
+                <input type="range" id="sentiment-intensity" min="0" max="10" value="5" step="0.1" class="w-full">
+                <div class="flex justify-between text-sm">
+                    <span>0.0</span>
+                    <span id="intensity-value">0.5</span>
+                    <span>1.0</span>
+                </div>
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-sentiment')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="saveSentimentConfig()" class="btn btn-success flex-1">
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: IMPORTAR DADOS -->
+    <div id="modal-import" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Importar Dados</h3>
+            
+            <div class="form-group">
+                <label class="form-label">Cole os dados no formato:</label>
+                <textarea id="import-data" class="form-input" rows="10" placeholder="Exemplo:
+Vida: 85/100
+Mana: 65/100
+Força: 15
+Destreza: 12
+Inteligência: 18
+..."></textarea>
+            </div>
+            
+            <div class="alert alert-warning mb-4">
+                <i data-lucide="alert-circle"></i>
+                O sistema tentará mapear automaticamente os valores para as categorias e atributos existentes.
+            </div>
+            
+            <div class="flex gap-3 mt-6">
+                <button onclick="closeModal('modal-import')" class="btn flex-1">
+                    Cancelar
+                </button>
+                <button onclick="processImport()" class="btn btn-success flex-1">
+                    Importar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // =========== SISTEMA DE DADOS ===========
+    const systemData = {
+        // Categorias (máx 8)
+        categories: [
+            { id: 1, name: "Vida", value: 100, max: 100, color: "red", active: true, locked: false },
+            { id: 2, name: "Mana", value: 100, max: 100, color: "blue", active: true, locked: false },
+            { id: 3, name: "Estamina", value: 100, max: 100, color: "green", active: true, locked: false }
+        ],
+        
+        // Atributos (máx 8)
+        attributes: [
+            { id: 1, name: "Força", value: 0, max: 100, locked: false, active: true },
+            { id: 2, name: "Destreza", value: 0, max: 100, locked: false, active: true },
+            { id: 3, name: "Constituição", value: 0, max: 100, locked: false, active: true },
+            { id: 4, name: "Inteligência", value: 0, max: 100, locked: false, active: true },
+            { id: 5, name: "Sabedoria", value: 0, max: 100, locked: false, active: true },
+            { id: 6, name: "Carisma", value: 0, max: 100, locked: false, active: true }
+        ],
+        
+        // Atributos derivados (máx 8)
+        derived: [
+            { 
+                id: 1, 
+                name: "Dano Físico", 
+                formula: "Força * 1.5", 
+                value: 0,
+                operation: "*",
+                modifier: 1.5,
+                baseAttr: "forca",
+                active: true 
+            },
+            { 
+                id: 2, 
+                name: "Defesa", 
+                formula: "Constituição * 2 + Força * 0.5", 
+                value: 0,
+                operation: "+",
+                modifier: 0.5,
+                baseAttr: "constituicao",
+                active: true 
+            }
+        ],
+        
+        // Sistema de sorte
+        luck: {
+            value: 50,
+            rollHistory: [],
+            sentiments: [
+                { type: "alegria", effect: "buff", intensity: 0.7, active: true },
+                { type: "tristeza", effect: "debuff", intensity: 0.3, active: true },
+                { type: "raiva", effect: "buff", intensity: 0.5, active: true },
+                { type: "medo", effect: "debuff", intensity: 0.4, active: true },
+                { type: "indiferenca", effect: "neutral", intensity: 0.0, active: true },
+                { type: "amor", effect: "buff", intensity: 0.8, active: true }
+            ]
+        },
+        
+        config: {
+            maxCategories: 8,
+            maxAttributes: 8,
+            maxDerived: 8,
+            maxSentiments: 8
+        },
+        
+        diceSystem: {
+            quantity: 1,
+            type: 20,
+            useStatus: true,
+            useMascot: false,
+            useLuck: true,
+            lastResult: null,
+            lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
         }
-
-        function updateCat(i, k, v) { p.status.cats[i][k] = parseInt(v); render(); }
-        function updateAttr(i, v) { p.status.attrs[i].val = parseInt(v); }
-        function updateLuck() { p.status.luck.val = parseInt(document.getElementById('luck-val').value); }
-        function save() { Core.save(p); Core.notify('Status salvos!', 'success'); }
-        function rollLuck() { document.getElementById('luck-val').value = Math.floor(Math.random() * 100); updateLuck(); render(); }
-        function roll() {
-            const q = parseInt(document.getElementById('roll-qty').value);
-            const t = parseInt(document.getElementById('roll-type').value);
-            let res = 0; for(let i=0; i<q; i++) res += Math.floor(Math.random() * t) + 1;
-            p.status.dice.last = res; document.getElementById('last-roll').innerText = res;
+    };
+    
+    // =========== FUNÇÕES DE UTILIDADE ===========
+    function showNotification(message, type = "info") {
+        const notification = document.createElement("div");
+        notification.className = `alert alert-${type}`;
+        notification.innerHTML = `
+            <i data-lucide="${type === 'success' ? 'check-circle' : 
+                           type === 'error' ? 'x-circle' : 
+                           type === 'warning' ? 'alert-triangle' : 'info'}"></i>
+            <span>${message}</span>
+        `;
+        
+        document.querySelector(".container").prepend(notification);
+        lucide.createIcons();
+        
+        setTimeout(() => notification.remove(), 3000);
+    }
+    
+    function openModal(id) {
+        document.getElementById(id).classList.add("active");
+    }
+    
+    function closeModal(id) {
+        document.getElementById(id).classList.remove("active");
+    }
+    
+    // =========== SISTEMA DE CATEGORIAS ===========
+    function openCategoryModal() {
+        if (systemData.categories.length >= systemData.config.maxCategories) {
+            showNotification(`Limite de ${systemData.config.maxCategories} categorias atingido!`, "error");
+            return;
         }
+        openModal("modal-category");
+    }
+    
+    function addCategory() {
+        const name = document.getElementById("category-name").value;
+        const value = parseInt(document.getElementById("category-value").value);
+        const max = parseInt(document.getElementById("category-max").value);
+        const color = document.getElementById("category-color").value;
+        
+        if (!name || isNaN(value) || isNaN(max)) {
+            showNotification("Preencha todos os campos corretamente!", "error");
+            return;
+        }
+        
+        const newCategory = {
+            id: Date.now(),
+            name,
+            value,
+            max,
+            color,
+            active: true,
+            locked: false
+        };
+        
+        systemData.categories.push(newCategory);
+        renderCategories();
+        closeModal("modal-category");
+        showNotification(`Categoria "${name}" adicionada!`, "success");
+    }
+    
+    function toggleCategory(categoryId, action) {
+        const category = systemData.categories.find(c => c.id === categoryId);
+        if (!category) return;
+        
+        switch(action) {
+            case "active":
+                category.active = !category.active;
+                break;
+            case "lock":
+                category.locked = !category.locked;
+                break;
+            case "delete":
+                systemData.categories = systemData.categories.filter(c => c.id !== categoryId);
+                break;
+        }
+        
+        renderCategories();
+        saveToStorage();
+    }
+    
+    function updateCategoryValue(categoryId, newValue) {
+        const category = systemData.categories.find(c => c.id === categoryId);
+        if (category && !category.locked) {
+            category.value = Math.max(0, Math.min(category.max, newValue));
+            renderCategories();
+            saveToStorage();
+        }
+    }
+    
+    function renderCategories() {
+        const container = document.getElementById("categories-container");
+        container.innerHTML = "";
+        
+        systemData.categories.forEach(category => {
+            const card = document.createElement("div");
+            card.className = `category-card ${category.active ? "active" : "inactive"} ${category.locked ? "locked" : ""} border-${category.color}`;
+            card.style.borderColor = `var(--accent-${category.color})`;
+            
+            card.innerHTML = `
+                <div class="category-header">
+                    <div class="category-icon bg-${category.color}">
+                        <i data-lucide="heart" class="color-${category.color}"></i>
+                    </div>
+                    <div class="category-info">
+                        <div class="category-name color-${category.color}">${category.name}</div>
+                        <div class="text-sm">${category.active ? "Ativo" : "Inativo"} | ${category.locked ? "Trancado" : "Destrancado"}</div>
+                    </div>
+                </div>
+                
+                <div class="category-value color-${category.color}">${category.value}/${category.max}</div>
+                
+                <input type="range" min="0" max="${category.max}" value="${category.value}" 
+                       ${category.locked ? "disabled" : ""} 
+                       onchange="updateCategoryValue(${category.id}, parseInt(this.value))"
+                       class="w-full">
+                
+                <div class="category-controls flex flex-wrap gap-2">
+                    <button onclick="toggleCategory(${category.id}, 'active')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${category.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${category.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
+                        ${category.active ? "Desativar" : "Ativar"}
+                    </button>
+                    
+                    <button onclick="toggleCategory(${category.id}, 'lock')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${category.locked ? 'btn-unlock' : 'btn-lock'}">
+                        <i data-lucide="${category.locked ? 'unlock' : 'lock'}" class="w-4 h-4 mr-1"></i>
+                        ${category.locked ? "Destrancar" : "Trancar"}
+                    </button>
+                    
+                    <button onclick="toggleCategory(${category.id}, 'delete')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                        Remover
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        lucide.createIcons();
+    }
+    
+    // =========== SISTEMA DE ATRIBUTOS ===========
+    function openAttributeModal() {
+        if (systemData.attributes.length >= systemData.config.maxAttributes) {
+            showNotification(`Limite de ${systemData.config.maxAttributes} atributos atingido!`, "error");
+            return;
+        }
+        openModal("modal-attribute");
+    }
+    
+    function addAttribute() {
+        const name = document.getElementById("attribute-name").value;
+        const value = parseInt(document.getElementById("attribute-value").value);
+        const max = parseInt(document.getElementById("attribute-max").value);
+        
+        if (!name || isNaN(value) || isNaN(max)) {
+            showNotification("Preencha todos os campos corretamente!", "error");
+            return;
+        }
+        
+        const newAttribute = {
+            id: Date.now(),
+            name,
+            value,
+            max,
+            locked: false,
+            active: true
+        };
+        
+        systemData.attributes.push(newAttribute);
+        renderAttributes();
+        closeModal("modal-attribute");
+        showNotification(`Atributo "${name}" adicionado!`, "success");
+    }
+    
+    function distributeRandom() {
+        const totalPoints = parseInt(document.getElementById("total-points").value);
+        if (!totalPoints || totalPoints <= 0) {
+            showNotification("Digite um número válido de pontos!", "error");
+            return;
+        }
+        
+        const activeAttributes = systemData.attributes.filter(attr => attr.active);
+        if (activeAttributes.length === 0) {
+            showNotification("Nenhum atributo ativo para distribuir!", "error");
+            return;
+        }
+        
+        // Resetar valores
+        activeAttributes.forEach(attr => {
+            if (!attr.locked) {
+                attr.value = 0;
+            }
+        });
+        
+        // Distribuir aleatoriamente
+        let pointsLeft = totalPoints;
+        const distribution = {};
+        
+        // Primeiro, distribuir para atributos destrancados
+        const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
+        
+        while (pointsLeft > 0 && unlockedAttributes.length > 0) {
+            const randomIndex = Math.floor(Math.random() * unlockedAttributes.length);
+            const attr = unlockedAttributes[randomIndex];
+            
+            if (attr.value < attr.max) {
+                if (!distribution[attr.id]) distribution[attr.id] = 0;
+                
+                distribution[attr.id]++;
+                attr.value = Math.min(attr.max, attr.value + 1);
+                pointsLeft--;
+                
+                // Se atingiu o máximo, remover da lista
+                if (attr.value >= attr.max) {
+                    unlockedAttributes.splice(randomIndex, 1);
+                }
+            }
+        }
+        
+        // Se ainda sobraram pontos, mostrar aviso
+        if (pointsLeft > 0) {
+            showNotification(`${pointsLeft} pontos não puderam ser distribuídos (limites máximos atingidos)`, "warning");
+        }
+        
+        renderAttributes();
+        updateDerivedAttributes();
+        saveToStorage();
+        
+        const summary = activeAttributes.map(attr => 
+            `${attr.name}: ${attr.value}`
+        ).join(", ");
+        
+        showNotification(`${totalPoints} pontos distribuídos: ${summary}`, "success");
+    }
+    
+    function distributeWithMin() {
+        const minValue = parseInt(document.getElementById("min-value").value);
+        if (isNaN(minValue) || minValue < 0) {
+            showNotification("Digite um valor mínimo válido!", "error");
+            return;
+        }
+        
+        const activeAttributes = systemData.attributes.filter(attr => attr.active);
+        const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
+        
+        if (unlockedAttributes.length === 0) {
+            showNotification("Nenhum atributo destrancado para distribuir!", "error");
+            return;
+        }
+        
+        // Calcular pontos necessários para o mínimo
+        let pointsNeeded = 0;
+        unlockedAttributes.forEach(attr => {
+            if (attr.value < minValue) {
+                pointsNeeded += (minValue - attr.value);
+            }
+        });
+        
+        // Verificar se há pontos suficientes (considerando máximo 100 por atributo)
+        const maxPossiblePoints = unlockedAttributes.length * 100;
+        if (minValue * unlockedAttributes.length > maxPossiblePoints) {
+            showNotification(`Valor mínimo muito alto para ${unlockedAttributes.length} atributos!`, "error");
+            return;
+        }
+        
+        // Aplicar mínimo primeiro
+        unlockedAttributes.forEach(attr => {
+            if (attr.value < minValue) {
+                attr.value = minValue;
+            }
+        });
+        
+        // Calcular pontos restantes para distribuição aleatória
+        const currentTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.value, 0);
+        const maxTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.max, 0);
+        const remainingCapacity = maxTotal - currentTotal;
+        
+        if (remainingCapacity > 0) {
+            // Distribuir pontos aleatórios extras
+            let extraPoints = Math.floor(remainingCapacity * 0.3); // 30% da capacidade restante
+            
+            while (extraPoints > 0) {
+                const randomIndex = Math.floor(Math.random() * unlockedAttributes.length);
+                const attr = unlockedAttributes[randomIndex];
+                
+                if (attr.value < attr.max) {
+                    attr.value++;
+                    extraPoints--;
+                }
+            }
+        }
+        
+        renderAttributes();
+        updateDerivedAttributes();
+        saveToStorage();
+        
+        const summary = unlockedAttributes.map(attr => 
+            `${attr.name}: ${attr.value}`
+        ).join(", ");
+        
+        showNotification(`Distribuído com mínimo de ${minValue}: ${summary}`, "success");
+    }
+    
+    function saveAttributes() {
+        // Salvar os valores atuais dos atributos
+        saveToStorage();
+        showNotification("Atributos salvos com sucesso!", "success");
+    }
+    
+    function resetAttributes() {
+        if (confirm("Resetar todos os atributos para 0? Isso não pode ser desfeito.")) {
+            systemData.attributes.forEach(attr => {
+                if (!attr.locked) {
+                    attr.value = 0;
+                }
+            });
+            
+            renderAttributes();
+            updateDerivedAttributes();
+            saveToStorage();
+            showNotification("Atributos resetados!", "info");
+        }
+    }
+    
+    function toggleAttribute(attrId, action) {
+        const attr = systemData.attributes.find(a => a.id === attrId);
+        if (!attr) return;
+        
+        switch(action) {
+            case "active":
+                attr.active = !attr.active;
+                break;
+            case "lock":
+                attr.locked = !attr.locked;
+                break;
+            case "delete":
+                systemData.attributes = systemData.attributes.filter(a => a.id !== attrId);
+                break;
+        }
+        
+        renderAttributes();
+        updateDerivedAttributes();
+        saveToStorage();
+    }
+    
+    function updateAttributeValue(attrId, newValue) {
+        const attr = systemData.attributes.find(a => a.id === attrId);
+        if (attr && !attr.locked) {
+            attr.value = Math.max(0, Math.min(attr.max, newValue));
+            renderAttributes();
+            updateDerivedAttributes();
+            saveToStorage();
+        }
+    }
+    
+    function renderAttributes() {
+        const container = document.getElementById("attributes-container");
+        container.innerHTML = "";
+        
+        systemData.attributes.forEach(attr => {
+            const card = document.createElement("div");
+            card.className = `attribute-card ${attr.active ? "active" : "inactive"} ${attr.locked ? "locked" : ""}`;
+            
+            card.innerHTML = `
+                <div class="attribute-header">
+                    <div class="attribute-name">${attr.name}</div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleAttribute(${attr.id}, 'lock')" 
+                                class="control-btn control-btn-small ${attr.locked ? 'btn-unlock' : 'btn-lock'}">
+                            <i data-lucide="${attr.locked ? 'unlock' : 'lock'}"></i>
+                        </button>
+                        
+                        <button onclick="toggleAttribute(${attr.id}, 'active')" 
+                                class="control-btn control-btn-small ${attr.active ? 'btn-inactive' : 'btn-active'}">
+                            <i data-lucide="${attr.active ? 'pause' : 'play'}"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="attribute-value">${attr.value}</div>
+                
+                <input type="range" min="0" max="${attr.max}" value="${attr.value}" 
+                       ${attr.locked ? "disabled" : ""} 
+                       onchange="updateAttributeValue(${attr.id}, parseInt(this.value))"
+                       class="w-full">
+                
+                <div class="flex gap-2 mt-2">
+                    <input type="number" min="0" max="${attr.max}" value="${attr.value}" 
+                           ${attr.locked ? "disabled" : ""}
+                           onchange="updateAttributeValue(${attr.id}, parseInt(this.value))"
+                           class="attribute-input">
+                    
+                    <button onclick="toggleAttribute(${attr.id}, 'delete')" 
+                            class="control-btn btn-danger">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        lucide.createIcons();
+    }
+    
+    // =========== ATRIBUTOS DERIVADOS ===========
+    function openDerivedModal() {
+        if (systemData.derived.length >= systemData.config.maxDerived) {
+            showNotification(`Limite de ${systemData.config.maxDerived} atributos derivados atingido!`, "error");
+            return;
+        }
+        
+        // Preencher opções de atributos base
+        const baseSelect = document.getElementById("derived-base");
+        baseSelect.innerHTML = "";
+        
+        systemData.attributes.forEach(attr => {
+            const option = document.createElement("option");
+            option.value = attr.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            option.textContent = attr.name;
+            baseSelect.appendChild(option);
+        });
+        
+        openModal("modal-derived");
+    }
+    
+    function addDerived() {
+        const name = document.getElementById("derived-name").value;
+        const baseAttr = document.getElementById("derived-base").value;
+        const operation = document.getElementById("derived-operation").value;
+        const modifier = parseFloat(document.getElementById("derived-modifier").value);
+        
+        if (!name || !baseAttr || isNaN(modifier)) {
+            showNotification("Preencha todos os campos corretamente!", "error");
+            return;
+        }
+        
+        const formula = `${getAttributeName(baseAttr)} ${operation} ${modifier}`;
+        
+        const newDerived = {
+            id: Date.now(),
+            name,
+            formula,
+            value: 0,
+            operation,
+            modifier,
+            baseAttr,
+            active: true
+        };
+        
+        systemData.derived.push(newDerived);
+        updateDerivedAttributes();
+        renderDerived();
+        closeModal("modal-derived");
+        showNotification(`Atributo derivado "${name}" adicionado!`, "success");
+    }
+    
+    function getAttributeName(key) {
+        const attr = systemData.attributes.find(a => 
+            a.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === key
+        );
+        return attr ? attr.name : key;
+    }
+    
+    function updateDerivedAttributes() {
+        systemData.derived.forEach(derived => {
+            if (!derived.active) return;
+            
+            const baseAttr = systemData.attributes.find(a => 
+                a.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === derived.baseAttr
+            );
+            
+            if (!baseAttr) {
+                derived.value = 0;
+                return;
+            }
+            
+            let result = 0;
+            const baseValue = baseAttr.value;
+            
+            switch(derived.operation) {
+                case "+":
+                    result = baseValue + derived.modifier;
+                    break;
+                case "-":
+                    result = baseValue - derived.modifier;
+                    break;
+                case "*":
+                    result = baseValue * derived.modifier;
+                    break;
+                case "/":
+                    result = derived.modifier !== 0 ? baseValue / derived.modifier : 0;
+                    break;
+                case "%":
+                    result = (baseValue * derived.modifier) / 100;
+                    break;
+            }
+            
+            derived.value = Math.round(result * 100) / 100;
+        });
+        
+        renderDerived();
+    }
+    
+    function toggleDerived(derivedId, action) {
+        const derived = systemData.derived.find(d => d.id === derivedId);
+        if (!derived) return;
+        
+        switch(action) {
+            case "active":
+                derived.active = !derived.active;
+                break;
+            case "delete":
+                systemData.derived = systemData.derived.filter(d => d.id !== derivedId);
+                break;
+        }
+        
+        renderDerived();
+        saveToStorage();
+    }
+    
+    function renderDerived() {
+        const container = document.getElementById("derived-container");
+        container.innerHTML = "";
+        
+        systemData.derived.forEach(derived => {
+            const card = document.createElement("div");
+            card.className = `derived-card ${derived.active ? "active" : "inactive"}`;
+            
+            card.innerHTML = `
+                <div class="category-header">
+                    <div class="category-icon" style="background: rgba(139, 92, 246, 0.2);">
+                        <i data-lucide="function" style="color: #8b5cf6;"></i>
+                    </div>
+                    <div class="category-info">
+                        <div class="category-name" style="color: #8b5cf6;">${derived.name}</div>
+                        <div class="text-sm">${derived.active ? "Ativo" : "Inativo"}</div>
+                    </div>
+                </div>
+                
+                <div class="category-value" style="color: #8b5cf6;">${derived.value}</div>
+                
+                <div class="derived-formula">
+                    Fórmula: ${derived.formula}
+                </div>
+                
+                <div class="category-controls flex flex-wrap gap-2 mt-2">
+                    <button onclick="toggleDerived(${derived.id}, 'active')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${derived.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${derived.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
+                        ${derived.active ? "Desativar" : "Ativar"}
+                    </button>
+                    
+                    <button onclick="toggleDerived(${derived.id}, 'delete')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                        Remover
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        lucide.createIcons();
+    }
+    
+    // =========== SISTEMA DE SORTE ===========
+    function addSentiment() {
+        if (systemData.luck.sentiments.length >= systemData.config.maxSentiments) {
+            showNotification(`Limite de ${systemData.config.maxSentiments} sentimentos atingido!`, "error");
+            return;
+        }
+        
+        document.getElementById("intensity-value").textContent = "0.5";
+        document.getElementById("sentiment-intensity").value = 5;
+        openModal("modal-sentiment");
+    }
+    
+    function saveSentimentConfig() {
+        const type = document.getElementById("sentiment-type").value;
+        const effect = document.getElementById("sentiment-effect").value;
+        const intensity = parseFloat(document.getElementById("sentiment-intensity").value) / 10;
+        
+        let name = type;
+        if (type === "custom") {
+            name = document.getElementById("custom-sentiment-name").value || "Personalizado";
+        }
+        
+        const newSentiment = {
+            type: name,
+            effect,
+            intensity,
+            active: true
+        };
+        
+        systemData.luck.sentiments.push(newSentiment);
+        renderSentiments();
+        closeModal("modal-sentiment");
+        showNotification(`Sentimento "${name}" configurado!`, "success");
+    }
+    
+    function rollLuck() {
+        // Sorte base aleatória 1-100
+        const baseLuck = Math.floor(Math.random() * 100) + 1;
+        
+        // Aplicar modificadores dos sentimentos ativos
+        let finalLuck = baseLuck;
+        let modifiersText = [];
+        
+        systemData.luck.sentiments.forEach(sentiment => {
+            if (!sentiment.active || sentiment.effect === "neutral") return;
+            
+            const modifier = sentiment.intensity * 20; // Convert 0-1 para 0-20
+            if (sentiment.effect === "buff") {
+                finalLuck += modifier;
+                modifiersText.push(`+${modifier.toFixed(1)} (${sentiment.type})`);
+            } else if (sentiment.effect === "debuff") {
+                finalLuck -= modifier;
+                modifiersText.push(`-${modifier.toFixed(1)} (${sentiment.type})`);
+            }
+        });
+        
+        // Garantir limites 1-100
+        finalLuck = Math.max(1, Math.min(100, Math.round(finalLuck)));
+        
+        // Salvar no histórico
+        systemData.luck.rollHistory.push({
+            base: baseLuck,
+            final: finalLuck,
+            modifiers: modifiersText,
+            timestamp: new Date().toLocaleString()
+        });
+        
+        // Atualizar display
+        systemData.luck.value = finalLuck;
+        document.getElementById("luck-value").textContent = finalLuck;
+        
+        // Mostrar resultado
+        let message = `Sorte: ${finalLuck}%`;
+        if (modifiersText.length > 0) {
+            message += `\nModificadores: ${modifiersText.join(", ")}`;
+        }
+        
+        showNotification(message, finalLuck > 50 ? "success" : "warning");
+        saveToStorage();
+    }
+    
+    function saveLuck() {
+        // Salvar configurações de sorte
+        saveToStorage();
+        showNotification("Configurações de sorte salvas!", "success");
+    }
+    
+    function toggleSentiment(index, action) {
+        if (index < 0 || index >= systemData.luck.sentiments.length) return;
+        
+        const sentiment = systemData.luck.sentiments[index];
+        
+        switch(action) {
+            case "active":
+                sentiment.active = !sentiment.active;
+                break;
+            case "delete":
+                systemData.luck.sentiments.splice(index, 1);
+                break;
+        }
+        
+        renderSentiments();
+        saveToStorage();
+    }
+    
+    function renderSentiments() {
+        const container = document.getElementById("sentiments-container");
+        container.innerHTML = "";
+        
+        systemData.luck.sentiments.forEach((sentiment, index) => {
+            const card = document.createElement("div");
+            card.className = `sentiment-card ${sentiment.active ? "active" : "inactive"}`;
+            
+            const effectColor = sentiment.effect === "buff" ? "#22c55e" : 
+                              sentiment.effect === "debuff" ? "#ff4757" : "#a0a0a0";
+            
+            card.innerHTML = `
+                <div class="category-name" style="color: ${effectColor};">
+                    ${sentiment.type}
+                </div>
+                
+                <div class="text-sm mb-2">
+                    Efeito: ${sentiment.effect === "buff" ? "Buff" : 
+                            sentiment.effect === "debuff" ? "Debuff" : "Neutro"} 
+                    | Intensidade: ${sentiment.intensity.toFixed(1)}
+                </div>
+                
+                <div class="sentiment-controls flex flex-wrap gap-2 mt-2">
+                    <button onclick="toggleSentiment(${index}, 'active')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${sentiment.active ? 'btn-inactive' : 'btn-active'}">
+                        <i data-lucide="${sentiment.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
+                        ${sentiment.active ? "Desativar" : "Ativar"}
+                    </button>
+                    
+                    <button onclick="toggleSentiment(${index}, 'delete')" 
+                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
+                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
+                        Remover
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(card);
+        });
+        
+        lucide.createIcons();
+    }
+    
+    // =========== SISTEMA DE ROLAGEM DE DADOS ===========
+    function saveDiceConfig() {
+        if (!systemData.diceSystem) return;
+        const typeMatch = parseInt(document.getElementById("dice-type").value);
+        const qtyMatch = parseInt(document.getElementById("dice-quantity").value);
+        if(!isNaN(typeMatch)) systemData.diceSystem.type = typeMatch;
+        if(!isNaN(qtyMatch)) systemData.diceSystem.quantity = qtyMatch;
+        systemData.diceSystem.useStatus = document.getElementById("dice-use-status").checked;
+        systemData.diceSystem.useMascot = document.getElementById("dice-use-mascot").checked;
+        systemData.diceSystem.useLuck = document.getElementById("dice-use-luck").checked;
+        saveToStorage();
+    }
+    
+    function initDiceSystem() {
+        if (!systemData.diceSystem) {
+            systemData.diceSystem = {
+                quantity: 1, type: 20, useStatus: true, useMascot: false, useLuck: true,
+                lastResult: "-", lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
+            };
+        }
+        document.getElementById("dice-quantity").value = systemData.diceSystem.quantity || 1;
+        document.getElementById("dice-type").value = systemData.diceSystem.type;
+        document.getElementById("dice-use-status").checked = systemData.diceSystem.useStatus;
+        document.getElementById("dice-use-mascot").checked = systemData.diceSystem.useMascot;
+        document.getElementById("dice-use-luck").checked = systemData.diceSystem.useLuck;
+        document.getElementById("dice-result-value").textContent = systemData.diceSystem.lastResult || "-";
+        document.getElementById("dice-result-details").innerHTML = systemData.diceSystem.lastString || "";
+    }
 
-        document.addEventListener('DOMContentLoaded', render);
+    function rollCustomDice() {
+        const qty = systemData.diceSystem.quantity || 1;
+        const maxDice = systemData.diceSystem.type;
+        
+        let baseRollTotal = 0;
+        let rollsValues = [];
+        
+        for(let i=0; i<qty; i++) {
+            const roll = Math.floor(Math.random() * maxDice) + 1;
+            rollsValues.push(roll);
+            baseRollTotal += roll;
+        }
+        
+        let totalVal = baseRollTotal;
+        let detailsHtml = `
+            <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-blue-900/30">
+                <span class="font-bold text-gray-300">🎲 Dados Rolados (${qty}D${maxDice}):</span>
+                <span class="font-mono text-blue-300 tracking-wider">[ ${rollsValues.join(' | ')} ] = <b class="text-white">${baseRollTotal}</b></span>
+            </div>
+        `;
+        
+        // 1. Modificadores de Status
+        if (systemData.diceSystem.useStatus) {
+            const activeAttrs = systemData.attributes.filter(a => a.active);
+            if(activeAttrs.length > 0) {
+                const somaAttrs = activeAttrs.reduce((sum, a) => sum + a.value, 0);
+                const mediaStatus = Math.floor(somaAttrs / activeAttrs.length);
+                const mod = Math.floor(mediaStatus / 10); 
+                if (mod > 0) {
+                    totalVal += mod;
+                    detailsHtml += `
+                        <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-green-900/30 mt-1">
+                            <span class="text-green-300 opacity-90"><i data-lucide="activity" class="inline w-3 h-3 mr-1"></i> Atributos Status (Média ${mediaStatus})</span>
+                            <span class="font-bold text-green-400">+${mod}</span>
+                        </div>
+                    `;
+                }
+            }
+        }
+        
+        // 2. Modificadores do Mascote
+        if (systemData.diceSystem.useMascot) {
+            try {
+                const mascotDataJson = localStorage.getItem('grimorio_mascote_completo');
+                if (mascotDataJson) {
+                    const mascotData = JSON.parse(mascotDataJson);
+                    const mascotLevel = mascotData.nivel || 1;
+                    const mod = Math.floor(mascotLevel / 5) + 1; 
+                    if (mod > 0) {
+                        totalVal += mod;
+                        detailsHtml += `
+                            <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-purple-900/30 mt-1">
+                                <span class="text-purple-300 opacity-90"><i data-lucide="cat" class="inline w-3 h-3 mr-1"></i> Auxílio do Mascote (Nv ${mascotLevel})</span>
+                                <span class="font-bold text-purple-400">+${mod}</span>
+                            </div>
+                        `;
+                    }
+                } else {
+                    detailsHtml += `
+                        <div class="flex justify-between items-center bg-red-900/20 p-2 rounded border border-red-900/30 mt-1">
+                            <span class="text-red-400 opacity-90 text-xs text-center w-full">Nenhum Mascote Localizado no Cache</span>
+                        </div>
+                    `;
+                }
+            } catch(e) {}
+        }
+        
+        // 3. Modificadores de Sorte e Humor
+        if (systemData.diceSystem.useLuck) {
+            const luckValue = systemData.luck.value; 
+            let mod = 0;
+            if(luckValue > 80) mod = Math.floor(maxDice * qty * 0.1) || 1; 
+            else if(luckValue < 20) mod = -(Math.floor(maxDice * qty * 0.1) || 1); 
+            
+            if(mod !== 0) {
+                totalVal += mod;
+                const luckColor = mod > 0 ? "yellow" : "red";
+                detailsHtml += `
+                    <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-${luckColor}-900/30 mt-1">
+                        <span class="text-${luckColor}-300 opacity-90"><i data-lucide="clover" class="inline w-3 h-3 mr-1"></i> Sorte/Sentimento (${luckValue}%)</span>
+                        <span class="font-bold text-${luckColor}-400">${mod > 0 ? '+'+mod : mod}</span>
+                    </div>
+                `;
+            }
+        }
+        
+        // Update DOM
+        document.getElementById("dice-result-value").textContent = totalVal;
+        document.getElementById("dice-result-details").innerHTML = detailsHtml;
+        lucide.createIcons();
+        
+        systemData.diceSystem.lastResult = totalVal;
+        systemData.diceSystem.lastString = detailsHtml;
+        saveToStorage();
+    }
+
+    // =========== SISTEMA DE IMPORTAR ===========
+    function openImportModal() {
+        openModal("modal-import");
+    }
+    
+    function normalizeText(text) {
+        return text.toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]/g, "");
+    }
+    
+    function findBestMatch(value, items, getNameFn) {
+        const normalizedValue = normalizeText(value);
+        let bestMatch = null;
+        let bestScore = 0;
+        
+        items.forEach(item => {
+            const itemName = getNameFn(item);
+            const normalizedItemName = normalizeText(itemName);
+            
+            // Verificar correspondência exata
+            if (normalizedItemName === normalizedValue) {
+                bestMatch = item;
+                bestScore = 100;
+                return;
+            }
+            
+            // Verificar se contém
+            if (normalizedValue.includes(normalizedItemName) || normalizedItemName.includes(normalizedValue)) {
+                const score = Math.min(normalizedValue.length, normalizedItemName.length) / 
+                             Math.max(normalizedValue.length, normalizedItemName.length) * 100;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = item;
+                }
+            }
+        });
+        
+        // Aceitar se score for maior que 60%
+        return bestScore > 60 ? bestMatch : null;
+    }
+    
+    function processImport() {
+        const importText = document.getElementById("import-data").value;
+        if (!importText.trim()) {
+            showNotification("Digite os dados para importar!", "error");
+            return;
+        }
+        
+        const lines = importText.split('\n');
+        let importedCount = 0;
+        let notFoundItems = [];
+        
+        lines.forEach(line => {
+            const trimmedLine = line.trim();
+            if (!trimmedLine) return;
+            
+            // Procurar padrões como "Nome: Valor" ou "Nome: Valor/Max"
+            const match = trimmedLine.match(/^([^:]+):\s*(.+)$/);
+            if (!match) return;
+            
+            const name = match[1].trim();
+            const valuePart = match[2].trim();
+            
+            // Tentar extrair valor (e possível máximo)
+            let value = 0;
+            let max = null;
+            
+            // Padrão: "85/100"
+            const valueMaxMatch = valuePart.match(/^(\d+)\s*\/\s*(\d+)$/);
+            if (valueMaxMatch) {
+                value = parseInt(valueMaxMatch[1]);
+                max = parseInt(valueMaxMatch[2]);
+            } else {
+                // Apenas valor
+                const numMatch = valuePart.match(/^(\d+)$/);
+                if (numMatch) {
+                    value = parseInt(numMatch[1]);
+                }
+            }
+            
+            if (isNaN(value)) return;
+            
+            // Primeiro, tentar encontrar em categorias
+            let matchedItem = findBestMatch(name, systemData.categories, item => item.name);
+            
+            if (matchedItem) {
+                // Atualizar categoria
+                matchedItem.value = Math.min(value, matchedItem.max);
+                if (max !== null && max > 0) {
+                    matchedItem.max = max;
+                }
+                importedCount++;
+                return;
+            }
+            
+            // Tentar em atributos
+            matchedItem = findBestMatch(name, systemData.attributes, item => item.name);
+            
+            if (matchedItem) {
+                // Atualizar atributo
+                matchedItem.value = Math.min(value, matchedItem.max);
+                if (max !== null && max > 0) {
+                    matchedItem.max = max;
+                }
+                importedCount++;
+                return;
+            }
+            
+            // Se não encontrou, adicionar à lista de não encontrados
+            notFoundItems.push(name);
+        });
+        
+        // Atualizar visualizações
+        renderCategories();
+        renderAttributes();
+        updateDerivedAttributes();
+        renderDerived();
+        saveToStorage();
+        
+        // Fechar modal
+        closeModal("modal-import");
+        
+        // Mostrar resultado
+        let message = `${importedCount} valores importados com sucesso!`;
+        if (notFoundItems.length > 0) {
+            message += `\nNão encontrados: ${notFoundItems.join(", ")}`;
+        }
+        
+        showNotification(message, importedCount > 0 ? "success" : "warning");
+    }
+    
+    // =========== CONTROLES GERAIS ===========
+    function saveAll() {
+        saveToStorage();
+        showNotification("Todos os dados foram salvos no storage!", "success");
+    }
+    
+    function exportToTXT() {
+        let txtContent = "=== FICHA DO PERSONAGEM ===\n";
+        txtContent += `Gerado em: ${new Date().toLocaleString()}\n\n`;
+        
+        // Categorias
+        txtContent += "--- CATEGORIAS ---\n";
+        systemData.categories.forEach(cat => {
+            if (cat.active) {
+                txtContent += `${cat.name}: ${cat.value}/${cat.max} ${cat.locked ? "(Trancado)" : ""}\n`;
+            }
+        });
+        
+        // Atributos
+        txtContent += "\n--- ATRIBUTOS ---\n";
+        systemData.attributes.forEach(attr => {
+            if (attr.active) {
+                txtContent += `${attr.name}: ${attr.value}/${attr.max} ${attr.locked ? "(Trancado)" : ""}\n`;
+            }
+        });
+        
+        // Derivados
+        txtContent += "\n--- ATRIBUTOS DERIVADOS ---\n";
+        systemData.derived.forEach(derived => {
+            if (derived.active) {
+                txtContent += `${derived.name}: ${derived.value}\n`;
+                txtContent += `  Fórmula: ${derived.formula}\n`;
+            }
+        });
+        
+        // Sorte
+        txtContent += "\n--- SISTEMA DE SORTE ---\n";
+        txtContent += `Sorte Atual: ${systemData.luck.value}%\n`;
+        txtContent += "Modificadores Ativos:\n";
+        systemData.luck.sentiments.forEach(sent => {
+            if (sent.active) {
+                txtContent += `  ${sent.type}: ${sent.effect} (${sent.intensity.toFixed(1)})\n`;
+            }
+        });
+        
+        // Histórico
+        if (systemData.luck.rollHistory.length > 0) {
+            txtContent += "\nÚltimas Rolagens de Sorte:\n";
+            const lastRolls = systemData.luck.rollHistory.slice(-3);
+            lastRolls.forEach(roll => {
+                txtContent += `  ${roll.timestamp}: ${roll.final}% (Base: ${roll.base}%)\n`;
+            });
+        }
+        
+        // Configurações do Dado
+        if (systemData.diceSystem) {
+            txtContent += `\n--- SISTEMA DE ROLAGEM ---\n`;
+            txtContent += `Tipo de Dado: ${systemData.diceSystem.quantity}D${systemData.diceSystem.type}\n`;
+            txtContent += `Usa Status: ${systemData.diceSystem.useStatus ? "Sim" : "Não"}\n`;
+            txtContent += `Usa Mascote: ${systemData.diceSystem.useMascot ? "Sim" : "Não"}\n`;
+            txtContent += `Usa Condições/Sorte: ${systemData.diceSystem.useLuck ? "Sim" : "Não"}\n`;
+            txtContent += `Último Resultado Exato (Total): ${systemData.diceSystem.lastResult}\n`;
+        }
+        
+        // Criar e baixar arquivo
+        const blob = new Blob([txtContent], { type: "text/plain" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "ficha_personagem.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        showNotification("Ficha exportada como TXT!", "success");
+    }
+    
+    function generateVisualSheet() {
+        showNotification("Funcionalidade em desenvolvimento - Em breve!", "warning");
+        // Aqui seria implementada a geração de uma ficha visual em PDF/HTML
+    }
+    
+    // =========== PERSISTÊNCIA ===========
+    function saveToStorage() {
+        try {
+            localStorage.setItem("grimorio_advanced_status", JSON.stringify(systemData));
+            console.log("Dados salvos no localStorage");
+        } catch (error) {
+            console.error("Erro ao salvar:", error);
+        }
+    }
+    
+    function loadFromStorage() {
+        try {
+            const saved = localStorage.getItem("grimorio_advanced_status");
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                Object.assign(systemData, parsed);
+                console.log("Dados carregados do localStorage");
+            }
+        } catch (error) {
+            console.error("Erro ao carregar:", error);
+        }
+    }
+    
+    // =========== INICIALIZAÇÃO ===========
+    document.addEventListener("DOMContentLoaded", function() {
+        // Inicializar ícones
+        lucide.createIcons();
+        
+        // Carregar dados salvos
+        loadFromStorage();
+        
+        // Renderizar todos os componentes
+        renderCategories();
+        renderAttributes();
+        updateDerivedAttributes();
+        renderDerived();
+        renderSentiments();
+        initDiceSystem();
+        
+        // Atualizar display da sorte
+        document.getElementById("luck-value").textContent = systemData.luck.value;
+        
+        // Configurar eventos
+        document.getElementById("btn-save-all").addEventListener("click", saveAll);
+        document.getElementById("btn-import").addEventListener("click", openImportModal);
+        document.getElementById("btn-export").addEventListener("click", exportToTXT);
+        
+        // Configurar slider de intensidade
+        const intensitySlider = document.getElementById("sentiment-intensity");
+        const intensityValue = document.getElementById("intensity-value");
+        
+        intensitySlider.addEventListener("input", function() {
+            intensityValue.textContent = (this.value / 10).toFixed(1);
+        });
+        
+        // Configurar campo personalizado
+        const sentimentType = document.getElementById("sentiment-type");
+        sentimentType.addEventListener("change", function() {
+            const customGroup = document.getElementById("custom-sentiment-group");
+            customGroup.style.display = this.value === "custom" ? "block" : "none";
+        });
+        
+        console.log("Sistema de Status Avançado carregado!");
+        showNotification("Sistema carregado com sucesso!", "success");
+    });
+    
+    // =========== EVENT LISTENERS ADICIONAIS ===========
+    document.addEventListener("keydown", function(e) {
+        if (e.key === "Escape") {
+            document.querySelectorAll(".modal.active").forEach(modal => {
+                modal.classList.remove("active");
+            });
+        }
+    });
     </script>
 </body>
 </html>
