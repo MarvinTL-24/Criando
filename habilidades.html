@@ -4,17 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Habilidades</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <!-- SEU SISTEMA DE ARMAZENAMENTO -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
     <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { cinzel: ['Cinzel', 'serif'], sans: ['Inter', 'sans-serif'] },
+                    colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff' } }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #0a0a0c; color: #e8e4dc; }
+        .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        #modal-overlay { transition: opacity 0.3s ease; }
+        #modal-overlay.hidden { pointer-events: none; opacity: 0; }
+    </style>
+</head>
+<body class="min-h-screen font-sans pb-12">
+    <nav class="w-full bg-[#0f0f12]/95 border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-screen-2xl mx-auto px-6 flex items-center justify-between py-4">
+            <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-red-600/10 border border-red-600/30 rounded-lg text-red-600 font-medium hover:bg-red-600/20">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span class="font-cinzel text-sm">Hub</span>
+            </a>
+            <span class="font-cinzel text-xl font-bold text-red-600 uppercase">Grimório Digital</span>
+            <div class="w-24"></div>
+        </div>
+    </nav>
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+        <header class="flex items-center gap-4 mb-6 anim-entry">
+            <div class="p-3 rounded-lg bg-red-600/10 border border-red-600/20"><i data-lucide="sword" class="w-8 h-8 text-red-600"></i></div>
+            <div><h1 class="text-3xl font-cinzel font-bold text-white">Habilidades</h1><p class="text-gray-400 text-xs">Suas skills de combate e utilidade</p></div>
+        </header>
+        <div id="skills-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry"></div>
+        <div class="flex justify-end pt-8 anim-entry"><button onclick="addSkill()" class="bg-red-600 text-white px-6 py-2 rounded font-medium">+ NOVA SKILL</button></div>
+    </div>
+    <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
+        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg p-6">
+            <h2 class="font-cinzel text-xl text-white mb-6">Nova Habilidade</h2>
+            <form id="form-skill" onsubmit="saveSkill(event)" class="space-y-4">
+                <input type="hidden" id="skill-id">
+                <div><label class="block text-[10px] uppercase text-gray-500 mb-2">Nome</label><input type="text" id="skill-nome" required class="w-full bg-black border border-theme-border rounded p-2 text-white outline-none"></div>
+                <div><label class="block text-[10px] uppercase text-gray-500 mb-2">Descrição</label><textarea id="skill-desc" class="w-full bg-black border border-theme-border rounded p-2 text-white h-24 outline-none"></textarea></div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-theme-border"><button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-400">Cancelar</button><button type="submit" class="bg-red-600 text-white px-6 py-2 rounded">Salvar</button></div>
+            </form>
+        </div>
+    </div>
+    <script>
+<<<<<<< HEAD
+        const q = s => document.querySelector(s);
+        let user = Core.load();
+        function render() {
+            q('#skills-grid').innerHTML = user.skills.map(s => `
+                <div class="bg-theme-panel border border-theme-border p-4 rounded group">
+                    <div class="flex justify-between items-center mb-2"><h4 class="text-white font-medium">${s.nome}</h4><button onclick="del('${s.id}')" class="text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"><i data-lucide="trash" class="w-4 h-4"></i></button></div>
+                    <p class="text-xs text-gray-500">${s.desc || 'Sem descrição'}</p>
+                </div>
+            `).join("");
+            lucide.createIcons();
+        }
+        function addSkill() { q('#form-skill').reset(); q('#skill-id').value = ""; q('#modal-overlay').classList.remove('hidden'); }
+        function closeModal() { q('#modal-overlay').classList.add('hidden'); }
+        function saveSkill(e) {
+            e.preventDefault();
+            const id = Date.now();
+            user.skills.push({ id, nome: q('#skill-nome').value, desc: q('#skill-desc').value });
+            Core.save(user); closeModal(); render();
+        }
+        function del(id) { if (confirm('Excluir?')) { user.skills = user.skills.filter(s => s.id != id); Core.save(user); render(); } }
+        document.addEventListener('DOMContentLoaded', render);
+=======
         tailwind.config = {
             theme: {
                 extend: {
@@ -395,6 +460,7 @@
             location.reload(); // Recarrega para mostrar dados atualizados
         }
     });
+>>>>>>> parent of 069c538 (a)
     </script>
 </body>
 </html>

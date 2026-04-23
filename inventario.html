@@ -4,457 +4,149 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Inventário</title>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <!-- SEU SISTEMA DE ARMAZENAMENTO -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            muted: '#606060',
-                            blue: '#4a9eff',
-                        }
-                    }
-                }
-            }
-        }
-        // Verificar se há perfil ativo
-        window.addEventListener('load', function() {
-            if (window.hasActiveProfile && window.hasActiveProfile()) {
-                const profileInfo = window.getActiveProfileInfo();
-                console.log('Trabalhando no perfil:', profileInfo.name);
-                
-                // Carregar dados específicos desta página
-                const dados = window.loadFromProfile('status'); // 'status' muda por página
-                if (dados) {
-                    preencherCampos(dados);
-                }
-            }
-        });
-
-        // Ao salvar na página
-        function salvarNaPagina() {
-            const dados = coletarDadosDaPagina();
-            
-            // Salvar localmente (compatibilidade com versão antiga)
-            localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
-            
-            // Salvar no perfil ativo (novo sistema)
-            if (window.saveToProfile) {
-                const success = window.saveToProfile('status', dados);
-                if (success) {
-                    alert('Salvo no perfil também!');
+                    fontFamily: { cinzel: ['Cinzel', 'serif'], sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff' } }
                 }
             }
         }
     </script>
-
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Animações */
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-
-        /* Modal Transitions */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         #modal-overlay { transition: opacity 0.3s ease; }
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
-        #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
-
-        /* Scrollbar */
-        textarea::-webkit-scrollbar { width: 6px; }
-        textarea::-webkit-scrollbar-track { background: #0f0f12; }
-        textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
-        
-        /* Estilos para cards de item */
-        .item-card {
-            border-left: 3px solid;
-            transition: all 0.3s ease;
-        }
-        
-        .item-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Barra de progresso personalizada */
-        .progress-bar {
-            transition: width 0.5s ease;
-            border-radius: 9999px;
-        }
-        
-        .progress-bar-danger { background: linear-gradient(90deg, #dc2626 0%, #ef4444 100%); }
-        .progress-bar-warning { background: linear-gradient(90deg, #f59e0b 0%, #fbbf24 100%); }
-        .progress-bar-safe { background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%); }
     </style>
 </head>
 <body class="min-h-screen font-sans pb-12">
-
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
-        <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-yellow-600/10 border border-yellow-600/30 rounded-lg text-yellow-600 font-medium transition-all hover:bg-yellow-600/20 shadow-[0_0_15px_rgba(245,158,11,0.1)]">
-                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
-                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
-                </a>
-            </div>
-            
-            <div class="flex items-center flex-col sm:flex-row">
-                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-yellow-600 drop-shadow-md uppercase tracking-wider">Grimório Digital</span>
-                <div class="h-6 w-[1px] bg-theme-border mx-4 hidden sm:block"></div>
-                <span class="text-sm 2xl:text-base text-theme-muted font-medium uppercase">Inventário & Recursos</span>
-            </div>
-            
-            <div class="w-24 hidden sm:block"></div>
+    <nav class="w-full bg-[#0f0f12]/95 border-b border-theme-border sticky top-0 z-50 mb-8">
+        <div class="max-w-screen-2xl mx-auto px-6 flex items-center justify-between py-4">
+            <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-blue-600/10 border border-blue-600/30 rounded-lg text-theme-blue font-medium hover:bg-blue-600/20 transition-all">
+                <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                <span class="font-cinzel text-sm">Hub</span>
+            </a>
+            <span class="font-cinzel text-xl font-bold text-theme-blue uppercase">Inventário</span>
+            <div id="weight-display" class="text-xs font-mono text-gray-500">Peso: 0/50kg</div>
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-yellow-600 to-transparent"></div>
+        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
     </nav>
 
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
-
-        <header class="flex items-center gap-4 mb-6 anim-entry">
-            <div class="p-3 rounded-lg bg-yellow-600/10 border border-yellow-600/20">
-                <i data-lucide="backpack" class="w-8 h-8 text-yellow-600"></i>
+    <main class="max-w-6xl mx-auto px-4 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-theme-panel border border-theme-border p-4 rounded-lg flex items-center gap-4">
+                <div class="p-3 rounded bg-yellow-600/10 border border-yellow-600/20"><i data-lucide="coins" class="w-6 h-6 text-yellow-600"></i></div>
+                <div><p class="text-xs text-gray-500 uppercase">Dinheiro</p><p id="money-display" class="font-mono text-white">0G 0S 100C</p></div>
             </div>
-            <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Inventário</h1>
-                <p class="text-gray-400">Seus pertences e recursos</p>
-            </div>
-        </header>
-
-        <!-- Estatísticas Rápidas -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.1s;">
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="package" class="w-8 h-8 text-theme-blue"></i>
-                <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Itens</p>
-                    <p id="stat-total-itens" class="text-2xl font-bold text-white">0</p>
-                </div>
-            </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="weight" class="w-8 h-8 text-orange-500"></i>
-                <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Peso</p>
-                    <p id="stat-peso-total" class="text-2xl font-bold text-white">0.0 kg</p>
-                </div>
-            </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="coins" class="w-8 h-8 text-yellow-500"></i>
-                <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Ouro</p>
-                    <p id="stat-ouro" class="text-2xl font-bold text-white">0</p>
-                </div>
-            </div>
-            <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
-                <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
-                <div>
-                    <p class="text-xs text-theme-muted uppercase tracking-wide">Limite</p>
-                    <p id="stat-limite" class="text-2xl font-bold text-white">0%</p>
+            <div class="bg-theme-panel border border-theme-border p-4 rounded-lg flex items-center gap-4 md:col-span-2">
+                <div class="p-3 rounded bg-blue-600/10 border border-blue-600/20"><i data-lucide="package" class="w-6 h-6 text-theme-blue"></i></div>
+                <div class="flex-grow">
+                    <div class="flex justify-between text-xs mb-1"><span class="text-gray-500 uppercase">Carga</span><span id="weight-text" class="text-gray-400">0 / 50.0 kg</span></div>
+                    <div class="w-full h-2 bg-black rounded-full overflow-hidden"><div id="weight-bar" class="h-full bg-theme-blue" style="width: 0%"></div></div>
                 </div>
             </div>
         </div>
 
-        <!-- Barra de Progresso do Peso -->
-        <div class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry" style="animation-delay: 0.15s;">
-            <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center gap-2">
-                    <i data-lucide="weight" class="w-4 h-4 text-orange-500"></i>
-                    <span class="text-sm font-medium">Capacidade do Inventário</span>
-                </div>
-                <span class="text-sm font-mono" id="weight-display">
-                    <span id="current-weight">0.0</span>/<span id="max-weight">50.0</span> kg
-                </span>
-            </div>
-            <div class="h-3 bg-[#0a0a0c] rounded-full overflow-hidden">
-                <div id="weight-progress" class="h-full progress-bar" style="width: 0%"></div>
-            </div>
-            <div class="flex justify-end mt-2">
-                <button onclick="openConfigModal()" class="text-xs text-theme-blue hover:text-blue-400 flex items-center gap-1">
-                    <i data-lucide="settings" class="w-3 h-3"></i>
-                    Configurar Limite
-                </button>
-            </div>
-        </div>
+        <div id="items-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry"></div>
+    </main>
 
-        <!-- Filtros de Categorias -->
-        <div id="filter-container" class="flex flex-wrap gap-2 anim-entry" style="animation-delay: 0.2s;">
-            <!-- Filtros serão renderizados aqui -->
-        </div>
-
-        <!-- Alertas de Limite -->
-        <div id="alerts-container" class="space-y-2 anim-entry" style="animation-delay: 0.25s;">
-            <!-- Alertas serão renderizados aqui -->
-        </div>
-
-        <!-- Grid de Itens -->
-        <div id="items-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry p-2" style="animation-delay: 0.3s;">
-            <!-- Itens serão renderizados aqui -->
-        </div>
-
-        <!-- Carteira -->
-        <div class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.35s;">
-            <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-yellow-500 mb-4">
-                <i data-lucide="coins" class="w-4 h-4"></i> Carteira
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Ouro -->
-                <div class="bg-[#0a0a0c] border border-yellow-600/30 p-4 rounded-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-yellow-500/20 flex items-center justify-center">
-                                <i data-lucide="circle" class="w-4 h-4 text-yellow-500"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-theme-muted uppercase">Ouro</p>
-                                <p id="gold-amount" class="text-xl font-bold text-yellow-500">100</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-1">
-                            <button onclick="adjustMoney('gold', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
-                                -1
-                            </button>
-                            <button onclick="adjustMoney('gold', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
-                                +1
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="number" id="input-gold" placeholder="Quantia" min="0" 
-                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-xs">
-                        <button onclick="setMoney('gold')" class="px-3 bg-yellow-600 hover:bg-yellow-700 rounded text-white text-xs">
-                            Definir
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Prata -->
-                <div class="bg-[#0a0a0c] border border-gray-500/30 p-4 rounded-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-gray-400/20 flex items-center justify-center">
-                                <i data-lucide="circle" class="w-4 h-4 text-gray-400"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-theme-muted uppercase">Prata</p>
-                                <p id="silver-amount" class="text-xl font-bold text-gray-300">500</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-1">
-                            <button onclick="adjustMoney('silver', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
-                                -1
-                            </button>
-                            <button onclick="adjustMoney('silver', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
-                                +1
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="number" id="input-silver" placeholder="Quantia" min="0" 
-                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-xs">
-                        <button onclick="setMoney('silver')" class="px-3 bg-gray-600 hover:bg-gray-700 rounded text-white text-xs">
-                            Definir
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cobre -->
-                <div class="bg-[#0a0a0c] border border-orange-600/30 p-4 rounded-lg">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-orange-600/20 flex items-center justify-center">
-                                <i data-lucide="circle" class="w-4 h-4 text-orange-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-xs text-theme-muted uppercase">Cobre</p>
-                                <p id="copper-amount" class="text-xl font-bold text-orange-500">1000</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-1">
-                            <button onclick="adjustMoney('copper', -1)" class="w-6 h-6 flex items-center justify-center bg-red-900/30 hover:bg-red-900/50 rounded text-red-400 text-xs">
-                                -1
-                            </button>
-                            <button onclick="adjustMoney('copper', 1)" class="w-6 h-6 flex items-center justify-center bg-green-900/30 hover:bg-green-900/50 rounded text-green-400 text-xs">
-                                +1
-                            </button>
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="number" id="input-copper" placeholder="Quantia" min="0" 
-                               class="flex-1 bg-[#0f0f12] border border-theme-border rounded p-2 text-white text-xs">
-                        <button onclick="setMoney('copper')" class="px-3 bg-orange-600 hover:bg-orange-700 rounded text-white text-xs">
-                            Definir
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Total -->
-            <div class="mt-4 pt-4 border-t border-theme-border">
-                <div class="flex justify-between items-center">
-                    <div>
-                        <p class="text-sm text-theme-muted">Valor Total em Cobre</p>
-                        <p id="total-copper" class="text-lg font-bold text-yellow-500">0 cp</p>
-                    </div>
-                    <div class="text-right text-xs text-theme-muted">
-                        <p>Conversão Automática</p>
-                        <p>1 Ouro = 10 Prata = 100 Cobre</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="flex justify-between gap-4 border-t border-theme-border pt-6 mt-8 anim-entry" style="animation-delay: 0.4s;">
-            <button onclick="resetInventory()" class="flex items-center gap-2 px-4 py-2 border border-red-900/50 text-red-500 hover:bg-red-900/20 rounded transition-colors text-sm">
-                <i data-lucide="trash" class="w-4 h-4"></i>
-                Limpar Tudo
-            </button>
-            <div class="flex gap-4">
-                <button onclick="exportTXT()" class="flex items-center gap-2 px-6 py-2 border border-theme-border rounded text-theme-text hover:bg-white/5 transition-colors font-cinzel text-sm">
-                    <i data-lucide="file-text" class="w-4 h-4"></i>
-                    Baixar TXT
-                </button>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Modal para Adicionar/Editar Item -->
     <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
-        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
-            <div class="flex justify-between items-center mb-6">
-                <h2 id="modal-title" class="font-cinzel text-xl text-white">Novo Item</h2>
-                <button onclick="closeModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
+        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg p-6">
+            <h2 id="modal-title" class="font-cinzel text-xl text-white mb-6">Novo Item</h2>
             <form id="form-item" onsubmit="saveItem(event)" class="space-y-4">
                 <input type="hidden" id="item-id">
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Nome</label>
-                    <input type="text" id="item-nome" required class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
+                <div><label class="block text-xs uppercase text-gray-500 mb-2">Nome</label><input type="text" id="item-name" required class="w-full bg-black border border-theme-border rounded p-2 text-white outline-none"></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs uppercase text-gray-500 mb-2">Tipo</label><select id="item-type" class="w-full bg-black border border-theme-border rounded p-2 text-white outline-none">
+                        <option value="Arma">Arma</option><option value="Armadura">Armadura</option><option value="Consumível">Consumível</option><option value="Material">Material</option><option value="Outro">Outro</option>
+                    </select></div>
+                    <div><label class="block text-xs uppercase text-gray-500 mb-2">Raridade</label><select id="item-rarity" class="w-full bg-black border border-theme-border rounded p-2 text-white outline-none">
+                        <option value="Comum">Comum</option><option value="Incomum">Incomum</option><option value="Raro">Raro</option><option value="Épico">Épico</option><option value="Lendário">Lendário</option>
+                    </select></div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Categoria</label>
-                        <select id="item-categoria" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none" onchange="updateItemType()">
-                            <option value="arma">Armas</option>
-                            <option value="armadura">Armaduras</option>
-                            <option value="consumivel">Consumíveis</option>
-                            <option value="material">Materiais</option>
-                            <option value="chave">Itens-Chave</option>
-                            <option value="outro">Outros</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Tipo</label>
-                        <select id="item-tipo" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                            <option value="normal">Normal</option>
-                            <option value="usavel">Usável</option>
-                            <option value="carregavel">Carregável</option>
-                        </select>
-                    </div>
+                    <div><label class="block text-xs uppercase text-gray-500 mb-2">Peso (kg)</label><input type="number" id="item-weight" step="0.1" value="1.0" class="w-full bg-black border border-theme-border rounded p-2 text-white outline-none"></div>
+                    <div><label class="block text-xs uppercase text-gray-500 mb-2">Quantidade</label><input type="number" id="item-qty" value="1" class="w-full bg-black border border-theme-border rounded p-2 text-white outline-none"></div>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Quantidade</label>
-                        <input type="number" id="item-qtd" required min="1" value="1" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Peso (kg)</label>
-                        <input type="number" id="item-peso" step="0.1" value="0" min="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Valor (cobre)</label>
-                    <input type="number" id="item-valor" value="0" min="0" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Descrição</label>
-                    <textarea id="item-desc" class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none h-24 resize-none"></textarea>
-                </div>
-                <div id="weight-warning" class="hidden p-3 bg-red-900/30 border border-red-700/50 rounded text-sm text-red-300">
-                    <i data-lucide="alert-triangle" class="w-4 h-4 inline mr-2"></i>
-                    <span id="weight-warning-text"></span>
-                </div>
-                <div class="flex justify-end gap-3 pt-4 border-t border-theme-border mt-4">
-                    <button type="button" onclick="closeModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
-                </div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-theme-border"><button type="button" onclick="closeModal()" class="px-4 py-2 text-gray-400">Cancelar</button><button type="submit" class="bg-theme-blue text-white px-6 py-2 rounded font-medium">Salvar</button></div>
             </form>
         </div>
     </div>
 
-    <!-- Modal de Configurações -->
-    <div id="configModal" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
-        <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="font-cinzel text-xl text-white">Configurar Inventário</h2>
-                <button onclick="closeConfigModal()" class="text-theme-muted hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Limite de Peso (kg)</label>
-                    <input type="number" id="config-max-weight" min="1" max="999" step="0.1" value="50.0" 
-                           class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Itens Usáveis</label>
-                        <input type="number" id="config-max-usaveis" min="1" max="100" value="10" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Itens Carregáveis</label>
-                        <input type="number" id="config-max-carregaveis" min="1" max="100" value="20" 
-                               class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                    </div>
-                </div>
-                <div class="pt-4 border-t border-theme-border mt-4">
-                    <h3 class="font-cinzel text-lg text-white mb-3">Moedas Iniciais</h3>
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Ouro</label>
-                            <input type="number" id="config-initial-gold" min="0" value="100" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Prata</label>
-                            <input type="number" id="config-initial-silver" min="0" value="500" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs uppercase tracking-widest text-theme-muted mb-2">Cobre</label>
-                            <input type="number" id="config-initial-copper" min="0" value="1000" 
-                                   class="w-full bg-[#0a0a0c] border border-theme-border rounded p-2 text-white focus:border-theme-blue outline-none">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="flex justify-end gap-3 pt-6 mt-6 border-t border-theme-border">
-                <button onclick="closeConfigModal()" class="px-4 py-2 text-theme-text hover:bg-white/5 rounded transition-colors">Cancelar</button>
-                <button onclick="saveConfig()" class="bg-theme-blue hover:bg-blue-600 text-white px-6 py-2 rounded transition-colors font-medium">Salvar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
+<<<<<<< HEAD
+        const q = s => document.querySelector(s);
+        let user = Core.load();
+
+        const rarities = {
+            'Comum': '#606060', 'Incomum': '#22c55e', 'Raro': '#4a9eff', 'Épico': '#8b5cf6', 'Lendário': '#f59e0b'
+        };
+
+        function render() {
+            const grid = q('#items-grid');
+            let weight = 0;
+            grid.innerHTML = user.items.map(item => {
+                weight += (item.weight || 0) * (item.qty || 1);
+                const color = rarities[item.rarity] || '#606060';
+                return `
+                <div class="bg-theme-panel border border-theme-border p-4 group hover:border-blue-600/30 transition-all rounded" style="border-left: 3px solid ${color}">
+                    <div class="flex justify-between items-start mb-2">
+                        <div><h4 class="text-white font-medium">${item.name}</h4><span class="text-[10px] uppercase font-bold" style="color:${color}">${item.rarity}</span></div>
+                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="openModal('${item.id}')" class="p-1 hover:bg-blue-500/10 rounded"><i data-lucide="edit-2" class="w-4 h-4 text-theme-blue"></i></button>
+                            <button onclick="del('${item.id}')" class="p-1 hover:bg-red-500/10 rounded"><i data-lucide="trash" class="w-4 h-4 text-red-500"></i></button>
+                        </div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 font-mono mt-4"><span>${item.qty}x</span><span>${item.weight} kg</span></div>
+                </div>`;
+            }).join("") + `<button onclick="openModal()" class="bg-black border-2 border-dashed border-theme-border p-8 flex flex-col items-center justify-center gap-2 hover:border-theme-blue transition-colors group rounded"><i data-lucide="plus" class="w-6 h-6 text-gray-600 group-hover:text-theme-blue"></i><span class="text-gray-600 group-hover:text-theme-blue font-cinzel text-xs">Adicionar</span></button>`;
+            
+            const maxW = user.limits.weight || 50;
+            q('#weight-text').innerText = `${weight.toFixed(1)} / ${maxW} kg`;
+            q('#weight-bar').style.width = `${Math.min(100, (weight / maxW) * 100)}%`;
+            q('#weight-display').innerText = `Peso: ${weight.toFixed(1)}/${maxW}kg`;
+            const m = user.money;
+            q('#money-display').innerText = `${m.gold}G ${m.silver}S ${m.copper}C`;
+            lucide.createIcons();
+        }
+
+        function openModal(id = null) {
+            if (id) {
+                const item = user.items.find(x => x.id == id);
+                q('#item-id').value = item.id;
+                q('#item-name').value = item.name;
+                q('#item-type').value = item.type;
+                q('#item-rarity').value = item.rarity;
+                q('#item-weight').value = item.weight;
+                q('#item-qty').value = item.qty;
+            } else { q('#form-item').reset(); q('#item-id').value = ""; }
+            q('#modal-overlay').classList.remove('hidden');
+        }
+        function closeModal() { q('#modal-overlay').classList.add('hidden'); }
+        function saveItem(e) {
+            e.preventDefault();
+            const id = q('#item-id').value;
+            const item = {
+                id: id || Date.now(),
+                name: q('#item-name').value,
+                type: q('#item-type').value,
+                rarity: q('#item-rarity').value,
+                weight: parseFloat(q('#item-weight').value),
+                qty: parseInt(q('#item-qty').value)
+            };
+            if (id) { const i = user.items.findIndex(x => x.id == id); user.items[i] = item; }
+            else user.items.push(item);
+            Core.save(user);
+=======
         // Configuração de categorias
         const categoriesConfig = {
             'arma': { label: "Armas", icon: "sword", color: "#dc2626" },
@@ -865,9 +557,14 @@
             
             updateStorage();
             renderGrid();
+>>>>>>> parent of 069c538 (a)
             closeModal();
         }
+        function del(id) { if (confirm('Excluir?')) { user.items = user.items.filter(x => x.id != id); Core.save(user); render(); } }
 
+<<<<<<< HEAD
+        document.addEventListener('DOMContentLoaded', render);
+=======
         function deleteItem(itemId) {
             if (confirm('Tem certeza que deseja remover este item?')) {
                 inventario = inventario.filter(item => item.id !== itemId);
@@ -1134,6 +831,7 @@
                 location.reload(); // Recarrega para mostrar dados atualizados
             }
         });
+>>>>>>> parent of 069c538 (a)
     </script>
 </body>
 </html>

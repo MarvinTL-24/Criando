@@ -9,6 +9,23 @@
     <link rel="stylesheet" href="css/global.css">
     <script src="grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+<<<<<<< HEAD
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff', red: '#dc2626' } } } } }
+    </script>
+    <style>
+        body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
+        .section { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 border-b border-theme-border z-50 mb-8 py-4">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-theme-blue font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Hub</span></a>
+            <h1 class="font-cinzel text-xl font-bold text-theme-blue uppercase">Ordem Paranormal</h1>
+            <button onclick="save()" class="px-4 py-1 bg-theme-blue/20 text-theme-blue border border-theme-blue/30 rounded text-xs font-bold">SALVAR</button>
+=======
     <script src="js/tailwind-config.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
@@ -39,10 +56,34 @@
                     <span class="hidden sm:inline">Exportar</span>
                 </button>
             </div>
+>>>>>>> parent of 069c538 (a)
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue/50 to-transparent"></div>
     </nav>
 
+<<<<<<< HEAD
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="space-y-6">
+            <section class="section border-l-4 border-l-theme-blue">
+                <h3 class="font-cinzel text-theme-blue text-xs mb-4">Agente</h3>
+                <div class="space-y-2">
+                    <input type="text" id="p-rank" placeholder="Patente" class="w-full bg-black border border-theme-border rounded p-2 text-xs text-white outline-none">
+                    <input type="number" id="p-nex" placeholder="NEX %" class="w-full bg-black border border-theme-border rounded p-2 text-xs text-white outline-none">
+                </div>
+            </section>
+            <section class="section space-y-4">
+                <div v-for="s in ['Vida','Sanidade','Esforço']">
+                    <div class="flex justify-between text-[10px] uppercase text-gray-500 mb-1"><span>Vida</span><span id="v-val">20/20</span></div>
+                    <div class="flex gap-2"><input type="number" id="v-cur" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"><input type="number" id="v-max" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] uppercase text-gray-500 mb-1"><span>Sanidade</span><span id="s-val">16/16</span></div>
+                    <div class="flex gap-2"><input type="number" id="s-cur" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"><input type="number" id="s-max" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-[10px] uppercase text-gray-500 mb-1"><span>Esforço</span><span id="e-val">4/4</span></div>
+                    <div class="flex gap-2"><input type="number" id="e-cur" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"><input type="number" id="e-max" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+=======
     <!-- CONTAINER PRINCIPAL -->
     <div class="container-adaptive max-w-7xl 2xl:max-w-[1600px] flex-grow space-y-6 2xl:space-y-10">
         <!-- SEÇÃO 1: INFORMAÇÕES + IMAGENS -->
@@ -161,6 +202,7 @@
                             </div>
                         </div>
                     </div>
+>>>>>>> parent of 069c538 (a)
                 </div>
 
                 <div id="tab-history" class="main-content hidden flex-grow">
@@ -196,6 +238,24 @@
             </div>
         </div>
 
+<<<<<<< HEAD
+        <div class="md:col-span-2 space-y-6">
+            <section class="section grid grid-cols-5 gap-2">
+                <div v-for="a in ['agi','str','int','vig','pre']" class="text-center p-2 bg-black rounded border border-theme-border">
+                    <div class="text-[10px] uppercase text-gray-600 mb-1">AGI</div>
+                    <input type="number" id="a-agi" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none">
+                </div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">FOR</div><input type="number" id="a-str" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">INT</div><input type="number" id="a-int" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">VIG</div><input type="number" id="a-vig" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">PRE</div><input type="number" id="a-pre" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+            </section>
+            
+            <section class="section">
+                <div class="flex justify-between items-center mb-4"><h3 class="font-cinzel text-theme-blue text-xs">Rituais</h3><button onclick="addRit()" class="p-1 hover:text-theme-blue"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+                <div id="rituals-list" class="space-y-2"></div>
+            </section>
+=======
         <!-- SEÇÃO 2: ATRIBUTOS E DEFESAS -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 2xl:gap-8 mb-8 2xl:mb-12">
             <!-- ATRIBUTOS -->
@@ -696,10 +756,56 @@
                 <button class="px-4 py-2 text-theme-muted hover:text-white transition-colors font-medium" onclick="hideModal('ritual-modal')">Cancelar</button>
                 <button class="px-4 py-2 bg-theme-purple text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="addRitual()">Adicionar Ritual</button>
             </div>
+>>>>>>> parent of 069c538 (a)
         </div>
     </div>
 
     <script>
+<<<<<<< HEAD
+        const q = s => document.querySelector(s);
+        let user = Core.load();
+
+        function render() {
+            const p = user.paranormal;
+            q('#p-rank').value = p.rank;
+            q('#p-nex').value = p.nex;
+            q('#v-cur').value = user.res.hp; q('#v-max').value = user.res.hpMax;
+            q('#s-cur').value = p.sanity; q('#s-max').value = p.sanityMax;
+            q('#e-cur').value = p.effort; q('#e-max').value = p.effortMax;
+            const a = p.attributes;
+            q('#a-agi').value = a.agi; q('#a-str').value = a.str; q('#a-int').value = a.int; q('#a-vig').value = a.vig; q('#a-pre').value = a.pre;
+            renderRits();
+            lucide.createIcons();
+        }
+
+        function renderRits() {
+            q('#rituals-list').innerHTML = user.paranormal.rituals.map((r, i) => `
+                <div class="p-3 bg-black/40 border border-theme-border rounded flex justify-between items-center">
+                    <div><input type="text" value="${r.nome}" onchange="editRit(${i},'nome',this.value)" class="bg-transparent text-xs text-white outline-none">
+                    <p class="text-[10px] text-gray-600 mt-1">${r.elemento || 'Sem Elemento'}</p></div>
+                    <button onclick="delRit(${i})" class="text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function save() {
+            const p = user.paranormal;
+            p.rank = q('#p-rank').value;
+            p.nex = parseInt(q('#p-nex').value);
+            user.res.hp = parseInt(q('#v-cur').value); user.res.hpMax = parseInt(q('#v-max').value);
+            p.sanity = parseInt(q('#s-cur').value); p.sanityMax = parseInt(q('#s-max').value);
+            p.effort = parseInt(q('#e-cur').value); p.effortMax = parseInt(q('#e-max').value);
+            p.attributes = { agi:parseInt(q('#a-agi').value), str:parseInt(q('#a-str').value), int:parseInt(q('#a-int').value), vig:parseInt(q('#a-vig').value), pre:parseInt(q('#a-pre').value) };
+            Core.save(user);
+            Core.notify('Agente atualizado!');
+        }
+
+        function addRit() { user.paranormal.rituals.push({ nome: 'Novo Ritual', elemento: 'Morte' }); renderRits(); }
+        function editRit(i, f, v) { user.paranormal.rituals[i][f] = v; }
+        function delRit(i) { user.paranormal.rituals.splice(i,1); renderRits(); }
+
+        document.addEventListener('DOMContentLoaded', render);
+=======
         // Inicializar ícones do Lucide
         lucide.createIcons();
 
@@ -1720,6 +1826,7 @@
             
             input.click();
         }
+>>>>>>> parent of 069c538 (a)
     </script>
 </body>
 </html>
