@@ -7,106 +7,64 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', orange: '#f59e0b', red: '#dc2626', purple: '#8b5cf6', yellow: '#f59e0b', blue: '#4a9eff', green: '#22c55e', muted: '#606060' } } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff', red: '#dc2626', green: '#22c55e' } } } } }
     </script>
     <style>
         body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
-        .section-panel { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 2rem; }
+        .section { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 2rem; }
     </style>
 </head>
 <body class="min-h-screen">
-    <nav class="sticky top-0 bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border z-50 mb-12 py-4">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 border-b border-theme-border z-50 mb-12 py-4">
         <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-theme-blue font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Voltar</span></a>
+            <a href="index.html" class="flex items-center gap-2 text-theme-blue font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Hub</span></a>
             <h1 class="font-cinzel text-xl font-bold text-theme-blue uppercase">Salvamento</h1>
             <div class="w-20"></div>
         </div>
     </nav>
 
     <div class="max-w-4xl mx-auto px-4 space-y-8">
-        <section class="section-panel text-center">
-            <div class="w-20 h-20 bg-theme-blue/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-theme-blue/20">
-                <i data-lucide="database" class="w-10 h-10 text-theme-blue"></i>
-            </div>
+        <section class="section text-center">
+            <div class="w-16 h-16 bg-theme-blue/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-theme-blue/20"><i data-lucide="database" class="w-8 h-8 text-theme-blue"></i></div>
             <h2 class="font-cinzel text-2xl font-bold text-white mb-2">Gerenciar Dados</h2>
-            <p class="text-theme-muted mb-8 max-w-md mx-auto">Exportar sua ficha gera um arquivo JSON contendo todo o progresso do seu personagem, mascote e maestrias.</p>
-
+            <p class="text-xs text-gray-500 mb-8 max-w-md mx-auto">Exportar sua ficha gera um arquivo JSON contendo todo o progresso do seu personagem.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button onclick="exportData()" class="p-4 bg-theme-blue/20 text-theme-blue border border-theme-blue/40 rounded-xl font-bold hover:bg-theme-blue/30 transition-all flex flex-col items-center gap-2">
-                    <i data-lucide="download" class="w-6 h-6"></i> EXPORTAR FICHA
-                </button>
-                <button onclick="q('#file-input').click()" class="p-4 bg-theme-green/20 text-theme-green border border-theme-green/40 rounded-xl font-bold hover:bg-theme-green/30 transition-all flex flex-col items-center gap-2">
-                    <i data-lucide="upload" class="w-6 h-6"></i> IMPORTAR FICHA
-                </button>
+                <button onclick="exportData()" class="p-6 bg-theme-blue/10 text-theme-blue border border-theme-blue/20 rounded-xl font-bold hover:bg-theme-blue/20 transition-all flex flex-col items-center gap-2"><i data-lucide="download" class="w-6 h-6"></i> EXPORTAR</button>
+                <button onclick="q('#file-input').click()" class="p-6 bg-theme-green/10 text-theme-green border border-theme-green/20 rounded-xl font-bold hover:bg-theme-green/20 transition-all flex flex-col items-center gap-2"><i data-lucide="upload" class="w-6 h-6"></i> IMPORTAR</button>
             </div>
             <input type="file" id="file-input" class="hidden" accept=".json" onchange="importData(event)">
         </section>
 
-        <section class="section-panel border-theme-red/30">
+        <section class="section">
             <div class="flex items-center justify-between">
-                <div>
-                    <h3 class="font-cinzel text-theme-red font-bold">Zona de Perigo</h3>
-                    <p class="text-xs text-theme-muted">Ações irreversíveis que apagam seu progresso local.</p>
-                </div>
-                <button onclick="clearData()" class="px-6 py-2 bg-theme-red/20 text-theme-red border border-theme-red/40 rounded-lg text-sm font-bold hover:bg-theme-red/30 transition-all">LIMPAR TUDO</button>
+                <div><h3 class="font-cinzel text-theme-red font-bold text-sm">Zona de Perigo</h3><p class="text-[10px] text-gray-600">Ações irreversíveis que apagam seu progresso local.</p></div>
+                <button onclick="clearData()" class="px-6 py-2 bg-theme-red/10 text-theme-red border border-theme-red/20 rounded-lg text-xs font-bold hover:bg-theme-red/20 transition-all">LIMPAR TUDO</button>
             </div>
         </section>
-
-        <footer class="text-center text-[10px] text-theme-muted uppercase tracking-widest">
-            Grimório Digital &copy; 2026 - Central de Segurança
-        </footer>
     </div>
 
     <script>
         const q = s => document.querySelector(s);
-
-        function init() {
-            Core.init();
-            lucide.createIcons();
-        }
-
         function exportData() {
             const user = Core.load();
             const blob = new Blob([JSON.stringify(user, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `grimorio_${user.name.toLowerCase().replace(/\s+/g, '_')}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            Core.notify('Ficha exportada com sucesso!');
+            const a = document.createElement('a'); a.href = url; a.download = `grimorio_${user.name.toLowerCase().replace(/\s+/g,'_')}.json`; a.click();
+            Core.notify('Ficha exportada!');
         }
-
         function importData(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = (re) => {
-                try {
-                    const data = JSON.parse(re.target.result);
-                    if (!data.name || !data.stats) throw 'Invalido';
-                    Core.save(data);
-                    Core.notify('Ficha importada!');
-                    setTimeout(() => location.reload(), 1000);
-                } catch(err) {
-                    alert('Arquivo de save inválido!');
-                }
+            const f = e.target.files[0]; if (!f) return;
+            const r = new FileReader();
+            r.onload = re => {
+                try { const d = JSON.parse(re.target.result); Core.save(d); Core.notify('Ficha importada!'); setTimeout(() => location.reload(), 1000); }
+                catch(err) { alert('Arquivo inválido!'); }
             };
-            reader.readAsText(file);
+            r.readAsText(f);
         }
-
-        function clearData() {
-            if (confirm('TEM CERTEZA? Isso apagará permanentemente seu personagem local!')) {
-                localStorage.clear();
-                location.href = 'index.html';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        function clearData() { if (confirm('Apagar TUDO?')) { localStorage.clear(); location.reload(); } }
+        document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
     </script>
 </body>
 </html>

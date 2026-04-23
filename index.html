@@ -4,589 +4,150 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Hub Central</title>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    
-    <!-- Sistema Grimório -->
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            blue: '#4a9eff',
-                            orange: '#ff6b35',
-                            red: '#dc2626',
-                            green: '#22c55e',
-                            purple: '#8b5cf6',
-                            yellow: '#f59e0b',
-                            pink: '#ec4899',
-                            gold: '#d4a76a',
-                            copper: '#8b7355'
-                        }
-                    },
-                    animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out',
-                        'slide-up': 'slideUp 0.5s ease-out',
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            'from': { opacity: '0' },
-                            'to': { opacity: '1' }
-                        },
-                        slideUp: {
-                            'from': { transform: 'translateY(20px)', opacity: '0' },
-                            'to': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        pulseGlow: {
-                            '0%, 100%': { boxShadow: '0 0 5px rgba(74, 158, 255, 0.5)' },
-                            '50%': { boxShadow: '0 0 20px rgba(74, 158, 255, 0.8)' }
-                        }
-                    }
+                    fontFamily: { cinzel: ['Cinzel', 'serif'], sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+                    colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff', orange: '#ff6b35', red: '#dc2626', green: '#22c55e', purple: '#8b5cf6', yellow: '#f59e0b', pink: '#ec4899', gold: '#d4a76a' } },
+                    animation: { 'fade-in': 'fadeIn 0.5s ease-out', 'slide-up': 'slideUp 0.5s ease-out' },
+                    keyframes: { fadeIn: { 'from': { opacity: '0' }, 'to': { opacity: '1' } }, slideUp: { 'from': { transform: 'translateY(20px)', opacity: '0' }, 'to': { transform: 'translateY(0)', opacity: '1' } } }
                 }
             }
         }
     </script>
-
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Scrollbar Customizada */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
-
-        /* Avatar Placeholder */
-        .avatar-placeholder {
-            background: linear-gradient(135deg, #2a2a2e 0%, #1a1a1e 100%);
-            border: 2px dashed #4a9eff;
-        }
-        
-        /* Cards */
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-        }
-        
-        /* Badges */
-        .badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: inline-block;
-        }
-        
-        .badge-blue { background: rgba(74, 158, 255, 0.15); color: #4a9eff; border: 1px solid rgba(74, 158, 255, 0.3); }
-        .badge-orange { background: rgba(255, 107, 53, 0.15); color: #ff6b35; border: 1px solid rgba(255, 107, 53, 0.3); }
-        .badge-green { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
-        
-        /* Seção Explicativa */
-        .feature-card {
-            background: linear-gradient(135deg, rgba(15, 15, 18, 0.8) 0%, rgba(10, 10, 12, 0.9) 100%);
-            border: 1px solid #2a2a2e;
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-        
-        .feature-card:hover {
-            border-color: #4a9eff;
-            transform: translateY(-3px);
-        }
-        
-        .info-section {
-            background: linear-gradient(135deg, rgba(15, 15, 18, 0.6) 0%, rgba(10, 10, 12, 0.8) 100%);
-            border: 1px solid #2a2a2e;
-            backdrop-filter: blur(10px);
-        }
-
-        .dropdown-content {
-            display: none;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: all 0.3s ease;
-        }
-
-        .dropdown-content.active {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .chevron { transition: transform 0.3s ease; }
-        .chevron.rotate { transform: rotate(180deg); }
+        .feature-card { background: #0f0f12; border: 1px solid #2a2a2e; transition: all 0.3s ease; }
+        .feature-card:hover { transform: translateY(-5px); border-color: #4a9eff80; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .dropdown-content { display: none; }
+        .dropdown-content.active { display: block; animation: fadeIn 0.2s ease-out; }
+        .rotate { transform: rotate(180deg); }
     </style>
 </head>
-<body class="min-h-screen font-sans flex flex-col">
-
-    <!-- Navbar -->
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="flex items-center justify-center flex-wrap" id="nav-container">
-                
-                <!-- Página Atual (Home) -->
-                <a href="index.html" class="flex items-center gap-2 px-5 py-4 text-theme-blue font-medium tracking-wide transition-all duration-300 bg-[#1a1a1e] border-b-2 border-[#4a9eff]">
-                    <i data-lucide="home" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Home</span>
-                </a>
-
-                <!-- Personagem Dropdown -->
-                <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-personagem', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                        <i data-lucide="user" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Personagem</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
-                    </button>
-                    <div id="menu-personagem" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50 rounded-b-lg">
-                        <a href="ficha.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="scroll-text" class="w-3 h-3"></i> Ficha Completa
-                        </a>
-                        <a href="status.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="zap" class="w-3 h-3"></i> Status & Atributos
-                        </a>
+<body class="min-h-screen flex flex-col font-sans">
+    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border sticky top-0 z-50">
+        <div class="max-w-screen-2xl mx-auto px-6 flex items-center justify-between py-4">
+            <div class="flex items-center gap-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-theme-blue/10 border border-theme-blue/30 rounded flex items-center justify-center">
+                        <i data-lucide="book-open" class="w-6 h-6 text-theme-blue"></i>
+                    </div>
+                    <span class="font-cinzel text-xl font-bold text-white tracking-widest hidden md:block">GRIMÓRIO <span class="text-theme-blue">DIGITAL</span></span>
+                </div>
+                <div class="hidden lg:flex items-center gap-6">
+                    <div class="dropdown-container relative">
+                        <button onclick="toggleMenu('menu-char', this)" class="flex items-center gap-2 text-sm font-medium text-[#a0a0a0] hover:text-white transition-colors py-2">
+                            PERSONAGEM <i data-lucide="chevron-down" class="w-4 h-4 chevron transition-transform"></i>
+                        </button>
+                        <div id="menu-char" class="dropdown-content absolute top-full left-0 mt-2 w-56 bg-theme-panel border border-theme-border rounded-lg shadow-2xl py-2 z-50">
+                            <a href="ficha.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="scroll" class="w-4 h-4"></i> Ficha Essencial</a>
+                            <a href="status.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="activity" class="w-4 h-4"></i> Status & Atributos</a>
+                            <a href="classe.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="award" class="w-4 h-4"></i> Classe & Origem</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-container relative">
+                        <button onclick="toggleMenu('menu-sys', this)" class="flex items-center gap-2 text-sm font-medium text-[#a0a0a0] hover:text-white transition-colors py-2">
+                            SISTEMAS <i data-lucide="chevron-down" class="w-4 h-4 chevron transition-transform"></i>
+                        </button>
+                        <div id="menu-sys" class="dropdown-content absolute top-full left-0 mt-2 w-56 bg-theme-panel border border-theme-border rounded-lg shadow-2xl py-2 z-50">
+                            <a href="inventario.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="package" class="w-4 h-4"></i> Inventário</a>
+                            <a href="habilidades.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="zap" class="w-4 h-4"></i> Habilidades</a>
+                            <a href="proficiencias.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="target" class="w-4 h-4"></i> Maestrias</a>
+                        </div>
+                    </div>
+                    <div class="dropdown-container relative">
+                        <button onclick="toggleMenu('menu-extra', this)" class="flex items-center gap-2 text-sm font-medium text-[#a0a0a0] hover:text-white transition-colors py-2">
+                            COMPLEMENTOS <i data-lucide="chevron-down" class="w-4 h-4 chevron transition-transform"></i>
+                        </button>
+                        <div id="menu-extra" class="dropdown-content absolute top-full left-0 mt-2 w-56 bg-theme-panel border border-theme-border rounded-lg shadow-2xl py-2 z-50">
+                            <a href="mascote.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="dog" class="w-4 h-4"></i> Mascote</a>
+                            <a href="ordem.html" class="flex items-center gap-3 px-4 py-2 text-sm text-[#a0a0a0] hover:bg-white/5 hover:text-white transition-colors"><i data-lucide="binary" class="w-4 h-4"></i> Ordem Paranormal</a>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Classe -->
-                <a href="classe.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                    <i data-lucide="crown" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Classe</span>
-                </a>
-
-                <!-- Inventário -->
-                <a href="inventario.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                    <i data-lucide="backpack" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Inventário</span>
-                </a>
-
-                <!-- Mascote -->
-                <a href="mascote.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                    <i data-lucide="dog" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Mascote</span>
-                </a>
-
-                <!-- Habilidades Dropdown -->
-                <div class="relative group dropdown-container">
-                    <button onclick="toggleMenu('menu-habil', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                        <i data-lucide="sword" class="w-4 h-4"></i>
-                        <span class="font-cinzel">Habilidades</span>
-                        <i data-lucide="chevron-down" class="w-4 h-4 chevron"></i>
-                    </button>
-                    <div id="menu-habil" class="dropdown-content absolute top-full left-0 min-w-[220px] bg-[#0f0f12] border border-[#2a2a2e] shadow-2xl shadow-black/50 z-50 rounded-b-lg">
-                        <a href="habilidades.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="sword" class="w-3 h-3"></i> Combate (Ativas)
-                        </a>
-                        <a href="proficiencias.html" class="flex items-center gap-2 px-5 py-3 text-[#a0a0a0] text-sm transition-all duration-300 hover:bg-[#4a9eff]/10 hover:text-[#4a9eff] hover:pl-7 border-l-2 border-transparent hover:border-[#4a9eff]">
-                            <i data-lucide="hammer" class="w-3 h-3"></i> Proficiências (Passivas)
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Ordem  -->
-                <a href="ordem.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
-                    <i data-lucide="flame" class="w-4 h-4"></i>
-                    <span class="font-cinzel">Ordem paranormal</span>
-                </a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="salvamento.html" class="p-2 text-[#a0a0a0] hover:text-white transition-colors"><i data-lucide="save" class="w-5 h-5"></i></a>
             </div>
         </div>
-        <div class="h-[2px] bg-gradient-to-r from-transparent via-[#4a9eff] to-transparent"></div>
     </nav>
 
-    <main class="flex-grow">
-        <!-- Hero Banner -->
-        <div class="relative w-full h-[30vh] min-h-[250px] overflow-hidden animate-fade-in">
-            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&q=80'); filter: brightness(0.6);"></div>
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent"></div>
-            
-            <div class="absolute inset-0 flex flex-col items-center justify-center z-10">
-                <h1 class="font-cinzel text-4xl md:text-6xl font-bold text-white tracking-widest mb-4 text-center">
-                    GRIMÓRIO DIGITAL
-                </h1>
-                <div class="w-48 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
-                <p class="text-[#a0a0a0] mt-3 tracking-[0.3em] text-sm font-light uppercase">Hub Central</p>
-            </div>
-        </div>
-
-        <!-- SEÇÃO PRINCIPAL: SEU PERSONAGEM -->
-        <div class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Cabeçalho da Seção -->
-            <div class="flex items-center justify-between mb-6 animate-slide-up">
-                <div>
-                    <h2 class="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
-                        <i data-lucide="user" class="w-6 h-6 text-theme-blue"></i>
-                        Seu Personagem
-                    </h2>
-                    <p class="text-[#a0a0a0] text-sm">Visualize e gerencie seu personagem</p>
+    <main class="flex-grow pt-12 pb-24">
+        <div class="max-w-7xl mx-auto px-4 mb-20">
+            <div class="animate-fade-in flex flex-col md:flex-row items-center gap-8 bg-theme-panel border border-theme-border p-8 rounded-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-theme-blue/5 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                <div id="avatar-container" class="w-32 h-32 md:w-40 md:h-40 bg-black rounded-2xl border-2 border-theme-blue flex items-center justify-center relative group overflow-hidden">
+                    <i id="avatar-icon" data-lucide="user" class="w-16 h-16 text-theme-blue/30 group-hover:scale-110 transition-transform"></i>
                 </div>
-                
-                <div class="flex gap-3">
-                    <button onclick="window.location.href='ficha.html'" class="flex items-center gap-2 px-4 py-2 bg-theme-blue hover:bg-blue-600 rounded-lg text-white text-sm font-medium transition-all duration-300">
-                        <i data-lucide="external-link" class="w-4 h-4"></i>
-                        Ver ficha Completa
-                    </button>
-                    <button onclick="window.location.href='status.html'" class="flex items-center gap-2 px-4 py-2 bg-theme-panel border border-theme-border hover:border-theme-blue rounded-lg text-theme-text text-sm font-medium transition-all duration-300">
-                        <i data-lucide="edit" class="w-4 h-4"></i>
-                        Editar status
-                    </button>
-                </div>
-            </div>
-
-            <!-- Grid Principal: Avatar + Informações -->
-            <div class="grid lg:grid-cols-3 gap-6 animate-slide-up" style="animation-delay: 0.1s">
-                
-                <!-- COLUNA 1: Avatar e Imagem -->
-                <div class="lg:col-span-1">
-                    <div class="card-hover bg-theme-panel border border-theme-border rounded-xl p-6 h-full">
-                        <div class="flex items-center gap-3 mb-6">
-                            <i data-lucide="image" class="w-5 h-5 text-theme-blue"></i>
-                            <h3 class="font-cinzel text-lg font-semibold text-white">Avatar</h3>
-                        </div>
-                        
-                        <div class="flex flex-col items-center">
-                            <!-- Container da Imagem -->
-                            <div id="avatar-container" class="w-48 h-48 rounded-full avatar-placeholder mb-4 overflow-hidden border-4 border-theme-border flex items-center justify-center">
-                                <!-- Imagem será carregada aqui -->
-                                <i data-lucide="user" class="w-20 h-20 text-[#606060]" id="avatar-icon"></i>
-                            </div>
-                            
-                            <!-- Nome e Classe -->
-                            <div class="text-center w-full mb-4">
-                                <div id="display-nome" class="text-xl font-cinzel font-bold text-white mb-2">Carregando...</div>
-                                <div id="display-classe" class="text-sm text-theme-orange font-medium">Classe não escolhida</div>
-                            </div>
-                            
-                            <p class="text-xs text-[#606060] text-center">
-                                Para alterar seu avatar, acesse a página de ficha
-                            </p>
-                        </div>
+                <div class="text-center md:text-left flex-grow">
+                    <div class="flex flex-col md:flex-row md:items-end gap-3 mb-4">
+                        <h2 id="display-nome" class="font-cinzel text-4xl font-bold text-white tracking-tight">Sem Nome</h2>
+                        <span id="display-classe" class="text-theme-blue font-mono text-sm border border-theme-blue/30 px-3 py-1 rounded bg-theme-blue/5 uppercase">Nenhuma</span>
                     </div>
-                </div>
-                
-                <!-- COLUNA 2: Informações e Introdução -->
-                <div class="lg:col-span-2">
-                    <div class="card-hover info-section rounded-xl p-6 h-full">
-                        <div class="flex items-center gap-3 mb-6">
-                            <i data-lucide="info" class="w-5 h-5 text-theme-orange"></i>
-                            <h3 class="font-cinzel text-lg font-semibold text-white">Bem-vindo ao Grimório Digital</h3>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <p class="text-[#e8e4dc]">
-                                Este é o sistema completo de gerenciamento de personagens para suas aventuras RPG. 
-                                Aqui você pode criar, personalizar e acompanhar todos os aspectos do seu personagem.
-                            </p>
-                            
-                            <div class="p-4 rounded-lg bg-theme-panel/50 border border-theme-border">
-                                <h4 class="font-cinzel text-md font-semibold text-white mb-2 flex items-center gap-2">
-                                    <i data-lucide="sparkles" class="w-4 h-4 text-theme-blue"></i>
-                                    Como começar?
-                                </h4>
-                                <ol class="list-decimal pl-5 space-y-2 text-sm text-[#a0a0a0]">
-                                    <li><span class="text-white font-medium">1.</span> Crie sua ficha completa na página "Ficha"</li>
-                                    <li><span class="text-white font-medium">2.</span> Escolha uma classe na página "Classe"</li>
-                                    <li><span class="text-white font-medium">3.</span> Distribua seus pontos de atributo em "Status"</li>
-                                    <li><span class="text-white font-medium">4.</span> Explore as outras seções para completar seu personagem</li>
-                                </ol>
-                            </div>
-                            
-                            <div class="flex items-center gap-3 p-3 rounded-lg bg-theme-blue/10 border border-theme-blue/30">
-                                <i data-lucide="lightbulb" class="w-5 h-5 text-theme-blue flex-shrink-0"></i>
-                                <p class="text-sm text-[#a0a0a0]">
-                                    <span class="text-white font-medium">Dica:</span> Todas as alterações são salvas automaticamente. 
-                                    Você pode acessar seu personagem de qualquer dispositivo.
-                                </p>
-                            </div>
-                        </div>
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="bg-black/40 border border-theme-border p-3 rounded-lg"><p class="text-[10px] text-gray-500 uppercase mb-1">Vida</p><p id="hp-val" class="font-mono text-white text-sm">0 / 0</p></div>
+                        <div class="bg-black/40 border border-theme-border p-3 rounded-lg"><p class="text-[10px] text-gray-500 uppercase mb-1">Mana</p><p id="mp-val" class="font-mono text-white text-sm">0 / 0</p></div>
+                        <div class="bg-black/40 border border-theme-border p-3 rounded-lg"><p class="text-[10px] text-gray-500 uppercase mb-1">NEX</p><p id="display-nex" class="font-mono text-white text-sm">0%</p></div>
+                        <div class="bg-black/40 border border-theme-border p-3 rounded-lg"><p class="text-[10px] text-gray-500 uppercase mb-1">Dinheiro</p><p id="money-val" class="font-mono text-white text-sm">0G</p></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- SEÇÃO: Features Principais -->
-        <div class="max-w-7xl mx-auto px-4 pb-12">
-            <div class="animate-slide-up" style="animation-delay: 0.3s">
-                <div class="flex items-center gap-3 mb-6">
-                    <i data-lucide="compass" class="w-6 h-6 text-theme-purple"></i>
-                    <h3 class="font-cinzel text-lg font-semibold text-white">Conheça o Sistema</h3>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Ficha Completa -->
-                    <div class="feature-card rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-[#4a9eff]/10">
-                                <i data-lucide="scroll-text" class="w-5 h-5 text-theme-blue"></i>
-                            </div>
-                            <h4 class="font-cinzel text-md font-semibold text-white">Ficha Completa</h4>
-                        </div>
-                        <p class="text-sm text-[#a0a0a0] mb-3">
-                            Defina a identidade do seu personagem: nome, história, aparência física, 
-                            personalidade e todos os detalhes que fazem dele único.
-                        </p>
-                        <div class="flex items-center gap-2 text-xs text-[#606060]">
-                            <i data-lucide="clock" class="w-3 h-3"></i>
-                            Onde tudo começa
-                        </div>
-                    </div>
-
-                    <!-- Status e Atributos -->
-                    <div class="feature-card rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-[#ff6b35]/10">
-                                <i data-lucide="zap" class="w-5 h-5 text-theme-orange"></i>
-                            </div>
-                            <h4 class="font-cinzel text-md font-semibold text-white">Status e Atributos</h4>
-                        </div>
-                        <p class="text-sm text-[#a0a0a0] mb-3">
-                            Distribua pontos entre Força, Destreza, Inteligência e outros atributos. 
-                            Veja como seus recursos (vida, mana, estamina) são calculados automaticamente.
-                        </p>
-                        <div class="flex items-center gap-2 text-xs text-[#606060]">
-                            <i data-lucide="activity" class="w-3 h-3"></i>
-                            Poderes e habilidades base
-                        </div>
-                    </div>
-
-                    <!-- Sistema de Classes -->
-                    <div class="feature-card rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-[#8b5cf6]/10">
-                                <i data-lucide="crown" class="w-5 h-5 text-theme-purple"></i>
-                            </div>
-                            <h4 class="font-cinzel text-md font-semibold text-white">Sistema de Classes</h4>
-                        </div>
-                        <p class="text-sm text-[#a0a0a0] mb-3">
-                            Escolha entre classes tradicionais ou crie sua própria classe personalizada 
-                            com armas únicas, habilidades especiais e pactos exclusivos.
-                        </p>
-                        <div class="flex items-center gap-2 text-xs text-[#606060]">
-                            <i data-lucide="swords" class="w-3 h-3"></i>
-                            +2 pontos para classes personalizadas
-                        </div>
-                    </div>
-
-                    <!-- Inventário -->
-                    <div class="feature-card rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-[#4a9eff]/10">
-                                <i data-lucide="backpack" class="w-5 h-5 text-theme-blue"></i>
-                            </div>
-                            <h4 class="font-cinzel text-md font-semibold text-white">Inventário</h4>
-                        </div>
-                        <p class="text-sm text-[#a0a0a0] mb-3">
-                            Gerencie seus itens, equipamentos, moedas e tesouros. 
-                            Sistema completo com categorias, descrições e propriedades especiais.
-                        </p>
-                        <div class="flex items-center gap-2 text-xs text-[#606060]">
-                            <i data-lucide="package" class="w-3 h-3"></i>
-                            Organize seus pertences
-                        </div>
-                    </div>
-
-                    <!-- Mascote -->
-                    <div class="feature-card rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-[#22c55e]/10">
-                                <i data-lucide="dog" class="w-5 h-5 text-theme-green"></i>
-                            </div>
-                            <h4 class="font-cinzel text-md font-semibold text-white">Mascote</h4>
-                        </div>
-                        <p class="text-sm text-[#a0a0a0] mb-3">
-                            Crie um companheiro de aventuras! Defina espécie, habilidades, 
-                            personalidade e acompanhe seu crescimento ao longo da jornada.
-                        </p>
-                        <div class="flex items-center gap-2 text-xs text-[#606060]">
-                            <i data-lucide="heart" class="w-3 h-3"></i>
-                            Seu fiel companheiro
-                        </div>
-                    </div>
-
-                    <!-- Habilidades -->
-                    <div class="feature-card rounded-xl p-6">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-[#ff6b35]/10">
-                                <i data-lucide="sword" class="w-5 h-5 text-theme-orange"></i>
-                            </div>
-                            <h4 class="font-cinzel text-md font-semibold text-white">Habilidades e Proficiências</h4>
-                        </div>
-                        <p class="text-sm text-[#a0a0a0] mb-3">
-                            Domine habilidades de combate, magias e técnicas especiais. 
-                            Desenvolva proficiências com diferentes tipos de armas e estilos de luta.
-                        </p>
-                        <div class="flex items-center gap-2 text-xs text-[#606060]">
-                            <i data-lucide="target" class="w-3 h-3"></i>
-                            Torne-se um especialista
-                        </div>
-                    </div>
-                </div>
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+            <div onclick="window.location.href='ficha.html'" class="feature-card rounded-xl p-8 cursor-pointer flex flex-col items-center text-center">
+                <i data-lucide="scroll" class="w-10 h-10 text-theme-blue mb-4"></i>
+                <h3 class="font-cinzel text-lg mb-2">Ficha de Identidade</h3>
+                <p class="text-xs text-gray-500">História, aparência e personalidade.</p>
             </div>
-        </div>
-            <!-- SEÇÃO: Ordem Paranormal -->
-            <div class="max-w-screen-2xl mx-auto px-6 pb-16">
-                <div class="animate-slide-up flex justify-center" style="animation-delay: 0.5s">
-                    <div class="grid grid-cols-1 gap-8 w-full max-w-3xl">
-                        <div class="feature-card rounded-xl p-8 min-h-[280px] 
-                                    flex flex-col items-center text-center">
-                            
-                            <div class="flex items-center gap-3 mb-4">
-                                <div class="p-3 rounded-lg bg-[#ff6b35]/10">
-                                    <i data-lucide="sword" class="w-6 h-6 text-theme-orange"></i>
-                                </div>
-                                <h4 class="font-cinzel text-lg font-semibold text-white">
-                                    Ordem Paranormal
-                                </h4>
-                            </div>
-
-                            <p class="text-sm text-[#a0a0a0] mb-4 max-w-xl">
-                                Se você sabe que este site foca em RPG, é natural que Ordem Paranormal
-                                — uma organização secreta dedicada a combater ameaças sobrenaturais —
-                                tenha seu espaço. Crie seu personagem como membro da Ordem, escolhendo
-                                habilidades, equipamentos e missões.
-                            </p>
-
-                            <div class="flex items-center gap-2 text-xs text-[#606060]">
-                                <i data-lucide="target" class="w-3 h-3"></i>
-                                Lhes desejo boa sorte
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
+            <div onclick="window.location.href='status.html'" class="feature-card rounded-xl p-8 cursor-pointer flex flex-col items-center text-center">
+                <i data-lucide="activity" class="w-10 h-10 text-theme-green mb-4"></i>
+                <h3 class="font-cinzel text-lg mb-2">Status & Atributos</h3>
+                <p class="text-xs text-gray-500">Controle total de força, mana e sorte.</p>
             </div>
-        </div>
-
-
-        <!-- SEÇÃO: Ações Rápidas -->
-        <div class="max-w-7xl mx-auto px-4 pb-12">
-            <div class="animate-slide-up" style="animation-delay: 0.5s">
-                <div class="flex items-center gap-3 mb-6">
-                    <i data-lucide="rocket" class="w-6 h-6 text-theme-orange"></i>
-                    <h3 class="font-cinzel text-lg font-semibold text-white">Pronto para Aventurar?</h3>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Crie sua Ficha -->
-                    <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
-                        <div class="p-3 rounded-full bg-[#4a9eff]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
-                            <i data-lucide="pencil" class="w-8 h-8 text-theme-blue"></i>
-                        </div>
-                        <h4 class="font-cinzel text-lg font-semibold text-white mb-3">Crie sua Ficha</h4>
-                        <p class="text-sm text-[#a0a0a0] mb-4">Dê vida ao seu personagem com história e personalidade únicas</p>
-                        <button onclick="window.location.href='ficha.html'" class="w-full px-4 py-3 bg-theme-blue hover:bg-blue-600 rounded-lg text-white font-medium transition-all duration-300">
-                            Começar Agora
-                        </button>
-                    </div>
-
-                    <!-- Escolha sua Classe -->
-                    <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
-                        <div class="p-3 rounded-full bg-[#8b5cf6]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
-                            <i data-lucide="crown" class="w-8 h-8 text-theme-purple"></i>
-                        </div>
-                        <h4 class="font-cinzel text-lg font-semibold text-white mb-3">Escolha sua Classe</h4>
-                        <p class="text-sm text-[#a0a0a0] mb-4">Selecione uma classe padrão ou crie sua própria classe única</p>
-                        <button onclick="window.location.href='classe.html'" class="w-full px-4 py-3 bg-theme-purple hover:bg-purple-600 rounded-lg text-white font-medium transition-all duration-300">
-                            Ver Classes
-                        </button>
-                    </div>
-
-                    <!-- Veja seu Status -->
-                    <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
-                        <div class="p-3 rounded-full bg-[#22c55e]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
-                            <i data-lucide="user-check" class="w-8 h-8 text-theme-green"></i>
-                        </div>
-                        <h4 class="font-cinzel text-lg font-semibold text-white mb-3">Crie e personalize seus status</h4>
-                        <p class="text-sm text-[#a0a0a0] mb-4">Visualize todas as variaveis do seu personagem em um só lugar</p>
-                        <button onclick="window.location.href='status.html'" class="w-full px-4 py-3 bg-theme-green hover:bg-green-600 rounded-lg text-white font-medium transition-all duration-300">
-                            Ver Status & Atributos
-                        </button>
-                    </div>
-                </div>
+            <div onclick="window.location.href='inventario.html'" class="feature-card rounded-xl p-8 cursor-pointer flex flex-col items-center text-center">
+                <i data-lucide="package" class="w-10 h-10 text-theme-orange mb-4"></i>
+                <h3 class="font-cinzel text-lg mb-2">Inventário</h3>
+                <p class="text-xs text-gray-500">Itens, moedas e peso de carga.</p>
             </div>
         </div>
     </main>
 
-    <footer class="border-t border-theme-border py-8 mt-auto">
-        <div class="flex justify-center items-center gap-4">
-            <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-[#4a9eff]/50"></div>
-            <i data-lucide="sword" class="w-4 h-4 text-[#4a9eff]/50 rotate-90 md:rotate-0"></i>
-            <div class="w-16 h-[1px] bg-gradient-to-l from-transparent to-[#4a9eff]/50"></div>
-        </div>
-        <p class="text-center text-[#606060] text-xs mt-4">Grimório Digital - Sistema de RPG v2.0</p>
+    <footer class="py-12 border-t border-theme-border text-center">
+        <p class="text-[10px] tracking-widest text-gray-600 uppercase">Grimório Digital &copy; 2026 - RPG Framework</p>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) lucide.createIcons();
-            load();
-            setInterval(load, 2000);
-        });
-
-/* ==============================////============================== */
-
-        function load() {
-            const user = Core.load();
-            if (!user) return;
-
-            const nameEl = document.getElementById('display-nome');
-            const classEl = document.getElementById('display-classe');
-            const avatarEl = document.getElementById('avatar-container');
-            const iconEl = document.getElementById('avatar-icon');
-
-            if (nameEl) nameEl.textContent = user.name || 'Sem Nome';
-            if (classEl) classEl.textContent = user.class || 'Nenhuma';
-
-            if (user.avatar && avatarEl) {
-                avatarEl.style.backgroundImage = `url('${user.avatar}')`;
-                avatarEl.style.backgroundSize = 'cover';
-                avatarEl.style.backgroundPosition = 'center';
-                if (iconEl) iconEl.style.display = 'none';
-            }
-        }
-
+        const q = s => document.querySelector(s);
         function toggleMenu(id, btn) {
-            const menu = document.getElementById(id);
-            const chevron = btn.querySelector('.chevron');
-            const active = menu.classList.contains('active');
-
+            const el = q('#'+id); const act = el.classList.contains('active');
             document.querySelectorAll('.dropdown-content').forEach(m => m.classList.remove('active'));
             document.querySelectorAll('.chevron').forEach(c => c.classList.remove('rotate'));
-
-            if (!active) {
-                menu.classList.add('active');
-                if (chevron) chevron.classList.add('rotate');
-            }
+            if (!act) { el.classList.add('active'); btn.querySelector('.chevron').classList.add('rotate'); }
         }
-
-        window.onclick = (e) => {
-            if (!e.target.closest('.dropdown-container')) {
-                document.querySelectorAll('.dropdown-content').forEach(m => m.classList.remove('active'));
-                document.querySelectorAll('.chevron').forEach(c => c.classList.remove('rotate'));
-            }
-        };
-
-/* ==============================////============================== */
+        function load() {
+            const u = Core.load(); if(!u) return;
+            q('#display-nome').innerText = u.name || 'Sem Nome';
+            q('#display-classe').innerText = u.class || 'Nenhuma';
+            q('#display-nex').innerText = (u.paranormal.nex || 0) + '%';
+            q('#hp-val').innerText = `${u.res.hp} / ${u.res.hpMax}`;
+            q('#mp-val').innerText = `${u.res.mp} / ${u.res.mpMax}`;
+            q('#money-val').innerText = `${u.money.gold}G`;
+            if (u.avatar) { q('#avatar-container').style.backgroundImage = `url('${u.avatar}')`; q('#avatar-container').style.backgroundSize = 'cover'; q('#avatar-icon').style.display='none'; }
+        }
+        window.onclick = e => { if(!e.target.closest('.dropdown-container')) { document.querySelectorAll('.dropdown-content').forEach(m => m.classList.remove('active')); document.querySelectorAll('.chevron').forEach(c => c.classList.remove('rotate')); } };
+        document.addEventListener('DOMContentLoaded', () => { load(); lucide.createIcons(); });
     </script>
 </body>
 </html>

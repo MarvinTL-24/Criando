@@ -7,23 +7,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', orange: '#f59e0b', red: '#dc2626', purple: '#8b5cf6', yellow: '#f59e0b', blue: '#4a9eff', green: '#22c55e', muted: '#606060' } } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', orange: '#f59e0b' } } } } }
     </script>
     <style>
         body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
-        .section-panel { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
+        .section { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
         .tab-btn.active { color: #f59e0b; border-bottom: 2px solid #f59e0b; }
         .hidden { display: none; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
-    <nav class="sticky top-0 bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border z-50 mb-8 py-4">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 border-b border-theme-border z-50 mb-8 py-4">
         <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-theme-orange font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Voltar</span></a>
+            <a href="index.html" class="flex items-center gap-2 text-theme-orange font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Hub</span></a>
             <h1 class="font-cinzel text-xl font-bold text-theme-orange uppercase">Maestrias</h1>
             <div class="w-20"></div>
         </div>
@@ -37,69 +35,36 @@
             <button class="tab-btn px-6 py-3 font-cinzel text-sm" onclick="tab('other')">Outros</button>
         </div>
 
-        <div id="tab-combat" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Gerado -->
-        </div>
-
-        <div id="tab-magic" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Gerado -->
-        </div>
-
-        <div id="tab-pacts" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Gerado -->
-        </div>
-
-        <div id="tab-other" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Gerado -->
-        </div>
+        <div id="tab-combat" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="tab-magic" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="tab-pacts" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        <div id="tab-other" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
 
     <script>
         const q = s => document.querySelector(s);
         const qa = s => document.querySelectorAll(s);
-
         const cats = {
             combat: [
-                { id: 'sword', label: 'Espadas', cat: 'sharp' },
-                { id: 'axe', label: 'Machados', cat: 'sharp' },
-                { id: 'scythe', label: 'Foices', cat: 'sharp' },
-                { id: 'dagger', label: 'Adagas', cat: 'pierce' },
-                { id: 'spear', label: 'Lanças', cat: 'pierce' },
-                { id: 'hammer', label: 'Martelos', cat: 'blunt' },
-                { id: 'mace', label: 'Maças', cat: 'blunt' },
-                { id: 'bow', label: 'Arcos', cat: 'range' },
-                { id: 'staff', label: 'Cajados', cat: 'range' }
+                { id: 'sword', label: 'Espadas', cat: 'sharp' }, { id: 'axe', label: 'Machados', cat: 'sharp' }, { id: 'scythe', label: 'Foices', cat: 'sharp' },
+                { id: 'dagger', label: 'Adagas', cat: 'pierce' }, { id: 'spear', label: 'Lanças', cat: 'pierce' },
+                { id: 'hammer', label: 'Martelos', cat: 'blunt' }, { id: 'mace', label: 'Maças', cat: 'blunt' },
+                { id: 'bow', label: 'Arcos', cat: 'range' }, { id: 'staff', label: 'Cajados', cat: 'range' }
             ],
             magic: [
-                { id: 'fire', label: 'Fogo', cat: 'magic' },
-                { id: 'ice', label: 'Gelo', cat: 'magic' },
-                { id: 'elec', label: 'Eletricidade', cat: 'magic' },
-                { id: 'earth', label: 'Terra', cat: 'magic' },
-                { id: 'wind', label: 'Vento', cat: 'magic' },
-                { id: 'water', label: 'Água', cat: 'magic' },
-                { id: 'death', label: 'Morte', cat: 'magic' },
-                { id: 'life', label: 'Vida', cat: 'magic' }
+                { id: 'fire', label: 'Fogo', cat: 'magic' }, { id: 'ice', label: 'Gelo', cat: 'magic' }, { id: 'elec', label: 'Eletricidade', cat: 'magic' },
+                { id: 'earth', label: 'Terra', cat: 'magic' }, { id: 'wind', label: 'Vento', cat: 'magic' }, { id: 'water', label: 'Água', cat: 'magic' },
+                { id: 'death', label: 'Morte', cat: 'magic' }, { id: 'life', label: 'Vida', cat: 'magic' }
             ],
             pacts: [
-                { id: 'demon', label: 'Demoníaco', cat: 'pacts' },
-                { id: 'celestial', label: 'Celestial', cat: 'pacts' },
-                { id: 'ancestor', label: 'Ancestral', cat: 'pacts' },
-                { id: 'elemental', label: 'Elemental', cat: 'pacts' },
-                { id: 'blood', label: 'Sangue', cat: 'pacts' }
+                { id: 'demon', label: 'Demoníaco', cat: 'pacts' }, { id: 'celestial', label: 'Celestial', cat: 'pacts' }, { id: 'ancestor', label: 'Ancestral', cat: 'pacts' },
+                { id: 'elemental', label: 'Elemental', cat: 'pacts' }, { id: 'blood', label: 'Sangue', cat: 'pacts' }
             ],
             other: [
-                { id: 'druid', label: 'Druidismo', cat: 'special' },
-                { id: 'psionic', label: 'Psionismo', cat: 'special' },
-                { id: 'alchemist', label: 'Alquimia', cat: 'special' },
-                { id: 'shadow', label: 'Sombras', cat: 'special' },
-                { id: 'berserker', label: 'Berserker', cat: 'special' }
+                { id: 'druid', label: 'Druidismo', cat: 'special' }, { id: 'psionic', label: 'Psionismo', cat: 'special' }, { id: 'alchemist', label: 'Alquimia', cat: 'special' },
+                { id: 'shadow', label: 'Sombras', cat: 'special' }, { id: 'berserker', label: 'Berserker', cat: 'special' }
             ]
         };
-
-        function init() {
-            Core.init();
-            render();
-        }
 
         function tab(id) {
             qa('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(id) || (id === 'combat' && b.innerText === 'Combate')));
@@ -110,49 +75,30 @@
         function render() {
             const user = Core.load();
             Object.keys(cats).forEach(tabId => {
-                const list = q(`#tab-${tabId}`);
-                list.innerHTML = cats[tabId].map(skill => {
-                    let level = 0;
-                    if (skill.cat === 'magic' || skill.cat === 'pacts' || skill.cat === 'special' || skill.cat === 'summon') {
-                        level = user.mastery[skill.cat][skill.id];
-                    } else {
-                        level = user.mastery[skill.cat][skill.id].lv;
-                    }
-
+                q(`#tab-${tabId}`).innerHTML = cats[tabId].map(skill => {
+                    let lv = ['magic','pacts','special'].includes(skill.cat) ? user.mastery[skill.cat][skill.id] : user.mastery[skill.cat][skill.id].lv;
                     return `
-                        <div class="section-panel flex flex-col gap-3 group hover:border-theme-orange/50 transition-colors">
-                            <div class="flex justify-between items-center">
-                                <span class="font-bold text-white">${skill.label}</span>
-                                <span class="text-sm font-mono text-theme-orange">LV. ${level}</span>
-                            </div>
-                            <div class="flex gap-1">
-                                ${Array.from({length: 10}).map((_, i) => `
-                                    <div class="flex-1 h-1.5 rounded-full ${i < level ? 'bg-theme-orange' : 'bg-white/5'}"></div>
-                                `).join('')}
-                            </div>
+                        <div class="section flex flex-col gap-3 group hover:border-orange-500/30 transition-all">
+                            <div class="flex justify-between items-center"><span class="font-bold text-white text-xs">${skill.label}</span><span class="text-xs font-mono text-theme-orange">LV. ${lv}</span></div>
+                            <div class="flex gap-1">${Array.from({length:10}).map((_,i) => `<div class="flex-1 h-1 rounded-full ${i < lv ? 'bg-theme-orange' : 'bg-white/5'}"></div>`).join('')}</div>
                             <div class="flex gap-2 mt-2">
-                                <button onclick="update('${skill.cat}', '${skill.id}', -1)" class="flex-1 py-1 bg-white/5 rounded text-xs hover:bg-white/10">-</button>
-                                <button onclick="update('${skill.cat}', '${skill.id}', 1)" class="flex-1 py-1 bg-theme-orange/20 text-theme-orange rounded text-xs font-bold hover:bg-theme-orange/30">UP</button>
+                                <button onclick="up('${skill.cat}','${skill.id}',-1)" class="flex-1 py-1 bg-white/5 rounded text-[10px]">-</button>
+                                <button onclick="up('${skill.cat}','${skill.id}',1)" class="flex-1 py-1 bg-theme-orange/20 text-theme-orange rounded text-[10px] font-bold">UP</button>
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
             });
             lucide.createIcons();
         }
 
-        function update(cat, id, v) {
+        function up(cat, id, v) {
             const user = Core.load();
-            if (['magic', 'pacts', 'special', 'summon'].includes(cat)) {
-                user.mastery[cat][id] = Math.max(0, Math.min(10, user.mastery[cat][id] + v));
-            } else {
-                user.mastery[cat][id].lv = Math.max(0, Math.min(10, user.mastery[cat][id].lv + v));
-            }
-            Core.save(user);
-            render();
+            if (['magic','pacts','special'].includes(cat)) user.mastery[cat][id] = Math.max(0, Math.min(10, user.mastery[cat][id] + v));
+            else user.mastery[cat][id].lv = Math.max(0, Math.min(10, user.mastery[cat][id].lv + v));
+            Core.save(user); render();
         }
 
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', render);
     </script>
 </body>
 </html>

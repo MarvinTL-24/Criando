@@ -4,318 +4,134 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Mascote</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { cinzel: ['Cinzel', 'serif'], sans: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-                    colors: {
-                        theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', pink: '#ec4899', red: '#dc2626', purple: '#8b5cf6', yellow: '#f59e0b', blue: '#4a9eff', green: '#22c55e', muted: '#606060' }
-                    }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', pink: '#ec4899', red: '#dc2626', blue: '#4a9eff' } } } } }
     </script>
     <style>
-        body { background: #0a0a0c; color: #e8e4dc; }
-        .stat-bar { height: 0.5rem; background: #1a1a1a; border-radius: 999px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.3s; }
-        .profile-img-container { width: 120px; height: 120px; border: 3px solid #ec4899; border-radius: 12px; overflow: hidden; position: relative; background: #0f0f12; }
-        .profile-img { width: 100%; height: 100%; object-fit: cover; }
-        .upload-btn { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: white; padding: 4px; font-size: 10px; text-align: center; cursor: pointer; }
-        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+        body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
+        .section { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
     </style>
 </head>
-<body class="min-h-screen font-sans pb-12">
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 py-4">
-        <div class="max-w-6xl mx-auto px-6 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-theme-pink/10 border border-theme-pink/30 rounded-lg text-theme-pink font-medium hover:bg-theme-pink/20 transition-all">
-                <i data-lucide="arrow-left" class="w-5 h-5"></i>
-                <span class="font-cinzel text-sm hidden sm:inline">Voltar ao Hub</span>
-            </a>
-            <div class="flex items-center flex-col sm:flex-row">
-                <span class="font-cinzel text-xl font-bold text-theme-pink uppercase tracking-wider">Grimório Digital</span>
-                <div class="h-6 w-[1px] bg-theme-border mx-4 hidden sm:block"></div>
-                <span class="text-sm text-theme-muted font-medium uppercase">Mascote & Companheiro</span>
-            </div>
-            <div class="w-24 hidden sm:block"></div>
+<body class="min-h-screen pb-12">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 border-b border-theme-border z-50 mb-8 py-4">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-theme-pink"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Hub</span></a>
+            <h1 class="font-cinzel text-xl font-bold text-theme-pink uppercase">Mascote</h1>
+            <button onclick="save()" class="px-4 py-1 bg-theme-pink/20 text-theme-pink border border-theme-pink/30 rounded text-xs font-bold">SALVAR</button>
         </div>
     </nav>
 
-    <div class="max-w-4xl mx-auto px-4 space-y-6">
-        <header class="flex items-center gap-6 mb-8">
-            <div class="profile-img-container shadow-lg" onclick="openImg()">
-                <img id="mascote-icon" src="" class="profile-img">
-                <div class="upload-btn"><i data-lucide="camera" class="w-3 h-3 inline"></i> Editar</div>
-            </div>
-            <div>
-                <h1 class="text-3xl font-cinzel font-bold text-white">Mascote</h1>
-                <p class="text-theme-muted">Companheiro fiel e protetor</p>
-                <div class="flex gap-2 mt-2">
-                    <button onclick="downloadTXT()" class="text-[10px] px-2 py-1 bg-green-900/20 text-green-400 border border-green-800 rounded hover:bg-green-900/40">EXPORTAR TXT</button>
-                    <button onclick="reset()" class="text-[10px] px-2 py-1 bg-red-900/20 text-red-400 border border-red-800 rounded hover:bg-red-900/40">RESETAR</button>
+    <div class="max-w-4xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-1 space-y-6">
+            <div class="section flex flex-col items-center">
+                <div id="img-container" class="w-32 h-32 bg-black border-2 border-theme-pink rounded-lg overflow-hidden mb-4 cursor-pointer relative group" onclick="q('#file-input').click()">
+                    <img id="mascot-img" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center text-[10px]">ALTERAR</div>
                 </div>
+                <input type="file" id="file-input" class="hidden" onchange="upload(event)">
+                <input type="text" id="m-name" class="w-full bg-black border border-theme-border rounded p-2 text-white text-center font-bold" placeholder="Nome">
+                <input type="number" id="m-lv" class="w-full mt-2 bg-black border border-theme-border rounded p-1 text-center text-xs" placeholder="Nível">
             </div>
-        </header>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="md:col-span-2 space-y-6">
-                <!-- Identidade -->
-                <section class="bg-theme-panel border border-theme-border p-5 rounded-lg border-l-4 border-l-theme-pink">
-                    <h3 class="font-cinzel text-theme-pink mb-4 flex items-center gap-2"><i data-lucide="star" class="w-4 h-4"></i> Identidade</h3>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="col-span-2">
-                            <label class="block text-xs text-theme-muted mb-1">Nome</label>
-                            <input type="text" id="mascote-nome" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-white outline-none focus:border-theme-pink">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-theme-muted mb-1">Nível</label>
-                            <input type="number" id="mascote-nivel" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-white outline-none focus:border-theme-pink">
-                        </div>
-                        <div>
-                            <label class="block text-xs text-theme-muted mb-1">Tipo / Espécie</label>
-                            <input type="text" id="mascote-tipo" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-white outline-none focus:border-theme-pink">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-xs text-theme-muted mb-1">Elemento</label>
-                            <select id="mascote-elemento" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-white outline-none focus:border-theme-pink">
-                                <option value="">Nenhum / Neutro</option>
-                                <option value="Fogo">Fogo</option><option value="Água">Água</option><option value="Terra">Terra</option><option value="Vento">Vento</option><option value="Luz">Luz</option><option value="Trevas">Trevas</option>
-                            </select>
-                        </div>
+            <div class="section">
+                <h3 class="font-cinzel text-theme-red text-xs mb-4">Atributos</h3>
+                <div class="space-y-2">
+                    <div v-for="s in ['AGI','STR','PER','DEF','STA']" class="flex items-center justify-between">
+                        <span class="text-xs text-gray-500">AGI</span>
+                        <input type="number" id="s-agi" class="w-12 bg-black border border-theme-border rounded p-1 text-center text-xs">
                     </div>
-                </section>
-
-                <!-- Status -->
-                <section class="bg-theme-panel border border-theme-border p-5 rounded-lg border-l-4 border-l-theme-red">
-                    <h3 class="font-cinzel text-theme-red mb-4 flex items-center gap-2"><i data-lucide="heart" class="w-4 h-4"></i> Vitalidade & Lealdade</h3>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between text-xs mb-1"><span>HP</span> <span id="hp-display">50/50</span></div>
-                            <div class="stat-bar"><div id="hp-bar" class="stat-bar-fill bg-theme-red"></div></div>
-                            <div class="grid grid-cols-2 gap-2 mt-2">
-                                <input type="number" id="vida-atual" class="bg-theme-bg border border-theme-border rounded p-1 text-center text-xs text-white">
-                                <input type="number" id="vida-max" class="bg-theme-bg border border-theme-border rounded p-1 text-center text-xs text-white">
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-xs mb-1"><span>Lealdade</span> <span id="lealdade-display">80%</span></div>
-                            <div class="stat-bar"><div id="lealdade-bar" class="stat-bar-fill bg-theme-pink"></div></div>
-                            <input type="range" id="input-lealdade" class="w-full accent-theme-pink mt-2">
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Habilidades -->
-                <section class="bg-theme-panel border border-theme-border p-5 rounded-lg border-l-4 border-l-theme-blue">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-cinzel text-theme-blue flex items-center gap-2"><i data-lucide="zap" class="w-4 h-4"></i> Habilidades</h3>
-                        <button onclick="addSkill()" class="p-1 px-2 bg-theme-blue/20 text-theme-blue rounded text-xs hover:bg-theme-blue/30">+ Novo</button>
-                    </div>
-                    <div id="skills-list" class="space-y-3"></div>
-                </section>
-            </div>
-
-            <!-- Coluna Lateral -->
-            <div class="space-y-6">
-                <!-- Atributos -->
-                <section class="bg-theme-panel border border-theme-border p-5 rounded-lg border-l-4 border-l-theme-purple">
-                    <h3 class="font-cinzel text-theme-purple mb-4 flex items-center gap-2"><i data-lucide="activity" class="w-4 h-4"></i> Atributos</h3>
-                    <div class="space-y-3">
-                        <div v-for="s in ['Força', 'Agilidade', 'Percepção', 'Defesa', 'Estamina']">
-                            <div class="flex justify-between text-[10px] uppercase text-theme-muted mb-1"><span id="lbl-agi">Agilidade</span> <span id="agilidade-display">50</span></div>
-                            <input type="range" id="input-agilidade" class="w-full h-1 accent-theme-blue">
-                        </div>
-                        <div><div class="flex justify-between text-[10px] uppercase text-theme-muted mb-1"><span>Força</span> <span id="forca-display">50</span></div><input type="range" id="input-forca" class="w-full h-1 accent-theme-red"></div>
-                        <div><div class="flex justify-between text-[10px] uppercase text-theme-muted mb-1"><span>Percepção</span> <span id="percepcao-display">50</span></div><input type="range" id="input-percepcao" class="w-full h-1 accent-theme-green"></div>
-                        <div><div class="flex justify-between text-[10px] uppercase text-theme-muted mb-1"><span>Defesa</span> <span id="defesa-display">50</span></div><input type="range" id="input-defesa" class="w-full h-1 accent-theme-purple"></div>
-                        <div><div class="flex justify-between text-[10px] uppercase text-theme-muted mb-1"><span>Estamina</span> <span id="estamina-display">50</span></div><input type="range" id="input-estamina" class="w-full h-1 accent-theme-blue"></div>
-                    </div>
-                </section>
-
-                <!-- Descrições -->
-                <section class="bg-theme-panel border border-theme-border p-5 rounded-lg flex flex-col gap-4">
-                    <div>
-                        <label class="text-xs text-theme-muted mb-1 flex justify-between">Aparência <span id="char-count-aparencia">0</span></label>
-                        <textarea id="mascote-aparencia" rows="3" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-xs text-white outline-none focus:border-theme-green"></textarea>
-                    </div>
-                    <div>
-                        <label class="text-xs text-theme-muted mb-1 flex justify-between">Personalidade <span id="char-count-personalidade">0</span></label>
-                        <textarea id="mascote-personalidade" rows="3" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-xs text-white outline-none focus:border-theme-green"></textarea>
-                    </div>
-                    <div>
-                        <label class="text-xs text-theme-muted mb-1 flex justify-between">História <span id="char-count-historia">0</span></label>
-                        <textarea id="mascote-historia" rows="5" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-xs text-white outline-none focus:border-theme-yellow"></textarea>
-                    </div>
-                </section>
+                    <div class="flex items-center justify-between"><span class="text-xs text-gray-500">STR</span><input type="number" id="s-str" class="w-12 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+                    <div class="flex items-center justify-between"><span class="text-xs text-gray-500">PER</span><input type="number" id="s-per" class="w-12 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+                    <div class="flex items-center justify-between"><span class="text-xs text-gray-500">DEF</span><input type="number" id="s-def" class="w-12 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+                    <div class="flex items-center justify-between"><span class="text-xs text-gray-500">STA</span><input type="number" id="s-sta" class="w-12 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal Imagem -->
-    <div id="image-modal" class="modal hidden">
-        <div class="bg-theme-panel border border-theme-border p-6 rounded-lg max-w-sm w-full">
-            <h3 class="font-cinzel text-white mb-4">Mudar Ícone</h3>
-            <div class="flex flex-col items-center gap-4">
-                <img id="image-preview" src="" class="w-32 h-32 rounded-lg border-2 border-theme-pink object-cover">
-                <input type="file" id="image-input" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                <div class="flex gap-2 w-full">
-                    <button onclick="document.getElementById('image-input').click()" class="flex-1 bg-theme-pink text-white py-2 rounded text-sm">Upload</button>
-                    <button onclick="removeImage()" class="flex-1 border border-red-500 text-red-500 py-2 rounded text-sm">Remover</button>
+        <div class="md:col-span-2 space-y-6">
+            <div class="section">
+                <h3 class="font-cinzel text-theme-blue text-xs mb-4">Status & Info</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-[10px] uppercase text-gray-500">Vida</label>
+                        <div class="flex gap-2"><input type="number" id="m-hp" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center"><input type="number" id="m-hpmax" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center"></div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] uppercase text-gray-500">Lealdade %</label>
+                        <input type="number" id="m-loyalty" class="w-full bg-black border border-theme-border rounded p-1 text-center">
+                    </div>
                 </div>
-                <button onclick="closeImg()" class="w-full bg-theme-border text-white py-2 rounded text-sm">Fechar</button>
+                <textarea id="m-desc" placeholder="História / Personalidade" class="w-full mt-4 bg-black border border-theme-border rounded p-2 text-xs h-24 outline-none"></textarea>
+            </div>
+            <div class="section">
+                <div class="flex justify-between items-center mb-4"><h3 class="font-cinzel text-theme-pink text-xs">Habilidades</h3><button onclick="addSkill()" class="p-1 hover:text-theme-pink"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+                <div id="skills-list" class="space-y-2"></div>
             </div>
         </div>
     </div>
 
     <script>
         const q = s => document.querySelector(s);
-        const qa = s => document.querySelectorAll(s);
-
-        function init() {
-            Core.init();
-            render();
-            setup();
-        }
-
-        function setup() {
-            qa('input, select, textarea').forEach(el => {
-                el.addEventListener('change', () => { if (el.id !== 'image-input') save(); });
-            });
-        }
-
-        function save() {
-            const user = Core.load();
-            const m = user.mascot;
-            m.name = q('#mascote-nome').value;
-            m.level = parseInt(q('#mascote-nivel').value) || 1;
-            m.type = q('#mascote-tipo').value;
-            m.element = q('#mascote-elemento').value;
-            m.hp = parseInt(q('#vida-atual').value) || 0;
-            m.hpMax = parseInt(q('#vida-max').value) || 1;
-            m.loyalty = parseInt(q('#input-lealdade').value) || 0;
-            m.stats.agi = parseInt(q('#input-agilidade').value) || 0;
-            m.stats.str = parseInt(q('#input-forca').value) || 0;
-            m.stats.per = parseInt(q('#input-percepcao').value) || 0;
-            m.stats.def = parseInt(q('#input-defesa').value) || 0;
-            m.stats.sta = parseInt(q('#input-estamina').value) || 0;
-            m.desc.view = q('#mascote-aparencia').value;
-            m.desc.personality = q('#mascote-personalidade').value;
-            m.desc.history = q('#mascote-historia').value;
-            Core.save(user);
-            render();
-        }
+        let user = Core.load();
 
         function render() {
-            const user = Core.load();
             const m = user.mascot;
-            q('#mascote-nome').value = m.name;
-            q('#mascote-nivel').value = m.level;
-            q('#mascote-tipo').value = m.type;
-            q('#mascote-elemento').value = m.element;
-            q('#vida-atual').value = m.hp;
-            q('#vida-max').value = m.hpMax;
-            q('#hp-display').innerText = `${m.hp}/${m.hpMax}`;
-            q('#hp-bar').style.width = `${(m.hp / m.hpMax) * 100}%`;
-            q('#input-lealdade').value = m.loyalty;
-            q('#lealdade-display').innerText = `${m.loyalty}%`;
-            q('#lealdade-bar').style.width = `${m.loyalty}%`;
-            const map = { agi: 'agilidade', str: 'forca', per: 'percepcao', def: 'defesa', sta: 'estamina' };
-            Object.entries(map).forEach(([k, id]) => {
-                q(`#input-${id}`).value = m.stats[k];
-                q(`#${id}-display`).innerText = m.stats[k];
-            });
-            q('#mascote-aparencia').value = m.desc.view;
-            q('#mascote-personalidade').value = m.desc.personality;
-            q('#mascote-historia').value = m.desc.history;
-            q('#char-count-aparencia').innerText = m.desc.view.length;
-            q('#char-count-personalidade').innerText = m.desc.personality.length;
-            q('#char-count-historia').innerText = m.desc.history.length;
-            q('#mascote-icon').src = m.icon || '';
-            q('#image-preview').src = m.icon || '';
-            renderSkills(m.skills);
+            q('#m-name').value = m.name;
+            q('#m-lv').value = m.level;
+            q('#m-hp').value = m.hp;
+            q('#m-hpmax').value = m.hpMax;
+            q('#m-loyalty').value = m.loyalty;
+            q('#m-desc').value = m.desc.history;
+            q('#s-agi').value = m.stats.agi;
+            q('#s-str').value = m.stats.str;
+            q('#s-per').value = m.stats.per;
+            q('#s-def').value = m.stats.def;
+            q('#s-sta').value = m.stats.sta;
+            q('#mascot-img').src = m.icon || '';
+            renderSkills();
             lucide.createIcons();
         }
 
-        function renderSkills(skills) {
-            const list = q('#skills-list');
-            if (skills.length === 0) { list.innerHTML = `<p class="text-center text-xs text-theme-muted">Sem habilidades</p>`; return; }
-            list.innerHTML = skills.map((s, idx) => `
-                <div class="p-3 bg-theme-bg border border-theme-border rounded relative group">
-                    <input type="text" value="${s.nome}" onchange="updateSkill(${idx}, 'nome', this.value)" class="bg-transparent text-white font-bold text-sm w-full mb-1">
-                    <div class="flex items-center gap-2 mb-2">
-                        <span class="text-[10px] text-theme-blue">Custo: <input type="number" value="${s.custo}" onchange="updateSkill(${idx}, 'custo', this.value)" class="w-8 bg-transparent text-center border-none"></span>
-                        <button onclick="delSkill(${idx})" class="text-red-500 opacity-0 group-hover:opacity-100"><i data-lucide="trash" class="w-3 h-3"></i></button>
-                    </div>
-                    <textarea onchange="updateSkill(${idx}, 'desc', this.value)" rows="2" class="w-full bg-black/20 border border-theme-border rounded p-1 text-[11px] text-gray-400 focus:outline-none">${s.desc}</textarea>
+        function renderSkills() {
+            q('#skills-list').innerHTML = user.mascot.skills.map((s, i) => `
+                <div class="p-2 bg-black/40 border border-theme-border rounded flex justify-between items-center">
+                    <input type="text" value="${s.nome}" onchange="editSkill(${i}, this.value)" class="bg-transparent text-xs w-full outline-none">
+                    <button onclick="delSkill(${i})" class="text-red-500 ml-2"><i data-lucide="trash" class="w-3 h-3"></i></button>
                 </div>
             `).join('');
         }
 
-        function addSkill() {
-            const user = Core.load();
-            user.mascot.skills.push({ nome: 'Nova Habilidade', custo: 0, desc: '' });
+        function save() {
+            const m = user.mascot;
+            m.name = q('#m-name').value;
+            m.level = parseInt(q('#m-lv').value);
+            m.hp = parseInt(q('#m-hp').value);
+            m.hpMax = parseInt(q('#m-hpmax').value);
+            m.loyalty = parseInt(q('#m-loyalty').value);
+            m.desc.history = q('#m-desc').value;
+            m.stats = {
+                agi: parseInt(q('#s-agi').value), str: parseInt(q('#s-str').value),
+                per: parseInt(q('#s-per').value), def: parseInt(q('#s-def').value), sta: parseInt(q('#s-sta').value)
+            };
             Core.save(user);
-            render();
+            Core.notify('Mascote salvo!');
         }
 
-        function updateSkill(idx, field, val) {
-            const user = Core.load();
-            user.mascot.skills[idx][field] = val;
-            Core.save(user);
-            render();
-        }
-
-        function delSkill(idx) { if (confirm("Excluir?")) { const user = Core.load(); user.mascot.skills.splice(idx, 1); Core.save(user); render(); } }
-        function openImg() { q('#image-modal').classList.remove('hidden'); }
-        function closeImg() { q('#image-modal').classList.add('hidden'); }
-
-        function handleImageUpload(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    const user = Core.load();
-                    user.mascot.icon = ev.target.result;
-                    Core.save(user);
-                    render();
-                };
-                reader.readAsDataURL(file);
+        function addSkill() { user.mascot.skills.push({ nome: 'Nova Habilidade' }); renderSkills(); }
+        function editSkill(i, v) { user.mascot.skills[i].nome = v; }
+        function delSkill(i) { user.mascot.skills.splice(i, 1); renderSkills(); }
+        function upload(e) {
+            const f = e.target.files[0];
+            if (f) {
+                const r = new FileReader();
+                r.onload = ev => { user.mascot.icon = ev.target.result; q('#mascot-img').src = ev.target.result; };
+                r.readAsDataURL(f);
             }
         }
-
-        function removeImage() {
-            const user = Core.load();
-            user.mascot.icon = '';
-            Core.save(user);
-            render();
-        }
-
-        function reset() {
-            if (confirm("Resetar mascote?")) {
-                const user = Core.load();
-                user.mascot = null;
-                Core.init();
-                location.reload();
-            }
-        }
-
-        function downloadTXT() {
-            const m = Core.load().mascot;
-            let txt = `=== MASCOTE: ${m.name} ===\nNível: ${m.level}\nHabil.: \n` + m.skills.map(s => `- ${s.nome}`).join('\n');
-            const blob = new Blob([txt], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `${m.name}.txt`; a.click();
-        }
-
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', render);
     </script>
 </body>
 </html>

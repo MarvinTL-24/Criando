@@ -7,207 +7,112 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script>
-        tailwind.config = {
-            theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', pink: '#ec4899', red: '#dc2626', purple: '#8b5cf6', yellow: '#f59e0b', blue: '#4a9eff', green: '#22c55e', muted: '#606060' } } } }
-        }
+        tailwind.config = { theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff', red: '#dc2626' } } } } }
     </script>
     <style>
         body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
-        .section-panel { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
-        .stat-bar { height: 6px; background: #1a1a1a; border-radius: 3px; overflow: hidden; }
-        .stat-bar-fill { height: 100%; transition: width 0.3s; }
-        .tab-btn.active { color: #4a9eff; border-bottom: 2px solid #4a9eff; }
-        .hidden { display: none; }
+        .section { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
     </style>
 </head>
 <body class="min-h-screen pb-12">
-    <nav class="sticky top-0 bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border z-50 mb-8 py-4">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 border-b border-theme-border z-50 mb-8 py-4">
         <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-theme-blue font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Voltar</span></a>
+            <a href="index.html" class="flex items-center gap-2 text-theme-blue font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Hub</span></a>
             <h1 class="font-cinzel text-xl font-bold text-theme-blue uppercase">Ordem Paranormal</h1>
-            <div class="flex gap-2">
-                <button onclick="save()" class="p-2 px-4 bg-theme-green/20 text-theme-green border border-theme-green/30 rounded text-sm font-bold">SALVAR</button>
-            </div>
+            <button onclick="save()" class="px-4 py-1 bg-theme-blue/20 text-theme-blue border border-theme-blue/30 rounded text-xs font-bold">SALVAR</button>
         </div>
     </nav>
 
     <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Coluna 1: Info e Status -->
         <div class="space-y-6">
-            <section class="section-panel border-l-4 border-l-theme-blue">
-                <h3 class="font-cinzel text-theme-blue mb-4">Informações</h3>
-                <div class="space-y-3">
-                    <input type="text" id="char-name" placeholder="Personagem" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-white">
-                    <select id="char-class" class="w-full bg-theme-bg border border-theme-border rounded p-2 text-white outline-none">
-                        <option value="combatente">Combatente</option><option value="especialista">Especialista</option><option value="ocultista">Ocultista</option>
-                    </select>
-                    <div class="flex gap-2">
-                        <input type="number" id="char-nex" placeholder="NEX" class="w-1/2 bg-theme-bg border border-theme-border rounded p-2 text-white">
-                        <input type="text" id="char-rank" placeholder="Patente" class="w-1/2 bg-theme-bg border border-theme-border rounded p-2 text-white">
-                    </div>
+            <section class="section border-l-4 border-l-theme-blue">
+                <h3 class="font-cinzel text-theme-blue text-xs mb-4">Agente</h3>
+                <div class="space-y-2">
+                    <input type="text" id="p-rank" placeholder="Patente" class="w-full bg-black border border-theme-border rounded p-2 text-xs text-white outline-none">
+                    <input type="number" id="p-nex" placeholder="NEX %" class="w-full bg-black border border-theme-border rounded p-2 text-xs text-white outline-none">
                 </div>
             </section>
-
-            <section class="section-panel space-y-4">
-                <div>
-                    <div class="flex justify-between text-xs mb-1"><span>Vida</span> <span id="vida-display">20/20</span></div>
-                    <div class="stat-bar"><div id="vida-bar" class="stat-bar-fill bg-theme-red"></div></div>
-                    <input type="number" id="vida-input" class="w-full mt-2 bg-theme-bg border border-theme-border rounded p-1 text-center text-xs text-white">
+            <section class="section space-y-4">
+                <div v-for="s in ['Vida','Sanidade','Esforço']">
+                    <div class="flex justify-between text-[10px] uppercase text-gray-500 mb-1"><span>Vida</span><span id="v-val">20/20</span></div>
+                    <div class="flex gap-2"><input type="number" id="v-cur" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"><input type="number" id="v-max" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-xs mb-1"><span>Sanidade</span> <span id="sanidade-display">16/16</span></div>
-                    <div class="stat-bar"><div id="sanidade-bar" class="stat-bar-fill bg-theme-blue"></div></div>
-                    <input type="number" id="sanidade-input" class="w-full mt-2 bg-theme-bg border border-theme-border rounded p-1 text-center text-xs text-white">
+                    <div class="flex justify-between text-[10px] uppercase text-gray-500 mb-1"><span>Sanidade</span><span id="s-val">16/16</span></div>
+                    <div class="flex gap-2"><input type="number" id="s-cur" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"><input type="number" id="s-max" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
                 </div>
                 <div>
-                    <div class="flex justify-between text-xs mb-1"><span>Esforço</span> <span id="esforco-display">4/4</span></div>
-                    <div class="stat-bar"><div id="esforco-bar" class="stat-bar-fill bg-theme-yellow"></div></div>
-                    <input type="number" id="esforco-input" class="w-full mt-2 bg-theme-bg border border-theme-border rounded p-1 text-center text-xs text-white">
+                    <div class="flex justify-between text-[10px] uppercase text-gray-500 mb-1"><span>Esforço</span><span id="e-val">4/4</span></div>
+                    <div class="flex gap-2"><input type="number" id="e-cur" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"><input type="number" id="e-max" class="w-1/2 bg-black border border-theme-border rounded p-1 text-center text-xs"></div>
                 </div>
             </section>
         </div>
 
-        <!-- Coluna 2: Atributos e Perícias -->
         <div class="md:col-span-2 space-y-6">
-            <section class="section-panel">
-                <div class="flex border-b border-theme-border mb-4">
-                    <button class="tab-btn active px-4 py-2 font-cinzel text-sm" onclick="tab('attrs')">Atributos</button>
-                    <button class="tab-btn px-4 py-2 font-cinzel text-sm" onclick="tab('skills')">Perícias</button>
+            <section class="section grid grid-cols-5 gap-2">
+                <div v-for="a in ['agi','str','int','vig','pre']" class="text-center p-2 bg-black rounded border border-theme-border">
+                    <div class="text-[10px] uppercase text-gray-600 mb-1">AGI</div>
+                    <input type="number" id="a-agi" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none">
                 </div>
-                
-                <div id="tab-attrs" class="grid grid-cols-5 gap-2">
-                    <div v-for="a in ['agi','str','int','vig','pre']" class="text-center bg-white/5 p-3 rounded border border-theme-border">
-                        <div class="text-[10px] uppercase text-theme-muted mb-1" id="lbl-agi">Agi</div>
-                        <input type="number" id="input-agi" value="1" class="w-full bg-transparent text-center text-xl font-bold text-white outline-none">
-                    </div>
-                    <div class="text-center bg-white/5 p-3 rounded border border-theme-border">
-                        <div class="text-[10px] uppercase text-theme-muted mb-1">For</div>
-                        <input type="number" id="input-str" value="1" class="w-full bg-transparent text-center text-xl font-bold text-white outline-none">
-                    </div>
-                    <div class="text-center bg-white/5 p-3 rounded border border-theme-border">
-                        <div class="text-[10px] uppercase text-theme-muted mb-1">Int</div>
-                        <input type="number" id="input-int" value="1" class="w-full bg-transparent text-center text-xl font-bold text-white outline-none">
-                    </div>
-                    <div class="text-center bg-white/5 p-3 rounded border border-theme-border">
-                        <div class="text-[10px] uppercase text-theme-muted mb-1">Vig</div>
-                        <input type="number" id="input-vig" value="1" class="w-full bg-transparent text-center text-xl font-bold text-white outline-none">
-                    </div>
-                    <div class="text-center bg-white/5 p-3 rounded border border-theme-border">
-                        <div class="text-[10px] uppercase text-theme-muted mb-1">Pre</div>
-                        <input type="number" id="input-pre" value="1" class="w-full bg-transparent text-center text-xl font-bold text-white outline-none">
-                    </div>
-                </div>
-
-                <div id="tab-skills" class="hidden grid grid-cols-2 sm:grid-cols-3 gap-2">
-                    <!-- Gerado -->
-                </div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">FOR</div><input type="number" id="a-str" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">INT</div><input type="number" id="a-int" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">VIG</div><input type="number" id="a-vig" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
+                <div class="text-center p-2 bg-black rounded border border-theme-border"><div class="text-[10px] uppercase text-gray-600 mb-1">PRE</div><input type="number" id="a-pre" value="0" class="w-full bg-transparent text-center text-lg font-bold text-white outline-none"></div>
             </section>
-
-            <section class="section-panel">
-                <h3 class="font-cinzel text-theme-blue mb-4">Combate</h3>
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="text-center bg-theme-bg border border-theme-border p-3 rounded">
-                        <div class="text-[10px] uppercase text-theme-muted">Defesa</div>
-                        <input type="number" id="defense" class="w-full bg-transparent text-center font-bold text-lg">
-                    </div>
-                    <div class="text-center bg-theme-bg border border-theme-border p-3 rounded">
-                        <div class="text-[10px] uppercase text-theme-muted">Esquiva</div>
-                        <input type="number" id="dodge" class="w-full bg-transparent text-center font-bold text-lg">
-                    </div>
-                    <div class="text-center bg-theme-bg border border-theme-border p-3 rounded">
-                        <div class="text-[10px] uppercase text-theme-muted">Bloqueio</div>
-                        <input type="number" id="block" class="w-full bg-transparent text-center font-bold text-lg">
-                    </div>
-                </div>
+            
+            <section class="section">
+                <div class="flex justify-between items-center mb-4"><h3 class="font-cinzel text-theme-blue text-xs">Rituais</h3><button onclick="addRit()" class="p-1 hover:text-theme-blue"><i data-lucide="plus" class="w-4 h-4"></i></button></div>
+                <div id="rituals-list" class="space-y-2"></div>
             </section>
         </div>
     </div>
 
     <script>
         const q = s => document.querySelector(s);
-        const qa = s => document.querySelectorAll(s);
-
-        function init() {
-            Core.init();
-            render();
-            setup();
-        }
-
-        function setup() {
-            qa('input, select, textarea').forEach(el => {
-                el.addEventListener('change', () => save());
-            });
-        }
-
-        function tab(id) {
-            qa('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(id)));
-            q('#tab-attrs').classList.toggle('hidden', id !== 'attrs');
-            q('#tab-skills').classList.toggle('hidden', id !== 'skills');
-        }
-
-        function save() {
-            const user = Core.load();
-            const p = user.paranormal;
-            user.name = q('#char-name').value;
-            user.class = q('#char-class').value;
-            p.rank = q('#char-rank').value;
-            p.nex = parseInt(q('#char-nex').value) || 5;
-            user.res.hp = parseInt(q('#vida-input').value) || 0;
-            p.sanity = parseInt(q('#sanidade-input').value) || 0;
-            p.effort = parseInt(q('#esforco-input').value) || 0;
-            ['agi','str','int','vig','pre'].forEach(a => p.attributes[a] = parseInt(q(`#input-${a}`).value) || 0);
-            p.defenses.defense = parseInt(q('#defense').value) || 10;
-            p.defenses.dodge = parseInt(q('#dodge').value) || 0;
-            p.defenses.block = parseInt(q('#block').value) || 0;
-            Core.save(user);
-            render();
-        }
+        let user = Core.load();
 
         function render() {
-            const user = Core.load();
             const p = user.paranormal;
-            q('#char-name').value = user.name;
-            q('#char-class').value = user.class;
-            q('#char-rank').value = p.rank;
-            q('#char-nex').value = p.nex;
-            q('#vida-input').value = user.res.hp;
-            q('#vida-display').innerText = `${user.res.hp}/${user.res.hpMax}`;
-            q('#vida-bar').style.width = `${(user.res.hp / user.res.hpMax) * 100}%`;
-            q('#sanidade-input').value = p.sanity;
-            q('#sanidade-display').innerText = `${p.sanity}/${p.sanityMax}`;
-            q('#sanidade-bar').style.width = `${(p.sanity / p.sanityMax) * 100}%`;
-            q('#esforco-input').value = p.effort;
-            q('#esforco-display').innerText = `${p.effort}/${p.effortMax}`;
-            q('#esforco-bar').style.width = `${(p.effort / p.effortMax) * 100}%`;
-            ['agi','str','int','vig','pre'].forEach(a => q(`#input-${a}`).value = p.attributes[a]);
-            q('#defense').value = p.defenses.defense;
-            q('#dodge').value = p.defenses.dodge;
-            q('#block').value = p.defenses.block;
-            renderSkills();
+            q('#p-rank').value = p.rank;
+            q('#p-nex').value = p.nex;
+            q('#v-cur').value = user.res.hp; q('#v-max').value = user.res.hpMax;
+            q('#s-cur').value = p.sanity; q('#s-max').value = p.sanityMax;
+            q('#e-cur').value = p.effort; q('#e-max').value = p.effortMax;
+            const a = p.attributes;
+            q('#a-agi').value = a.agi; q('#a-str').value = a.str; q('#a-int').value = a.int; q('#a-vig').value = a.vig; q('#a-pre').value = a.pre;
+            renderRits();
             lucide.createIcons();
         }
 
-        function renderSkills() {
-            const list = q('#tab-skills');
-            const skills = ["Acrobacia", "Atletismo", "Crime", "Diplomacia", "Enganação", "Fortitude", "Furtividade", "Iniciativa", "Intimidação", "Investigação", "Luta", "Ocultismo", "Percepção", "Pontaria", "Reflexos", "Tática", "Vontade"];
-            const user = Core.load();
-            list.innerHTML = skills.map(s => `
-                <div class="p-2 bg-white/5 border border-theme-border rounded text-[10px] uppercase">
-                    <span class="block text-theme-muted mb-1">${s}</span>
-                    <input type="number" value="${user.paranormal.skills[s] || 0}" onchange="updateSkill('${s}', this.value)" class="w-full bg-transparent text-white font-bold outline-none">
+        function renderRits() {
+            q('#rituals-list').innerHTML = user.paranormal.rituals.map((r, i) => `
+                <div class="p-3 bg-black/40 border border-theme-border rounded flex justify-between items-center">
+                    <div><input type="text" value="${r.nome}" onchange="editRit(${i},'nome',this.value)" class="bg-transparent text-xs text-white outline-none">
+                    <p class="text-[10px] text-gray-600 mt-1">${r.elemento || 'Sem Elemento'}</p></div>
+                    <button onclick="delRit(${i})" class="text-red-500"><i data-lucide="trash" class="w-3 h-3"></i></button>
                 </div>
             `).join('');
         }
 
-        function updateSkill(s, v) {
-            const user = Core.load();
-            user.paranormal.skills[s] = parseInt(v) || 0;
+        function save() {
+            const p = user.paranormal;
+            p.rank = q('#p-rank').value;
+            p.nex = parseInt(q('#p-nex').value);
+            user.res.hp = parseInt(q('#v-cur').value); user.res.hpMax = parseInt(q('#v-max').value);
+            p.sanity = parseInt(q('#s-cur').value); p.sanityMax = parseInt(q('#s-max').value);
+            p.effort = parseInt(q('#e-cur').value); p.effortMax = parseInt(q('#e-max').value);
+            p.attributes = { agi:parseInt(q('#a-agi').value), str:parseInt(q('#a-str').value), int:parseInt(q('#a-int').value), vig:parseInt(q('#a-vig').value), pre:parseInt(q('#a-pre').value) };
             Core.save(user);
+            Core.notify('Agente atualizado!');
         }
 
-        document.addEventListener('DOMContentLoaded', init);
+        function addRit() { user.paranormal.rituals.push({ nome: 'Novo Ritual', elemento: 'Morte' }); renderRits(); }
+        function editRit(i, f, v) { user.paranormal.rituals[i][f] = v; }
+        function delRit(i) { user.paranormal.rituals.splice(i,1); renderRits(); }
+
+        document.addEventListener('DOMContentLoaded', render);
     </script>
 </body>
 </html>
