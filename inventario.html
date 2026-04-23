@@ -83,70 +83,6 @@
     </div>
 
     <script>
-<<<<<<< HEAD
-        const q = s => document.querySelector(s);
-        let user = Core.load();
-
-        const rarities = {
-            'Comum': '#606060', 'Incomum': '#22c55e', 'Raro': '#4a9eff', 'Épico': '#8b5cf6', 'Lendário': '#f59e0b'
-        };
-
-        function render() {
-            const grid = q('#items-grid');
-            let weight = 0;
-            grid.innerHTML = user.items.map(item => {
-                weight += (item.weight || 0) * (item.qty || 1);
-                const color = rarities[item.rarity] || '#606060';
-                return `
-                <div class="bg-theme-panel border border-theme-border p-4 group hover:border-blue-600/30 transition-all rounded" style="border-left: 3px solid ${color}">
-                    <div class="flex justify-between items-start mb-2">
-                        <div><h4 class="text-white font-medium">${item.name}</h4><span class="text-[10px] uppercase font-bold" style="color:${color}">${item.rarity}</span></div>
-                        <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="openModal('${item.id}')" class="p-1 hover:bg-blue-500/10 rounded"><i data-lucide="edit-2" class="w-4 h-4 text-theme-blue"></i></button>
-                            <button onclick="del('${item.id}')" class="p-1 hover:bg-red-500/10 rounded"><i data-lucide="trash" class="w-4 h-4 text-red-500"></i></button>
-                        </div>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-500 font-mono mt-4"><span>${item.qty}x</span><span>${item.weight} kg</span></div>
-                </div>`;
-            }).join("") + `<button onclick="openModal()" class="bg-black border-2 border-dashed border-theme-border p-8 flex flex-col items-center justify-center gap-2 hover:border-theme-blue transition-colors group rounded"><i data-lucide="plus" class="w-6 h-6 text-gray-600 group-hover:text-theme-blue"></i><span class="text-gray-600 group-hover:text-theme-blue font-cinzel text-xs">Adicionar</span></button>`;
-            
-            const maxW = user.limits.weight || 50;
-            q('#weight-text').innerText = `${weight.toFixed(1)} / ${maxW} kg`;
-            q('#weight-bar').style.width = `${Math.min(100, (weight / maxW) * 100)}%`;
-            q('#weight-display').innerText = `Peso: ${weight.toFixed(1)}/${maxW}kg`;
-            const m = user.money;
-            q('#money-display').innerText = `${m.gold}G ${m.silver}S ${m.copper}C`;
-            lucide.createIcons();
-        }
-
-        function openModal(id = null) {
-            if (id) {
-                const item = user.items.find(x => x.id == id);
-                q('#item-id').value = item.id;
-                q('#item-name').value = item.name;
-                q('#item-type').value = item.type;
-                q('#item-rarity').value = item.rarity;
-                q('#item-weight').value = item.weight;
-                q('#item-qty').value = item.qty;
-            } else { q('#form-item').reset(); q('#item-id').value = ""; }
-            q('#modal-overlay').classList.remove('hidden');
-        }
-        function closeModal() { q('#modal-overlay').classList.add('hidden'); }
-        function saveItem(e) {
-            e.preventDefault();
-            const id = q('#item-id').value;
-            const item = {
-                id: id || Date.now(),
-                name: q('#item-name').value,
-                type: q('#item-type').value,
-                rarity: q('#item-rarity').value,
-                weight: parseFloat(q('#item-weight').value),
-                qty: parseInt(q('#item-qty').value)
-            };
-            if (id) { const i = user.items.findIndex(x => x.id == id); user.items[i] = item; }
-            else user.items.push(item);
-            Core.save(user);
-=======
         // Configuração de categorias
         const categoriesConfig = {
             'arma': { label: "Armas", icon: "sword", color: "#dc2626" },
@@ -557,14 +493,10 @@
             
             updateStorage();
             renderGrid();
->>>>>>> parent of 069c538 (a)
             closeModal();
         }
         function del(id) { if (confirm('Excluir?')) { user.items = user.items.filter(x => x.id != id); Core.save(user); render(); } }
 
-<<<<<<< HEAD
-        document.addEventListener('DOMContentLoaded', render);
-=======
         function deleteItem(itemId) {
             if (confirm('Tem certeza que deseja remover este item?')) {
                 inventario = inventario.filter(item => item.id !== itemId);
@@ -831,7 +763,6 @@
                 location.reload(); // Recarrega para mostrar dados atualizados
             }
         });
->>>>>>> parent of 069c538 (a)
     </script>
 </body>
 </html>
