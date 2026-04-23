@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <script src="grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+<<<<<<< HEAD
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = { theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', blue: '#4a9eff', red: '#dc2626', green: '#22c55e' } } } } }
+=======
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <script>
@@ -43,9 +48,22 @@
                 }
             }
         }
+>>>>>>> parent of 069c538 (a)
     </script>
 
     <style>
+<<<<<<< HEAD
+        body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
+        .section { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 2rem; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 border-b border-theme-border z-50 mb-12 py-4">
+        <div class="max-w-4xl mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-theme-blue font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Hub</span></a>
+            <h1 class="font-cinzel text-xl font-bold text-theme-blue uppercase">Salvamento</h1>
+            <div class="w-20"></div>
+=======
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
         /* Animações */
@@ -108,6 +126,7 @@
             </div>
             
             <div class="w-24 hidden sm:block"></div>
+>>>>>>> parent of 069c538 (a)
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
     </nav>
@@ -136,6 +155,36 @@
             </div>
         </header>
 
+<<<<<<< HEAD
+        <section class="section">
+            <div class="flex items-center justify-between">
+                <div><h3 class="font-cinzel text-theme-red font-bold text-sm">Zona de Perigo</h3><p class="text-[10px] text-gray-600">Ações irreversíveis que apagam seu progresso local.</p></div>
+                <button onclick="clearData()" class="px-6 py-2 bg-theme-red/10 text-theme-red border border-theme-red/20 rounded-lg text-xs font-bold hover:bg-theme-red/20 transition-all">LIMPAR TUDO</button>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const q = s => document.querySelector(s);
+        function exportData() {
+            const user = Core.load();
+            const blob = new Blob([JSON.stringify(user, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `grimorio_${user.name.toLowerCase().replace(/\s+/g,'_')}.json`; a.click();
+            Core.notify('Ficha exportada!');
+        }
+        function importData(e) {
+            const f = e.target.files[0]; if (!f) return;
+            const r = new FileReader();
+            r.onload = re => {
+                try { const d = JSON.parse(re.target.result); Core.save(d); Core.notify('Ficha importada!'); setTimeout(() => location.reload(), 1000); }
+                catch(err) { alert('Arquivo inválido!'); }
+            };
+            r.readAsText(f);
+        }
+        function clearData() { if (confirm('Apagar TUDO?')) { localStorage.clear(); location.reload(); } }
+        document.addEventListener('DOMContentLoaded', () => lucide.createIcons());
+=======
         <!-- Seção 1: Informações -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #4a9eff;">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
@@ -1186,6 +1235,7 @@
                 });
             }
         });
+>>>>>>> parent of 069c538 (a)
     </script>
 </body>
 </html>
