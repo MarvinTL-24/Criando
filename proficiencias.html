@@ -3,1188 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grimório Digital - Estilos de Combate</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <title>Grimório Digital - Proficiências</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <script src="js/grimorio-core.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        cinzel: ['Cinzel', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        theme: {
-                            bg: '#0a0a0c',
-                            panel: '#0f0f12',
-                            border: '#2a2a2e',
-                            text: '#e8e4dc',
-                            orange: '#f59e0b',
-                            red: '#dc2626',
-                            muted: '#606060',
-                            blue: '#4a9eff',
-                            green: '#22c55e',
-                            purple: '#a855f7',
-                            cyan: '#06b6d4',
-                            pink: '#ec4899',
-                            teal: '#14b8a6'
-                        }
-                    }
-                }
-            }
+            theme: { extend: { colors: { theme: { bg: '#0a0a0c', panel: '#0f0f12', border: '#2a2a2e', text: '#e8e4dc', orange: '#f59e0b', red: '#dc2626', purple: '#8b5cf6', yellow: '#f59e0b', blue: '#4a9eff', green: '#22c55e', muted: '#606060' } } } }
         }
     </script>
-
     <style>
-        body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        .anim-entry { animation: fadeInUp 0.5s ease-out forwards; opacity: 0; }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
-        .delay-5 { animation-delay: 0.5s; }
-
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        .progress-fill { transition: width 0.5s ease; }
-        .skill-badge { transition: all 0.3s ease; }
-        .skill-badge:hover { transform: translateY(-2px); box-shadow: 0 0 15px currentColor; }
-        
-        .category-pill {
-            background: linear-gradient(135deg, var(--cat-color)20, transparent);
-            border: 1px solid var(--cat-color)40;
-        }
-        
-        @keyframes pulse-gold {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-        
-        @keyframes fade-in-up {
-            from { 
-                opacity: 0;
-                transform: translateY(20px) scale(0.95);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .animate-pulse-gold {
-            animation: pulse-gold 2s infinite;
-        }
-        
-        .animate-fade-in-up {
-            animation: fade-in-up 0.3s ease-out forwards;
-        }
-        
-        .loading {
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
+        body { background: #0a0a0c; color: #e8e4dc; font-family: 'Inter', sans-serif; }
+        .section-panel { background: #0f0f12; border: 1px solid #2a2a2e; border-radius: 12px; padding: 1.5rem; }
+        .tab-btn.active { color: #f59e0b; border-bottom: 2px solid #f59e0b; }
+        .hidden { display: none; }
     </style>
 </head>
-<body class="min-h-screen font-sans pb-20">
-
-    <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
-        <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
-            <div class="flex items-center gap-4">
-                <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-theme-orange/10 border border-theme-orange/30 rounded-lg text-theme-orange font-medium transition-all hover:bg-theme-orange/20 shadow-[0_0_15px_rgba(255,107,53,0.1)]">
-                    <i data-lucide="arrow-left" class="w-5 h-5 2xl:w-6 2xl:h-6"></i>
-                    <span class="font-cinzel text-sm 2xl:text-base hidden sm:inline">Voltar ao Hub</span>
-                </a>
-            </div>
-            
-            <div class="flex items-center flex-col sm:flex-row">
-                <span class="font-cinzel text-lg 2xl:text-2xl font-bold text-theme-orange drop-shadow-md uppercase tracking-wider">Grimório Digital</span>
-                <div class="h-6 w-[1px] bg-theme-border mx-4 hidden sm:block"></div>
-                <span class="text-sm 2xl:text-base text-theme-muted font-medium uppercase">Proficiências & Magias</span>
-            </div>
-            
-            <div class="w-24 hidden sm:block"></div>
+<body class="min-h-screen pb-12">
+    <nav class="sticky top-0 bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border z-50 mb-8 py-4">
+        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-2 text-theme-orange font-medium"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel">Voltar</span></a>
+            <h1 class="font-cinzel text-xl font-bold text-theme-orange uppercase">Maestrias</h1>
+            <div class="w-20"></div>
         </div>
-        <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-orange to-transparent"></div>
     </nav>
 
-    <div class="max-w-7xl mx-auto px-4 space-y-8">
-
-        <header class="flex items-center gap-4 anim-entry">
-            <div class="p-3 rounded-lg bg-gradient-to-br from-purple-900/30 to-blue-900/30 border border-purple-700/30">
-                <i data-lucide="swords" class="w-10 h-10 text-purple-400"></i>
-            </div>
-            <div>
-                <h1 class="text-4xl font-cinzel font-bold text-white">Estilos de Combate</h1>
-                <p class="text-gray-400">Maestria em diferentes formas de batalha e domínios</p>
-            </div>
-        </header>
-
-        <!-- Categorias Rápidas -->
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 anim-entry delay-1">
-            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #dc2626">
-                <i data-lucide="sword" class="w-6 h-6 mx-auto mb-2" style="color: #dc2626"></i>
-                <p class="text-sm font-medium">Armas Físicas</p>
-                <p class="text-xs text-gray-500">63 habilidades</p>
-            </div>
-            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #4a9eff">
-                <i data-lucide="sparkles" class="w-6 h-6 mx-auto mb-2" style="color: #4a9eff"></i>
-                <p class="text-sm font-medium">Magias</p>
-                <p class="text-xs text-gray-500">10 escolas</p>
-            </div>
-            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #a855f7">
-                <i data-lucide="heart-handshake" class="w-6 h-6 mx-auto mb-2" style="color: #a855f7"></i>
-                <p class="text-sm font-medium">Pactos</p>
-                <p class="text-xs text-gray-500">7 tipos</p>
-            </div>
-            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #14b8a6">
-                <i data-lucide="leaf" class="w-6 h-6 mx-auto mb-2" style="color: #14b8a6"></i>
-                <p class="text-sm font-medium">Naturalismo</p>
-                <p class="text-xs text-gray-500">6 disciplinas</p>
-            </div>
-            <div class="category-pill p-4 rounded-lg text-center" style="--cat-color: #f59e0b">
-                <i data-lucide="zap" class="w-6 h-6 mx-auto mb-2" style="color: #f59e0b"></i>
-                <p class="text-sm font-medium">Especiais</p>
-                <p class="text-xs text-gray-500">8 técnicas</p>
-            </div>
+    <div class="max-w-6xl mx-auto px-4 space-y-6">
+        <div class="flex border-b border-theme-border mb-6">
+            <button class="tab-btn active px-6 py-3 font-cinzel text-sm" onclick="tab('combat')">Combate</button>
+            <button class="tab-btn px-6 py-3 font-cinzel text-sm" onclick="tab('magic')">Magia</button>
+            <button class="tab-btn px-6 py-3 font-cinzel text-sm" onclick="tab('pacts')">Pactos</button>
+            <button class="tab-btn px-6 py-3 font-cinzel text-sm" onclick="tab('other')">Outros</button>
         </div>
 
-        <!-- SEÇÃO 1: ARMAMENTO FÍSICO -->
-        <section class="anim-entry delay-2" style="border-left: 4px solid #dc2626;">
-            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-lg bg-red-900/30 border border-red-700/30">
-                            <i data-lucide="sword" class="w-6 h-6 text-red-400"></i>
-                        </div>
-                        <div>
-                            <h2 class="font-cinzel text-2xl font-bold text-white">Armamento Físico</h2>
-                            <p class="text-gray-400 text-sm">Habilidade com armas e combate corpo a corpo</p>
-                        </div>
-                    </div>
-                    <button onclick="mostrarSeletorArmas()" 
-                            class="flex items-center gap-2 px-4 py-2 bg-red-900/30 hover:bg-red-900/50 border border-red-700/30 text-red-300 rounded-lg transition-colors text-sm">
-                        <i data-lucide="plus" class="w-4 h-4"></i>
-                        Nova Arma
-                    </button>
-                </div>
-                
-                <!-- Grid organizado por subcategorias -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-armas">
-                    <div class="col-span-full text-center py-8">
-                        <div class="loading">
-                            <i data-lucide="sword" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                            <p class="text-gray-500">Carregando armas...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div id="tab-combat" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Gerado -->
+        </div>
 
-        <!-- SEÇÃO 2: ESCOLAS DE MAGIA -->
-        <section class="anim-entry delay-3" style="border-left: 4px solid #4a9eff;">
-            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 rounded-lg bg-blue-900/30 border border-blue-700/30">
-                        <i data-lucide="sparkles" class="w-6 h-6 text-blue-400"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-cinzel text-2xl font-bold text-white">Escolas de Magia</h2>
-                        <p class="text-gray-400 text-sm">Domínio sobre forças arcana e elementais</p>
-                    </div>
-                </div>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" id="grid-magia">
-                    <div class="col-span-full text-center py-8">
-                        <div class="loading">
-                            <i data-lucide="sparkles" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                            <p class="text-gray-500">Carregando magias...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div id="tab-magic" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Gerado -->
+        </div>
 
-        <!-- SEÇÃO 3: PACTO E ESPIRITUALIDADE -->
-        <section class="anim-entry delay-4" style="border-left: 4px solid #a855f7;">
-            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 rounded-lg bg-purple-900/30 border border-purple-700/30">
-                        <i data-lucide="heart-handshake" class="w-6 h-6 text-purple-400"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-cinzel text-2xl font-bold text-white">Pactos & Espiritualidade</h2>
-                        <p class="text-gray-400 text-sm">Acordos com entidades e ligações espirituais</p>
-                    </div>
-                </div>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-pactos">
-                    <div class="col-span-full text-center py-8">
-                        <div class="loading">
-                            <i data-lucide="heart-handshake" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                            <p class="text-gray-500">Carregando pactos...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <div id="tab-pacts" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Gerado -->
+        </div>
 
-        <!-- SEÇÃO 4: DOMINAÇÃO E INVOCAÇÃO -->
-        <section class="anim-entry delay-5" style="border-left: 4px solid #14b8a6;">
-            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 rounded-lg bg-teal-900/30 border border-teal-700/30">
-                        <i data-lucide="ghost" class="w-6 h-6 text-teal-400"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-cinzel text-2xl font-bold text-white">Dominação & Invocação</h2>
-                        <p class="text-gray-400 text-sm">Controle sobre criaturas e seres</p>
-                    </div>
-                </div>
-                
-                <div class="grid md:grid-cols-2 gap-4" id="grid-invocacao">
-                    <div class="col-span-full text-center py-8">
-                        <div class="loading">
-                            <i data-lucide="ghost" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                            <p class="text-gray-500">Carregando invocações...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- SEÇÃO 5: TÉCNICAS ESPECIAIS -->
-        <section class="anim-entry" style="border-left: 4px solid #f59e0b;">
-            <div class="bg-theme-panel border border-theme-border p-6 rounded-lg">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-2 rounded-lg bg-orange-900/30 border border-orange-700/30">
-                        <i data-lucide="zap" class="w-6 h-6 text-orange-400"></i>
-                    </div>
-                    <div>
-                        <h2 class="font-cinzel text-2xl font-bold text-white">Técnicas Especiais</h2>
-                        <p class="text-gray-400 text-sm">Habilidades únicas e raras</p>
-                    </div>
-                </div>
-                
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-especiais">
-                    <div class="col-span-full text-center py-8">
-                        <div class="loading">
-                            <i data-lucide="zap" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                            <p class="text-gray-500">Carregando técnicas...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- RESUMO FINAL -->
-        <section class="bg-gradient-to-br from-gray-900/30 to-gray-800/20 border border-gray-700/30 p-6 rounded-lg anim-entry">
-            <div class="flex items-center gap-3 mb-6">
-                <div class="p-2 rounded-lg bg-yellow-500/20">
-                    <i data-lucide="crown" class="w-6 h-6 text-yellow-400"></i>
-                </div>
-                <div>
-                    <h3 class="font-cinzel text-xl font-bold text-white">Sistema de Maestria</h3>
-                    <p class="text-gray-400 text-sm">Bônus por habilidades dominadas (nível 10)</p>
-                </div>
-            </div>
-            
-            <!-- Medalhas de maestria -->
-            <div id="medalhas-maestria" class="mb-6">
-                <div class="text-center py-4">
-                    <div class="loading">
-                        <i data-lucide="crown" class="w-8 h-8 mx-auto text-gray-600 mb-2"></i>
-                        <p class="text-gray-500">Carregando maestrias...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Seção de estatísticas de maestria -->
-            <div id="secao-maestrias">
-                <div class="text-center py-8">
-                    <div class="loading">
-                        <i data-lucide="bar-chart" class="w-12 h-12 mx-auto text-gray-600 mb-4"></i>
-                        <p class="text-gray-500">Calculando estatísticas...</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Regras do sistema -->
-            <div class="mt-6 pt-6 border-t border-gray-700/30">
-                <h4 class="text-sm font-medium text-gray-400 mb-3">Como funciona:</h4>
-                <ul class="space-y-2 text-sm text-gray-400">
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                        <span>Cada habilidade no <span class="text-yellow-300">nível 10</span> dá <span class="text-yellow-300">+20 pontos bônus</span></span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                        <span>Habilidades com maestria ganham <span class="text-yellow-300">badge dourada</span> e efeitos especiais</span>
-                    </li>
-                    <li class="flex items-center gap-2">
-                        <div class="w-1.5 h-1.5 rounded-full bg-yellow-500"></div>
-                        <span>Pontuação total = Pontos base + Bônus de maestria</span>
-                    </li>
-                </ul>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- BOTÕES DE AÇÃO -->
-    <div class="fixed bottom-6 right-6 flex gap-3">
-        <button onclick="resetAll()" class="flex items-center gap-2 px-5 py-3 bg-red-900/30 hover:bg-red-900/50 border border-red-700/50 text-red-300 rounded-lg transition-all">
-            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-            Resetar
-        </button>
-        <button onclick="downloadTXT()" class="flex items-center gap-2 px-5 py-3 bg-blue-900/30 hover:bg-blue-900/50 border border-blue-700/50 text-blue-300 rounded-lg transition-all">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            Exportar
-        </button>
-        <button onclick="saveToProfile()" class="flex items-center gap-2 px-5 py-3 bg-purple-900/30 hover:bg-purple-900/50 border border-purple-700/50 text-purple-300 rounded-lg transition-all">
-            <i data-lucide="save" class="w-4 h-4"></i>
-            Salvar
-        </button>
+        <div id="tab-other" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Gerado -->
+        </div>
     </div>
 
     <script>
-        // CATEGORIAS DE PROFICIÊNCIA COMPLETAS
-        const categorias = {
-            armas: {
-                cor: '#dc2626',
-                icone: 'sword',
-                subcategorias: {
-                    espadas: {
-                        cor: '#ef4444',
-                        icone: 'sword',
-                        habilidades: [
-                            { id: "espada-longa", label: "Espada Longa", descricao: "Lâmina versátil de uma mão", nivel: 0, maxNivel: 10 },
-                            { id: "espada-curta", label: "Espada Curta", descricao: "Lâmina ágil para combate rápido", nivel: 0, maxNivel: 10 },
-                            { id: "espada-gume", label: "Espada 2 Gumes", descricao: "Lâmina dupla para cortes precisos", nivel: 0, maxNivel: 10 },
-                            { id: "katana", label: "Katana", descricao: "Lâmina curva de corte rápido", nivel: 0, maxNivel: 10 },
-                            { id: "rapieira", label: "Rapieira", descricao: "Espada fina para estocadas", nivel: 0, maxNivel: 10 },
-                            { id: "claymore", label: "Claymore", descricao: "Espada grande de duas mãos", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    perfurantes: {
-                        cor: '#8b5cf6',
-                        icone: 'dagger',
-                        habilidades: [
-                            { id: "adaga", label: "Adaga", descricao: "Arma pequena para ataques rápidos", nivel: 0, maxNivel: 10 },
-                            { id: "adagas-duplas", label: "Adagas Duplas", descricao: "Par de adagas para combos", nivel: 0, maxNivel: 10 },
-                            { id: "punhal", label: "Punhal", descricao: "Arma perfurante de precisão", nivel: 0, maxNivel: 10 },
-                            { id: "lança", label: "Lança", descricao: "Arma de longo alcance corpo a corpo", nivel: 0, maxNivel: 10 },
-                            { id: "tridente", label: "Tridente", descricao: "Arma de três pontas para controle", nivel: 0, maxNivel: 10 },
-                            { id: "azagaia", label: "Azagaia", descricao: "Lança de arremesso", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    cortantes: {
-                        cor: '#dc2626',
-                        icone: 'axe',
-                        habilidades: [
-                            { id: "machado", label: "Machado", descricao: "Arma de corte pesado", nivel: 0, maxNivel: 10 },
-                            { id: "machado-duplo", label: "Machado Duplo", descricao: "Dois machados para ataques rápidos", nivel: 0, maxNivel: 10 },
-                            { id: "foice", label: "Foice", descricao: "Lâmina curva para ataques amplos", nivel: 0, maxNivel: 10 },
-                            { id: "foice-guerra", label: "Foice de Guerra", descricao: "Foice grande de duas mãos", nivel: 0, maxNivel: 10 },
-                            { id: "kama", label: "Kama", descricao: "Foice curta para combate ágil", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    contundentes: {
-                        cor: '#f97316',
-                        icone: 'hammer',
-                        habilidades: [
-                            { id: "martelo", label: "Martelo de Guerra", descricao: "Arma de impacto contundente", nivel: 0, maxNivel: 10 },
-                            { id: "martelo-guerra", label: "Grande Martelo", descricao: "Martelo enorme de duas mãos", nivel: 0, maxNivel: 10 },
-                            { id: "clava", label: "Clava", descricao: "Arma simples de impacto", nivel: 0, maxNivel: 10 },
-                            { id: "maça", label: "Maça", descricao: "Arma de impacto com cabeça pesada", nivel: 0, maxNivel: 10 },
-                            { id: "mangual", label: "Mangual", descricao: "Arma de corrente com peso", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    corpoCorpo: {
-                        cor: '#22c55e',
-                        icone: 'hand',
-                        habilidades: [
-                            { id: "corpo-a-corpo", label: "Mãos Livres", descricao: "Luta desarmada e artes marciais", nivel: 0, maxNivel: 10 },
-                            { id: "luvas", label: "Luvas de Combate", descricao: "Proteção para ataques de punho", nivel: 0, maxNivel: 10 },
-                            { id: "manopla", label: "Manopla", descricao: "Luvas com placas de metal", nivel: 0, maxNivel: 10 },
-                            { id: "garra", label: "Garra", descricao: "Armas de garra para rasgar", nivel: 0, maxNivel: 10 },
-                            { id: "soqueira", label: "Soqueira", descricao: "Anéis de metal para punhos", nivel: 0, maxNivel: 10 },
-                            { id: "tonfa", label: "Tonfa", descricao: "Arma de defesa pessoal", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    distancia: {
-                        cor: '#0ea5e9',
-                        icone: 'crosshair',
-                        habilidades: [
-                            { id: "arco", label: "Arco", descricao: "Arma de flechas de longo alcance", nivel: 0, maxNivel: 10 },
-                            { id: "arco-longo", label: "Arco Longo", descricao: "Arco grande para maior alcance", nivel: 0, maxNivel: 10 },
-                            { id: "besta", label: "Besta", descricao: "Arma de disparo preciso", nivel: 0, maxNivel: 10 },
-                            { id: "funda", label: "Funda", descricao: "Arma simples de arremesso", nivel: 0, maxNivel: 10 },
-                            { id: "zarabatana", label: "Zarabatana", descricao: "Arma silenciosa de sopro", nivel: 0, maxNivel: 10 },
-                            { id: "shuriken", label: "Shuriken", descricao: "Estrelas de arremesso", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    exoticas: {
-                        cor: '#ec4899',
-                        icone: 'wind',
-                        habilidades: [
-                            { id: "chicote", label: "Chicote", descricao: "Arma flexível de longo alcance", nivel: 0, maxNivel: 10 },
-                            { id: "nunchaku", label: "Nunchaku", descricao: "Arma de madeira conectada", nivel: 0, maxNivel: 10 },
-                            { id: "sai", label: "Sai", descricao: "Arma de três pontas para defesa", nivel: 0, maxNivel: 10 },
-                            { id: "kusarigama", label: "Kusarigama", descricao: "Foice com corrente", nivel: 0, maxNivel: 10 },
-                            { id: "corrente", label: "Corrente com Lâmina", descricao: "Corrente com ponta cortante", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    defensivas: {
-                        cor: '#6366f1',
-                        icone: 'shield',
-                        habilidades: [
-                            { id: "escudo", label: "Escudo", descricao: "Proteção defensiva", nivel: 0, maxNivel: 10 },
-                            { id: "escudo-espada", label: "Escudo + Espada", descricao: "Combinação defensa/ataque", nivel: 0, maxNivel: 10 },
-                            { id: "escudo-grande", label: "Escudo Grande", descricao: "Escudo de cobertura total", nivel: 0, maxNivel: 10 },
-                            { id: "broquel", label: "Broquel", descricao: "Escudo pequeno para aparar", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    magicas: {
-                        cor: '#8b5cf6',
-                        icone: 'wand',
-                        habilidades: [
-                            { id: "cajado", label: "Cajado", descricao: "Foco para magia geral", nivel: 0, maxNivel: 10 },
-                            { id: "cajado-arcano", label: "Cajado Arcano", descricao: "Foco para magia pura", nivel: 0, maxNivel: 10 },
-                            { id: "varinha", label: "Varinha", descricao: "Foco preciso para feitiços", nivel: 0, maxNivel: 10 },
-                            { id: "orb", label: "Orb Mágico", descricao: "Foco para magia elemental", nivel: 0, maxNivel: 10 },
-                            { id: "tomo", label: "Tomo Mágico", descricao: "Foco para magia ritualística", nivel: 0, maxNivel: 10 },
-                            { id: "cetro", label: "Cetro", descricao: "Foco para magia divina", nivel: 0, maxNivel: 10 }
-                        ]
-                    },
-                    modernas: {
-                        cor: '#6b7280',
-                        icone: 'target',
-                        habilidades: [
-                            { id: "pistola", label: "Pistola", descricao: "Arma de fogo de uma mão", nivel: 0, maxNivel: 10 },
-                            { id: "revolver", label: "Revolver", descricao: "Arma de fogo de tambor", nivel: 0, maxNivel: 10 },
-                            { id: "rifle", label: "Rifle", descricao: "Arma de fogo de longo alcance", nivel: 0, maxNivel: 10 },
-                            { id: "espingarda", label: "Espingarda", descricao: "Arma de fogo de curto alcance", nivel: 0, maxNivel: 10 }
-                        ]
-                    }
-                }
-            },
-            magia: {
-                cor: '#4a9eff',
-                icone: 'sparkles',
-                habilidades: [
-                    { id: "piromancia", label: "Piromancia", descricao: "Domínio sobre fogo e calor", nivel: 0, maxNivel: 10 },
-                    { id: "criomancia", label: "Criomancia", descricao: "Controle de gelo e frio", nivel: 0, maxNivel: 10 },
-                    { id: "eletromancia", label: "Eletromancia", descricao: "Manipulação de energia elétrica", nivel: 0, maxNivel: 10 },
-                    { id: "terramancia", label: "Terramancia", descricao: "Controle sobre terra e rochas", nivel: 0, maxNivel: 10 },
-                    { id: "aeromancia", label: "Aeromancia", descricao: "Domínio de ventos e tempestades", nivel: 0, maxNivel: 10 },
-                    { id: "hidromancia", label: "Hidromancia", descricao: "Controle sobre água e fluidos", nivel: 0, maxNivel: 10 },
-                    { id: "necromancia", label: "Necromancia", descricao: "Magia de morte e decadência", nivel: 0, maxNivel: 10 },
-                    { id: "vitamancia", label: "Vitamancia", descricao: "Magia de vida e cura", nivel: 0, maxNivel: 10 },
-                    { id: "cronomancia", label: "Cronomancia", descricao: "Manipulação do tempo", nivel: 0, maxNivel: 10 },
-                    { id: "espaciomancia", label: "Espaciomancia", descricao: "Controle do espaço e dimensões", nivel: 0, maxNivel: 10 }
-                ]
-            },
-            pactos: {
-                cor: '#a855f7',
-                icone: 'heart-handshake',
-                habilidades: [
-                    { id: "demonico", label: "Pacto Demoníaco", descricao: "Acordo com entidades infernais", nivel: 0, maxNivel: 10 },
-                    { id: "celestial", label: "Pacto Celestial", descricao: "Aliança com seres divinos", nivel: 0, maxNivel: 10 },
-                    { id: "ancestral", label: "Pacto Ancestral", descricao: "Ligação com espíritos ancestrais", nivel: 0, maxNivel: 10 },
-                    { id: "elemental", label: "Pacto Elemental", descricao: "Acordo com espíritos elementais", nivel: 0, maxNivel: 10 },
-                    { id: "sangue", label: "Pacto de Sangue", descricao: "Juramento vinculado ao sangue", nivel: 0, maxNivel: 10 },
-                    { id: "alma", label: "Vínculo de Alma", descricao: "Ligação espiritual profunda", nivel: 0, maxNivel: 10 },
-                    { id: "bestial", label: "Pacto Bestial", descricao: "Aliança com criaturas místicas", nivel: 0, maxNivel: 10 }
-                ]
-            },
-            invocacao: {
-                cor: '#14b8a6',
-                icone: 'ghost',
-                habilidades: [
-                    { id: "invocador", label: "Invocador", descricao: "Convocação de seres para batalha", nivel: 0, maxNivel: 10 },
-                    { id: "domador", label: "Domador", descricao: "Controle sobre criaturas selvagens", nivel: 0, maxNivel: 10 },
-                    { id: "necromante", label: "Necromante", descricao: "Levantamento e controle de mortos", nivel: 0, maxNivel: 10 },
-                    { id: "golemancer", label: "Golemancer", descricao: "Criação e animação de construtos", nivel: 0, maxNivel: 10 },
-                    { id: "espiritista", label: "Espiritista", descricao: "Comunicação com espíritos", nivel: 0, maxNivel: 10 },
-                    { id: "contratante", label: "Contratante", descricao: "Formação de contratos com seres", nivel: 0, maxNivel: 10 }
-                ]
-            },
-            especiais: {
-                cor: '#f59e0b',
-                icone: 'zap',
-                habilidades: [
-                    { id: "druida", label: "Druida", descricao: "Conexão com natureza e animais", nivel: 0, maxNivel: 10 },
-                    { id: "bencao", label: "Abençoado", descricao: "Habilidades concedidas por divindades", nivel: 0, maxNivel: 10 },
-                    { id: "maldicao", label: "Amaldiçoado", descricao: "Poderes obtidos através de maldições", nivel: 0, maxNivel: 10 },
-                    { id: "psionico", label: "Psíquico", descricao: "Poderes mentais e telecinéticos", nivel: 0, maxNivel: 10 },
-                    { id: "alquimista", label: "Alquimista de Batalha", descricao: "Uso de poções e elementos em combate", nivel: 0, maxNivel: 10 },
-                    { id: "shadow", label: "Sombra", descricao: "Manipulação de escuridão e furtividade", nivel: 0, maxNivel: 10 },
-                    { id: "berserker", label: "Berserker", descricao: "Fúria de batalha aprimorada", nivel: 0, maxNivel: 10 },
-                    { id: "paladino", label: "Paladino", descricao: "Combinação de fé e combate", nivel: 0, maxNivel: 10 }
-                ]
-            }
+        const q = s => document.querySelector(s);
+        const qa = s => document.querySelectorAll(s);
+
+        const cats = {
+            combat: [
+                { id: 'sword', label: 'Espadas', cat: 'sharp' },
+                { id: 'axe', label: 'Machados', cat: 'sharp' },
+                { id: 'scythe', label: 'Foices', cat: 'sharp' },
+                { id: 'dagger', label: 'Adagas', cat: 'pierce' },
+                { id: 'spear', label: 'Lanças', cat: 'pierce' },
+                { id: 'hammer', label: 'Martelos', cat: 'blunt' },
+                { id: 'mace', label: 'Maças', cat: 'blunt' },
+                { id: 'bow', label: 'Arcos', cat: 'range' },
+                { id: 'staff', label: 'Cajados', cat: 'range' }
+            ],
+            magic: [
+                { id: 'fire', label: 'Fogo', cat: 'magic' },
+                { id: 'ice', label: 'Gelo', cat: 'magic' },
+                { id: 'elec', label: 'Eletricidade', cat: 'magic' },
+                { id: 'earth', label: 'Terra', cat: 'magic' },
+                { id: 'wind', label: 'Vento', cat: 'magic' },
+                { id: 'water', label: 'Água', cat: 'magic' },
+                { id: 'death', label: 'Morte', cat: 'magic' },
+                { id: 'life', label: 'Vida', cat: 'magic' }
+            ],
+            pacts: [
+                { id: 'demon', label: 'Demoníaco', cat: 'pacts' },
+                { id: 'celestial', label: 'Celestial', cat: 'pacts' },
+                { id: 'ancestor', label: 'Ancestral', cat: 'pacts' },
+                { id: 'elemental', label: 'Elemental', cat: 'pacts' },
+                { id: 'blood', label: 'Sangue', cat: 'pacts' }
+            ],
+            other: [
+                { id: 'druid', label: 'Druidismo', cat: 'special' },
+                { id: 'psionic', label: 'Psionismo', cat: 'special' },
+                { id: 'alchemist', label: 'Alquimia', cat: 'special' },
+                { id: 'shadow', label: 'Sombras', cat: 'special' },
+                { id: 'berserker', label: 'Berserker', cat: 'special' }
+            ]
         };
 
-        // --- SISTEMA DE MAESTRIA (NÍVEL 10) ---
-        class SistemaMaestria {
-            constructor() {
-                this.maestrias = this.carregarMaestrias();
-            }
-            
-            // Verificar se uma habilidade atingiu maestria
-            verificarMaestria(habilidade, categoria, subcategoria = null) {
-                const chave = this.gerarChave(habilidade.id, categoria, subcategoria);
-                
-                if (habilidade.nivel >= 10 && !this.maestrias[chave]) {
-                    // NOVA MAESTRIA DESBLOQUEADA!
-                    this.maestrias[chave] = {
-                        data: new Date().toISOString(),
-                        habilidade: habilidade.label,
-                        categoria: categoria,
-                        subcategoria: subcategoria,
-                        nivel: habilidade.nivel
-                    };
-                    
-                    this.salvarMaestrias();
-                    this.mostrarNotificacaoMaestria(habilidade.label);
-                    return true;
-                }
-                
-                return this.maestrias[chave] !== undefined;
-            }
-            
-            // Gerar chave única
-            gerarChave(id, categoria, subcategoria) {
-                return subcategoria ? `${categoria}_${subcategoria}_${id}` : `${categoria}_${id}`;
-            }
-            
-            // Contar maestrias totais
-            contarMaestrias() {
-                return Object.keys(this.maestrias).length;
-            }
-            
-            // Contar maestrias por categoria
-            contarMaestriasPorCategoria() {
-                const contagem = {};
-                
-                Object.values(this.maestrias).forEach(maestria => {
-                    if (!contagem[maestria.categoria]) {
-                        contagem[maestria.categoria] = 0;
+        function init() {
+            Core.init();
+            render();
+        }
+
+        function tab(id) {
+            qa('.tab-btn').forEach(b => b.classList.toggle('active', b.innerText.toLowerCase().includes(id) || (id === 'combat' && b.innerText === 'Combate')));
+            qa('[id^="tab-"]').forEach(t => t.classList.add('hidden'));
+            q(`#tab-${id}`).classList.remove('hidden');
+        }
+
+        function render() {
+            const user = Core.load();
+            Object.keys(cats).forEach(tabId => {
+                const list = q(`#tab-${tabId}`);
+                list.innerHTML = cats[tabId].map(skill => {
+                    let level = 0;
+                    if (skill.cat === 'magic' || skill.cat === 'pacts' || skill.cat === 'special' || skill.cat === 'summon') {
+                        level = user.mastery[skill.cat][skill.id];
+                    } else {
+                        level = user.mastery[skill.cat][skill.id].lv;
                     }
-                    contagem[maestria.categoria]++;
-                });
-                
-                return contagem;
-            }
-            
-            // Mostrar notificação de nova maestria
-            mostrarNotificacaoMaestria(nomeHabilidade) {
-                const notificacao = document.createElement('div');
-                notificacao.className = 'fixed top-6 right-6 bg-gradient-to-r from-yellow-900/90 to-orange-900/90 border border-yellow-600/50 text-white p-4 rounded-lg shadow-2xl z-[100] animate-fade-in-up';
-                notificacao.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="p-2 rounded-full bg-yellow-500/20">
-                            <i data-lucide="crown" class="w-6 h-6 text-yellow-300"></i>
-                        </div>
-                        <div>
-                            <p class="font-bold text-yellow-200">🏆 MAESTRIA ALCANÇADA!</p>
-                            <p class="text-sm">Você dominou completamente: <span class="font-semibold">${nomeHabilidade}</span></p>
-                            <p class="text-xs text-yellow-300/70 mt-1">+20 pontos de maestria adicionados</p>
-                        </div>
-                    </div>
-                `;
-                
-                document.body.appendChild(notificacao);
-                
-                // Remover após 5 segundos
-                setTimeout(() => {
-                    notificacao.classList.add('opacity-0', 'transition-opacity', 'duration-300');
-                    setTimeout(() => notificacao.remove(), 300);
-                }, 5000);
-                
-                // Atualizar ícone
-                if (window.lucide) {
-                    lucide.createIcons();
-                }
-            }
-            
-            // Salvar maestrias
-            salvarMaestrias() {
-                localStorage.setItem('rpg_maestrias', JSON.stringify(this.maestrias));
-            }
-            
-            // Carregar maestrias
-            carregarMaestrias() {
-                const salvo = localStorage.getItem('rpg_maestrias');
-                return salvo ? JSON.parse(salvo) : {};
-            }
-            
-            // Resetar maestrias
-            resetarMaestrias() {
-                this.maestrias = {};
-                this.salvarMaestrias();
-            }
-        }
 
-        // Inicializar sistema de maestria
-        const sistemaMaestria = new SistemaMaestria();
-
-        // --- SISTEMA DE PONTUAÇÃO COM BÔNUS DE MAESTRIA ---
-        function calcularPontuacao() {
-            let pontosTotais = 0;
-            let pontosBase = 0;
-            let bonusMaestria = 0;
-            let maestriasCompletas = 0;
-            
-            // Contar pontos base
-            Object.keys(categorias).forEach(categoria => {
-                if (categoria === 'armas' && categorias[categoria].subcategorias) {
-                    // Armas com subcategorias
-                    Object.keys(categorias[categoria].subcategorias).forEach(subcat => {
-                        categorias[categoria].subcategorias[subcat].habilidades.forEach(habilidade => {
-                            pontosBase += habilidade.nivel;
-                            
-                            // Verificar maestria
-                            if (sistemaMaestria.verificarMaestria(habilidade, categoria, subcat)) {
-                                maestriasCompletas++;
-                                bonusMaestria += 50; // BÔNUS por maestria completa
-                            }
-                        });
-                    });
-                } else {
-                    // Outras categorias
-                    categorias[categoria].habilidades.forEach(habilidade => {
-                        pontosBase += habilidade.nivel;
-                        
-                        // Verificar maestria
-                        if (sistemaMaestria.verificarMaestria(habilidade, categoria)) {
-                            maestriasCompletas++;
-                            bonusMaestria += 20; // BÔNUS por maestria completa
-                        }
-                    });
-                }
-            });
-            
-            // Cálculo total com bônus
-            pontosTotais = pontosBase + bonusMaestria;
-            
-            return {
-                base: pontosBase,
-                bonus: bonusMaestria,
-                total: pontosTotais,
-                maestrias: maestriasCompletas,
-                temMaestria: maestriasCompletas > 0
-            };
-        }
-
-        // --- FUNÇÕES DO SISTEMA ---
-
-        // 1. Mudar nível (com verificação de maestria)
-        function changeLevel(categoria, subcategoria, index, delta) {
-            let habilidade;
-            
-            if (categoria === 'armas' && subcategoria) {
-                habilidade = categorias[categoria].subcategorias[subcategoria].habilidades[index];
-            } else {
-                habilidade = categorias[categoria].habilidades[index];
-            }
-            
-            const novoNivel = habilidade.nivel + delta;
-            const maxNivel = habilidade.maxNivel || 10;
-            
-            if (novoNivel >= 0 && novoNivel <= maxNivel) {
-                habilidade.nivel = novoNivel;
-                saveAll();
-                
-                // Verificar se atingiu maestria
-                sistemaMaestria.verificarMaestria(habilidade, categoria, subcategoria);
-                
-                updateResumo();
-                renderizarCategoria(categoria);
-            }
-        }
-
-        // 2. Criar card (com indicador de maestria)
-        function createCard(habilidade, categoria, subcategoria, index) {
-            const catConfig = categorias[categoria];
-            const subcatConfig = subcategoria ? catConfig.subcategorias[subcategoria] : null;
-            const cor = subcatConfig ? subcatConfig.cor : catConfig.cor;
-            const icone = subcatConfig ? subcatConfig.icone : catConfig.icone;
-            
-            const porcentagem = (habilidade.nivel / (habilidade.maxNivel || 10)) * 100;
-            const nivelLabel = `${habilidade.nivel}/${habilidade.maxNivel || 10}`;
-            
-            // Verificar se é maestria
-            const chaveMaestria = sistemaMaestria.gerarChave(habilidade.id, categoria, subcategoria);
-            const temMaestria = sistemaMaestria.maestrias[chaveMaestria] !== undefined;
-            const eMaestriaCompleta = habilidade.nivel >= 10;
-            
-            return `
-                <div class="skill-badge bg-[#0a0a0c] border ${temMaestria ? 'border-yellow-500/50' : 'border-[#2a2a2e]'} p-4 rounded-lg hover:border-opacity-60 transition-all relative overflow-hidden" 
-                     style="${temMaestria ? 'border-color: #f59e0b50' : `border-color: ${cor}40`}">
-                    
-                    ${temMaestria ? `
-                        <div class="absolute top-0 right-0 p-1 bg-yellow-500 text-black text-xs font-bold rounded-bl-lg">
-                            <i data-lucide="crown" class="w-3 h-3"></i>
-                        </div>
-                    ` : ''}
-                    
-                    <div class="flex items-center gap-4">
-                        <div class="p-3 rounded-lg relative" style="background-color: ${cor}15">
-                            ${temMaestria ? `
-                                <div class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full animate-pulse"></div>
-                            ` : ''}
-                            <i data-lucide="${icone}" class="w-5 h-5" style="color: ${cor}"></i>
-                        </div>
-                        <div class="flex-1">
-                            <div class="flex justify-between items-center mb-2">
-                                <div>
-                                    <h4 class="text-white font-medium flex items-center gap-2">
-                                        ${habilidade.label}
-                                        ${temMaestria ? '<span class="text-xs px-1.5 py-0.5 bg-yellow-500/20 text-yellow-300 rounded">MESTRE</span>' : ''}
-                                    </h4>
-                                    ${subcategoria ? `<span class="text-xs text-gray-500">${subcategoria.replace(/([A-Z])/g, ' $1').trim()}</span>` : ''}
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <button onclick="changeLevel('${categoria}', ${subcategoria ? `'${subcategoria}'` : 'null'}, ${index}, -1)" 
-                                            class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white transition-colors rounded hover:bg-white/10">-</button>
-                                    <span class="font-mono w-12 text-center ${eMaestriaCompleta ? 'text-yellow-400 font-bold' : ''}" style="${!eMaestriaCompleta ? `color: ${cor}` : ''}">
-                                        ${nivelLabel}
-                                    </span>
-                                    <button onclick="changeLevel('${categoria}', ${subcategoria ? `'${subcategoria}'` : 'null'}, ${index}, 1)" 
-                                            class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-white transition-colors rounded hover:bg-white/10">+</button>
-                                </div>
+                    return `
+                        <div class="section-panel flex flex-col gap-3 group hover:border-theme-orange/50 transition-colors">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-white">${skill.label}</span>
+                                <span class="text-sm font-mono text-theme-orange">LV. ${level}</span>
                             </div>
-                            
-                            <p class="text-gray-500 text-xs mb-3">${habilidade.descricao}</p>
-                            
-                            <!-- Barra de Progresso -->
-                            <div class="h-2 bg-gray-900 rounded-full overflow-hidden">
-                                <div class="progress-fill h-full rounded-full" 
-                                     style="background: ${temMaestria ? 
-                                        'linear-gradient(90deg, #f59e0b, #fbbf24)' : 
-                                        `linear-gradient(90deg, ${cor}, ${cor}80)`}; 
-                                            width: ${porcentagem}%"></div>
-                            </div>
-                            
-                            <!-- Pontos -->
-                            <div class="flex gap-1 mt-3">
-                                ${Array.from({length: habilidade.maxNivel || 10}).map((_, i) => `
-                                    <div class="flex-1 h-1 rounded-full ${i < habilidade.nivel ? '' : 'bg-gray-900'}" 
-                                         style="${i < habilidade.nivel ? 
-                                            (temMaestria ? 'background-color: #f59e0b' : `background-color: ${cor}`) : ''}"></div>
+                            <div class="flex gap-1">
+                                ${Array.from({length: 10}).map((_, i) => `
+                                    <div class="flex-1 h-1.5 rounded-full ${i < level ? 'bg-theme-orange' : 'bg-white/5'}"></div>
                                 `).join('')}
                             </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // 3. Renderizar uma categoria específica
-        function renderizarCategoria(categoria) {
-            const containerId = `grid-${categoria}`;
-            const container = document.getElementById(containerId);
-            if (!container) return;
-            
-            let html = '';
-            
-            if (categoria === 'armas' && categorias[categoria].subcategorias) {
-                Object.keys(categorias[categoria].subcategorias).forEach(subcat => {
-                    const subcatConfig = categorias[categoria].subcategorias[subcat];
-                    
-                    // Adicionar header da subcategoria
-                    html += `
-                        <div class="md:col-span-2 lg:col-span-3">
-                            <h3 class="text-lg font-medium mb-4 mt-6 first:mt-0 flex items-center gap-2">
-                                <div class="p-1.5 rounded" style="background-color: ${subcatConfig.cor}20">
-                                    <i data-lucide="${subcatConfig.icone}" class="w-4 h-4" style="color: ${subcatConfig.cor}"></i>
-                                </div>
-                                ${subcat.charAt(0).toUpperCase() + subcat.slice(1).replace(/([A-Z])/g, ' $1')}
-                                <span class="text-sm text-gray-500 ml-auto">${subcatConfig.habilidades.length} armas</span>
-                            </h3>
+                            <div class="flex gap-2 mt-2">
+                                <button onclick="update('${skill.cat}', '${skill.id}', -1)" class="flex-1 py-1 bg-white/5 rounded text-xs hover:bg-white/10">-</button>
+                                <button onclick="update('${skill.cat}', '${skill.id}', 1)" class="flex-1 py-1 bg-theme-orange/20 text-theme-orange rounded text-xs font-bold hover:bg-theme-orange/30">UP</button>
+                            </div>
                         </div>
                     `;
-                    
-                    // Adicionar cards da subcategoria
-                    subcatConfig.habilidades.forEach((habilidade, index) => {
-                        html += createCard(habilidade, categoria, subcat, index);
-                    });
-                });
+                }).join('');
+            });
+            lucide.createIcons();
+        }
+
+        function update(cat, id, v) {
+            const user = Core.load();
+            if (['magic', 'pacts', 'special', 'summon'].includes(cat)) {
+                user.mastery[cat][id] = Math.max(0, Math.min(10, user.mastery[cat][id] + v));
             } else {
-                // Outras categorias
-                categorias[categoria].habilidades.forEach((habilidade, index) => {
-                    html += createCard(habilidade, categoria, null, index);
-                });
+                user.mastery[cat][id].lv = Math.max(0, Math.min(10, user.mastery[cat][id].lv + v));
             }
-            
-            container.innerHTML = html;
-            
-            // Atualizar ícones
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            Core.save(user);
+            render();
         }
 
-        // 4. Salvar todos os dados
-        function saveAll() {
-            const dataToSave = {};
-            
-            Object.keys(categorias).forEach(categoria => {
-                if (categoria === 'armas' && categorias[categoria].subcategorias) {
-                    dataToSave[categoria] = {};
-                    Object.keys(categorias[categoria].subcategorias).forEach(subcat => {
-                        dataToSave[categoria][subcat] = categorias[categoria].subcategorias[subcat].habilidades.map(h => ({
-                            id: h.id,
-                            nivel: h.nivel
-                        }));
-                    });
-                } else {
-                    dataToSave[categoria] = categorias[categoria].habilidades.map(h => ({
-                        id: h.id,
-                        nivel: h.nivel
-                    }));
-                }
-            });
-            
-            localStorage.setItem('rpg_proficiencias', JSON.stringify(dataToSave));
-            
-            // Feedback visual
-            mostrarFeedback('Salvo com sucesso!', 'green');
-        }
-
-        // 5. Carregar todos os dados
-        function loadAll() {
-            try {
-                const saved = localStorage.getItem('rpg_proficiencias');
-                
-                if (saved) {
-                    const data = JSON.parse(saved);
-                    
-                    Object.keys(data).forEach(categoria => {
-                        if (categoria === 'armas' && data[categoria]) {
-                            Object.keys(data[categoria]).forEach(subcat => {
-                                if (categorias.armas.subcategorias[subcat]) {
-                                    data[categoria][subcat].forEach(savedHabilidade => {
-                                        const habilidade = categorias.armas.subcategorias[subcat].habilidades.find(h => h.id === savedHabilidade.id);
-                                        if (habilidade) {
-                                            habilidade.nivel = savedHabilidade.nivel;
-                                        }
-                                    });
-                                }
-                            });
-                        } else if (categorias[categoria] && categorias[categoria].habilidades) {
-                            data[categoria].forEach(savedHabilidade => {
-                                const habilidade = categorias[categoria].habilidades.find(h => h.id === savedHabilidade.id);
-                                if (habilidade) {
-                                    habilidade.nivel = savedHabilidade.nivel;
-                                }
-                            });
-                        }
-                    });
-                    
-                    console.log('Dados carregados com sucesso!');
-                }
-            } catch (e) {
-                console.error('Erro ao carregar dados:', e);
-            }
-            
-            // Renderizar todas as categorias
-            Object.keys(categorias).forEach(renderizarCategoria);
-            
-            // Atualizar resumo
-            updateResumo();
-        }
-
-        // 6. Atualizar resumo (com sistema de pontos)
-        function updateResumo() {
-            const pontuacao = calcularPontuacao();
-            
-            // Atualizar seção de maestrias
-            atualizarSecaoMaestrias(pontuacao);
-            
-            // Atualizar medalhas de maestria
-            const maestriasPorCat = sistemaMaestria.contarMaestriasPorCategoria();
-            const totalMaestrias = pontuacao.maestrias;
-            atualizarMedalhasMaestria(totalMaestrias, maestriasPorCat);
-        }
-
-        // 7. Atualizar seção de maestrias
-        function atualizarSecaoMaestrias(pontuacao) {
-            const maestriasElem = document.getElementById('secao-maestrias');
-            if (!maestriasElem) return;
-            
-            const maestriasPorCat = sistemaMaestria.contarMaestriasPorCategoria();
-            const totalMaestrias = pontuacao.maestrias;
-            
-            maestriasElem.innerHTML = `
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Card Pontuação -->
-                    <div class="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/30 p-5 rounded-lg">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-yellow-500/20">
-                                <i data-lucide="trophy" class="w-5 h-5 text-yellow-400"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-white">Pontuação Total</h4>
-                                <p class="text-xs text-gray-400">Base + Bônus Maestria</p>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-yellow-400 mb-1">${pontuacao.total}</div>
-                            <div class="text-sm text-gray-400">
-                                <span class="text-green-400">${pontuacao.base}</span> + 
-                                <span class="text-yellow-400">${pontuacao.bonus}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card Maestrias -->
-                    <div class="bg-gradient-to-br from-yellow-900/20 to-orange-900/20 border border-yellow-700/30 p-5 rounded-lg">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-yellow-500/30">
-                                <i data-lucide="crown" class="w-5 h-5 text-yellow-300"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-white">Maestrias Completas</h4>
-                                <p class="text-xs text-gray-400">Habilidades no nível máximo</p>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-white mb-1">${totalMaestrias}</div>
-                            <div class="text-sm text-yellow-300/70">
-                                +${totalMaestrias * 20} pontos bônus
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card Progresso -->
-                    <div class="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border border-blue-700/30 p-5 rounded-lg">
-                        <div class="flex items-center gap-3 mb-4">
-                            <div class="p-2 rounded-lg bg-blue-500/20">
-                                <i data-lucide="trending-up" class="w-5 h-5 text-blue-400"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-medium text-white">Progresso Global</h4>
-                                <p class="text-xs text-gray-400">Domínio geral</p>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-4xl font-bold text-blue-400 mb-1">${Math.round((pontuacao.total / 1000) * 100)}%</div>
-                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden mt-2">
-                                <div class="h-full bg-gradient-to-r from-blue-500 to-purple-500" 
-                                     style="width: ${Math.min(100, (pontuacao.total / 1000) * 100)}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                ${totalMaestrias > 0 ? `
-                    <div class="mt-6">
-                        <h5 class="text-sm font-medium text-gray-400 mb-3">Distribuição de Maestrias</h5>
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                            ${Object.entries(maestriasPorCat).map(([cat, count]) => `
-                                <div class="bg-gray-900/50 border border-gray-700/30 p-3 rounded-lg">
-                                    <div class="text-xs text-gray-400 mb-1">${cat.charAt(0).toUpperCase() + cat.slice(1)}</div>
-                                    <div class="flex items-center justify-between">
-                                        <span class="text-lg font-bold text-white">${count}</span>
-                                        <i data-lucide="${categorias[cat].icone}" class="w-4 h-4" style="color: ${categorias[cat].cor}"></i>
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                ` : ''}
-            `;
-            
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
-
-        // 8. Atualizar medalhas de maestria
-        function atualizarMedalhasMaestria(totalMaestrias, maestriasPorCat) {
-            const container = document.getElementById('medalhas-maestria');
-            if (!container) return;
-            
-            if (totalMaestrias > 0) {
-                container.innerHTML = `
-                    <div class="flex flex-wrap gap-2">
-                        ${Object.entries(maestriasPorCat).map(([cat, count]) => count > 0 ? `
-                            <div class="flex items-center gap-1.5 px-3 py-1.5" style="background-color: ${categorias[cat].cor}20; border-color: ${categorias[cat].cor}40" class="border rounded-full">
-                                <i data-lucide="${categorias[cat].icone}" class="w-3 h-3" style="color: ${categorias[cat].cor}"></i>
-                                <span class="text-xs text-white">${count} ${cat}</span>
-                            </div>
-                        ` : '').join('')}
-                    </div>
-                `;
-                
-                if (window.lucide) {
-                    lucide.createIcons();
-                }
-            } else {
-                container.innerHTML = `
-                    <div class="text-center py-2">
-                        <p class="text-gray-500 text-sm">Nenhuma maestria alcançada ainda</p>
-                        <p class="text-gray-600 text-xs">Leve habilidades ao nível 10 para desbloquear</p>
-                    </div>
-                `;
-            }
-        }
-
-        // 9. Mostrar feedback
-        function mostrarFeedback(mensagem, tipo = 'blue') {
-            const cores = {
-                green: 'bg-green-900/30 border-green-700/50 text-green-300',
-                blue: 'bg-blue-900/30 border-blue-700/50 text-blue-300',
-                red: 'bg-red-900/30 border-red-700/50 text-red-300',
-                yellow: 'bg-yellow-900/30 border-yellow-700/50 text-yellow-300'
-            };
-            
-            const feedback = document.createElement('div');
-            feedback.className = `fixed top-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg border backdrop-blur-sm z-[100] animate-fade-in-up ${cores[tipo]}`;
-            feedback.textContent = mensagem;
-            
-            document.body.appendChild(feedback);
-            
-            setTimeout(() => {
-                feedback.classList.add('opacity-0', 'transition-opacity', 'duration-300');
-                setTimeout(() => feedback.remove(), 300);
-            }, 3000);
-        }
-
-        // 10. Resetar tudo
-        function resetAll() {
-            if (confirm('Tem certeza que deseja resetar TODOS os níveis e maestrias? Esta ação não pode ser desfeita.')) {
-                // Resetar níveis
-                Object.keys(categorias).forEach(categoria => {
-                    if (categoria === 'armas' && categorias[categoria].subcategorias) {
-                        Object.keys(categorias[categoria].subcategorias).forEach(subcat => {
-                            categorias[categoria].subcategorias[subcat].habilidades.forEach(h => h.nivel = 0);
-                        });
-                    } else {
-                        categorias[categoria].habilidades.forEach(h => h.nivel = 0);
-                    }
-                });
-                
-                // Resetar maestrias
-                sistemaMaestria.resetarMaestrias();
-                
-                // Salvar e atualizar
-                saveAll();
-                Object.keys(categorias).forEach(renderizarCategoria);
-                updateResumo();
-                
-                mostrarFeedback('Todos os dados foram resetados!', 'red');
-            }
-        }
-
-        // 11. Exportar dados
-        function downloadTXT() {
-            const pontuacao = calcularPontuacao();
-            let texto = `GRIMÓRIO DIGITAL - ESTILOS DE COMBATE\n`;
-            texto += `Gerado em: ${new Date().toLocaleString('pt-BR')}\n`;
-            texto += `========================================\n\n`;
-            texto += `PONTUAÇÃO TOTAL: ${pontuacao.total} pontos\n`;
-            texto += `• Pontos base: ${pontuacao.base}\n`;
-            texto += `• Bônus maestria: ${pontuacao.bonus}\n`;
-            texto += `• Maestrias: ${pontuacao.maestrias}\n\n`;
-            
-            texto += `DETALHAMENTO POR CATEGORIA:\n`;
-            texto += `============================\n\n`;
-            
-            // Armas
-            texto += `ARMAMENTO FÍSICO:\n`;
-            Object.keys(categorias.armas.subcategorias).forEach(subcat => {
-                texto += `  ${subcat.charAt(0).toUpperCase() + subcat.slice(1).replace(/([A-Z])/g, ' $1')}:\n`;
-                categorias.armas.subcategorias[subcat].habilidades.forEach(h => {
-                    const chave = sistemaMaestria.gerarChave(h.id, 'armas', subcat);
-                    const maestria = sistemaMaestria.maestrias[chave] ? ' [MESTRE]' : '';
-                    texto += `    • ${h.label}: ${h.nivel}/10${maestria}\n`;
-                });
-            });
-            texto += '\n';
-            
-            // Outras categorias
-            ['magia', 'pactos', 'invocacao', 'especiais'].forEach(cat => {
-                texto += `${cat.toUpperCase()}:\n`;
-                categorias[cat].habilidades.forEach(h => {
-                    const chave = sistemaMaestria.gerarChave(h.id, cat);
-                    const maestria = sistemaMaestria.maestrias[chave] ? ' [MESTRE]' : '';
-                    texto += `  • ${h.label}: ${h.nivel}/10${maestria}\n`;
-                });
-                texto += '\n';
-            });
-            
-            // Criar e baixar arquivo
-            const blob = new Blob([texto], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `grimorio_combate_${new Date().toISOString().split('T')[0]}.txt`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-            
-            mostrarFeedback('Exportado com sucesso!', 'green');
-        }
-
-        // 12. Salvar no perfil
-        function saveToProfile() {
-            saveAll();
-            mostrarFeedback('Progresso salvo no perfil!', 'green');
-        }
-
-        // 13. Mostrar seletor de armas
-        function mostrarSeletorArmas() {
-            mostrarFeedback('Funcionalidade em desenvolvimento!', 'blue');
-        }
-
-        // 14. Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar ícones
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-            
-            // Carregar dados
-            loadAll();
-            
-            // Animações de entrada
-            setTimeout(() => {
-                document.querySelectorAll('.anim-entry').forEach((el, i) => {
-                    el.style.animationDelay = `${0.1 + (i * 0.1)}s`;
-                });
-            }, 100);
-            
-            // Verificar maestrias existentes
-            Object.keys(categorias).forEach(categoria => {
-                if (categoria === 'armas' && categorias[categoria].subcategorias) {
-                    Object.keys(categorias[categoria].subcategorias).forEach(subcat => {
-                        categorias[categoria].subcategorias[subcat].habilidades.forEach(habilidade => {
-                            sistemaMaestria.verificarMaestria(habilidade, categoria, subcat);
-                        });
-                    });
-                } else {
-                    categorias[categoria].habilidades.forEach(habilidade => {
-                        sistemaMaestria.verificarMaestria(habilidade, categoria);
-                    });
-                }
-            });
-        });
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

@@ -558,786 +558,125 @@
     </div>
 
     <script>
-        // 1. INICIALIZAÇÃO
-        document.addEventListener('DOMContentLoaded', function () {
-            lucide.createIcons();
-            inicializarFicha();
-            configurarAutoSave();
+        let user = Core.load();
+        let changed = false;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+            init();
+            setup();
         });
 
-        // 2. VARIÁVEIS GLOBAIS
-        let currentAvatar = null;
-        let autoSaveTimer = null;
-        let hasUnsavedChanges = false;
+/* ==============================////============================== */
 
-        // 3. SISTEMA DE PERFIS
-        function inicializarFicha() {
-            // Verificar se há perfil ativo
-            const perfilAtivo = getActiveProfile();
+        const fields = {
+            'inp-nome': 'name', 'inp-titulo': 'title', 'inp-nivel': 'level',
+            'inp-idade': 'age', 'inp-altura': 'height', 'inp-peso': 'weight',
+            'inp-raca': 'race', 'inp-classe': 'class', 'inp-cabeca': 'head',
+            'inp-torso': 'torso', 'inp-bracos': 'arms', 'inp-pernas': 'legs',
+            'inp-historia': 'bio', 'inp-motivacoes': 'motives', 'inp-medos': 'fears',
+            'inp-personalidade': 'traits', 'inp-ideais': 'ideals', 'inp-defeitos': 'flaws',
+            'inp-habitos': 'habits', 'inp-aliados': 'allies', 'inp-inimigos': 'enemies'
+        };
 
-            if (!perfilAtivo) {
-                showFeedback('⚠️ Nenhum perfil ativo!', 'Você será redirecionado para criar um perfil.', 'warning');
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 3000);
-                return;
-            }
-
-            // Atualizar informação do perfil
-            atualizarInfoPerfil(perfilAtivo);
-
-            // Carregar dados da ficha se existirem
-            if (perfilAtivo.ficha) {
-                carregarDadosFicha(perfilAtivo.ficha);
-            }
-
-            // Verificar classe pré-definida
-            if (perfilAtivo.classe && perfilAtivo.classe !== 'Escolha livre') {
-                document.getElementById('inp-classe').value = perfilAtivo.classe;
-            }
-
-            // Chama detalhes de fallback global
-            inicializarFichaAvancada();
+        function init() {
+            Object.entries(fields).forEach(([id, key]) => {
+                const el = document.getElementById(id);
+                if (el) el.value = user[key] || (id === 'inp-nivel' ? 1 : '');
+            });
+            if (user.avatar) updateAvatar(user.avatar);
         }
 
-        function atualizarInfoPerfil(perfil) {
-            document.getElementById('profile-name').textContent = perfil.nome || 'Novo Personagem';
-
-            if (perfil.ultimaAtualizacao) {
-                const data = new Date(perfil.ultimaAtualizacao);
-                const agora = new Date();
-                const diffMs = agora - data;
-                const diffMin = Math.floor(diffMs / (1000 * 60));
-
-                let texto = '';
-                if (diffMin < 1) {
-                    texto = 'Atualizado agora';
-                } else if (diffMin < 60) {
-                    texto = `Atualizado há ${diffMin} min`;
-                } else if (diffMin < 1440) {
-                    texto = `Atualizado hoje às ${data.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-                } else {
-                    texto = `Atualizado em ${data.toLocaleDateString('pt-BR')}`;
-                }
-
-                document.getElementById('profile-last-update').textContent = texto;
-            }
+        function setup() {
+            document.querySelectorAll('.data-field').forEach(el => {
+                el.oninput = () => changed = true;
+            });
+            window.onbeforeunload = () => changed ? 'Alterações não salvas!' : null;
         }
 
-        function salvarEAplicar() {
-            try {
-                console.log('Iniciando salvamento...');
-
-                // Coletar dados básicos
-                const dadosBasicos = {
-                    nome: document.getElementById('inp-nome').value.trim(),
-                    titulo: document.getElementById('inp-titulo').value.trim(),
-                    nivel: parseInt(document.getElementById('inp-nivel').value) || 1,
-                    idade: document.getElementById('inp-idade').value.trim(),
-                    altura: document.getElementById('inp-altura').value.trim(),
-                    peso: document.getElementById('inp-peso').value.trim(),
-                    raca: document.getElementById('inp-raca').value.trim(),
-                    classe: document.getElementById('inp-classe').value.trim()
-                };
-
-                // Validar
-                if (!dadosBasicos.nome) {
-                    showFeedback('⚠️ Atenção', 'O nome do personagem é obrigatório!', 'warning');
-                    return;
-                }
-
-                // Salvar dados básicos
-                GrimorioSystem.salvarDadosBasicos(dadosBasicos);
-
-                // Salvar avatar se existir
-                if (currentAvatar) {
-                    GrimorioSystem.salvarAvatar(currentAvatar);
-                }
-
-                // Salvar ficha completa em localStorage no cache padrao
-                const fichaCompleta = coletarTodosDados();
-                localStorage.setItem('grimorio_ficha_completa', JSON.stringify(fichaCompleta));
-
-                // Salvar no perfil ativo para garantir que os dados não se percam
-                const perfilAtivo = getActiveProfile();
-                if (perfilAtivo) {
-                    perfilAtivo.ficha = fichaCompleta;
-                    perfilAtivo.nome = dadosBasicos.nome;
-                    perfilAtivo.classe = dadosBasicos.classe;
-                    perfilAtivo.ultimaAtualizacao = new Date().toISOString();
-                    localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(perfilAtivo));
-
-                    const todosPerfis = localStorage.getItem('grimorio_perfis');
-                    if (todosPerfis) {
-                        try {
-                            const pObj = JSON.parse(todosPerfis);
-                            const index = pObj.findIndex(p => p.id === perfilAtivo.id);
-                            if (index !== -1) {
-                                pObj[index] = perfilAtivo;
-                                localStorage.setItem('grimorio_perfis', JSON.stringify(pObj));
-                            }
-                        } catch (e) { }
-                    }
-                }
-
-                // Atualizar last update label
-                atualizarInfoPerfil(perfilAtivo || { ultimaAtualizacao: new Date().toISOString(), nome: dadosBasicos.nome });
-
-                // Feedback
-                showFeedback('✅ Sucesso!', 'Ficha salva em todos os sistemas e no cache do site!', 'success');
-
-                // Atualizar estado
-                hasUnsavedChanges = false;
-
-                console.log('Salvamento concluído com sucesso');
-
-            } catch (error) {
-                console.error('Erro completo ao salvar:', error);
-                showFeedback('❌ Erro', 'Erro ao salvar: ' + error.message, 'error');
-            }
+        function collect() {
+            const data = { ...user };
+            Object.entries(fields).forEach(([id, key]) => {
+                const el = document.getElementById(id);
+                if (el) data[key] = el.value;
+            });
+            data.avatar = user.avatar;
+            return data;
         }
 
-        // Atualize a função coletarTodosDados() para incluir todos os campos:
-        function coletarTodosDados() {
-            return {
-                // Identidade
-                nome: document.getElementById('inp-nome').value.trim(),
-                titulo: document.getElementById('inp-titulo').value.trim(),
-                nivel: parseInt(document.getElementById('inp-nivel').value) || 1,
-                idade: document.getElementById('inp-idade').value.trim(),
-                altura: document.getElementById('inp-altura').value.trim(),
-                peso: document.getElementById('inp-peso').value.trim(),
-                raca: document.getElementById('inp-raca').value.trim(),
-                classe: document.getElementById('inp-classe').value.trim(),
-                origem: document.getElementById('inp-origem') ? document.getElementById('inp-origem').value.trim() : '',
-
-                // Aparência
-                cabeca: document.getElementById('inp-cabeca').value.trim(),
-                torso: document.getElementById('inp-torso').value.trim(),
-                bracos: document.getElementById('inp-bracos').value.trim(),
-                pernas: document.getElementById('inp-pernas').value.trim(),
-
-                // História
-                historia: document.getElementById('inp-historia').value.trim(),
-                motivacoes: document.getElementById('inp-motivacoes').value.trim(),
-                medos: document.getElementById('inp-medos').value.trim(),
-
-                // Personalidade
-                personalidade: document.getElementById('inp-personalidade').value.trim(),
-                ideais: document.getElementById('inp-ideais').value.trim(),
-                defeitos: document.getElementById('inp-defeitos').value.trim(),
-                habitos: document.getElementById('inp-habitos').value.trim(),
-
-                // Relações
-                aliados: document.getElementById('inp-aliados').value.trim(),
-                inimigos: document.getElementById('inp-inimigos').value.trim(),
-
-                // Avatar
-                avatar: currentAvatar || '',
-
-                // Metadados
-                dataSalvamento: new Date().toISOString(),
-                versao: '2.0'
-            };
+        function save() {
+            const data = collect();
+            if (!data.name) return Core.notify('Nome é obrigatório!', 'warning');
+            Core.save(data);
+            user = data;
+            changed = false;
+            Core.notify('Ficha salva!', 'success');
         }
 
-        // Adicione esta função para carregar avatar da ficha
-        function carregarAvatarDoGrimorio() {
-            try {
-                const personagem = GrimorioSystem.carregarPersonagem();
-
-                if (personagem.avatar && personagem.avatar.trim() !== '') {
-                    currentAvatar = personagem.avatar;
-
-                    const container = document.getElementById('avatar-container');
-                    if (container) {
-                        container.style.backgroundImage = `url('${personagem.avatar}')`;
-                        container.style.backgroundSize = 'cover';
-                        container.style.backgroundPosition = 'center';
-
-                        const placeholder = container.querySelector('.avatar-placeholder');
-                        if (placeholder) {
-                            placeholder.style.opacity = '0';
-                        }
-
-                        console.log('Avatar carregado do Grimorio');
-                    }
-                }
-            } catch (error) {
-                console.error('Erro ao carregar avatar:', error);
-            }
+        function updateAvatar(base64) {
+            const el = document.getElementById('avatar-container');
+            if (!el) return;
+            el.style.backgroundImage = `url('${base64}')`;
+            el.querySelector('.avatar-placeholder').style.opacity = '0';
+            user.avatar = base64;
+            changed = true;
         }
 
-        function inicializarFichaAvancada() {
-            try {
-                // 1. Inicializar Lucide
-                if (window.lucide) {
-                    lucide.createIcons();
-                }
-
-                // 2. Tentar carregar dados do GrimorioSystem global também
-                const personagem = GrimorioSystem.carregarPersonagem();
-                if (personagem) {
-                    // Carregar avatar do GrimorioSystem global se existir
-                    carregarAvatarDoGrimorio();
-
-                    // Se não for o padrão, carrega os dados básicos extras
-                    if (personagem.nome !== 'Novo Aventureiro') {
-                        if (!document.getElementById('inp-nome').value) document.getElementById('inp-nome').value = personagem.nome || '';
-                        if (!document.getElementById('inp-titulo').value) document.getElementById('inp-titulo').value = personagem.titulo || '';
-                        if (!document.getElementById('inp-nivel').value || document.getElementById('inp-nivel').value === '1') document.getElementById('inp-nivel').value = personagem.nivel || 1;
-                        if (!document.getElementById('inp-idade').value) document.getElementById('inp-idade').value = personagem.idade || '';
-                        if (!document.getElementById('inp-altura').value) document.getElementById('inp-altura').value = personagem.altura || '';
-                        if (!document.getElementById('inp-peso').value) document.getElementById('inp-peso').value = personagem.peso || '';
-                        if (!document.getElementById('inp-raca').value) document.getElementById('inp-raca').value = personagem.raca || '';
-                        if (!document.getElementById('inp-classe').value) document.getElementById('inp-classe').value = personagem.classe || '';
-                    }
-                }
-
-                // Tenta carregar do cache estático adicional como fallback
-                const fichaCompleta = localStorage.getItem('grimorio_ficha_completa');
-                if (fichaCompleta) {
-                    try {
-                        const dados = JSON.parse(fichaCompleta);
-                        // Se o campo nome ainda estiver vazio, preenche tudo (fallback). 
-                        if (!document.getElementById('inp-nome').value) {
-                            carregarDadosFicha(dados);
-                        }
-                    } catch (e) {
-                        console.error('Erro ao carregar ficha completa (fallback):', e);
-                    }
-                }
-
-                console.log('Ficha estendida inicializada.');
-            } catch (error) {
-                console.error('Erro ao inicializar detalhes estendidos:', error);
-            }
-        }
-
-
-
-        function carregarDadosFicha(dados) {
-            // Identidade
-            if (dados.nome) document.getElementById('inp-nome').value = dados.nome;
-            if (dados.titulo) document.getElementById('inp-titulo').value = dados.titulo;
-            if (dados.nivel) document.getElementById('inp-nivel').value = dados.nivel;
-            if (dados.idade) document.getElementById('inp-idade').value = dados.idade;
-            if (dados.altura) document.getElementById('inp-altura').value = dados.altura;
-            if (dados.peso) document.getElementById('inp-peso').value = dados.peso;
-            if (dados.raca) document.getElementById('inp-raca').value = dados.raca;
-            if (dados.classe) document.getElementById('inp-classe').value = dados.classe;
-
-            // Aparência
-            if (dados.cabeca) document.getElementById('inp-cabeca').value = dados.cabeca;
-            if (dados.torso) document.getElementById('inp-torso').value = dados.torso;
-            if (dados.bracos) document.getElementById('inp-bracos').value = dados.bracos;
-            if (dados.pernas) document.getElementById('inp-pernas').value = dados.pernas;
-
-            // História
-            if (dados.historia) document.getElementById('inp-historia').value = dados.historia;
-            if (dados.motivacoes) document.getElementById('inp-motivacoes').value = dados.motivacoes;
-            if (dados.medos) document.getElementById('inp-medos').value = dados.medos;
-
-            // Personalidade
-            if (dados.personalidade) document.getElementById('inp-personalidade').value = dados.personalidade;
-            if (dados.ideais) document.getElementById('inp-ideais').value = dados.ideais;
-            if (dados.defeitos) document.getElementById('inp-defeitos').value = dados.defeitos;
-            if (dados.habitos) document.getElementById('inp-habitos').value = dados.habitos;
-
-            // Relações
-            if (dados.aliados) document.getElementById('inp-aliados').value = dados.aliados;
-            if (dados.inimigos) document.getElementById('inp-inimigos').value = dados.inimigos;
-
-            // Avatar
-            if (dados.avatar) {
-                currentAvatar = dados.avatar;
-                const container = document.getElementById('avatar-container');
-                container.style.backgroundImage = `url('${dados.avatar}')`;
-                container.querySelector('.avatar-placeholder').style.opacity = '0';
-            }
-        }
-
-        // 5. SISTEMA DE AVATAR
-        function previewImage(event) {
-            const file = event.target.files[0];
+        function previewImage(e) {
+            const file = e.target.files[0];
             if (!file) return;
-
-            // Validar tipo e tamanho
-            if (!file.type.match('image.*')) {
-                showFeedback('❌ Erro', 'Por favor, selecione uma imagem válida.', 'error');
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                showFeedback('⚠️ Tamanho excessivo', 'A imagem deve ter menos de 5MB.', 'warning');
-                return;
-            }
-
             const reader = new FileReader();
-            reader.onload = function (e) {
-                // Comprimir imagem
-                comprimirImagem(e.target.result, 400, function (imagemComprimida) {
-                    currentAvatar = imagemComprimida;
-
-                    // Aplicar ao container
-                    const container = document.getElementById('avatar-container');
-                    container.style.backgroundImage = `url('${imagemComprimida}')`;
-                    container.querySelector('.avatar-placeholder').style.opacity = '0';
-
-                    // Marcar como não salvo
-                    hasUnsavedChanges = true;
-
-                    showFeedback('📷 Avatar carregado', 'Clique em "Salvar e Aplicar" para gravar.', 'info');
-                });
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.src = ev.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = 400;
+                    let w = img.width, h = img.height;
+                    if (w > h) { h = (h * size) / w; w = size; }
+                    else { w = (w * size) / h; h = size; }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    updateAvatar(canvas.toDataURL('image/jpeg', 0.8));
+                };
             };
             reader.readAsDataURL(file);
         }
 
-        function comprimirImagem(base64, tamanhoMax, callback) {
-            const img = new Image();
-            img.src = base64;
-
-            img.onload = function () {
-                const canvas = document.createElement('canvas');
-                let width = img.width;
-                let height = img.height;
-
-                // Redimensionar mantendo proporção
-                if (width > height) {
-                    if (width > tamanhoMax) {
-                        height = Math.round((height * tamanhoMax) / width);
-                        width = tamanhoMax;
-                    }
-                } else {
-                    if (height > tamanhoMax) {
-                        width = Math.round((width * tamanhoMax) / height);
-                        height = tamanhoMax;
-                    }
-                }
-
-                canvas.width = width;
-                canvas.height = height;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
-
-                // Converter para JPEG com 85% de qualidade
-                const imagemComprimida = canvas.toDataURL('image/jpeg', 0.85);
-                callback(imagemComprimida);
-            };
-        }
-
-        function removerAvatar() {
-            currentAvatar = null;
-            const container = document.getElementById('avatar-container');
-            container.style.backgroundImage = '';
-            container.querySelector('.avatar-placeholder').style.opacity = '1';
-
-            hasUnsavedChanges = true;
-            showFeedback('🗑️ Avatar removido', 'Clique em "Salvar e Aplicar" para atualizar.', 'info');
-        }
-
-        // 6. FUNÇÕES AUXILIARES
-        function getActiveProfile() {
-            const dados = localStorage.getItem('grimorio_perfil_ativo');
-            return dados ? JSON.parse(dados) : null;
-        }
-
-        function configurarAutoSave() {
-            // Configurar salvamento automático após 30 segundos de inatividade
-            const campos = document.querySelectorAll('.data-field');
-
-            campos.forEach(campo => {
-                campo.addEventListener('input', function () {
-                    hasUnsavedChanges = true;
-
-                    clearTimeout(autoSaveTimer);
-                    autoSaveTimer = setTimeout(function () {
-                        if (hasUnsavedChanges && confirm('Salvar alterações automaticamente?')) {
-                            salvarEAplicar();
-                        }
-                    }, 30000); // 30 segundos
-                });
-            });
-
-            // Alertar antes de sair se houver alterações não salvas
-            window.addEventListener('beforeunload', function (e) {
-                if (hasUnsavedChanges) {
-                    e.preventDefault();
-                    e.returnValue = 'Você tem alterações não salvas. Deseja realmente sair?';
-                }
-            });
-        }
-
-        function showFeedback(titulo, mensagem, tipo = 'info') {
-            const toast = document.getElementById('feedback-toast');
-            const icon = document.getElementById('feedback-icon');
-            const titleEl = document.getElementById('feedback-title');
-            const messageEl = document.getElementById('feedback-message');
-
-            // Configurar cores
-            let corBg, corBorda, corTexto, icone;
-
-            switch (tipo) {
-                case 'success':
-                    corBg = 'bg-green-900/20';
-                    corBorda = 'border-green-700';
-                    corTexto = 'text-green-300';
-                    icone = 'check-circle';
-                    break;
-                case 'error':
-                    corBg = 'bg-red-900/20';
-                    corBorda = 'border-red-700';
-                    corTexto = 'text-red-300';
-                    icone = 'alert-circle';
-                    break;
-                case 'warning':
-                    corBg = 'bg-yellow-900/20';
-                    corBorda = 'border-yellow-700';
-                    corTexto = 'text-yellow-300';
-                    icone = 'alert-triangle';
-                    break;
-                default:
-                    corBg = 'bg-blue-900/20';
-                    corBorda = 'border-blue-700';
-                    corTexto = 'text-blue-300';
-                    icone = 'info';
+        function removeAvatar() {
+            const el = document.getElementById('avatar-container');
+            if (el) {
+                el.style.backgroundImage = '';
+                el.querySelector('.avatar-placeholder').style.opacity = '1';
             }
-
-            // Atualizar conteúdo
-            icon.innerHTML = `<i data-lucide="${icone}" class="w-5 h-5"></i>`;
-            titleEl.textContent = titulo;
-            messageEl.textContent = mensagem;
-
-            // Atualizar classes
-            toast.className = `fixed top-4 right-4 z-50 feedback-success ${corBg} ${corBorda} ${corTexto}`;
-
-            // Mostrar
-            toast.classList.remove('hidden');
-
-            // Recriar ícones
-            lucide.createIcons();
-
-            // Esconder após 5 segundos
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 5000);
+            user.avatar = '';
+            changed = true;
         }
 
-        // 7. FUNÇÕES DE UTILIDADE
-        function limparFicha() {
-            if (!confirm('Tem certeza que deseja limpar toda a ficha? Esta ação não pode ser desfeita.')) {
-                return;
-            }
-
-            const campos = document.querySelectorAll('.data-field');
-            campos.forEach(campo => {
-                if (campo.type === 'number') {
-                    campo.value = campo.id === 'inp-nivel' ? '1' : '';
-                } else {
-                    campo.value = '';
-                }
-            });
-
-            removerAvatar();
-            hasUnsavedChanges = true;
-
-            showFeedback('🧹 Ficha limpa', 'Todos os campos foram resetados.', 'info');
+        function clearSheet() {
+            if (!confirm('Limpar toda a ficha?')) return;
+            document.querySelectorAll('.data-field').forEach(el => el.value = el.id === 'inp-nivel' ? 1 : '');
+            removeAvatar();
+            save();
         }
 
-        function getCamposFicha(dados) {
-            return [
-                { t: 'Nome', v: dados.nome },
-                { t: 'Título / Epíteto', v: dados.titulo },
-                { t: 'Nível', v: dados.nivel },
-                { t: 'Idade', v: dados.idade },
-                { t: 'Altura', v: dados.altura },
-                { t: 'Peso', v: dados.peso },
-                { t: 'Raça', v: dados.raca },
-                { t: 'Classe', v: dados.classe },
-                { t: 'Cabeça / Rosto', v: dados.cabeca },
-                { t: 'Torso', v: dados.torso },
-                { t: 'Braços / Mãos', v: dados.bracos },
-                { t: 'Pernas / Pés', v: dados.pernas },
-                { t: 'História de Fundo', v: dados.historia },
-                { t: 'Motivações', v: dados.motivacoes },
-                { t: 'Medos / Traumas', v: dados.medos },
-                { t: 'Traços de Personalidade', v: dados.personalidade },
-                { t: 'Ideais & Valores', v: dados.ideais },
-                { t: 'Defeitos & Fraquezas', v: dados.defeitos },
-                { t: 'Maneirismos & Hábitos', v: dados.habitos },
-                { t: 'Aliados & Amigos', v: dados.aliados },
-                { t: 'Inimigos & Rivalidades', v: dados.inimigos }
-            ];
+        function exportTXT() {
+            const data = collect();
+            const text = Object.entries(fields).map(([id, key]) => `${key.toUpperCase()}: ${data[key] || '-'}`).join('\n\n');
+            const blob = new Blob([text], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `ficha_${data.name || 'player'}.txt`;
+            a.click();
         }
 
-        function exportarTXT() {
-            const dados = coletarTodosDados();
-            const campos = getCamposFicha(dados);
-
-            const texto = campos.map(c => `${c.t} - ${c.v || 'Não preenchido'}`).join('\n\n===============================================================\n\n');
-
-            const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.txt`;
-
-            link.href = URL.createObjectURL(blob);
-            link.download = nomeArquivo;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showFeedback('📄 Exportado!', 'Ficha salva como arquivo TXT limpo.', 'success');
-        }
-
-        function exportarWord() {
-            const dados = coletarTodosDados();
-            const campos = getCamposFicha(dados);
-            const formatString = (str) => (str || 'Não preenchido').replace(/\n/g, '<br/>');
-
-            const corpoHtml = campos.map(c => `<span><strong>${c.t}</strong> - ${formatString(c.v)}</span>`).join('<br/><br/>=====<br/><br/>');
-
-            let html = `
-                <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
-                <head>
-                    <meta charset='utf-8'>
-                    <title>Ficha Personagem</title>
-                    <style>
-                        body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;}
-                    </style>
-                </head>
-                <body>
-                    ${corpoHtml}
-                </body>
-                </html>
-            `;
-
-            const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
-            const link = document.createElement('a');
-            const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.doc`;
-
-            link.href = URL.createObjectURL(blob);
-            link.download = nomeArquivo;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showFeedback('📄 Exportado!', 'Ficha salva como arquivo Word limpo.', 'success');
-        }
-
-        // 8. EXPORTAR FUNÇÕES PARA O GLOBAL
-        window.salvarEAplicar = salvarEAplicar;
-        window.limparFicha = limparFicha;
-        window.exportarTXT = exportarTXT;
-        window.exportarWord = exportarWord;
+        window.salvarEAplicar = save;
+        window.limparFicha = clearSheet;
+        window.exportarTXT = exportTXT;
         window.previewImage = previewImage;
-        window.removerAvatar = removerAvatar;
+        window.removerAvatar = removeAvatar;
 
-        // 9. FUNÇÃO ESPECIAL PARA PÁGINA DE CLASSES USAR
-        window.aplicarClasse = function (dadosClasse) {
-            if (dadosClasse.nome) {
-                document.getElementById('inp-classe').value = dadosClasse.nome;
-                showFeedback('🎯 Classe aplicada!', `Classe "${dadosClasse.nome}" foi adicionada à ficha.`, 'success');
-
-                // Salvar automaticamente se houver perfil ativo
-                const perfil = getActiveProfile();
-                if (perfil) {
-                    perfil.classe = dadosClasse.nome;
-                    localStorage.setItem('grimorio_perfil_ativo', JSON.stringify(perfil));
-                }
-            }
-        };
-        // No ficha.html, adicione esta função para salvar no perfil
-        function saveAllToProfile() {
-            try {
-                // Coletar todos os dados da ficha
-                const dadosFicha = coletarTodosDados();
-
-                // Carregar perfil ativo
-                const perfis = localStorage.getItem('rpg_sistema_perfis');
-                const perfilAtivoId = localStorage.getItem('perfil_ativo');
-
-                if (!perfis || !perfilAtivoId) {
-                    console.error('Nenhum perfil ativo encontrado');
-                    return false;
-                }
-
-                const perfisObj = JSON.parse(perfis);
-                const perfilAtivo = perfisObj[perfilAtivoId];
-
-                if (!perfilAtivo) {
-                    console.error('Perfil ativo não encontrado');
-                    return false;
-                }
-
-                // Estrutura completa dos dados
-                const dadosCompletos = {
-                    // Dados básicos
-                    basico: {
-                        nome: document.getElementById('input-nome')?.value || 'Personagem',
-                        raca: document.getElementById('raca-select')?.value || '',
-                        classe: document.getElementById('classe-select')?.value || '',
-                        origem: document.getElementById('input-origem')?.value || '',
-                        idade: document.getElementById('input-idade')?.value || '',
-                        altura: document.getElementById('input-altura')?.value || '',
-                        peso: document.getElementById('input-peso')?.value || '',
-                        alinhamento: document.getElementById('alinhamento-select')?.value || ''
-                    },
-
-                    // Atributos (do status.html)
-                    atributos: {
-                        forca: document.getElementById('attr-forca')?.value || 0,
-                        destreza: document.getElementById('attr-destreza')?.value || 0,
-                        constituicao: document.getElementById('attr-constituicao')?.value || 0,
-                        inteligencia: document.getElementById('attr-inteligencia')?.value || 0,
-                        sabedoria: document.getElementById('attr-sabedoria')?.value || 0,
-                        carisma: document.getElementById('attr-carisma')?.value || 0
-                    },
-
-                    // Recursos (do status.html)
-                    recursos: {
-                        vida_atual: document.getElementById('input-vida-atual')?.value || 0,
-                        vida_max: document.getElementById('input-vida-max')?.value || 0,
-                        vida_base: 100, // Pode calcular baseado em atributos
-                        mana_atual: document.getElementById('input-mana-atual')?.value || 0,
-                        mana_max: document.getElementById('input-mana-max')?.value || 0,
-                        mana_base: 50,
-                        estamina_atual: document.getElementById('input-estamina-atual')?.value || 0,
-                        estamina_max: document.getElementById('input-estamina-max')?.value || 0,
-                        estamina_base: 80
-                    },
-
-                    // Progressão (do status.html)
-                    progressao: {
-                        nivel: document.getElementById('input-nivel')?.value || 1,
-                        xp_atual: document.getElementById('input-xp-acumulado')?.value || 0,
-                        xp_proximo: 1000
-                    },
-
-                    // Destino (do status.html)
-                    destino: JSON.parse(localStorage.getItem('grimorio_sorte')) || {
-                        valor: null,
-                        dados: [0, 0, 0],
-                        fixada: false
-                    },
-
-                    // Dados da ficha completa
-                    ficha: dadosFicha
-                };
-
-                // Salvar no perfil
-                perfilAtivo.dados = dadosCompletos;
-                perfisObj[perfilAtivoId] = perfilAtivo;
-                localStorage.setItem('rpg_sistema_perfis', JSON.stringify(perfisObj));
-
-                // Salvar também localmente (backup)
-                localStorage.setItem('grimorio_perfil_completo', JSON.stringify(dadosCompletos));
-
-                console.log('Dados salvos no perfil:', perfilAtivoId);
-                return true;
-
-            } catch (error) {
-                console.error('Erro ao salvar no perfil:', error);
-                return false;
-            }
-        }
-
-        // Chame esta função sempre que salvar na ficha
-        function saveFicha() {
-            // ... seu código atual de salvar ...
-
-            // Depois de salvar localmente, salvar no perfil
-            saveAllToProfile();
-
-            mostrarFeedback("Ficha salva no perfil!", "success");
-        }
-        // shared.js - Coloque em todas as páginas
-        class GrimorioSaveSystem {
-            static saveCharacter(data) {
-                localStorage.setItem('grimorio_character_data', JSON.stringify(data));
-                this.notifyUpdate('character');
-            }
-
-            static saveMascot(data) {
-                localStorage.setItem('grimorio_mascot_data', JSON.stringify(data));
-                this.notifyUpdate('mascot');
-            }
-
-            static saveItems(data) {
-                localStorage.setItem('grimorio_items_data', JSON.stringify(data));
-                this.notifyUpdate('items');
-            }
-
-            static loadCharacter() {
-                const data = localStorage.getItem('grimorio_character_data');
-                return data ? JSON.parse(data) : null;
-            }
-
-            static loadMascot() {
-                const data = localStorage.getItem('grimorio_mascot_data');
-                return data ? JSON.parse(data) : null;
-            }
-
-            static loadItems() {
-                const data = localStorage.getItem('grimorio_items_data');
-                return data ? JSON.parse(data) : [];
-            }
-
-            static notifyUpdate(type) {
-                // Dispara evento customizado
-                const event = new CustomEvent('grimorio-update', {
-                    detail: { type: type, timestamp: Date.now() }
-                });
-                window.dispatchEvent(event);
-            }
-
-            static exportAll() {
-                const allData = {
-                    character: this.loadCharacter(),
-                    mascot: this.loadMascot(),
-                    items: this.loadItems(),
-                    version: '2.0',
-                    exportDate: new Date().toISOString()
-                };
-
-                return JSON.stringify(allData, null, 2);
-            }
-
-            static importAll(jsonString) {
-                try {
-                    const data = JSON.parse(jsonString);
-
-                    if (data.character) {
-                        this.saveCharacter(data.character);
-                    }
-                    if (data.mascot) {
-                        this.saveMascot(data.mascot);
-                    }
-                    if (data.items) {
-                        this.saveItems(data.items);
-                    }
-
-                    return true;
-                } catch (error) {
-                    console.error('Erro ao importar:', error);
-                    return false;
-                }
-            }
-        }
-
-        // Listener para atualizações em tempo real
-        window.addEventListener('grimorio-update', function (event) {
-            console.log('Dados atualizados:', event.detail.type);
-            // Atualiza a página atual com os novos dados
-            refreshCurrentPage();
-        });
-
-        // Função para detectar mudanças no localStorage de outras abas
-        window.addEventListener('storage', function (event) {
-            if (event.key.startsWith('grimorio_')) {
-                location.reload(); // Recarrega para mostrar dados atualizados
-            }
-        });
+/* ==============================////============================== */
     </script>
 </body>
 

@@ -565,813 +565,204 @@
             <button onclick="salvarClasseNoPersonagem()" id="btn-confirmar-final" 
                     class="px-6 py-3 bg-gradient-to-r from-theme-blue to-blue-700 rounded-lg text-white font-semibold hover:opacity-90 transition-opacity opacity-50 cursor-not-allowed">
                 <i data-lucide="save" class="w-4 h-4 inline mr-2"></i>
-                Salvar na Ficha
-            </button>
-        </div>
-    </main>
+                Salvar na Fich    <script>
+        const q = s => document.querySelector(s);
+        const qa = s => document.querySelectorAll(s);
 
-    <script>
-        // ====================================================================
-        // SISTEMA COMPLETO DE CLASSES - CORRIGIDO PARA GRIMORIO-CORE.JS
-        // ====================================================================
+        let selected = null;
+        let type = null;
+        let customData = null;
+        let customList = [];
 
-        // Inicializar ícones
-        if (window.lucide) {
+        function init() {
+            Core.init();
+            loadCustoms();
+            checkCurrent();
             lucide.createIcons();
         }
 
-        // Variáveis do sistema
-        let classeSelecionada = null;
-        let tipoClasseSelecionada = null; // 'padrao' ou 'personalizada'
-        let dadosClassePersonalizada = null;
-        let classesSalvas = [];
+        function loadCustoms() {
+            try {
+                const raw = localStorage.getItem('grimorio_classes_personalizadas');
+                customList = raw ? JSON.parse(raw) : [];
+                renderCustoms();
+            } catch (e) { console.error(e); }
+        }
 
-        // Inicializar sistema
-        function inicializarSistema() {
-            // Verificar se grimorio-core.js está disponível
-            if (typeof GrimorioSystem === 'undefined') {
-                console.error('grimorio-core.js não carregado!');
-                mostrarErro('Sistema de armazenamento não encontrado');
+        function saveCustoms() {
+            localStorage.setItem('grimorio_classes_personalizadas', JSON.stringify(customList));
+        }
+
+        function renderCustoms() {
+            const container = q('#container-classes-personalizadas');
+            const counter = q('#contador-classes');
+            if (!container) return;
+
+            if (!customList.length) {
+                container.innerHTML = `<div class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg col-span-full">Nenhuma classe personalizada</div>`;
+                counter.textContent = '0 classes';
                 return;
             }
-            
-            // Garantir que o personagem existe
-            GrimorioSystem.inicializarPersonagemPadrao();
-            
-            carregarClassesPersonalizadas();
-            verificarClasseAtual();
-        }
 
-        // Funções para gerenciar classes personalizadas no localStorage
-        function salvarClassesPersonalizadas() {
-            try {
-                localStorage.setItem('grimorio_classes_personalizadas', JSON.stringify(classesSalvas));
-                console.log('[Classes] Classes salvas:', classesSalvas.length);
-                return true;
-            } catch (error) {
-                console.error('[Classes] Erro ao salvar classes:', error);
-                return false;
-            }
-        }
-
-        function carregarClassesPersonalizadas() {
-            try {
-                const dados = localStorage.getItem('grimorio_classes_personalizadas');
-                classesSalvas = dados ? JSON.parse(dados) : [];
-                
-                const container = document.getElementById('container-classes-personalizadas');
-                const contador = document.getElementById('contador-classes');
-                
-                if (!classesSalvas || classesSalvas.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg col-span-3">
-                            <i data-lucide="folder-plus" class="w-12 h-12 mx-auto mb-4 text-gray-600"></i>
-                            <p class="text-gray-500 mb-2">Nenhuma classe personalizada</p>
-                            <p class="text-sm text-gray-600">Clique em "Nova Classe" para criar</p>
+            counter.textContent = `${customList.length} classe${customList.length > 1 ? 's' : ''}`;
+            container.innerHTML = customList.map((c, i) => `
+                <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer group" onclick="selectCustom(${i})">
+                    <div class="flex justify-between mb-4">
+                        <div class="p-3 rounded-lg bg-purple-900/20 border border-purple-800">
+                            <i data-lucide="${getIcon(c.tipoCombate)}" class="text-purple-400"></i>
                         </div>
-                    `;
-                    contador.textContent = '0 classes';
-                    return;
-                }
-                
-                contador.textContent = `${classesSalvas.length} classe${classesSalvas.length !== 1 ? 's' : ''}`;
-                container.innerHTML = '';
-                
-                classesSalvas.forEach((classe, index) => {
-                    const corElemento = {
-                        'fogo': 'red',
-                        'agua': 'blue', 
-                        'terra': 'yellow',
-                        'ar': 'cyan',
-                        'luz': 'yellow',
-                        'trevas': 'purple'
-                    }[classe.elemento] || 'gray';
-                    
-                    // Determinar ícone baseado no tipo de combate
-                    const icone = getIconForClass(classe.tipoCombate);
-                    
-                    container.innerHTML += `
-                        <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer group" 
-                            onclick="selecionarClassePersonalizada(${index})">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="p-3 rounded-lg bg-${corElemento}-900/20 border border-${corElemento}-800">
-                                    <i data-lucide="${icone}" class="w-6 h-6 text-${corElemento}-400"></i>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <div class="flex flex-wrap gap-1">
-                                        ${classe.funcoes ? classe.funcoes.map(f => `
-                                            <span class="classe-tag bg-${corElemento}-900/20 text-${corElemento}-400 border border-${corElemento}-800">
-                                                ${f}
-                                            </span>
-                                        `).join('') : ''}
-                                    </div>
-                                    <button onclick="event.stopPropagation(); removerClassePersonalizada(${index})" 
-                                            class="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-900/30 rounded transition-opacity" 
-                                            title="Remover classe">
-                                        <i data-lucide="trash-2" class="w-4 h-4 text-red-400"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            
-                            <h3 class="font-cinzel text-xl font-bold text-white mb-2">${classe.nome}</h3>
-                            <p class="text-gray-400 text-sm mb-4">${classe.descricao || 'Classe personalizada'}</p>
-                            
-                            <div class="space-y-2">
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-400">Arma: ${classe.arma}</span>
-                                    <i data-lucide="${getIconForArma(classe.arma)}" class="w-4 h-4 text-${corElemento}-400"></i>
-                                </div>
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-400">Combate: ${getTipoCombateNome(classe.tipoCombate)}</span>
-                                    <i data-lucide="${icone}" class="w-4 h-4 text-${corElemento}-400"></i>
-                                </div>
-                                ${classe.elemento ? `
-                                <div class="flex items-center justify-between text-sm">
-                                    <span class="text-gray-400">Elemento: ${classe.elemento}</span>
-                                    <i data-lucide="${getIconForElemento(classe.elemento)}" class="w-4 h-4 text-${corElemento}-400"></i>
-                                </div>
-                                ` : ''}
-                            </div>
-                            
-                            <div class="mt-4 pt-4 border-t border-theme-border">
-                                <div class="text-xs text-gray-500">Habilidades:</div>
-                                <div class="text-xs text-gray-300 mt-1 truncate">
-                                    ${classe.habilidades ? classe.habilidades.map(h => h.nome).join(', ') : 'Nenhuma'}
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                if (window.lucide) {
-                    lucide.createIcons();
-                }
-                
-                return true;
-            } catch (error) {
-                console.error('[Classes] Erro ao carregar classes:', error);
-                return false;
-            }
+                        <button onclick="event.stopPropagation(); removeCustom(${i})" class="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-900/30 rounded"><i data-lucide="trash-2" class="w-4 h-4 text-red-400"></i></button>
+                    </div>
+                    <h3 class="font-cinzel text-xl font-bold text-white mb-2">${c.nome}</h3>
+                    <div class="text-sm text-gray-400">Arma: ${c.arma}</div>
+                    <div class="text-sm text-gray-400">Combate: ${c.tipoCombate}</div>
+                </div>
+            `).join("");
+            lucide.createIcons();
         }
 
-        function getTipoCombateNome(tipo) {
-            const tipos = {
-                'corpo-a-corpo': 'Corpo a Corpo',
-                'distancia': 'À Distância',
-                'magico': 'Mágico',
-                'hibrido': 'Híbrido',
-                'suporte': 'Suporte',
-                'furtivo': 'Furtivo'
-            };
-            return tipos[tipo] || tipo;
+        function getIcon(type) {
+            const map = { 'corpo-a-corpo': 'sword', 'distancia': 'target', 'magico': 'sparkles', 'hibrido': 'zap', 'suporte': 'heart', 'furtivo': 'ghost' };
+            return map[type] || 'user';
         }
 
-        function getIconForArma(arma) {
-            const armasIcons = {
-                'espada': 'sword',
-                'machado': 'axe',
-                'martelo': 'hammer',
-                'lança': 'spear',
-                'arco': 'bow',
-                'besta': 'target',
-                'adaga': 'dagger',
-                'cajado': 'wand',
-                'varinha': 'wand-2',
-                'orb': 'circle',
-                'escudo': 'shield',
-                'foice': 'scythe',
-                'katana': 'sword',
-                'manopla': 'hand',
-                'garra': 'claw',
-                'chicote': 'whip',
-                'pistola': 'gun',
-                'rifle': 'gun',
-                'luvas': 'hand'
-            };
-            
-            for (const [key, icon] of Object.entries(armasIcons)) {
-                if (arma.toLowerCase().includes(key)) {
-                    return icon;
-                }
-            }
-            return 'sword';
+        function selectPadrao(name) {
+            selected = name;
+            type = 'padrao';
+            customData = null;
+            updateUI();
         }
 
-        function getIconForElemento(elemento) {
-            const elementos = {
-                'fogo': 'flame',
-                'agua': 'droplets',
-                'terra': 'mountain',
-                'ar': 'wind',
-                'luz': 'sun',
-                'trevas': 'moon'
-            };
-            return elementos[elemento] || 'circle';
+        function selectCustom(i) {
+            const c = customList[i];
+            selected = c.nome;
+            type = 'custom';
+            customData = c;
+            updateUI();
         }
 
-        function verificarClasseAtual() {
-            const personagem = GrimorioSystem.carregarPersonagem();
-            if (personagem && personagem.classe && personagem.classe !== 'Não Escolhida') {
-                // Verificar se é classe personalizada
-                const classeEncontrada = classesSalvas.find(c => c.nome === personagem.classe);
-                
-                if (classeEncontrada) {
-                    // É classe personalizada
-                    const classeIndex = classesSalvas.findIndex(c => c.nome === personagem.classe);
-                    selecionarClassePersonalizada(classeIndex);
-                } else {
-                    // É classe padrão
-                    selecionarClasse(personagem.classe, 'padrao', true);
-                }
-            }
-        }
-
-        // Modal Functions
-        function abrirModalNovaClasse() {
-            document.getElementById('modal-nova-classe').style.display = 'flex';
-            setTimeout(() => {
-                document.querySelector('#modal-nova-classe .modal-content').classList.add('slide-in');
-            }, 10);
-        }
-
-        function fecharModal(modalId) {
-            document.querySelector(`#${modalId} .modal-content`).classList.remove('slide-in');
-            setTimeout(() => {
-                document.getElementById(modalId).style.display = 'none';
-            }, 300);
-        }
-
-        // Criar nova classe personalizada
-        function criarNovaClasse(event) {
-            event.preventDefault();
+        function updateUI() {
+            qa('.class-card').forEach(c => c.classList.remove('selected'));
+            // Visual selection handling
+            qa('[data-tipo="padrao"]').forEach(c => { if (c.dataset.classe.toLowerCase() === selected?.toLowerCase()) c.classList.add('selected'); });
             
-            // Coletar dados do formulário
-            const nome = document.getElementById('nova-classe-nome').value.trim();
-            const combate = document.getElementById('nova-classe-combate').value;
-            const armaSelecionada = document.getElementById('nova-classe-arma').value;
-            let arma = armaSelecionada;
+            const container = q('#selected-class-container');
+            const details = q('#class-details');
             
-            if (armaSelecionada === 'outra') {
-                arma = document.getElementById('arma-personalizada').value.trim() || 'Arma Personalizada';
-            }
-            
-            // Verificar se já existe classe com este nome
-            if (classesSalvas.some(c => c.nome.toLowerCase() === nome.toLowerCase())) {
-                mostrarErro('Já existe uma classe com este nome!');
-                return;
-            }
-            
-            // Pacto
-            const pactoElement = document.querySelector('input[name="pacto"]:checked');
-            const pacto = pactoElement ? pactoElement.value : null;
-            
-            // Elemento
-            const elementoElement = document.querySelector('input[name="elemento"]:checked');
-            const elemento = elementoElement ? elementoElement.value : null;
-            const variacaoElemento = document.getElementById('variacao-elemento').value.trim();
-            
-            // Habilidades
-            const habilidades = [
-                {
-                    nome: document.getElementById('habilidade1').value.trim(),
-                    custo: document.getElementById('custo-habilidade1').value.trim() || '0 MP'
-                },
-                {
-                    nome: document.getElementById('habilidade2').value.trim(),
-                    custo: document.getElementById('custo-habilidade2').value.trim() || '0 MP'
-                },
-                {
-                    nome: document.getElementById('habilidade3').value.trim(),
-                    custo: document.getElementById('custo-habilidade3').value.trim() || '0 MP'
-                }
-            ];
-            
-            // Funções
-            const funcoesElements = document.querySelectorAll('input[name="funcao"]:checked');
-            const funcoes = Array.from(funcoesElements).map(el => el.value);
-            
-            // Criar objeto da classe
-            const novaClasse = {
-                id: Date.now().toString(),
-                nome: nome,
-                tipoCombate: combate,
-                arma: arma,
-                pacto: pacto,
-                elemento: elemento,
-                variacaoElemento: variacaoElemento,
-                habilidades: habilidades,
-                funcoes: funcoes,
-                icone: getIconForClass(combate),
-                dataCriacao: new Date().toISOString(),
-                descricao: `Classe ${getTipoCombateNome(combate)} especializada em ${arma}`,
-                bonusPontos: 2, // +2 pontos ao escolher esta classe
-                habilidadesExclusivas: habilidades.map(h => h.nome) // 3 habilidades exclusivas
-            };
-            
-            // Adicionar à lista de classes
-            classesSalvas.push(novaClasse);
-            salvarClassesPersonalizadas();
-            
-            mostrarFeedbackSucesso(`Classe "${nome}" criada com sucesso!`);
-            fecharModal('modal-nova-classe');
-            carregarClassesPersonalizadas();
-            
-            // Selecionar automaticamente a nova classe
-            const ultimaClasseIndex = classesSalvas.length - 1;
-            selecionarClassePersonalizada(ultimaClasseIndex);
-            
-            // Resetar formulário
-            document.getElementById('form-nova-classe').reset();
-            document.getElementById('arma-personalizada-container').classList.add('hidden');
-        }
-
-        function removerClassePersonalizada(index) {
-            if (confirm('Tem certeza que deseja remover esta classe?')) {
-                const classeRemovida = classesSalvas[index];
-                classesSalvas.splice(index, 1);
-                salvarClassesPersonalizadas();
-                
-                // Se esta classe estava selecionada no personagem, limpar
-                const personagem = GrimorioSystem.carregarPersonagem();
-                if (personagem.classe === classeRemovida.nome) {
-                    personagem.classe = 'Não Escolhida';
-                    delete personagem.detalhesClasse;
-                    GrimorioSystem.salvarPersonagem(personagem);
-                }
-                
-                carregarClassesPersonalizadas();
-                mostrarFeedbackSucesso(`Classe "${classeRemovida.nome}" removida!`);
-                
-                // Se não há mais classes selecionadas, limpar seleção
-                if (classeSelecionada === classeRemovida.nome) {
-                    classeSelecionada = null;
-                    tipoClasseSelecionada = null;
-                    dadosClassePersonalizada = null;
-                    atualizarUI();
-                }
-            }
-        }
-
-        function getIconForClass(tipoCombate) {
-            const icons = {
-                'corpo-a-corpo': 'sword',
-                'distancia': 'target',
-                'magico': 'sparkles',
-                'hibrido': 'zap',
-                'suporte': 'heart',
-                'furtivo': 'ghost'
-            };
-            return icons[tipoCombate] || 'user';
-        }
-
-        // Selecionar classe padrão
-        function selecionarClasse(nomeClasse, tipo = 'padrao', naoAtualizarUI = false) {
-            classeSelecionada = nomeClasse;
-            tipoClasseSelecionada = tipo;
-            dadosClassePersonalizada = null;
-            
-            if (!naoAtualizarUI) {
-                atualizarUI();
-            }
-            
-            habilitarBotoesConfirmacao();
-        }
-
-        // Selecionar classe personalizada
-        function selecionarClassePersonalizada(index) {
-            if (index >= 0 && index < classesSalvas.length) {
-                classeSelecionada = classesSalvas[index].nome;
-                tipoClasseSelecionada = 'personalizada';
-                dadosClassePersonalizada = classesSalvas[index];
-                
-                atualizarUI();
-                habilitarBotoesConfirmacao();
-            }
-        }
-
-        function atualizarUI() {
-            // Remover seleção de todas as classes
-            document.querySelectorAll('.class-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Adicionar seleção à classe clicada
-            if (tipoClasseSelecionada === 'padrao') {
-                const cardSelecionado = document.querySelector(`[data-classe="${classeSelecionada.toLowerCase()}"]`);
-                if (cardSelecionado) {
-                    cardSelecionado.classList.add('selected');
-                }
-            } else if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                // Encontrar o card da classe personalizada
-                const cards = document.querySelectorAll('#container-classes-personalizadas .class-card');
-                cards.forEach((card, index) => {
-                    if (card.querySelector('h3').textContent === dadosClassePersonalizada.nome) {
-                        card.classList.add('selected');
-                    }
-                });
-            }
-            
-            // Atualizar painel de classe selecionada
-            atualizarPainelSelecionado();
-        }
-
-        function atualizarPainelSelecionado() {
-            const container = document.getElementById('selected-class-container');
-            const details = document.getElementById('class-details');
-            
-            if (!classeSelecionada) {
-                container.innerHTML = `
-                    <i data-lucide="swords" class="w-16 h-16 mx-auto mb-4 text-gray-600"></i>
-                    <p class="text-gray-500 mb-2">Nenhuma classe selecionada</p>
-                    <p class="text-sm text-gray-600">Clique em uma classe acima para selecionar</p>
-                `;
+            if (!selected) {
                 container.classList.remove('hidden');
                 details.classList.add('hidden');
                 return;
             }
-            
+
             container.classList.add('hidden');
             details.classList.remove('hidden');
-            
-            if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                mostrarDetalhesClassePersonalizada(dadosClassePersonalizada);
+            renderDetails();
+            q('#btn-confirmar').style.opacity = '1';
+            q('#btn-confirmar-final').style.opacity = '1';
+            q('#btn-confirmar-final').classList.remove('cursor-not-allowed');
+        }
+
+        function renderDetails() {
+            const details = q('#class-details');
+            if (type === 'custom' && customData) {
+                details.innerHTML = `
+                    <div class="p-4 bg-theme-panel border border-purple-800/30 rounded-lg">
+                        <h3 class="text-2xl font-bold text-purple-400 mb-2">${customData.nome}</h3>
+                        <p class="text-gray-400 mb-4">${customData.descricao}</p>
+                        <div class="grid grid-cols-2 gap-2 text-sm">
+                            <div class="p-2 bg-black/20 rounded"><b>Arma:</b> ${customData.arma}</div>
+                            <div class="p-2 bg-black/20 rounded"><b>Estilo:</b> ${customData.tipoCombate}</div>
+                            <div class="p-2 bg-black/20 rounded"><b>Elemento:</b> ${customData.elemento || 'Nenhum'}</div>
+                            <div class="p-2 bg-black/20 rounded"><b>Pacto:</b> ${customData.pacto || 'Nenhum'}</div>
+                        </div>
+                    </div>
+                `;
             } else {
-                mostrarDetalhesClassePadrao(classeSelecionada);
+                details.innerHTML = `<div class="p-4 bg-theme-panel border border-blue-800/30 rounded-lg"><h3 class="text-2xl font-bold text-blue-400">${selected}</h3><p class="text-gray-400 mt-2">Escolha clássica de aventura.</p></div>`;
+            }
+            lucide.createIcons();
+        }
+
+        function checkCurrent() {
+            const p = Core.player;
+            if (p.classe && p.classe !== 'Não Escolhida') {
+                const custom = customList.find(c => c.nome === p.classe);
+                if (custom) selectCustom(customList.indexOf(custom));
+                else selectPadrao(p.classe);
             }
         }
 
-        function mostrarDetalhesClassePersonalizada(classe) {
-            const details = document.getElementById('class-details');
-            const corElemento = {
-                'fogo': 'red',
-                'agua': 'blue', 
-                'terra': 'yellow',
-                'ar': 'cyan',
-                'luz': 'yellow',
-                'trevas': 'purple'
-            }[classe.elemento] || 'gray';
-            
-            details.innerHTML = `
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="p-3 rounded-lg bg-${corElemento}-900/20 border border-${corElemento}-800">
-                                <i data-lucide="${classe.icone || 'user'}" class="w-8 h-8 text-${corElemento}-400"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-cinzel text-2xl font-bold text-white">${classe.nome}</h3>
-                                <p class="text-gray-400">Classe Personalizada</p>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <h4 class="font-semibold text-white mb-2">Benefícios</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <div class="p-2 bg-gradient-to-br from-${corElemento}-900/30 to-transparent rounded border border-${corElemento}-800">
-                                        <div class="text-xs text-gray-400">Bônus de Pontos</div>
-                                        <div class="font-bold text-${corElemento}-400 text-xl">+${classe.bonusPontos}</div>
-                                    </div>
-                                    <div class="p-2 bg-gradient-to-br from-${corElemento}-900/30 to-transparent rounded border border-${corElemento}-800">
-                                        <div class="text-xs text-gray-400">Habilidades</div>
-                                        <div class="font-bold text-${corElemento}-400 text-xl">${classe.habilidades.length}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="font-semibold text-white mb-2">Especificações</h4>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                                    <div class="p-2 bg-theme-bg rounded border border-theme-border">
-                                        <div class="text-xs text-gray-400">Tipo de Combate</div>
-                                        <div class="font-medium">${getTipoCombateNome(classe.tipoCombate)}</div>
-                                    </div>
-                                    <div class="p-2 bg-theme-bg rounded border border-theme-border">
-                                        <div class="text-xs text-gray-400">Arma Principal</div>
-                                        <div class="font-medium">${classe.arma}</div>
-                                    </div>
-                                    ${classe.pacto ? `
-                                    <div class="p-2 bg-theme-bg rounded border border-theme-border">
-                                        <div class="text-xs text-gray-400">Pacto</div>
-                                        <div class="font-medium">${classe.pacto === 'celestial' ? 'Celestial ⚜️' : 'Demoníaco 🔥'}</div>
-                                    </div>
-                                    ` : ''}
-                                    ${classe.elemento ? `
-                                    <div class="p-2 bg-theme-bg rounded border border-theme-border">
-                                        <div class="text-xs text-gray-400">Elemento</div>
-                                        <div class="font-medium">${classe.elemento} ${classe.variacaoElemento ? `(${classe.variacaoElemento})` : ''}</div>
-                                    </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <h4 class="font-semibold text-white mb-2">Habilidades Exclusivas (3)</h4>
-                                <div class="space-y-2">
-                                    ${classe.habilidades ? classe.habilidades.map((h, i) => `
-                                        <div class="flex justify-between items-center p-2 bg-theme-bg rounded border border-theme-border">
-                                            <div>
-                                                <span class="font-medium">${h.nome}</span>
-                                                <span class="text-xs text-gray-500 ml-2">Habilidade ${i + 1}</span>
-                                            </div>
-                                            <span class="text-xs px-2 py-1 bg-${corElemento}-900/30 text-${corElemento}-400 rounded">${h.custo}</span>
-                                        </div>
-                                    `).join('') : ''}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold text-white mb-2">Funções na Equipe</h4>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            ${classe.funcoes ? classe.funcoes.map(f => `
-                                <span class="px-3 py-1 bg-${corElemento}-900/20 text-${corElemento}-400 text-sm rounded-full border border-${corElemento}-800">
-                                    ${f}
-                                </span>
-                            `).join('') : '<span class="text-gray-500">Nenhuma função definida</span>'}
-                        </div>
-                        
-                        <div class="p-4 rounded-lg bg-gradient-to-br from-theme-bg to-${corElemento}-900/5 border border-theme-border mb-4">
-                            <h5 class="font-semibold text-white mb-2">Efeitos no Personagem</h5>
-                            <ul class="text-sm text-gray-300 space-y-2">
-                                <li class="flex items-center gap-2">
-                                    <i data-lucide="plus" class="w-4 h-4 text-${corElemento}-400"></i>
-                                    <span>+${classe.bonusPontos} pontos para distribuir livremente</span>
-                                </li>
-                                <li class="flex items-center gap-2">
-                                    <i data-lucide="zap" class="w-4 h-4 text-${corElemento}-400"></i>
-                                    <span>${classe.habilidades.length} habilidades exclusivas</span>
-                                </li>
-                                <li class="flex items-center gap-2">
-                                    <i data-lucide="shield" class="w-4 h-4 text-${corElemento}-400"></i>
-                                    <span>Armas e estilos definidos pelo jogador</span>
-                                </li>
-                            </ul>
-                        </div>
-                        
-                        <div class="text-xs text-gray-500">
-                            <div class="flex items-center gap-1">
-                                <i data-lucide="calendar" class="w-3 h-3"></i>
-                                Criada em: ${new Date(classe.dataCriacao).toLocaleDateString()}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-        }
-
-        function mostrarDetalhesClassePadrao(nomeClasse) {
-            const classesInfo = {
-                'Guerreiro': {
-                    cor: 'red',
-                    icone: 'sword',
-                    descricao: 'Especialista em combate corpo a corpo com alta resistência.',
-                    arma: 'Espada Longa',
-                    elemento: 'Terra',
-                    atributos: { forca: 4, destreza: 2, constituicao: 4, inteligencia: 1, sabedoria: 2, carisma: 2 },
-                    funcoes: ['Dano', 'Tanque'],
-                    bonusPontos: 0
-                },
-                'Mago': {
-                    cor: 'blue',
-                    icone: 'sparkles',
-                    descricao: 'Mestre das artes arcanas com poder mágico devastador.',
-                    arma: 'Cajado',
-                    elemento: 'Ar',
-                    atributos: { forca: 1, destreza: 2, constituicao: 2, inteligencia: 5, sabedoria: 4, carisma: 3 },
-                    funcoes: ['Dano Mágico', 'Controle'],
-                    bonusPontos: 0
-                },
-                'Arqueiro': {
-                    cor: 'green',
-                    icone: 'target',
-                    descricao: 'Especialista em ataques à distância com precisão letal.',
-                    arma: 'Arco Longo',
-                    elemento: 'Vento',
-                    atributos: { forca: 2, destreza: 5, constituicao: 3, inteligencia: 3, sabedoria: 3, carisma: 2 },
-                    funcoes: ['Dano à Distância', 'Furtivo'],
-                    bonusPontos: 0
-                }
+        function createClass(e) {
+            e.preventDefault();
+            const nome = q('#nova-classe-nome').value;
+            const custom = {
+                nome,
+                tipoCombate: q('#nova-classe-combate').value,
+                arma: q('#nova-classe-arma').value === 'outra' ? q('#arma-personalizada').value : q('#nova-classe-arma').value,
+                pacto: q('input[name="pacto"]:checked')?.value,
+                elemento: q('input[name="elemento"]:checked')?.value,
+                habilidades: [
+                    { nome: q('#habilidade1').value, custo: q('#custo-habilidade1').value },
+                    { nome: q('#habilidade2').value, custo: q('#custo-habilidade2').value },
+                    { nome: q('#habilidade3').value, custo: q('#custo-habilidade3').value }
+                ],
+                funcoes: Array.from(qa('input[name="funcao"]:checked')).map(i => i.value),
+                descricao: `Classe personalizada focada em ${q('#nova-classe-combate').value}.`,
+                bonusPontos: 2
             };
-            
-            const info = classesInfo[nomeClasse] || classesInfo['Guerreiro'];
-            const details = document.getElementById('class-details');
-            
-            details.innerHTML = `
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div>
-                        <div class="flex items-center gap-4 mb-4">
-                            <div class="p-3 rounded-lg bg-${info.cor}-900/20 border border-${info.cor}-800">
-                                <i data-lucide="${info.icone}" class="w-8 h-8 text-${info.cor}-400"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-cinzel text-2xl font-bold text-white">${nomeClasse}</h3>
-                                <p class="text-gray-400">Classe Padrão</p>
-                            </div>
-                        </div>
-                        
-                        <p class="text-gray-300 mb-6">${info.descricao}</p>
-                        
-                        <div class="space-y-4">
-                            <div>
-                                <h4 class="font-semibold text-white mb-2">Bônus de Atributos</h4>
-                                ${Object.entries(info.atributos).map(([attr, valor]) => `
-                                    <div class="flex items-center justify-between py-2 border-b border-theme-border">
-                                        <span class="text-gray-400 capitalize">${attr}</span>
-                                        <span class="font-bold text-${info.cor}-400">+${valor}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                            
-                            <div>
-                                <h4 class="font-semibold text-white mb-2">Especificações</h4>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div class="p-2 bg-theme-bg rounded border border-theme-border">
-                                        <div class="text-xs text-gray-400">Arma Principal</div>
-                                        <div class="font-medium">${info.arma}</div>
-                                    </div>
-                                    <div class="p-2 bg-theme-bg rounded border border-theme-border">
-                                        <div class="text-xs text-gray-400">Elemento</div>
-                                        <div class="font-medium">${info.elemento}</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h4 class="font-semibold text-white mb-2">Funções</h4>
-                        <div class="flex flex-wrap gap-2 mb-6">
-                            ${info.funcoes.map(f => `
-                                <span class="px-3 py-1 bg-${info.cor}-900/20 text-${info.cor}-400 text-sm rounded-full border border-${info.cor}-800">
-                                    ${f}
-                                </span>
-                            `).join('')}
-                        </div>
-                        
-                        <div class="p-4 rounded-lg bg-gradient-to-br from-theme-bg to-${info.cor}-900/5 border border-theme-border mb-4">
-                            <h5 class="font-semibold text-white mb-2">Habilidades Padrão</h5>
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center p-2 bg-theme-bg rounded border border-theme-border">
-                                    <span>Ataque Poderoso</span>
-                                    <span class="text-xs px-2 py-1 bg-${info.cor}-900/30 text-${info.cor}-400 rounded">10 MP</span>
-                                </div>
-                                <div class="flex justify-between items-center p-2 bg-theme-bg rounded border border-theme-border">
-                                    <span>Defesa Elemental</span>
-                                    <span class="text-xs px-2 py-1 bg-${info.cor}-900/30 text-${info.cor}-400 rounded">15 MP</span>
-                                </div>
-                                <div class="flex justify-between items-center p-2 bg-theme-bg rounded border border-theme-border">
-                                    <span>Habilidade Especial</span>
-                                    <span class="text-xs px-2 py-1 bg-${info.cor}-900/30 text-${info.cor}-400 rounded">25 MP</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="text-sm text-gray-400">
-                            <p><i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Classes padrão não concedem bônus de pontos extras.</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            customList.push(custom);
+            saveCustoms();
+            renderCustoms();
+            closeModal('modal-nova-classe');
+            notify(`Classe ${nome} criada!`);
         }
 
-        function habilitarBotoesConfirmacao() {
-            document.getElementById('btn-confirmar').style.opacity = '1';
-            document.getElementById('btn-confirmar-final').style.opacity = '1';
-            document.getElementById('btn-confirmar-final').classList.remove('cursor-not-allowed');
-            document.getElementById('btn-confirmar-final').classList.add('cursor-pointer');
+        function removeCustom(i) {
+            if (!confirm('Excluir esta classe?')) return;
+            customList.splice(i, 1);
+            saveCustoms();
+            renderCustoms();
         }
 
-        // Salvar classe na ficha - INTEGRADO COM GRIMORIO-CORE.JS
-        function salvarClasseNoPersonagem() {
-            if (!classeSelecionada) {
-                mostrarErro('Por favor, selecione uma classe antes de confirmar.');
-                return;
+        function saveToSheet() {
+            if (!selected) return notify('Selecione uma classe!', 'error');
+            Core.player.classe = selected;
+            if (type === 'custom') {
+                Core.player.status = Core.player.status || {};
+                Core.player.pontos = (Core.player.pontos || 0) + 2;
+                Core.player.classDetails = customData;
             }
-            
-            const personagem = GrimorioSystem.carregarPersonagem();
-            
-            if (!personagem) {
-                mostrarErro('Erro ao carregar personagem. Tente recarregar a página.');
-                return;
-            }
-            
-            // Verificar se está mudando de classe
-            const mudandoClasse = personagem.classe && personagem.classe !== classeSelecionada;
-            
-            // Atualizar informações da classe no personagem
-            personagem.classe = classeSelecionada;
-            
-            // Se for classe personalizada, adicionar detalhes e aplicar bônus
-            if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                personagem.detalhesClasse = {
-                    tipoCombate: dadosClassePersonalizada.tipoCombate,
-                    arma: dadosClassePersonalizada.arma,
-                    pacto: dadosClassePersonalizada.pacto,
-                    elemento: dadosClassePersonalizada.elemento,
-                    variacaoElemento: dadosClassePersonalizada.variacaoElemento,
-                    habilidades: dadosClassePersonalizada.habilidades,
-                    funcoes: dadosClassePersonalizada.funcoes,
-                    icone: dadosClassePersonalizada.icone
-                };
-                
-                // Aplicar bônus de pontos (+2 pontos para classes personalizadas)
-                if (dadosClassePersonalizada.bonusPontos) {
-                    if (mudandoClasse) {
-                        // Se está mudando de classe, não acumula pontos
-                        personagem.pontosDisponiveis += dadosClassePersonalizada.bonusPontos;
-                        console.log(`[Classe] +${dadosClassePersonalizada.bonusPontos} pontos concedidos`);
-                    } else if (!personagem.classeAnterior) {
-                        // Se é a primeira vez escolhendo classe
-                        personagem.pontosDisponiveis += dadosClassePersonalizada.bonusPontos;
-                        console.log(`[Classe] +${dadosClassePersonalizada.bonusPontos} pontos concedidos`);
-                    }
-                }
-            } else {
-                // Para classes padrão, remover detalhes se existirem
-                delete personagem.detalhesClasse;
-            }
-            
-            // Salvar personagem atualizado
-            GrimorioSystem.salvarPersonagem(personagem);
-            
-            mostrarFeedbackSucesso(`Classe "${classeSelecionada}" salva na ficha! ${tipoClasseSelecionada === 'personalizada' ? '(+2 pontos adicionados)' : ''}`);
-            
-            // Redirecionar após breve delay
-            setTimeout(() => {
-                window.location.href = 'index.html?classe=' + encodeURIComponent(classeSelecionada);
-            }, 1500);
+            Core.save();
+            notify('Classe salva!', 'success');
+            setTimeout(() => window.location.href = 'index.html', 1000);
         }
 
-        // Feedback visual
-        function mostrarFeedbackSucesso(mensagem) {
-            const feedback = document.createElement('div');
-            feedback.className = 'fixed top-4 right-4 p-4 bg-green-900/20 border border-green-800 rounded-lg shadow-lg z-50 slide-in';
-            feedback.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <i data-lucide="check-circle" class="w-5 h-5 text-green-400"></i>
-                    <div>
-                        <p class="font-semibold text-white">Sucesso!</p>
-                        <p class="text-sm text-green-300">${mensagem}</p>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(feedback);
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-            
-            setTimeout(() => {
-                if (feedback.parentElement) {
-                    feedback.remove();
-                }
-            }, 3000);
+        function notify(msg, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `fixed top-4 right-4 p-4 border rounded-lg z-50 bg-black text-white ${type === 'error' ? 'border-red-500' : 'border-blue-500'}`;
+            div.textContent = msg;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 2500);
         }
 
-        function mostrarErro(mensagem) {
-            const feedback = document.createElement('div');
-            feedback.className = 'fixed top-4 right-4 p-4 bg-red-900/20 border border-red-800 rounded-lg shadow-lg z-50 slide-in';
-            feedback.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <i data-lucide="alert-circle" class="w-5 h-5 text-red-400"></i>
-                    <div>
-                        <p class="font-semibold text-white">Erro</p>
-                        <p class="text-sm text-red-300">${mensagem}</p>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(feedback);
-            if (window.lucide) {
-                lucide.createIcons();
-            }
-            
-            setTimeout(() => {
-                if (feedback.parentElement) {
-                    feedback.remove();
-                }
-            }, 3000);
-        }
+        function openModal(id) { q('#' + id).style.display = 'flex'; }
+        function closeModal(id) { q('#' + id).style.display = 'none'; }
 
-        // Inicializar quando a página carregar
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar evento para arma personalizada
-            document.getElementById('nova-classe-arma').addEventListener('change', function() {
-                const container = document.getElementById('arma-personalizada-container');
-                if (this.value === 'outra') {
-                    container.classList.remove('hidden');
-                } else {
-                    container.classList.add('hidden');
+        q('#form-nova-classe').onsubmit = createClass;
+        q('#nova-classe-arma').onchange = (e) => q('#arma-personalizada-container').classList.toggle('hidden', e.target.value !== 'outra');
+
+        // Global functions for inline onclicks
+        window.selecionarClasse = selectPadrao;
+        window.selecionarClassePersonalizada = selectCustom;
+        window.removerClassePersonalizada = removeCustom;
+        window.abrirModalNovaClasse = () => openModal('modal-nova-classe');
+        window.fecharModal = closeModal;
+        window.salvarClasseNoPersonagem = saveToSheet;
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+.classList.add('hidden');
                 }
             });
             

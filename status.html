@@ -1169,8 +1169,6 @@ Inteligência: 18
             
             <div class="flex gap-3 mt-6">
                 <button onclick="closeModal('modal-import')" class="btn flex-1">
-                    Cancelar
-                </button>
                 <button onclick="processImport()" class="btn btn-success flex-1">
                     Importar
                 </button>
@@ -1179,1215 +1177,404 @@ Inteligência: 18
     </div>
 
     <script>
-    // =========== SISTEMA DE DADOS ===========
-    const systemData = {
-        // Categorias (máx 8)
-        categories: [
-            { id: 1, name: "Vida", value: 100, max: 100, color: "red", active: true, locked: false },
-            { id: 2, name: "Mana", value: 100, max: 100, color: "blue", active: true, locked: false },
-            { id: 3, name: "Estamina", value: 100, max: 100, color: "green", active: true, locked: false }
-        ],
-        
-        // Atributos (máx 8)
-        attributes: [
-            { id: 1, name: "Força", value: 0, max: 100, locked: false, active: true },
-            { id: 2, name: "Destreza", value: 0, max: 100, locked: false, active: true },
-            { id: 3, name: "Constituição", value: 0, max: 100, locked: false, active: true },
-            { id: 4, name: "Inteligência", value: 0, max: 100, locked: false, active: true },
-            { id: 5, name: "Sabedoria", value: 0, max: 100, locked: false, active: true },
-            { id: 6, name: "Carisma", value: 0, max: 100, locked: false, active: true }
-        ],
-        
-        // Atributos derivados (máx 8)
-        derived: [
-            { 
-                id: 1, 
-                name: "Dano Físico", 
-                formula: "Força * 1.5", 
-                value: 0,
-                operation: "*",
-                modifier: 1.5,
-                baseAttr: "forca",
-                active: true 
-            },
-            { 
-                id: 2, 
-                name: "Defesa", 
-                formula: "Constituição * 2 + Força * 0.5", 
-                value: 0,
-                operation: "+",
-                modifier: 0.5,
-                baseAttr: "constituicao",
-                active: true 
-            }
-        ],
-        
-        // Sistema de sorte
-        luck: {
-            value: 50,
-            rollHistory: [],
-            sentiments: [
-                { type: "alegria", effect: "buff", intensity: 0.7, active: true },
-                { type: "tristeza", effect: "debuff", intensity: 0.3, active: true },
-                { type: "raiva", effect: "buff", intensity: 0.5, active: true },
-                { type: "medo", effect: "debuff", intensity: 0.4, active: true },
-                { type: "indiferenca", effect: "neutral", intensity: 0.0, active: true },
-                { type: "amor", effect: "buff", intensity: 0.8, active: true }
-            ]
-        },
-        
-        config: {
-            maxCategories: 8,
-            maxAttributes: 8,
-            maxDerived: 8,
-            maxSentiments: 8
-        },
-        
-        diceSystem: {
-            quantity: 1,
-            type: 20,
-            useStatus: true,
-            useMascot: false,
-            useLuck: true,
-            lastResult: null,
-            lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
-        }
-    };
-    
-    // =========== FUNÇÕES DE UTILIDADE ===========
-    function showNotification(message, type = "info") {
-        const notification = document.createElement("div");
-        notification.className = `alert alert-${type}`;
-        notification.innerHTML = `
-            <i data-lucide="${type === 'success' ? 'check-circle' : 
-                           type === 'error' ? 'x-circle' : 
-                           type === 'warning' ? 'alert-triangle' : 'info'}"></i>
-            <span>${message}</span>
-        `;
-        
-        document.querySelector(".container").prepend(notification);
-        lucide.createIcons();
-        
-        setTimeout(() => notification.remove(), 3000);
-    }
-    
-    function openModal(id) {
-        document.getElementById(id).classList.add("active");
-    }
-    
-    function closeModal(id) {
-        document.getElementById(id).classList.remove("active");
-    }
-    
-    // =========== SISTEMA DE CATEGORIAS ===========
-    function openCategoryModal() {
-        if (systemData.categories.length >= systemData.config.maxCategories) {
-            showNotification(`Limite de ${systemData.config.maxCategories} categorias atingido!`, "error");
-            return;
-        }
-        openModal("modal-category");
-    }
-    
-    function addCategory() {
-        const name = document.getElementById("category-name").value;
-        const value = parseInt(document.getElementById("category-value").value);
-        const max = parseInt(document.getElementById("category-max").value);
-        const color = document.getElementById("category-color").value;
-        
-        if (!name || isNaN(value) || isNaN(max)) {
-            showNotification("Preencha todos os campos corretamente!", "error");
-            return;
-        }
-        
-        const newCategory = {
-            id: Date.now(),
-            name,
-            value,
-            max,
-            color,
-            active: true,
-            locked: false
-        };
-        
-        systemData.categories.push(newCategory);
-        renderCategories();
-        closeModal("modal-category");
-        showNotification(`Categoria "${name}" adicionada!`, "success");
-    }
-    
-    function toggleCategory(categoryId, action) {
-        const category = systemData.categories.find(c => c.id === categoryId);
-        if (!category) return;
-        
-        switch(action) {
-            case "active":
-                category.active = !category.active;
-                break;
-            case "lock":
-                category.locked = !category.locked;
-                break;
-            case "delete":
-                systemData.categories = systemData.categories.filter(c => c.id !== categoryId);
-                break;
-        }
-        
-        renderCategories();
-        saveToStorage();
-    }
-    
-    function updateCategoryValue(categoryId, newValue) {
-        const category = systemData.categories.find(c => c.id === categoryId);
-        if (category && !category.locked) {
-            category.value = Math.max(0, Math.min(category.max, newValue));
-            renderCategories();
-            saveToStorage();
-        }
-    }
-    
-    function renderCategories() {
-        const container = document.getElementById("categories-container");
-        container.innerHTML = "";
-        
-        systemData.categories.forEach(category => {
-            const card = document.createElement("div");
-            card.className = `category-card ${category.active ? "active" : "inactive"} ${category.locked ? "locked" : ""} border-${category.color}`;
-            card.style.borderColor = `var(--accent-${category.color})`;
-            
-            card.innerHTML = `
-                <div class="category-header">
-                    <div class="category-icon bg-${category.color}">
-                        <i data-lucide="heart" class="color-${category.color}"></i>
-                    </div>
-                    <div class="category-info">
-                        <div class="category-name color-${category.color}">${category.name}</div>
-                        <div class="text-sm">${category.active ? "Ativo" : "Inativo"} | ${category.locked ? "Trancado" : "Destrancado"}</div>
-                    </div>
-                </div>
-                
-                <div class="category-value color-${category.color}">${category.value}/${category.max}</div>
-                
-                <input type="range" min="0" max="${category.max}" value="${category.value}" 
-                       ${category.locked ? "disabled" : ""} 
-                       onchange="updateCategoryValue(${category.id}, parseInt(this.value))"
-                       class="w-full">
-                
-                <div class="category-controls flex flex-wrap gap-2">
-                    <button onclick="toggleCategory(${category.id}, 'active')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${category.active ? 'btn-inactive' : 'btn-active'}">
-                        <i data-lucide="${category.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
-                        ${category.active ? "Desativar" : "Ativar"}
-                    </button>
-                    
-                    <button onclick="toggleCategory(${category.id}, 'lock')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${category.locked ? 'btn-unlock' : 'btn-lock'}">
-                        <i data-lucide="${category.locked ? 'unlock' : 'lock'}" class="w-4 h-4 mr-1"></i>
-                        ${category.locked ? "Destrancar" : "Trancar"}
-                    </button>
-                    
-                    <button onclick="toggleCategory(${category.id}, 'delete')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
-                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                        Remover
-                    </button>
-                </div>
-            `;
-            
-            container.appendChild(card);
-        });
-        
-        lucide.createIcons();
-    }
-    
-    // =========== SISTEMA DE ATRIBUTOS ===========
-    function openAttributeModal() {
-        if (systemData.attributes.length >= systemData.config.maxAttributes) {
-            showNotification(`Limite de ${systemData.config.maxAttributes} atributos atingido!`, "error");
-            return;
-        }
-        openModal("modal-attribute");
-    }
-    
-    function addAttribute() {
-        const name = document.getElementById("attribute-name").value;
-        const value = parseInt(document.getElementById("attribute-value").value);
-        const max = parseInt(document.getElementById("attribute-max").value);
-        
-        if (!name || isNaN(value) || isNaN(max)) {
-            showNotification("Preencha todos os campos corretamente!", "error");
-            return;
-        }
-        
-        const newAttribute = {
-            id: Date.now(),
-            name,
-            value,
-            max,
-            locked: false,
-            active: true
-        };
-        
-        systemData.attributes.push(newAttribute);
-        renderAttributes();
-        closeModal("modal-attribute");
-        showNotification(`Atributo "${name}" adicionado!`, "success");
-    }
-    
-    function distributeRandom() {
-        const totalPoints = parseInt(document.getElementById("total-points").value);
-        if (!totalPoints || totalPoints <= 0) {
-            showNotification("Digite um número válido de pontos!", "error");
-            return;
-        }
-        
-        const activeAttributes = systemData.attributes.filter(attr => attr.active);
-        if (activeAttributes.length === 0) {
-            showNotification("Nenhum atributo ativo para distribuir!", "error");
-            return;
-        }
-        
-        // Resetar valores
-        activeAttributes.forEach(attr => {
-            if (!attr.locked) {
-                attr.value = 0;
-            }
-        });
-        
-        // Distribuir aleatoriamente
-        let pointsLeft = totalPoints;
-        const distribution = {};
-        
-        // Primeiro, distribuir para atributos destrancados
-        const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
-        
-        while (pointsLeft > 0 && unlockedAttributes.length > 0) {
-            const randomIndex = Math.floor(Math.random() * unlockedAttributes.length);
-            const attr = unlockedAttributes[randomIndex];
-            
-            if (attr.value < attr.max) {
-                if (!distribution[attr.id]) distribution[attr.id] = 0;
-                
-                distribution[attr.id]++;
-                attr.value = Math.min(attr.max, attr.value + 1);
-                pointsLeft--;
-                
-                // Se atingiu o máximo, remover da lista
-                if (attr.value >= attr.max) {
-                    unlockedAttributes.splice(randomIndex, 1);
-                }
-            }
-        }
-        
-        // Se ainda sobraram pontos, mostrar aviso
-        if (pointsLeft > 0) {
-            showNotification(`${pointsLeft} pontos não puderam ser distribuídos (limites máximos atingidos)`, "warning");
-        }
-        
-        renderAttributes();
-        updateDerivedAttributes();
-        saveToStorage();
-        
-        const summary = activeAttributes.map(attr => 
-            `${attr.name}: ${attr.value}`
-        ).join(", ");
-        
-        showNotification(`${totalPoints} pontos distribuídos: ${summary}`, "success");
-    }
-    
-    function distributeWithMin() {
-        const minValue = parseInt(document.getElementById("min-value").value);
-        if (isNaN(minValue) || minValue < 0) {
-            showNotification("Digite um valor mínimo válido!", "error");
-            return;
-        }
-        
-        const activeAttributes = systemData.attributes.filter(attr => attr.active);
-        const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
-        
-        if (unlockedAttributes.length === 0) {
-            showNotification("Nenhum atributo destrancado para distribuir!", "error");
-            return;
-        }
-        
-        // Calcular pontos necessários para o mínimo
-        let pointsNeeded = 0;
-        unlockedAttributes.forEach(attr => {
-            if (attr.value < minValue) {
-                pointsNeeded += (minValue - attr.value);
-            }
-        });
-        
-        // Verificar se há pontos suficientes (considerando máximo 100 por atributo)
-        const maxPossiblePoints = unlockedAttributes.length * 100;
-        if (minValue * unlockedAttributes.length > maxPossiblePoints) {
-            showNotification(`Valor mínimo muito alto para ${unlockedAttributes.length} atributos!`, "error");
-            return;
-        }
-        
-        // Aplicar mínimo primeiro
-        unlockedAttributes.forEach(attr => {
-            if (attr.value < minValue) {
-                attr.value = minValue;
-            }
-        });
-        
-        // Calcular pontos restantes para distribuição aleatória
-        const currentTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.value, 0);
-        const maxTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.max, 0);
-        const remainingCapacity = maxTotal - currentTotal;
-        
-        if (remainingCapacity > 0) {
-            // Distribuir pontos aleatórios extras
-            let extraPoints = Math.floor(remainingCapacity * 0.3); // 30% da capacidade restante
-            
-            while (extraPoints > 0) {
-                const randomIndex = Math.floor(Math.random() * unlockedAttributes.length);
-                const attr = unlockedAttributes[randomIndex];
-                
-                if (attr.value < attr.max) {
-                    attr.value++;
-                    extraPoints--;
-                }
-            }
-        }
-        
-        renderAttributes();
-        updateDerivedAttributes();
-        saveToStorage();
-        
-        const summary = unlockedAttributes.map(attr => 
-            `${attr.name}: ${attr.value}`
-        ).join(", ");
-        
-        showNotification(`Distribuído com mínimo de ${minValue}: ${summary}`, "success");
-    }
-    
-    function saveAttributes() {
-        // Salvar os valores atuais dos atributos
-        saveToStorage();
-        showNotification("Atributos salvos com sucesso!", "success");
-    }
-    
-    function resetAttributes() {
-        if (confirm("Resetar todos os atributos para 0? Isso não pode ser desfeito.")) {
-            systemData.attributes.forEach(attr => {
-                if (!attr.locked) {
-                    attr.value = 0;
-                }
-            });
-            
-            renderAttributes();
-            updateDerivedAttributes();
-            saveToStorage();
-            showNotification("Atributos resetados!", "info");
-        }
-    }
-    
-    function toggleAttribute(attrId, action) {
-        const attr = systemData.attributes.find(a => a.id === attrId);
-        if (!attr) return;
-        
-        switch(action) {
-            case "active":
-                attr.active = !attr.active;
-                break;
-            case "lock":
-                attr.locked = !attr.locked;
-                break;
-            case "delete":
-                systemData.attributes = systemData.attributes.filter(a => a.id !== attrId);
-                break;
-        }
-        
-        renderAttributes();
-        updateDerivedAttributes();
-        saveToStorage();
-    }
-    
-    function updateAttributeValue(attrId, newValue) {
-        const attr = systemData.attributes.find(a => a.id === attrId);
-        if (attr && !attr.locked) {
-            attr.value = Math.max(0, Math.min(attr.max, newValue));
-            renderAttributes();
-            updateDerivedAttributes();
-            saveToStorage();
-        }
-    }
-    
-    function renderAttributes() {
-        const container = document.getElementById("attributes-container");
-        container.innerHTML = "";
-        
-        systemData.attributes.forEach(attr => {
-            const card = document.createElement("div");
-            card.className = `attribute-card ${attr.active ? "active" : "inactive"} ${attr.locked ? "locked" : ""}`;
-            
-            card.innerHTML = `
-                <div class="attribute-header">
-                    <div class="attribute-name">${attr.name}</div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="toggleAttribute(${attr.id}, 'lock')" 
-                                class="control-btn control-btn-small ${attr.locked ? 'btn-unlock' : 'btn-lock'}">
-                            <i data-lucide="${attr.locked ? 'unlock' : 'lock'}"></i>
-                        </button>
-                        
-                        <button onclick="toggleAttribute(${attr.id}, 'active')" 
-                                class="control-btn control-btn-small ${attr.active ? 'btn-inactive' : 'btn-active'}">
-                            <i data-lucide="${attr.active ? 'pause' : 'play'}"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="attribute-value">${attr.value}</div>
-                
-                <input type="range" min="0" max="${attr.max}" value="${attr.value}" 
-                       ${attr.locked ? "disabled" : ""} 
-                       onchange="updateAttributeValue(${attr.id}, parseInt(this.value))"
-                       class="w-full">
-                
-                <div class="flex gap-2 mt-2">
-                    <input type="number" min="0" max="${attr.max}" value="${attr.value}" 
-                           ${attr.locked ? "disabled" : ""}
-                           onchange="updateAttributeValue(${attr.id}, parseInt(this.value))"
-                           class="attribute-input">
-                    
-                    <button onclick="toggleAttribute(${attr.id}, 'delete')" 
-                            class="control-btn btn-danger">
-                        <i data-lucide="trash-2"></i>
-                    </button>
-                </div>
-            `;
-            
-            container.appendChild(card);
-        });
-        
-        lucide.createIcons();
-    }
-    
-    // =========== ATRIBUTOS DERIVADOS ===========
-    function openDerivedModal() {
-        if (systemData.derived.length >= systemData.config.maxDerived) {
-            showNotification(`Limite de ${systemData.config.maxDerived} atributos derivados atingido!`, "error");
-            return;
-        }
-        
-        // Preencher opções de atributos base
-        const baseSelect = document.getElementById("derived-base");
-        baseSelect.innerHTML = "";
-        
-        systemData.attributes.forEach(attr => {
-            const option = document.createElement("option");
-            option.value = attr.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            option.textContent = attr.name;
-            baseSelect.appendChild(option);
-        });
-        
-        openModal("modal-derived");
-    }
-    
-    function addDerived() {
-        const name = document.getElementById("derived-name").value;
-        const baseAttr = document.getElementById("derived-base").value;
-        const operation = document.getElementById("derived-operation").value;
-        const modifier = parseFloat(document.getElementById("derived-modifier").value);
-        
-        if (!name || !baseAttr || isNaN(modifier)) {
-            showNotification("Preencha todos os campos corretamente!", "error");
-            return;
-        }
-        
-        const formula = `${getAttributeName(baseAttr)} ${operation} ${modifier}`;
-        
-        const newDerived = {
-            id: Date.now(),
-            name,
-            formula,
-            value: 0,
-            operation,
-            modifier,
-            baseAttr,
-            active: true
-        };
-        
-        systemData.derived.push(newDerived);
-        updateDerivedAttributes();
-        renderDerived();
-        closeModal("modal-derived");
-        showNotification(`Atributo derivado "${name}" adicionado!`, "success");
-    }
-    
-    function getAttributeName(key) {
-        const attr = systemData.attributes.find(a => 
-            a.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === key
-        );
-        return attr ? attr.name : key;
-    }
-    
-    function updateDerivedAttributes() {
-        systemData.derived.forEach(derived => {
-            if (!derived.active) return;
-            
-            const baseAttr = systemData.attributes.find(a => 
-                a.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === derived.baseAttr
-            );
-            
-            if (!baseAttr) {
-                derived.value = 0;
-                return;
-            }
-            
-            let result = 0;
-            const baseValue = baseAttr.value;
-            
-            switch(derived.operation) {
-                case "+":
-                    result = baseValue + derived.modifier;
-                    break;
-                case "-":
-                    result = baseValue - derived.modifier;
-                    break;
-                case "*":
-                    result = baseValue * derived.modifier;
-                    break;
-                case "/":
-                    result = derived.modifier !== 0 ? baseValue / derived.modifier : 0;
-                    break;
-                case "%":
-                    result = (baseValue * derived.modifier) / 100;
-                    break;
-            }
-            
-            derived.value = Math.round(result * 100) / 100;
-        });
-        
-        renderDerived();
-    }
-    
-    function toggleDerived(derivedId, action) {
-        const derived = systemData.derived.find(d => d.id === derivedId);
-        if (!derived) return;
-        
-        switch(action) {
-            case "active":
-                derived.active = !derived.active;
-                break;
-            case "delete":
-                systemData.derived = systemData.derived.filter(d => d.id !== derivedId);
-                break;
-        }
-        
-        renderDerived();
-        saveToStorage();
-    }
-    
-    function renderDerived() {
-        const container = document.getElementById("derived-container");
-        container.innerHTML = "";
-        
-        systemData.derived.forEach(derived => {
-            const card = document.createElement("div");
-            card.className = `derived-card ${derived.active ? "active" : "inactive"}`;
-            
-            card.innerHTML = `
-                <div class="category-header">
-                    <div class="category-icon" style="background: rgba(139, 92, 246, 0.2);">
-                        <i data-lucide="function" style="color: #8b5cf6;"></i>
-                    </div>
-                    <div class="category-info">
-                        <div class="category-name" style="color: #8b5cf6;">${derived.name}</div>
-                        <div class="text-sm">${derived.active ? "Ativo" : "Inativo"}</div>
-                    </div>
-                </div>
-                
-                <div class="category-value" style="color: #8b5cf6;">${derived.value}</div>
-                
-                <div class="derived-formula">
-                    Fórmula: ${derived.formula}
-                </div>
-                
-                <div class="category-controls flex flex-wrap gap-2 mt-2">
-                    <button onclick="toggleDerived(${derived.id}, 'active')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${derived.active ? 'btn-inactive' : 'btn-active'}">
-                        <i data-lucide="${derived.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
-                        ${derived.active ? "Desativar" : "Ativar"}
-                    </button>
-                    
-                    <button onclick="toggleDerived(${derived.id}, 'delete')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
-                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                        Remover
-                    </button>
-                </div>
-            `;
-            
-            container.appendChild(card);
-        });
-        
-        lucide.createIcons();
-    }
-    
-    // =========== SISTEMA DE SORTE ===========
-    function addSentiment() {
-        if (systemData.luck.sentiments.length >= systemData.config.maxSentiments) {
-            showNotification(`Limite de ${systemData.config.maxSentiments} sentimentos atingido!`, "error");
-            return;
-        }
-        
-        document.getElementById("intensity-value").textContent = "0.5";
-        document.getElementById("sentiment-intensity").value = 5;
-        openModal("modal-sentiment");
-    }
-    
-    function saveSentimentConfig() {
-        const type = document.getElementById("sentiment-type").value;
-        const effect = document.getElementById("sentiment-effect").value;
-        const intensity = parseFloat(document.getElementById("sentiment-intensity").value) / 10;
-        
-        let name = type;
-        if (type === "custom") {
-            name = document.getElementById("custom-sentiment-name").value || "Personalizado";
-        }
-        
-        const newSentiment = {
-            type: name,
-            effect,
-            intensity,
-            active: true
-        };
-        
-        systemData.luck.sentiments.push(newSentiment);
-        renderSentiments();
-        closeModal("modal-sentiment");
-        showNotification(`Sentimento "${name}" configurado!`, "success");
-    }
-    
-    function rollLuck() {
-        // Sorte base aleatória 1-100
-        const baseLuck = Math.floor(Math.random() * 100) + 1;
-        
-        // Aplicar modificadores dos sentimentos ativos
-        let finalLuck = baseLuck;
-        let modifiersText = [];
-        
-        systemData.luck.sentiments.forEach(sentiment => {
-            if (!sentiment.active || sentiment.effect === "neutral") return;
-            
-            const modifier = sentiment.intensity * 20; // Convert 0-1 para 0-20
-            if (sentiment.effect === "buff") {
-                finalLuck += modifier;
-                modifiersText.push(`+${modifier.toFixed(1)} (${sentiment.type})`);
-            } else if (sentiment.effect === "debuff") {
-                finalLuck -= modifier;
-                modifiersText.push(`-${modifier.toFixed(1)} (${sentiment.type})`);
-            }
-        });
-        
-        // Garantir limites 1-100
-        finalLuck = Math.max(1, Math.min(100, Math.round(finalLuck)));
-        
-        // Salvar no histórico
-        systemData.luck.rollHistory.push({
-            base: baseLuck,
-            final: finalLuck,
-            modifiers: modifiersText,
-            timestamp: new Date().toLocaleString()
-        });
-        
-        // Atualizar display
-        systemData.luck.value = finalLuck;
-        document.getElementById("luck-value").textContent = finalLuck;
-        
-        // Mostrar resultado
-        let message = `Sorte: ${finalLuck}%`;
-        if (modifiersText.length > 0) {
-            message += `\nModificadores: ${modifiersText.join(", ")}`;
-        }
-        
-        showNotification(message, finalLuck > 50 ? "success" : "warning");
-        saveToStorage();
-    }
-    
-    function saveLuck() {
-        // Salvar configurações de sorte
-        saveToStorage();
-        showNotification("Configurações de sorte salvas!", "success");
-    }
-    
-    function toggleSentiment(index, action) {
-        if (index < 0 || index >= systemData.luck.sentiments.length) return;
-        
-        const sentiment = systemData.luck.sentiments[index];
-        
-        switch(action) {
-            case "active":
-                sentiment.active = !sentiment.active;
-                break;
-            case "delete":
-                systemData.luck.sentiments.splice(index, 1);
-                break;
-        }
-        
-        renderSentiments();
-        saveToStorage();
-    }
-    
-    function renderSentiments() {
-        const container = document.getElementById("sentiments-container");
-        container.innerHTML = "";
-        
-        systemData.luck.sentiments.forEach((sentiment, index) => {
-            const card = document.createElement("div");
-            card.className = `sentiment-card ${sentiment.active ? "active" : "inactive"}`;
-            
-            const effectColor = sentiment.effect === "buff" ? "#22c55e" : 
-                              sentiment.effect === "debuff" ? "#ff4757" : "#a0a0a0";
-            
-            card.innerHTML = `
-                <div class="category-name" style="color: ${effectColor};">
-                    ${sentiment.type}
-                </div>
-                
-                <div class="text-sm mb-2">
-                    Efeito: ${sentiment.effect === "buff" ? "Buff" : 
-                            sentiment.effect === "debuff" ? "Debuff" : "Neutro"} 
-                    | Intensidade: ${sentiment.intensity.toFixed(1)}
-                </div>
-                
-                <div class="sentiment-controls flex flex-wrap gap-2 mt-2">
-                    <button onclick="toggleSentiment(${index}, 'active')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 ${sentiment.active ? 'btn-inactive' : 'btn-active'}">
-                        <i data-lucide="${sentiment.active ? 'pause' : 'play'}" class="w-4 h-4 mr-1"></i>
-                        ${sentiment.active ? "Desativar" : "Ativar"}
-                    </button>
-                    
-                    <button onclick="toggleSentiment(${index}, 'delete')" 
-                            class="control-btn flex-1 min-w-[90px] whitespace-nowrap px-2 btn-danger">
-                        <i data-lucide="trash-2" class="w-4 h-4 mr-1"></i>
-                        Remover
-                    </button>
-                </div>
-            `;
-            
-            container.appendChild(card);
-        });
-        
-        lucide.createIcons();
-    }
-    
-    // =========== SISTEMA DE ROLAGEM DE DADOS ===========
-    function saveDiceConfig() {
-        if (!systemData.diceSystem) return;
-        const typeMatch = parseInt(document.getElementById("dice-type").value);
-        const qtyMatch = parseInt(document.getElementById("dice-quantity").value);
-        if(!isNaN(typeMatch)) systemData.diceSystem.type = typeMatch;
-        if(!isNaN(qtyMatch)) systemData.diceSystem.quantity = qtyMatch;
-        systemData.diceSystem.useStatus = document.getElementById("dice-use-status").checked;
-        systemData.diceSystem.useMascot = document.getElementById("dice-use-mascot").checked;
-        systemData.diceSystem.useLuck = document.getElementById("dice-use-luck").checked;
-        saveToStorage();
-    }
-    
-    function initDiceSystem() {
-        if (!systemData.diceSystem) {
-            systemData.diceSystem = {
-                quantity: 1, type: 20, useStatus: true, useMascot: false, useLuck: true,
-                lastResult: "-", lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
-            };
-        }
-        document.getElementById("dice-quantity").value = systemData.diceSystem.quantity || 1;
-        document.getElementById("dice-type").value = systemData.diceSystem.type;
-        document.getElementById("dice-use-status").checked = systemData.diceSystem.useStatus;
-        document.getElementById("dice-use-mascot").checked = systemData.diceSystem.useMascot;
-        document.getElementById("dice-use-luck").checked = systemData.diceSystem.useLuck;
-        document.getElementById("dice-result-value").textContent = systemData.diceSystem.lastResult || "-";
-        document.getElementById("dice-result-details").innerHTML = systemData.diceSystem.lastString || "";
-    }
+        const q = s => document.querySelector(s);
+        const qa = s => document.querySelectorAll(s);
 
-    function rollCustomDice() {
-        const qty = systemData.diceSystem.quantity || 1;
-        const maxDice = systemData.diceSystem.type;
-        
-        let baseRollTotal = 0;
-        let rollsValues = [];
-        
-        for(let i=0; i<qty; i++) {
-            const roll = Math.floor(Math.random() * maxDice) + 1;
-            rollsValues.push(roll);
-            baseRollTotal += roll;
-        }
-        
-        let totalVal = baseRollTotal;
-        let detailsHtml = `
-            <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-blue-900/30">
-                <span class="font-bold text-gray-300">🎲 Dados Rolados (${qty}D${maxDice}):</span>
-                <span class="font-mono text-blue-300 tracking-wider">[ ${rollsValues.join(' | ')} ] = <b class="text-white">${baseRollTotal}</b></span>
-            </div>
-        `;
-        
-        // 1. Modificadores de Status
-        if (systemData.diceSystem.useStatus) {
-            const activeAttrs = systemData.attributes.filter(a => a.active);
-            if(activeAttrs.length > 0) {
-                const somaAttrs = activeAttrs.reduce((sum, a) => sum + a.value, 0);
-                const mediaStatus = Math.floor(somaAttrs / activeAttrs.length);
-                const mod = Math.floor(mediaStatus / 10); 
-                if (mod > 0) {
-                    totalVal += mod;
-                    detailsHtml += `
-                        <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-green-900/30 mt-1">
-                            <span class="text-green-300 opacity-90"><i data-lucide="activity" class="inline w-3 h-3 mr-1"></i> Atributos Status (Média ${mediaStatus})</span>
-                            <span class="font-bold text-green-400">+${mod}</span>
-                        </div>
-                    `;
-                }
-            }
-        }
-        
-        // 2. Modificadores do Mascote
-        if (systemData.diceSystem.useMascot) {
-            try {
-                const mascotDataJson = localStorage.getItem('grimorio_mascote_completo');
-                if (mascotDataJson) {
-                    const mascotData = JSON.parse(mascotDataJson);
-                    const mascotLevel = mascotData.nivel || 1;
-                    const mod = Math.floor(mascotLevel / 5) + 1; 
-                    if (mod > 0) {
-                        totalVal += mod;
-                        detailsHtml += `
-                            <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-purple-900/30 mt-1">
-                                <span class="text-purple-300 opacity-90"><i data-lucide="cat" class="inline w-3 h-3 mr-1"></i> Auxílio do Mascote (Nv ${mascotLevel})</span>
-                                <span class="font-bold text-purple-400">+${mod}</span>
-                            </div>
-                        `;
-                    }
-                } else {
-                    detailsHtml += `
-                        <div class="flex justify-between items-center bg-red-900/20 p-2 rounded border border-red-900/30 mt-1">
-                            <span class="text-red-400 opacity-90 text-xs text-center w-full">Nenhum Mascote Localizado no Cache</span>
-                        </div>
-                    `;
-                }
-            } catch(e) {}
-        }
-        
-        // 3. Modificadores de Sorte e Humor
-        if (systemData.diceSystem.useLuck) {
-            const luckValue = systemData.luck.value; 
-            let mod = 0;
-            if(luckValue > 80) mod = Math.floor(maxDice * qty * 0.1) || 1; 
-            else if(luckValue < 20) mod = -(Math.floor(maxDice * qty * 0.1) || 1); 
-            
-            if(mod !== 0) {
-                totalVal += mod;
-                const luckColor = mod > 0 ? "yellow" : "red";
-                detailsHtml += `
-                    <div class="flex justify-between items-center bg-black/30 p-2 rounded border border-${luckColor}-900/30 mt-1">
-                        <span class="text-${luckColor}-300 opacity-90"><i data-lucide="clover" class="inline w-3 h-3 mr-1"></i> Sorte/Sentimento (${luckValue}%)</span>
-                        <span class="font-bold text-${luckColor}-400">${mod > 0 ? '+'+mod : mod}</span>
-                    </div>
-                `;
-            }
-        }
-        
-        // Update DOM
-        document.getElementById("dice-result-value").textContent = totalVal;
-        document.getElementById("dice-result-details").innerHTML = detailsHtml;
-        lucide.createIcons();
-        
-        systemData.diceSystem.lastResult = totalVal;
-        systemData.diceSystem.lastString = detailsHtml;
-        saveToStorage();
-    }
+        let data = {
+            cats: [
+                { name: "Vida", val: 100, max: 100, color: "red", active: true, lock: false },
+                { name: "Mana", val: 100, max: 100, color: "blue", active: true, lock: false },
+                { name: "Estamina", val: 100, max: 100, color: "green", active: true, lock: false }
+            ],
+            attrs: [
+                { name: "Força", val: 0, max: 100, lock: false, active: true },
+                { name: "Destreza", val: 0, max: 100, lock: false, active: true },
+                { name: "Constituição", val: 0, max: 100, lock: false, active: true },
+                { name: "Inteligência", val: 0, max: 100, lock: false, active: true },
+                { name: "Sabedoria", val: 0, max: 100, lock: false, active: true },
+                { name: "Carisma", val: 0, max: 100, lock: false, active: true }
+            ],
+            derived: [
+                { name: "Dano Físico", formula: "Força * 1.5", val: 0, op: "*", mod: 1.5, base: "força", active: true },
+                { name: "Defesa", formula: "Constituição * 2", val: 0, op: "*", mod: 2, base: "constituição", active: true }
+            ],
+            luck: { val: 50, sentiments: [] },
+            dice: { qty: 1, type: 20, useStatus: true, useMascot: false, useLuck: true, last: "-", details: "" }
+        };
 
-    // =========== SISTEMA DE IMPORTAR ===========
-    function openImportModal() {
-        openModal("modal-import");
-    }
-    
-    function normalizeText(text) {
-        return text.toLowerCase()
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/[^a-z0-9]/g, "");
-    }
-    
-    function findBestMatch(value, items, getNameFn) {
-        const normalizedValue = normalizeText(value);
-        let bestMatch = null;
-        let bestScore = 0;
-        
-        items.forEach(item => {
-            const itemName = getNameFn(item);
-            const normalizedItemName = normalizeText(itemName);
-            
-            // Verificar correspondência exata
-            if (normalizedItemName === normalizedValue) {
-                bestMatch = item;
-                bestScore = 100;
-                return;
-            }
-            
-            // Verificar se contém
-            if (normalizedValue.includes(normalizedItemName) || normalizedItemName.includes(normalizedValue)) {
-                const score = Math.min(normalizedValue.length, normalizedItemName.length) / 
-                             Math.max(normalizedValue.length, normalizedItemName.length) * 100;
-                if (score > bestScore) {
-                    bestScore = score;
-                    bestMatch = item;
-                }
-            }
-        });
-        
-        // Aceitar se score for maior que 60%
-        return bestScore > 60 ? bestMatch : null;
-    }
-    
-    function processImport() {
-        const importText = document.getElementById("import-data").value;
-        if (!importText.trim()) {
-            showNotification("Digite os dados para importar!", "error");
-            return;
+        function init() {
+            Core.init();
+            const saved = Core.load();
+            if (saved.status) data = { ...data, ...saved.status };
+            render();
         }
-        
-        const lines = importText.split('\n');
-        let importedCount = 0;
-        let notFoundItems = [];
-        
-        lines.forEach(line => {
-            const trimmedLine = line.trim();
-            if (!trimmedLine) return;
-            
-            // Procurar padrões como "Nome: Valor" ou "Nome: Valor/Max"
-            const match = trimmedLine.match(/^([^:]+):\s*(.+)$/);
-            if (!match) return;
-            
-            const name = match[1].trim();
-            const valuePart = match[2].trim();
-            
-            // Tentar extrair valor (e possível máximo)
-            let value = 0;
-            let max = null;
-            
-            // Padrão: "85/100"
-            const valueMaxMatch = valuePart.match(/^(\d+)\s*\/\s*(\d+)$/);
-            if (valueMaxMatch) {
-                value = parseInt(valueMaxMatch[1]);
-                max = parseInt(valueMaxMatch[2]);
-            } else {
-                // Apenas valor
-                const numMatch = valuePart.match(/^(\d+)$/);
-                if (numMatch) {
-                    value = parseInt(numMatch[1]);
-                }
-            }
-            
-            if (isNaN(value)) return;
-            
-            // Primeiro, tentar encontrar em categorias
-            let matchedItem = findBestMatch(name, systemData.categories, item => item.name);
-            
-            if (matchedItem) {
-                // Atualizar categoria
-                matchedItem.value = Math.min(value, matchedItem.max);
-                if (max !== null && max > 0) {
-                    matchedItem.max = max;
-                }
-                importedCount++;
-                return;
-            }
-            
-            // Tentar em atributos
-            matchedItem = findBestMatch(name, systemData.attributes, item => item.name);
-            
-            if (matchedItem) {
-                // Atualizar atributo
-                matchedItem.value = Math.min(value, matchedItem.max);
-                if (max !== null && max > 0) {
-                    matchedItem.max = max;
-                }
-                importedCount++;
-                return;
-            }
-            
-            // Se não encontrou, adicionar à lista de não encontrados
-            notFoundItems.push(name);
-        });
-        
-        // Atualizar visualizações
-        renderCategories();
-        renderAttributes();
-        updateDerivedAttributes();
-        renderDerived();
-        saveToStorage();
-        
-        // Fechar modal
-        closeModal("modal-import");
-        
-        // Mostrar resultado
-        let message = `${importedCount} valores importados com sucesso!`;
-        if (notFoundItems.length > 0) {
-            message += `\nNão encontrados: ${notFoundItems.join(", ")}`;
+
+        function save() {
+            Core.player.status = data;
+            Core.save();
         }
-        
-        showNotification(message, importedCount > 0 ? "success" : "warning");
-    }
-    
-    // =========== CONTROLES GERAIS ===========
-    function saveAll() {
-        saveToStorage();
-        showNotification("Todos os dados foram salvos no storage!", "success");
-    }
-    
-    function exportToTXT() {
-        let txtContent = "=== FICHA DO PERSONAGEM ===\n";
-        txtContent += `Gerado em: ${new Date().toLocaleString()}\n\n`;
-        
-        // Categorias
-        txtContent += "--- CATEGORIAS ---\n";
-        systemData.categories.forEach(cat => {
-            if (cat.active) {
-                txtContent += `${cat.name}: ${cat.value}/${cat.max} ${cat.locked ? "(Trancado)" : ""}\n`;
+
+        function notify(msg, type = "info") {
+            const div = document.createElement("div");
+            div.className = `alert alert-${type}`;
+            div.innerHTML = `<i data-lucide="${type === 'success' ? 'check' : 'alert-circle'}"></i><span>${msg}</span>`;
+            q(".container").prepend(div);
+            lucide.createIcons();
+            setTimeout(() => div.remove(), 2500);
+        }
+
+        // ==============================////==============================
+
+        function render() {
+            renderCats();
+            renderAttrs();
+            renderDerived();
+            renderSentiments();
+            renderDice();
+            lucide.createIcons();
+        }
+
+        function renderCats() {
+            const container = q("#categories-container");
+            if (!container) return;
+            container.innerHTML = data.cats.map((c, i) => `
+                <div class="category-card ${c.active ? 'active' : 'inactive'} ${c.lock ? 'locked' : ''} border-${c.color}">
+                    <div class="category-header">
+                        <div class="category-icon bg-${c.color}"><i data-lucide="heart" class="color-${c.color}"></i></div>
+                        <div class="category-info">
+                            <div class="category-name color-${c.color}">${c.name}</div>
+                            <div class="text-sm">${c.active ? 'Ativo' : 'Inativo'}</div>
+                        </div>
+                    </div>
+                    <div class="category-value color-${c.color}">${c.val}/${c.max}</div>
+                    <input type="range" min="0" max="${c.max}" value="${c.val}" ${c.lock ? 'disabled' : ''} 
+                        oninput="updateCat(${i}, this.value)" class="w-full">
+                    <div class="category-controls flex gap-2">
+                        <button onclick="toggleCat(${i}, 'active')" class="control-btn flex-1 ${c.active ? 'btn-inactive' : 'btn-active'}">
+                            <i data-lucide="${c.active ? 'pause' : 'play'}"></i>
+                        </button>
+                        <button onclick="toggleCat(${i}, 'lock')" class="control-btn flex-1 ${c.lock ? 'btn-unlock' : 'btn-lock'}">
+                            <i data-lucide="${c.lock ? 'unlock' : 'lock'}"></i>
+                        </button>
+                        <button onclick="delCat(${i})" class="control-btn btn-danger"><i data-lucide="trash-2"></i></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function updateCat(i, val) {
+            data.cats[i].val = parseInt(val);
+            save();
+            renderCats();
+            lucide.createIcons();
+        }
+
+        function toggleCat(i, key) {
+            data.cats[i][key] = !data.cats[i][key];
+            save();
+            renderCats();
+            lucide.createIcons();
+        }
+
+        function delCat(i) {
+            data.cats.splice(i, 1);
+            save();
+            renderCats();
+            lucide.createIcons();
+        }
+
+        function addCat() {
+            const name = q("#category-name").value;
+            if (!name) return;
+            data.cats.push({
+                name,
+                val: parseInt(q("#category-value").value) || 0,
+                max: parseInt(q("#category-max").value) || 100,
+                color: q("#category-color").value,
+                active: true,
+                lock: false
+            });
+            save();
+            renderCats();
+            q("#modal-category").classList.remove("active");
+            lucide.createIcons();
+        }
+
+        function renderAttrs() {
+            const container = q("#attributes-container");
+            if (!container) return;
+            container.innerHTML = data.attrs.map((a, i) => `
+                <div class="attribute-card ${a.active ? '' : 'inactive'} ${a.lock ? 'locked' : ''}">
+                    <div class="attribute-header">
+                        <div class="attribute-name">${a.name}</div>
+                        <div class="flex gap-2">
+                            <button onclick="toggleAttr(${i}, 'lock')" class="control-btn ${a.lock ? 'btn-unlock' : 'btn-lock'}">
+                                <i data-lucide="${a.lock ? 'unlock' : 'lock'}"></i>
+                            </button>
+                            <button onclick="toggleAttr(${i}, 'active')" class="control-btn ${a.active ? 'btn-inactive' : 'btn-active'}">
+                                <i data-lucide="${a.active ? 'pause' : 'play'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="attribute-value">${a.val}</div>
+                    <input type="range" min="0" max="${a.max}" value="${a.val}" ${a.lock ? 'disabled' : ''} 
+                        oninput="updateAttr(${i}, this.value)" class="w-full">
+                    <div class="flex gap-2 mt-2">
+                        <input type="number" value="${a.val}" onchange="updateAttr(${i}, this.value)" class="attribute-input flex-1">
+                        <button onclick="delAttr(${i})" class="btn-danger p-2 rounded"><i data-lucide="trash-2"></i></button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function updateAttr(i, val) {
+            data.attrs[i].val = Math.min(data.attrs[i].max, Math.max(0, parseInt(val) || 0));
+            updateDerived();
+            save();
+            renderAttrs();
+            renderDerived();
+            lucide.createIcons();
+        }
+
+        function toggleAttr(i, key) {
+            data.attrs[i][key] = !data.attrs[i][key];
+            save();
+            renderAttrs();
+            lucide.createIcons();
+        }
+
+        function delAttr(i) {
+            data.attrs.splice(i, 1);
+            save();
+            renderAttrs();
+            lucide.createIcons();
+        }
+
+        function distributeRandom() {
+            const total = parseInt(q("#total-points").value) || 0;
+            const target = data.attrs.filter(a => a.active && !a.lock);
+            if (!target.length) return notify("Sem atributos disponíveis", "error");
+            
+            target.forEach(a => a.val = 0);
+            let left = total;
+            while (left > 0) {
+                const a = target[Math.floor(Math.random() * target.length)];
+                if (a.val < a.max) { a.val++; left--; }
+                if (target.every(a => a.val >= a.max)) break;
             }
-        });
-        
-        // Atributos
-        txtContent += "\n--- ATRIBUTOS ---\n";
-        systemData.attributes.forEach(attr => {
-            if (attr.active) {
-                txtContent += `${attr.name}: ${attr.value}/${attr.max} ${attr.locked ? "(Trancado)" : ""}\n`;
-            }
-        });
-        
-        // Derivados
-        txtContent += "\n--- ATRIBUTOS DERIVADOS ---\n";
-        systemData.derived.forEach(derived => {
-            if (derived.active) {
-                txtContent += `${derived.name}: ${derived.value}\n`;
-                txtContent += `  Fórmula: ${derived.formula}\n`;
-            }
-        });
-        
-        // Sorte
-        txtContent += "\n--- SISTEMA DE SORTE ---\n";
-        txtContent += `Sorte Atual: ${systemData.luck.value}%\n`;
-        txtContent += "Modificadores Ativos:\n";
-        systemData.luck.sentiments.forEach(sent => {
-            if (sent.active) {
-                txtContent += `  ${sent.type}: ${sent.effect} (${sent.intensity.toFixed(1)})\n`;
-            }
-        });
-        
-        // Histórico
-        if (systemData.luck.rollHistory.length > 0) {
-            txtContent += "\nÚltimas Rolagens de Sorte:\n";
-            const lastRolls = systemData.luck.rollHistory.slice(-3);
-            lastRolls.forEach(roll => {
-                txtContent += `  ${roll.timestamp}: ${roll.final}% (Base: ${roll.base}%)\n`;
+            updateDerived();
+            save();
+            render();
+        }
+
+        function addAttr() {
+            const name = q("#attribute-name").value;
+            if (!name) return;
+            data.attrs.push({
+                name,
+                val: parseInt(q("#attribute-value").value) || 0,
+                max: parseInt(q("#attribute-max").value) || 100,
+                lock: false,
+                active: true
+            });
+            save();
+            renderAttrs();
+            q("#modal-attribute").classList.remove("active");
+            lucide.createIcons();
+        }
+
+        // ==============================////==============================
+
+        function updateDerived() {
+            data.derived.forEach(d => {
+                const base = data.attrs.find(a => a.name.toLowerCase() === d.base.toLowerCase());
+                if (!base) return d.val = 0;
+                const v = base.val;
+                if (d.op === "*") d.val = Math.round(v * d.mod);
+                else if (d.op === "+") d.val = v + d.mod;
+                else d.val = v;
             });
         }
-        
-        // Configurações do Dado
-        if (systemData.diceSystem) {
-            txtContent += `\n--- SISTEMA DE ROLAGEM ---\n`;
-            txtContent += `Tipo de Dado: ${systemData.diceSystem.quantity}D${systemData.diceSystem.type}\n`;
-            txtContent += `Usa Status: ${systemData.diceSystem.useStatus ? "Sim" : "Não"}\n`;
-            txtContent += `Usa Mascote: ${systemData.diceSystem.useMascot ? "Sim" : "Não"}\n`;
-            txtContent += `Usa Condições/Sorte: ${systemData.diceSystem.useLuck ? "Sim" : "Não"}\n`;
-            txtContent += `Último Resultado Exato (Total): ${systemData.diceSystem.lastResult}\n`;
+
+        function renderDerived() {
+            const container = q("#derived-container");
+            if (!container) return;
+            container.innerHTML = data.derived.map((d, i) => `
+                <div class="derived-card ${d.active ? '' : 'inactive'}">
+                    <div class="category-header">
+                        <div class="category-icon bg-purple"><i data-lucide="zap" class="color-purple"></i></div>
+                        <div class="category-info">
+                            <div class="category-name color-purple">${d.name}</div>
+                            <div class="text-sm">${d.active ? 'Ativo' : 'Inativo'}</div>
+                        </div>
+                    </div>
+                    <div class="category-value color-purple">${d.val}</div>
+                    <div class="derived-formula">Fórmula: ${d.formula}</div>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="toggleDerived(${i})" class="control-btn flex-1 ${d.active ? 'btn-inactive' : 'btn-active'}">
+                            ${d.active ? 'Desativar' : 'Ativar'}
+                        </button>
+                        <button onclick="delDerived(${i})" class="btn-danger p-2 rounded"><i data-lucide="trash-2"></i></button>
+                    </div>
+                </div>
+            `).join("");
         }
-        
-        // Criar e baixar arquivo
-        const blob = new Blob([txtContent], { type: "text/plain" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "ficha_personagem.txt";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        
-        showNotification("Ficha exportada como TXT!", "success");
-    }
-    
-    function generateVisualSheet() {
-        showNotification("Funcionalidade em desenvolvimento - Em breve!", "warning");
-        // Aqui seria implementada a geração de uma ficha visual em PDF/HTML
-    }
-    
-    // =========== PERSISTÊNCIA ===========
-    function saveToStorage() {
-        try {
-            localStorage.setItem("grimorio_advanced_status", JSON.stringify(systemData));
-            console.log("Dados salvos no localStorage");
-        } catch (error) {
-            console.error("Erro ao salvar:", error);
+
+        function toggleDerived(i) {
+            data.derived[i].active = !data.derived[i].active;
+            save();
+            renderDerived();
+            lucide.createIcons();
         }
-    }
-    
-    function loadFromStorage() {
-        try {
-            const saved = localStorage.getItem("grimorio_advanced_status");
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                Object.assign(systemData, parsed);
-                console.log("Dados carregados do localStorage");
+
+        function delDerived(i) {
+            data.derived.splice(i, 1);
+            save();
+            renderDerived();
+            lucide.createIcons();
+        }
+
+        function openDerivedModal() {
+            const baseSelect = q("#derived-base");
+            if (baseSelect) {
+                baseSelect.innerHTML = data.attrs.map(a => `<option value="${a.name}">${a.name}</option>`).join("");
             }
-        } catch (error) {
-            console.error("Erro ao carregar:", error);
+            q("#modal-derived").classList.add("active");
         }
-    }
-    
-    // =========== INICIALIZAÇÃO ===========
-    document.addEventListener("DOMContentLoaded", function() {
-        // Inicializar ícones
-        lucide.createIcons();
-        
-        // Carregar dados salvos
-        loadFromStorage();
-        
-        // Renderizar todos os componentes
-        renderCategories();
-        renderAttributes();
-        updateDerivedAttributes();
-        renderDerived();
-        renderSentiments();
-        initDiceSystem();
-        
-        // Atualizar display da sorte
-        document.getElementById("luck-value").textContent = systemData.luck.value;
-        
-        // Configurar eventos
-        document.getElementById("btn-save-all").addEventListener("click", saveAll);
-        document.getElementById("btn-import").addEventListener("click", openImportModal);
-        document.getElementById("btn-export").addEventListener("click", exportToTXT);
-        
-        // Configurar slider de intensidade
-        const intensitySlider = document.getElementById("sentiment-intensity");
-        const intensityValue = document.getElementById("intensity-value");
-        
-        intensitySlider.addEventListener("input", function() {
-            intensityValue.textContent = (this.value / 10).toFixed(1);
-        });
-        
-        // Configurar campo personalizado
-        const sentimentType = document.getElementById("sentiment-type");
-        sentimentType.addEventListener("change", function() {
-            const customGroup = document.getElementById("custom-sentiment-group");
-            customGroup.style.display = this.value === "custom" ? "block" : "none";
-        });
-        
-        console.log("Sistema de Status Avançado carregado!");
-        showNotification("Sistema carregado com sucesso!", "success");
-    });
-    
-    // =========== EVENT LISTENERS ADICIONAIS ===========
-    document.addEventListener("keydown", function(e) {
-        if (e.key === "Escape") {
-            document.querySelectorAll(".modal.active").forEach(modal => {
-                modal.classList.remove("active");
+
+        function addDerived() {
+            const name = q("#derived-name").value;
+            if (!name) return;
+            data.derived.push({
+                name,
+                base: q("#derived-base").value,
+                op: q("#derived-operation").value,
+                mod: parseFloat(q("#derived-modifier").value) || 0,
+                formula: `${q("#derived-base").value} ${q("#derived-operation").value} ${q("#derived-modifier").value}`,
+                val: 0,
+                active: true
             });
+            updateDerived();
+            save();
+            renderDerived();
+            q("#modal-derived").classList.remove("active");
+            lucide.createIcons();
         }
-    });
+
+        // ==============================////==============================
+
+        function renderSentiments() {
+            const container = q("#sentiments-container");
+            if (!container) return;
+            container.innerHTML = data.luck.sentiments.map((s, i) => `
+                <div class="sentiment-card ${s.active ? '' : 'inactive'}">
+                    <div class="flex justify-between items-center mb-2">
+                        <span style="color: ${s.eff === 'buff' ? '#22c55e' : '#ff4757'}">${s.name}</span>
+                        <div class="flex gap-1">
+                            <button onclick="toggleSent(${i})" class="btn-active p-1 rounded"><i data-lucide="power"></i></button>
+                            <button onclick="delSent(${i})" class="btn-danger p-1 rounded"><i data-lucide="x"></i></button>
+                        </div>
+                    </div>
+                    <div class="text-sm opacity-70">Tipo: ${s.eff} | Int: ${s.int}</div>
+                </div>
+            `).join("");
+            q("#luck-value").textContent = data.luck.val;
+        }
+
+        function toggleSent(i) {
+            data.luck.sentiments[i].active = !data.luck.sentiments[i].active;
+            save();
+            renderSentiments();
+            lucide.createIcons();
+        }
+
+        function delSent(i) {
+            data.luck.sentiments.splice(i, 1);
+            save();
+            renderSentiments();
+            lucide.createIcons();
+        }
+
+        function rollLuck() {
+            let val = Math.floor(Math.random() * 100) + 1;
+            data.luck.sentiments.filter(s => s.active).forEach(s => {
+                const mod = s.int * 20;
+                val += s.eff === "buff" ? mod : -mod;
+            });
+            data.luck.val = Math.max(1, Math.min(100, Math.round(val)));
+            save();
+            renderSentiments();
+            notify(`Sorte rolada: ${data.luck.val}%`, "success");
+        }
+
+        function openSentimentModal() {
+            q("#modal-sentiment").classList.add("active");
+        }
+
+        function addSentiment() {
+            data.luck.sentiments.push({
+                name: q("#sentiment-type").value === "custom" ? q("#custom-sentiment-name").value : q("#sentiment-type").value,
+                eff: q("#sentiment-effect").value,
+                int: parseFloat(q("#sentiment-intensity").value) / 10,
+                active: true
+            });
+            save();
+            renderSentiments();
+            q("#modal-sentiment").classList.remove("active");
+            lucide.createIcons();
+        }
+
+        // ==============================////==============================
+
+        function renderDice() {
+            q("#dice-result-value").textContent = data.dice.last;
+            q("#dice-result-details").innerHTML = data.dice.details;
+        }
+
+        function rollCustomDice() {
+            const qty = parseInt(q("#dice-quantity").value) || 1;
+            const type = parseInt(q("#dice-type").value) || 20;
+            const rolls = [];
+            let total = 0;
+            for (let i = 0; i < qty; i++) {
+                const r = Math.floor(Math.random() * type) + 1;
+                rolls.push(r);
+                total += r;
+            }
+
+            let html = `<div class="bg-black/30 p-2 rounded border border-blue-900/30 mb-1">
+                🎲 [ ${rolls.join(' | ')} ] = <b>${total}</b></div>`;
+
+            if (q("#dice-use-status").checked) {
+                const active = data.attrs.filter(a => a.active);
+                const avg = Math.floor(active.reduce((s, a) => s + a.val, 0) / (active.length || 1));
+                const mod = Math.floor(avg / 10);
+                total += mod;
+                html += `<div class="text-green-400 text-sm">Status: +${mod}</div>`;
+            }
+
+            if (q("#dice-use-luck").checked) {
+                const mod = data.luck.val > 80 ? 2 : (data.luck.val < 20 ? -2 : 0);
+                total += mod;
+                if (mod) html += `<div class="text-yellow-400 text-sm">Sorte: ${mod > 0 ? '+' : ''}${mod}</div>`;
+            }
+
+            data.dice.last = total;
+            data.dice.details = html;
+            save();
+            renderDice();
+            lucide.createIcons();
+        }
+
+        function openModal(id) { q("#" + id).classList.add("active"); }
+        function closeModal(id) { q("#" + id).classList.remove("active"); }
+
+        q("#btn-save-all").onclick = () => { save(); notify("Salvo!", "success"); };
+        q("#sentiment-type").onchange = (e) => q("#custom-sentiment-group").style.display = e.target.value === "custom" ? "block" : "none";
+        
+        window.onclick = (e) => { if (e.target.classList.contains("modal")) e.target.classList.remove("active"); };
+
+        document.addEventListener("DOMContentLoaded", init);
     </script>
 </body>
 </html>
