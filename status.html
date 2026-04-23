@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Status & Atributos</title>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -20,9 +28,11 @@
             }
         }
     </script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e2e8f0; scroll-behavior: smooth; }
-        .glass { background: rgba(15, 15, 18, 0.6); backdrop-blur: 10px; border: 1px solid rgba(42, 42, 46, 0.5); }
+        .glass { background: rgba(15, 15, 18, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(42, 42, 46, 0.5); }
         .input-bare { background: transparent; border: none; outline: none; width: 100%; color: inherit; font-family: inherit; }
         .progress-bar { height: 6px; border-radius: 3px; background: #1a1a1e; overflow: hidden; position: relative; }
         .progress-fill { height: 100%; transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -30,7 +40,11 @@
         .attr-card:hover { border-color: #4a9eff; transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <body class="min-h-screen pb-20">
+
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-4">
@@ -45,16 +59,20 @@
         </div>
     </nav>
 
+    <!-- =====================================================/////////////====================================================== -->
     <main class="max-w-7xl mx-auto px-6 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
         <div class="lg:col-span-4 space-y-6">
-            <section class="glass rounded-2xl p-6">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="glass rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="font-cinzel font-bold text-theme-blue flex items-center gap-2"><i data-lucide="heart" class="w-5 h-5"></i> VITAIS</h2>
                 </div>
                 <div id="vitals-list" class="space-y-6"></div>
             </section>
 
-            <section class="glass rounded-2xl p-6">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="glass rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="font-cinzel font-bold text-theme-yellow flex items-center gap-2"><i data-lucide="sparkles" class="w-5 h-5"></i> SORTE & DESTINO</h2>
                 </div>
@@ -69,14 +87,17 @@
         </div>
 
         <div class="lg:col-span-8 space-y-6">
-            <section class="glass rounded-2xl p-6">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="glass rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-8">
                     <h2 class="font-cinzel font-bold text-white flex items-center gap-2"><i data-lucide="shield-check" class="w-5 h-5"></i> ATRIBUTOS BASE</h2>
                 </div>
                 <div id="attrs-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
             </section>
 
-            <section class="glass rounded-2xl p-6">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="glass rounded-2xl p-6">
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="font-cinzel font-bold text-theme-purple flex items-center gap-2"><i data-lucide="dices" class="w-5 h-5"></i> ROLAGEM DE DADOS</h2>
                 </div>
@@ -100,6 +121,7 @@
         </div>
     </main>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         let p = Core.load();
         const colors = { red: '#ef4444', blue: '#4a9eff', green: '#22c55e', yellow: '#f59e0b', purple: '#818cf8' };

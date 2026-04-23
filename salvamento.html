@@ -8,11 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -47,18 +53,17 @@
 
     </script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <style>
 
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Animações */
+
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Modal */
+
         .modal-backdrop {
             position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(4px));
             z-index: 1000; display: flex; align-items: center; justify-content: center;
             padding: 1rem;
         }
@@ -67,8 +72,7 @@
             border-radius: 12px; width: 100%; max-width: 500px;
             max-height: 90vh; overflow-y: auto;
         }
-        
-        /* Cards de save */
+
         .save-card {
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -82,8 +86,7 @@
             border-color: #4a9eff;
             background: rgba(74, 158, 255, 0.05);
         }
-        
-        /* Progress bar */
+
         .progress-bar {
             height: 4px; background: #2a2a2e; border-radius: 2px; overflow: hidden;
         }
@@ -93,8 +96,11 @@
         }
     </style>
 </head>
-<body class="min-h-screen font-sans">
 
+    <!-- =====================================================/////////////====================================================== -->
+    <body class="min-h-screen font-sans">
+
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
         <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
@@ -111,28 +117,16 @@
             </div>
             
             <div class="w-24 hidden sm:block"></div>
->>>>>>> parent of 069c538 (a)
         </div>
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-pink to-transparent"></div>
     </nav>
 
-<<<<<<< HEAD
-    <div class="max-w-4xl mx-auto px-4 space-y-8">
-        <section class="section text-center">
-            <div class="w-16 h-16 bg-theme-blue/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-theme-blue/20"><i data-lucide="database" class="w-8 h-8 text-theme-blue"></i></div>
-            <h2 class="font-cinzel text-2xl font-bold text-white mb-2">Gerenciar Dados</h2>
-            <p class="text-xs text-gray-500 mb-8 max-w-md mx-auto">Exportar sua ficha gera um arquivo JSON contendo todo o progresso do seu personagem.</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button onclick="exportData()" class="p-6 bg-theme-blue/10 text-theme-blue border border-theme-blue/20 rounded-xl font-bold hover:bg-theme-blue/20 transition-all flex flex-col items-center gap-2"><i data-lucide="download" class="w-6 h-6"></i> EXPORTAR</button>
-                <button onclick="q('#file-input').click()" class="p-6 bg-theme-green/10 text-theme-green border border-theme-green/20 rounded-xl font-bold hover:bg-theme-green/20 transition-all flex flex-col items-center gap-2"><i data-lucide="upload" class="w-6 h-6"></i> IMPORTAR</button>
-=======
-    <div class="max-w-6xl mx-auto px-4 space-y-6">
+<div class="max-w-6xl mx-auto px-4 space-y-6">
 
-        <!-- Cabeçalho -->
-        <header class="flex items-center gap-4 mb-8 anim-entry">
+    <!-- =====================================================/////////////====================================================== -->
+    <header class="flex items-center gap-4 mb-8 anim-entry">
             <div class="p-3 rounded-lg bg-gradient-to-br from-theme-blue/20 to-cyan-600/20 border border-theme-blue/30">
                 <i data-lucide="save" class="w-8 h-8 text-theme-blue"></i>
->>>>>>> parent of 069c538 (a)
             </div>
             <div>
                 <h1 class="text-3xl font-cinzel font-bold text-white">Sistema de Save</h1>
@@ -140,8 +134,8 @@
             </div>
         </header>
 
-        <!-- Seção 1: Informações -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #4a9eff;">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.1s; border-left: 4px solid #4a9eff;">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-4">
                 <i data-lucide="info" class="w-4 h-4"></i> Como Funciona
             </h3>
@@ -198,8 +192,8 @@
             </div>
         </section>
 
-        <!-- Seção 2: Saves Locais -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #22c55e;">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.2s; border-left: 4px solid #22c55e;">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-green">
                     <i data-lucide="hard-drive" class="w-4 h-4"></i> Saves Locais
@@ -208,7 +202,7 @@
             </div>
             
             <div id="saves-container" class="space-y-4">
-                <!-- Saves serão inseridos aqui -->
+                
                 <div class="text-center py-12 border-2 border-dashed border-theme-border rounded-lg">
                     <i data-lucide="folder-open" class="w-12 h-12 mx-auto mb-3 text-theme-muted"></i>
                     <p class="text-theme-muted">Nenhum save local encontrado</p>
@@ -217,8 +211,8 @@
             </div>
         </section>
 
-        <!-- Seção 3: Ações Rápidas -->
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.3s; border-left: 4px solid #f59e0b;">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-yellow mb-6">
                 <i data-lucide="zap" class="w-4 h-4"></i> Ações Rápidas
             </h3>
@@ -262,8 +256,8 @@
             </div>
         </section>
 
-        <!-- Seção 4: Configurações -->
-        <section class="section-panel border-l border-b border-r border-[#8b5cf6]/20 p-6 2xl:p-10 rounded-xl anim-entry shadow-glass relative" style="animation-delay: 0.4s; border-left: 4px solid #8b5cf6;">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="section-panel border-l border-b border-r border-[#8b5cf6]/20 p-6 2xl:p-10 rounded-xl anim-entry shadow-glass relative" style="animation-delay: 0.4s; border-left: 4px solid #8b5cf6;">
             <div class="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-indigo-500/5 pointer-events-none"></div>
             <h3 class="flex items-center gap-2 2xl:gap-3 font-cinzel text-lg 2xl:text-2xl font-semibold text-theme-purple mb-6 2xl:mb-8 drop-shadow-sm relative">
                 <i data-lucide="settings" class="w-5 h-5 2xl:w-6 2xl:h-6"></i> Configurações
@@ -327,7 +321,6 @@
         </section>
     </div>
 
-    <!-- Modal de Importação -->
     <div id="import-modal" class="modal-backdrop hidden transition-opacity z-[100]">
         <div class="modal-content section-panel border border-theme-border/50 p-6 2xl:p-10 rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] relative overflow-hidden max-w-2xl 2xl:max-w-4xl w-full">
             <div class="absolute inset-0 bg-gradient-to-br from-theme-green/5 to-transparent pointer-events-none"></div>
@@ -391,7 +384,6 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação -->
     <div id="confirm-modal" class="modal-backdrop hidden z-[100]">
         <div class="modal-content section-panel border border-red-900/50 p-6 2xl:p-10 rounded-xl shadow-[0_0_40px_rgba(220,38,38,0.2)]">
             <div class="text-center mb-8 2xl:mb-10">
@@ -416,12 +408,11 @@
         </div>
     </div>
 
-    <!-- Modal de Resultado -->
     <div id="result-modal" class="modal-backdrop hidden z-[100]">
         <div class="modal-content section-panel border border-theme-border/50 p-6 2xl:p-10 rounded-xl shadow-[0_0_40px_rgba(0,0,0,0.8)] text-center">
             <div class="mb-8 2xl:mb-10">
                 <div id="result-icon" class="w-20 h-20 2xl:w-28 2xl:h-28 mx-auto mb-6 rounded-full flex items-center justify-center">
-                    <!-- Ícone será inserido via JS -->
+                    
                 </div>
                 <h3 class="font-cinzel text-2xl 2xl:text-4xl font-bold text-white mb-3 2xl:mb-5 tracking-wide" id="result-title"></h3>
                 <p class="text-theme-muted 2xl:text-lg leading-relaxed max-w-md mx-auto" id="result-message"></p>
@@ -439,6 +430,7 @@
         </div>
     </div>
 
+    <!-- =====================================================/////////////====================================================== -->
     <footer class="container-adaptive max-w-6xl 2xl:max-w-7xl mt-8 2xl:mt-12 pb-12 2xl:pb-16 text-center">
         <p class="text-sm 2xl:text-base text-theme-muted/70 flex items-center justify-center gap-2 font-mono">
             <i data-lucide="shield" class="w-4 h-4 2xl:w-5 2xl:h-5"></i> 
@@ -446,19 +438,14 @@
         </p>
     </footer>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         lucide.createIcons();
 
-        // ====================================================================
-        // DADOS GLOBAIS
-        // ====================================================================
         let currentSaveData = null;
         let selectedFile = null;
         let confirmedAction = null;
 
-        // ====================================================================
-        // FUNÇÕES DE MODAL
-        // ====================================================================
         function openImportModal() {
             document.getElementById('import-modal').classList.remove('hidden');
         }
@@ -492,8 +479,7 @@
             const titleEl = document.getElementById('result-title');
             const messageEl = document.getElementById('result-message');
             const viewBtn = document.getElementById('view-data-btn');
-            
-            // Configurar ícone
+
             icon.innerHTML = '';
             let iconElement;
             if (type === 'success') {
@@ -526,9 +512,6 @@
             document.getElementById('result-modal').classList.add('hidden');
         }
 
-        // ====================================================================
-        // FUNÇÕES DE IMPORT/EXPORT
-        // ====================================================================
         function handleFileSelect(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -539,14 +522,12 @@
             }
             
             selectedFile = file;
-            
-            // Atualizar UI
+
             document.getElementById('file-name').textContent = file.name;
             document.getElementById('file-size').textContent = formatFileSize(file.size);
             document.getElementById('file-info').classList.remove('hidden');
             document.getElementById('import-btn').disabled = false;
-            
-            // Simular progresso
+
             simulateUploadProgress();
         }
 
@@ -576,11 +557,9 @@
                     
                     openResultModal('success', 'Importação Concluída', 
                         'Save importado com sucesso! Os dados estão prontos para serem carregados.', true);
-                    
-                    // Salvar no localStorage para uso futuro
+
                     localStorage.setItem('last_imported_save', content);
-                    
-                    // Atualizar lista de saves
+
                     loadLocalSaves();
                     
                     closeImportModal();
@@ -599,7 +578,7 @@
         }
 
         function parseSaveFile(content) {
-            // Analisar o formato do save
+
             const lines = content.split('\n');
             const saveData = {
                 type: 'unknown',
@@ -609,8 +588,7 @@
                 items: [],
                 timestamp: new Date().toISOString()
             };
-            
-            // Detectar tipo de save
+
             if (content.includes('=== FICHA DE PERSONAGEM ===')) {
                 saveData.type = 'character';
                 saveData.metadata = extractCharacterMetadata(lines);
@@ -619,10 +597,9 @@
                 saveData.metadata = extractMascotMetadata(lines);
             } else if (content.includes('=== BACKUP COMPLETO ===')) {
                 saveData.type = 'complete';
-                // Processar backup completo
+
             }
-            
-            // Extrair dados específicos
+
             if (saveData.type === 'character') {
                 saveData.character = extractCharacterData(lines);
             } else if (saveData.type === 'mascot') {
@@ -663,7 +640,7 @@
         }
 
         function extractCharacterData(lines) {
-            // Implementar extração detalhada dos dados do personagem
+
             const characterData = {};
             
             let section = '';
@@ -673,7 +650,7 @@
                 if (trimmed.includes('===')) {
                     section = trimmed.replace(/=/g, '').trim().toLowerCase();
                 } else if (trimmed && section) {
-                    // Processar dados baseado na seção
+
                     if (section.includes('atributos')) {
                         const [attr, value] = trimmed.split(':');
                         if (attr && value) {
@@ -718,13 +695,12 @@
         }
 
         function exportCurrentCharacter() {
-            // Coletar dados atuais da ficha principal
+
             const characterData = getCurrentCharacterData();
             const saveContent = generateCharacterSave(characterData);
             
             downloadSaveFile(saveContent, 'personagem');
-            
-            // Salvar localmente
+
             saveLocalSave(characterData.metadata.nome, saveContent, 'character');
             
             openResultModal('success', 'Exportação Concluída', 
@@ -732,13 +708,12 @@
         }
 
         function exportAllData() {
-            // Coletar dados completos
+
             const completeData = getCompleteData();
             const saveContent = generateCompleteSave(completeData);
             
             downloadSaveFile(saveContent, 'backup_completo');
-            
-            // Salvar localmente
+
             saveLocalSave('Backup Completo', saveContent, 'complete');
             
             openResultModal('success', 'Backup Concluído', 
@@ -746,13 +721,12 @@
         }
 
         function getCurrentCharacterData() {
-            // Buscar dados da ficha principal do localStorage
+
             const fichaData = localStorage.getItem('grimorio_ficha_personagem');
             const nome = localStorage.getItem('grimorio_nome_personagem') || 'Personagem Sem Nome';
             const classe = localStorage.getItem('grimorio_classe_personagem') || 'Desconhecida';
             const raca = localStorage.getItem('grimorio_raca_personagem') || 'Desconhecida';
-            
-            // Buscar dados de status
+
             const statsData = localStorage.getItem('rpg_stats');
             let stats = {};
             if (statsData) {
@@ -780,19 +754,19 @@
         function getCompleteData() {
             return {
                 character: {
-                    // Busca dados de TODAS as páginas
+
                     nome: localStorage.getItem('grimorio_nome_personagem'),
                     classe: localStorage.getItem('grimorio_classe_personagem'),
                     raca: localStorage.getItem('grimorio_raca_personagem'),
                     stats: JSON.parse(localStorage.getItem('rpg_stats') || '{}'),
                     inventario: JSON.parse(localStorage.getItem('rpg_inventario') || '[]'),
-                    // ... adicione todos os dados necessários
+
                 },
                 mascot: JSON.parse(localStorage.getItem('rpg_mascote_completo') || 'null'),
                 sistema_classes: JSON.parse(localStorage.getItem('grimorio_custom_classes') || '[]'),
                 configuracoes: {
                     tema: localStorage.getItem('grimorio_tema'),
-                    // ... outras configurações
+
                 },
                 timestamp: new Date().toISOString()
             };
@@ -811,7 +785,7 @@
         }
 
         function getItemsData() {
-            // Implementar coleta de dados de itens
+
             return [];
         }
 
@@ -829,8 +803,7 @@
             save += '='.repeat(50) + '\n';
             save += '                 ATRIBUTOS\n';
             save += '='.repeat(50) + '\n\n';
-            
-            // Adicionar atributos do personagem
+
             if (data.stats) {
                 const attributes = ['attr-forca', 'attr-destreza', 'attr-constituicao', 
                                    'attr-inteligencia', 'attr-sabedoria', 'attr-carisma'];
@@ -846,8 +819,7 @@
             save += '\n' + '='.repeat(50) + '\n';
             save += '                 RECURSOS\n';
             save += '='.repeat(50) + '\n\n';
-            
-            // Adicionar recursos
+
             const resources = {
                 'input-vida-atual': 'Vida Atual',
                 'input-vida-max': 'Vida Máxima',
@@ -864,8 +836,7 @@
             save += '\n' + '='.repeat(50) + '\n';
             save += '                 INVENTÁRIO\n';
             save += '='.repeat(50) + '\n\n';
-            
-            // Adicionar itens (simplificado)
+
             save += 'Itens serão carregados na próxima versão.\n\n';
             
             save += '='.repeat(50) + '\n';
@@ -938,9 +909,6 @@
             link.click();
         }
 
-        // ====================================================================
-        // GERENCIAMENTO DE SAVES LOCAIS
-        // ====================================================================
         function saveLocalSave(name, content, type) {
             const saves = getLocalSaves();
             
@@ -1062,8 +1030,7 @@
                 'Tem certeza que deseja excluir este save? Esta ação não pode ser desfeita.',
                 'delete'
             );
-            
-            // Configurar ação específica
+
             confirmedAction = () => {
                 const saves = getLocalSaves();
                 const filtered = saves.filter(s => s.id !== saveId);
@@ -1080,9 +1047,6 @@
             }
         }
 
-        // ====================================================================
-        // FUNÇÕES UTILITÁRIAS
-        // ====================================================================
         function formatFileSize(bytes) {
             if (bytes === 0) return '0 Bytes';
             const k = 1024;
@@ -1121,9 +1085,6 @@
             openResultModal('success', 'Dados Limpos', 'Todos os saves locais foram removidos.');
         }
 
-        // ====================================================================
-        // DRAG AND DROP
-        // ====================================================================
         function setupDragAndDrop() {
             const dropZone = document.getElementById('drop-zone');
             
@@ -1142,7 +1103,7 @@
                 
                 const file = e.dataTransfer.files[0];
                 if (file && file.name.endsWith('.txt')) {
-                    // Simular seleção de arquivo
+
                     const dataTransfer = new DataTransfer();
                     dataTransfer.items.add(file);
                     document.getElementById('file-input').files = dataTransfer.files;
@@ -1153,26 +1114,20 @@
             });
         }
 
-        // ====================================================================
-        // INICIALIZAÇÃO
-        // ====================================================================
         window.addEventListener('load', () => {
             loadLocalSaves();
             setupDragAndDrop();
             lucide.createIcons();
-            
-            // Configurar auto-save
+
             const autoSaveToggle = document.getElementById('auto-save-toggle');
             const backupToggle = document.getElementById('backup-toggle');
-            
-            // Carregar configurações salvas
+
             const autoSaveEnabled = localStorage.getItem('auto_save_enabled') !== 'false';
             const backupEnabled = localStorage.getItem('backup_enabled') !== 'false';
             
             autoSaveToggle.checked = autoSaveEnabled;
             backupToggle.checked = backupEnabled;
-            
-            // Salvar configurações ao alterar
+
             autoSaveToggle.addEventListener('change', (e) => {
                 localStorage.setItem('auto_save_enabled', e.target.checked);
             });
@@ -1180,8 +1135,7 @@
             backupToggle.addEventListener('change', (e) => {
                 localStorage.setItem('backup_enabled', e.target.checked);
             });
-            
-            // Auto-save ao sair da página
+
             if (autoSaveEnabled) {
                 window.addEventListener('beforeunload', () => {
                     const characterData = getCurrentCharacterData();

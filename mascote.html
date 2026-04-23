@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Mascote</title>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -20,14 +28,20 @@
             }
         }
     </script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        .glass { background: rgba(15, 15, 18, 0.6); backdrop-blur: 10px; border: 1px solid #2a2a2e; }
+        .glass { background: rgba(15, 15, 18, 0.6); backdrop-filter: blur(10px); border: 1px solid #2a2a2e; }
         .stat-input { background: transparent; border-bottom: 1px solid #2a2a2e; width: 100%; text-align: center; color: #4a9eff; font-weight: bold; }
         .stat-input:focus { border-bottom-color: #4a9eff; outline: none; }
     </style>
 </head>
-<body class="min-h-screen pb-20">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <body class="min-h-screen pb-20">
+
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 border-b border-theme-border sticky top-0 z-50 px-6 py-4 mb-8">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-2 text-theme-blue hover:brightness-110"><i data-lucide="arrow-left" class="w-5 h-5"></i> <span class="font-cinzel text-sm uppercase">Sair</span></a>
@@ -36,6 +50,7 @@
         </div>
     </nav>
 
+    <!-- =====================================================/////////////====================================================== -->
     <main class="max-w-5xl mx-auto px-6 grid grid-cols-1 md:grid-cols-12 gap-8">
         <div class="md:col-span-4 flex flex-col items-center">
             <div id="icon-container" class="w-48 h-48 bg-theme-panel border-4 border-dashed border-theme-border rounded-full flex flex-col items-center justify-center cursor-pointer overflow-hidden transition-all hover:border-theme-blue" onclick="document.getElementById('f-up').click()">
@@ -68,20 +83,24 @@
         </div>
 
         <div class="md:col-span-8 space-y-6">
-            <section class="glass rounded-2xl p-6">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="glass rounded-2xl p-6">
                 <div class="grid grid-cols-2 gap-4">
                     <div><label class="text-[10px] text-gray-500 uppercase">Nome do Mascote</label><input type="text" id="m-name" class="w-full bg-transparent border-b border-theme-border py-2 text-white outline-none focus:border-theme-blue"></div>
                     <div><label class="text-[10px] text-gray-500 uppercase">Espécie / Tipo</label><input type="text" id="m-type" class="w-full bg-transparent border-b border-theme-border py-2 text-white outline-none focus:border-theme-blue"></div>
                 </div>
             </section>
 
-            <section class="glass rounded-2xl p-6 h-64">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="glass rounded-2xl p-6 h-64">
                 <h3 class="font-cinzel text-theme-pink text-xs font-bold mb-4 uppercase tracking-widest">Personalidade & Comportamento</h3>
                 <textarea id="m-perso" class="w-full h-40 bg-transparent border border-theme-border rounded-xl p-4 text-sm outline-none focus:border-theme-pink transition-all" placeholder="Como o mascote age com o dono e com estranhos?"></textarea>
             </section>
         </div>
     </main>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         const q = s => document.querySelector(s);
         let user = Core.load();
