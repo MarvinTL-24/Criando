@@ -1,4 +1,3 @@
-@ -1,877 +1,118 @@
 /* ==============================////============================== */
 
 const DB_KEY = 'grimorio_player';
@@ -16,8 +15,31 @@ class Core {
             next: 1000,
             points: 0,
             god: false,
-            stats: { str: 0, dex: 0, con: 0, int: 0, wis: 0, cha: 0 },
-            res: { hp: 10, hpMax: 10, mp: 0, mpMax: 0, sta: 20, staMax: 20 },
+            // Status Dinâmico (Compatibilidade com status.html)
+            status: {
+                cats: [
+                    { name: "Vida", val: 100, max: 100, color: "red", active: true, lock: false },
+                    { name: "Mana", val: 50, max: 50, color: "blue", active: true, lock: false },
+                    { name: "Estamina", val: 50, max: 50, color: "green", active: true, lock: false }
+                ],
+                attrs: [
+                    { name: "Força", val: 10, max: 100, lock: false, active: true },
+                    { name: "Destreza", val: 10, max: 100, lock: false, active: true },
+                    { name: "Constituição", val: 10, max: 100, lock: false, active: true },
+                    { name: "Inteligência", val: 10, max: 100, lock: false, active: true },
+                    { name: "Sabedoria", val: 10, max: 100, lock: false, active: true },
+                    { name: "Carisma", val: 10, max: 100, lock: false, active: true }
+                ],
+                derived: [
+                    { name: "Dano Físico", formula: "Força * 1.5", val: 15, op: "*", mod: 1.5, base: "Força", active: true },
+                    { name: "Defesa", formula: "Constituição * 2", val: 20, op: "*", mod: 2, base: "Constituição", active: true }
+                ],
+                luck: { val: 50, sentiments: [] },
+                dice: { qty: 1, type: 20, useStatus: true, useLuck: true, last: "-", details: "" }
+            },
+            // Atributos Estáticos (Sistema do Usuário)
+            stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
+            res: { hp: 100, hpMax: 100, mp: 50, mpMax: 50, sta: 50, staMax: 50 },
             items: [],
             skills: [],
             money: { gold: 0, silver: 0, copper: 100 },
@@ -35,26 +57,20 @@ class Core {
             styles: { oneHand: 0, twoHands: 0, dual: 0, magic: 0 },
             equip: { main: 'Nenhuma', body: 'Nenhuma', acc: 'Nenhum' },
             mascot: {
-                name: 'Novo Mascote',
-                level: 1,
-                type: '',
-                element: '',
-                hp: 50,
-                hpMax: 50,
-                loyalty: 80,
-                stats: { agi: 50, str: 50, per: 50, def: 50, sta: 50 },
-                skills: [],
-                desc: { view: '', personality: '', history: '' },
-                icon: ''
+                name: 'Mascote', level: 1, type: '', element: '', hp: 50, hpMax: 50, loyalty: 80,
+                stats: { agi: 5, str: 5, per: 5, def: 5, sta: 5 }, skills: [],
+                desc: { view: '', personality: '', history: '' }, icon: ''
             },
             paranormal: {
                 nex: 5, rank: '', sanity: 16, sanityMax: 16, effort: 4, effortMax: 4,
                 attributes: { agi: 0, str: 0, int: 0, vig: 0, pre: 0 },
                 defenses: { defense: 10, block: 0, dodge: 0 },
                 resistances: { blood: 0, death: 0, knowledge: 0, energy: 0, fear: 0 },
-                rituals: [],
-                skills: {}
+                rituals: [], skills: {}
             },
+            // Roleplay (Ficha)
+            head: '', torso: '', arms: '', legs: '',
+            bio: '', motives: '', fears: '', traits: '', ideals: '', flaws: '', habits: '', allies: '', enemies: '',
             avatar: '',
             created: new Date().toISOString(),
             updated: new Date().toISOString()
@@ -62,10 +78,13 @@ class Core {
         this.save(player);
     }
 
+    static get player() { return this.load(); }
+
     static save(data) {
-        data.updated = new Date().toISOString();
-        this.calc(data);
-        localStorage.setItem(DB_KEY, JSON.stringify(data));
+        const user = data || this.player;
+        user.updated = new Date().toISOString();
+        if (user.stats) this.calc(user);
+        localStorage.setItem(DB_KEY, JSON.stringify(user));
         window.dispatchEvent(new CustomEvent('update'));
         return true;
     }
@@ -79,6 +98,7 @@ class Core {
 
     static calc(user) {
         const s = user.stats;
+        if (!s) return;
         user.res.hpMax = Math.max(10, s.con * 5);
         user.res.hp = Math.min(user.res.hp ?? user.res.hpMax, user.res.hpMax);
         user.res.mpMax = s.int * 2;
@@ -91,19 +111,13 @@ class Core {
         const user = this.load();
         user.level++;
         user.points += 5;
-        user.next = Math.floor(user.next * 1.5);
         this.save(user);
-    }
-
-    static setInfo(data) {
-        const user = this.load();
-        Object.assign(user, data);
-        return this.save(user);
     }
 
     static notify(msg, type = 'info') {
         const el = document.createElement('div');
         el.className = `fixed top-4 right-4 px-4 py-3 rounded-lg z-50 bg-[#0f0f12] border border-theme-border text-white shadow-lg anim-fade-in`;
+        el.style.borderColor = type === 'success' ? '#22c55e' : (type === 'error' ? '#ef4444' : '#2a2a2e');
         el.textContent = msg;
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 3000);
@@ -115,5 +129,5 @@ class Core {
 document.addEventListener('DOMContentLoaded', () => {
     Core.init();
     window.Core = Core;
-    window.GrimorioSystem = Core; // Alias for legacy
+    window.GrimorioSystem = Core;
 });
