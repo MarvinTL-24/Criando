@@ -5,9 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Habilidades</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -18,6 +26,8 @@
             }
         }
     </script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
@@ -26,7 +36,11 @@
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
     </style>
 </head>
-<body class="min-h-screen font-sans pb-12">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <body class="min-h-screen font-sans pb-12">
+
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 border-b border-theme-border sticky top-0 z-50 mb-8">
         <div class="max-w-screen-2xl mx-auto px-6 flex items-center justify-between py-4">
             <a href="index.html" class="flex items-center gap-2 px-3 py-2 bg-red-600/10 border border-red-600/30 rounded-lg text-red-600 font-medium hover:bg-red-600/20">
@@ -38,7 +52,9 @@
         </div>
     </nav>
     <div class="max-w-6xl mx-auto px-4 space-y-6">
-        <header class="flex items-center gap-4 mb-6 anim-entry">
+
+    <!-- =====================================================/////////////====================================================== -->
+    <header class="flex items-center gap-4 mb-6 anim-entry">
             <div class="p-3 rounded-lg bg-red-600/10 border border-red-600/20"><i data-lucide="sword" class="w-8 h-8 text-red-600"></i></div>
             <div><h1 class="text-3xl font-cinzel font-bold text-white">Habilidades</h1><p class="text-gray-400 text-xs">Suas skills de combate e utilidade</p></div>
         </header>
@@ -56,6 +72,8 @@
             </form>
         </div>
     </div>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script>
 
         tailwind.config = {
@@ -79,13 +97,12 @@
                 }
             }
         }
-        // Verificar se há perfil ativo
+
         window.addEventListener('load', function() {
             if (window.hasActiveProfile && window.hasActiveProfile()) {
                 const profileInfo = window.getActiveProfileInfo();
                 console.log('Trabalhando no perfil:', profileInfo.name);
-                
-                // Carregar dados específicos desta página
+
                 const dados = window.loadFromProfile('status'); // 'status' muda por página
                 if (dados) {
                     preencherCampos(dados);
@@ -93,14 +110,11 @@
             }
         });
 
-        // Ao salvar na página
         function salvarNaPagina() {
             const dados = coletarDadosDaPagina();
-            
-            // Salvar localmente (compatibilidade com versão antiga)
+
             localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
-            
-            // Salvar no perfil ativo (novo sistema)
+
             if (window.saveToProfile) {
                 const success = window.saveToProfile('status', dados);
                 if (success) {
@@ -110,26 +124,30 @@
         }
     </script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
-        /* Animações */
+        
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* Modal Transitions */
+        
         #modal-overlay { transition: opacity 0.3s ease; }
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
         #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
 
-        /* Scrollbar */
+        
         textarea::-webkit-scrollbar { width: 6px; }
         textarea::-webkit-scrollbar-track { background: #0f0f12; }
         textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen font-sans pb-12">
 
+    <!-- =====================================================/////////////====================================================== -->
+    <body class="min-h-screen font-sans pb-12">
+
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
         <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
@@ -152,7 +170,8 @@
 
     <div class="max-w-6xl mx-auto px-4 space-y-6">
 
-        <header class="flex items-center gap-4 mb-6 anim-entry">
+    <!-- =====================================================/////////////====================================================== -->
+    <header class="flex items-center gap-4 mb-6 anim-entry">
             <div class="p-3 rounded-lg bg-red-600/10 border border-red-600/20">
                 <i data-lucide="sword" class="w-8 h-8 text-red-600"></i>
             </div>
@@ -227,6 +246,7 @@
         </div>
     </div>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         const typesConfig = {
             'dano': { label: "Dano", icon: "sword", color: "#dc2626" },
@@ -280,13 +300,12 @@
                         </div>
                     </div>`;
             });
-            // Botão Adicionar (Classe 'add-btn' para esconder no print)
+
             html += `<button onclick="openModal()" class="add-btn bg-[#0f0f12] border-2 border-dashed border-theme-border p-8 flex flex-col items-center justify-center gap-3 hover:border-theme-blue transition-colors group min-h-[200px] rounded anim-entry"><i data-lucide="plus" class="w-8 h-8 text-[#606060] group-hover:text-theme-blue transition-colors"></i><span class="text-[#606060] group-hover:text-theme-blue font-cinzel transition-colors">Nova Habilidade</span></button>`;
             grid.innerHTML = html;
             lucide.createIcons();
         }
 
-        // --- Export Functions ---
 
         function exportTXT() {
             let content = "=== HABILIDADES DE COMBATE ===\n\n";
@@ -305,7 +324,6 @@
             link.click();
         }
 
-        // --- Standard Logic ---
         function setFilter(f) { currentFilter = f; renderFilters(); renderGrid(); }
         function openModal(id=null) {
             const modal = document.getElementById('modal-overlay');
@@ -351,7 +369,7 @@
         }
 
         window.addEventListener('load', () => { renderFilters(); renderGrid(); });
-    // shared.js - Coloque em todas as páginas
+
     class GrimorioSaveSystem {
         static saveCharacter(data) {
             localStorage.setItem('grimorio_character_data', JSON.stringify(data));
@@ -384,7 +402,7 @@
         }
         
         static notifyUpdate(type) {
-            // Dispara evento customizado
+
             const event = new CustomEvent('grimorio-update', {
                 detail: { type: type, timestamp: Date.now() }
             });
@@ -425,14 +443,12 @@
         }
     }
 
-    // Listener para atualizações em tempo real
     window.addEventListener('grimorio-update', function(event) {
         console.log('Dados atualizados:', event.detail.type);
-        // Atualiza a página atual com os novos dados
+
         refreshCurrentPage();
     });
 
-    // Função para detectar mudanças no localStorage de outras abas
     window.addEventListener('storage', function(event) {
         if (event.key.startsWith('grimorio_')) {
             location.reload(); // Recarrega para mostrar dados atualizados

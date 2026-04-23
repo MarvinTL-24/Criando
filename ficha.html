@@ -11,11 +11,17 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap"
         rel="stylesheet">
+
     <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -44,6 +50,7 @@
         }
     </script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body {
             background-color: #0a0a0c;
@@ -137,7 +144,7 @@
 
         .avatar-placeholder {
             transition: all 0.3s;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(2px));
         }
 
         .avatar-upload:hover .avatar-placeholder {
@@ -177,8 +184,10 @@
     </style>
 </head>
 
-<body class="min-h-screen font-sans pb-20">
+    <!-- =====================================================/////////////====================================================== -->
+    <body class="min-h-screen font-sans pb-20">
 
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
         <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
@@ -232,7 +241,8 @@
             </div>
         </div>
 
-        <header class="flex items-center gap-4 mb-8 anim-entry delay-1">
+    <!-- =====================================================/////////////====================================================== -->
+    <header class="flex items-center gap-4 mb-8 anim-entry delay-1">
             <div class="p-3 rounded-lg bg-[#4a9eff]/10 border border-[#4a9eff]/20">
                 <i data-lucide="scroll-text" class="w-8 h-8 text-theme-blue"></i>
             </div>
@@ -242,7 +252,8 @@
             </div>
         </header>
 
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 card-highlight">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-1 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-blue mb-6">
                 <i data-lucide="user" class="w-5 h-5"></i>
                 <span>Identidade & Avatar</span>
@@ -351,7 +362,8 @@
             </div>
         </section>
 
-        <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 card-highlight">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry delay-2 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-theme-orange mb-6">
                 <i data-lucide="palette" class="w-5 h-5"></i>
                 <span>Aparência Física</span>
@@ -392,7 +404,8 @@
             </div>
         </section>
 
-        <section class="bg-[#0f120f] border border-[#1a3d1a] p-6 rounded-lg anim-entry delay-2 card-highlight">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-[#0f120f] border border-[#1a3d1a] p-6 rounded-lg anim-entry delay-2 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#32cd32] mb-6">
                 <i data-lucide="book-open" class="w-5 h-5"></i>
                 <span>História & Passado</span>
@@ -424,7 +437,8 @@
             </div>
         </section>
 
-        <section class="bg-[#141307] border border-[#4d4300] p-6 rounded-lg anim-entry delay-3 card-highlight">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-[#141307] border border-[#4d4300] p-6 rounded-lg anim-entry delay-3 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#ffd700] mb-6">
                 <i data-lucide="heart" class="w-5 h-5"></i>
                 <span>Personalidade & Comportamento</span>
@@ -466,7 +480,8 @@
             </div>
         </section>
 
-        <section class="bg-[#120f1a] border border-[#3d1a3d] p-6 rounded-lg anim-entry delay-3 card-highlight">
+    <!-- =====================================================/////////////====================================================== -->
+    <section class="bg-[#120f1a] border border-[#3d1a3d] p-6 rounded-lg anim-entry delay-3 card-highlight">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-[#d32cd3] mb-6">
                 <i data-lucide="users" class="w-5 h-5"></i>
                 <span>Relações & Conexões</span>
@@ -541,6 +556,7 @@
         </div>
     </div>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         
         document.addEventListener('DOMContentLoaded', function () {
@@ -1011,7 +1027,6 @@
             const dados = coletarTodosDados();
             const campos = getCamposFicha(dados);
 
-            const texto = campos.map(c => `${c.t} - ${c.v || 'Não preenchido'}`).join('\n\n===============================================================\n\n');
 
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
@@ -1038,11 +1053,15 @@
                 <head>
                     <meta charset='utf-8'>
                     <title>Ficha Personagem</title>
-                    <style>
+
+    <!-- =====================================================/////////////====================================================== -->
+    <style>
                         body { font-family: 'Segoe UI', Arial, sans-serif; line-height: 1.6; color: #333; padding: 20px;}
                     </style>
                 </head>
-                <body>
+
+    <!-- =====================================================/////////////====================================================== -->
+    <body>
                     ${corpoHtml}
                 </body>
                 </html>
