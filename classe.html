@@ -8,12 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <!-- SEU SISTEMA DE ARMAZENAMENTO -->
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -44,6 +49,7 @@
         }
     </script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
         
@@ -70,8 +76,7 @@
             border-color: #4a9eff;
             box-shadow: 0 0 20px rgba(74, 158, 255, 0.3);
         }
-        
-        /* Modal estilos */
+
         .modal-overlay {
             display: none;
             position: fixed;
@@ -90,8 +95,7 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        
-        /* Animações de entrada */
+
         .slide-in {
             animation: slideIn 0.3s ease-out forwards;
         }
@@ -106,8 +110,7 @@
                 transform: translateY(0) scale(1);
             }
         }
-        
-        /* Tags de classe */
+
         .classe-tag {
             display: inline-flex;
             align-items: center;
@@ -120,13 +123,14 @@
         }
     </style>
 </head>
+
+    <!-- =====================================================/////////////====================================================== -->
 <body class="min-h-screen font-sans">
 
-    <!-- Modal para Criar Nova Classe -->
     <div id="modal-nova-classe" class="modal-overlay flex items-center justify-center p-4">
         <div class="modal-content bg-theme-panel border border-theme-border rounded-xl w-full slide-in">
             <div class="p-6">
-                <!-- Cabeçalho do Modal -->
+                
                 <div class="flex items-center justify-between mb-6">
                     <div>
                         <h3 class="font-cinzel text-2xl font-bold text-white">
@@ -141,10 +145,9 @@
                     </button>
                 </div>
 
-                <!-- Formulário de Criação -->
                 <form id="form-nova-classe" onsubmit="criarNovaClasse(event)">
                     <div class="space-y-6">
-                        <!-- Nome e Descrição -->
+                        
                         <div class="grid md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-white mb-2">Nome da Classe *</label>
@@ -167,7 +170,6 @@
                             </div>
                         </div>
 
-                        <!-- Armas (32 opções) -->
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">
                                 <i data-lucide="sword" class="w-4 h-4 inline mr-1"></i>
@@ -216,7 +218,6 @@
                             </div>
                         </div>
 
-                        <!-- Pacto -->
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">
                                 <i data-lucide="scroll" class="w-4 h-4 inline mr-1"></i>
@@ -240,7 +241,6 @@
                             </div>
                         </div>
 
-                        <!-- Elementos -->
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">
                                 <i data-lucide="flame" class="w-4 h-4 inline mr-1"></i>
@@ -285,7 +285,6 @@
                             </div>
                         </div>
 
-                        <!-- Habilidades (3 slots) -->
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">
                                 <i data-lucide="zap" class="w-4 h-4 inline mr-1"></i>
@@ -319,7 +318,6 @@
                             </div>
                         </div>
 
-                        <!-- Função na Equipe -->
                         <div>
                             <label class="block text-sm font-semibold text-white mb-2">Função na Equipe</label>
                             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
@@ -358,7 +356,6 @@
                             </div>
                         </div>
 
-                        <!-- Botões do Modal -->
                         <div class="flex gap-3 pt-4 border-t border-theme-border">
                             <button type="button" onclick="fecharModal('modal-nova-classe')"
                                     class="flex-1 px-4 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
@@ -376,7 +373,7 @@
         </div>
     </div>
 
-    <!-- Barra de Navegação -->
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
         <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
@@ -407,10 +404,9 @@
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue to-transparent"></div>
     </nav>
 
-    <!-- Conteúdo Principal -->
+    <!-- =====================================================/////////////====================================================== -->
     <main class="max-w-6xl mx-auto px-4 py-8">
-        
-        <!-- Cabeçalho -->
+
         <div class="text-center mb-12 anim-entry">
             <h1 class="font-cinzel text-4xl font-bold text-white mb-4">Sistema Completo de Classes</h1>
             <p class="text-gray-400 max-w-2xl mx-auto">
@@ -418,8 +414,8 @@
             </p>
             <div class="w-32 h-[2px] bg-gradient-to-r from-transparent via-theme-blue to-transparent mx-auto mt-6"></div>
         </div>
-        
-        <!-- Classes Personalizadas (Salvas) -->
+
+    <!-- =====================================================/////////////====================================================== -->
         <section class="mb-12 anim-entry" style="animation-delay: 0.1s;" id="secao-classes-personalizadas">
             <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <i data-lucide="sparkles" class="w-6 h-6 text-theme-purple"></i>
@@ -430,7 +426,7 @@
             </h2>
             
             <div id="container-classes-personalizadas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Classes personalizadas serão carregadas aqui -->
+                
                 <div class="text-center py-8 border-2 border-dashed border-theme-border rounded-lg">
                     <i data-lucide="folder-plus" class="w-12 h-12 mx-auto mb-4 text-gray-600"></i>
                     <p class="text-gray-500 mb-2">Nenhuma classe personalizada</p>
@@ -438,8 +434,8 @@
                 </div>
             </div>
         </section>
-        
-        <!-- Classes Padrão -->
+
+    <!-- =====================================================/////////////====================================================== -->
         <section class="mb-12 anim-entry" style="animation-delay: 0.2s;">
             <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <i data-lucide="shield" class="w-6 h-6 text-theme-blue"></i>
@@ -447,8 +443,7 @@
             </h2>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- Guerreiro -->
+
                 <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
                      onclick="selecionarClasse('Guerreiro', 'padrao')" data-classe="guerreiro" data-tipo="padrao">
                     <div class="flex items-start justify-between mb-4">
@@ -476,8 +471,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Mago -->
+
                 <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
                      onclick="selecionarClasse('Mago', 'padrao')" data-classe="mago" data-tipo="padrao">
                     <div class="flex items-start justify-between mb-4">
@@ -505,8 +499,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Arqueiro -->
+
                 <div class="class-card bg-theme-panel border border-theme-border p-6 rounded-lg cursor-pointer" 
                      onclick="selecionarClasse('Arqueiro', 'padrao')" data-classe="arqueiro" data-tipo="padrao">
                     <div class="flex items-start justify-between mb-4">
@@ -536,8 +529,8 @@
                 </div>
             </div>
         </section>
-        
-        <!-- Classe Atualmente Selecionada -->
+
+    <!-- =====================================================/////////////====================================================== -->
         <section class="bg-theme-panel border border-theme-border p-6 rounded-lg mb-8 anim-entry" style="animation-delay: 0.3s;">
             <h2 class="font-cinzel text-2xl font-bold text-white mb-6 flex items-center gap-2">
                 <i data-lucide="check-circle" class="w-6 h-6 text-theme-green"></i>
@@ -551,11 +544,10 @@
             </div>
             
             <div id="class-details" class="hidden">
-                <!-- Detalhes serão preenchidos por JavaScript -->
+                
             </div>
         </section>
-        
-        <!-- Ações -->
+
         <div class="flex flex-col md:flex-row gap-4 justify-center anim-entry" style="animation-delay: 0.4s;">
             <button onclick="window.location.href='index.html'" 
                     class="px-6 py-3 border border-theme-border rounded-lg text-white hover:bg-white/5 transition-colors">
@@ -570,39 +562,32 @@
         </div>
     </main>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
-        // ====================================================================
-        // SISTEMA COMPLETO DE CLASSES - CORRIGIDO PARA GRIMORIO-CORE.JS
-        // ====================================================================
 
-        // Inicializar ícones
         if (window.lucide) {
             lucide.createIcons();
         }
 
-        // Variáveis do sistema
         let classeSelecionada = null;
         let tipoClasseSelecionada = null; // 'padrao' ou 'personalizada'
         let dadosClassePersonalizada = null;
         let classesSalvas = [];
 
-        // Inicializar sistema
         function inicializarSistema() {
-            // Verificar se grimorio-core.js está disponível
+
             if (typeof GrimorioSystem === 'undefined') {
                 console.error('grimorio-core.js não carregado!');
                 mostrarErro('Sistema de armazenamento não encontrado');
                 return;
             }
-            
-            // Garantir que o personagem existe
+
             GrimorioSystem.inicializarPersonagemPadrao();
             
             carregarClassesPersonalizadas();
             verificarClasseAtual();
         }
 
-        // Funções para gerenciar classes personalizadas no localStorage
         function salvarClassesPersonalizadas() {
             try {
                 localStorage.setItem('grimorio_classes_personalizadas', JSON.stringify(classesSalvas));
@@ -646,8 +631,7 @@
                         'luz': 'yellow',
                         'trevas': 'purple'
                     }[classe.elemento] || 'gray';
-                    
-                    // Determinar ícone baseado no tipo de combate
+
                     const icone = getIconForClass(classe.tipoCombate);
                     
                     container.innerHTML += `
@@ -772,21 +756,20 @@
         function verificarClasseAtual() {
             const personagem = GrimorioSystem.carregarPersonagem();
             if (personagem && personagem.classe && personagem.classe !== 'Não Escolhida') {
-                // Verificar se é classe personalizada
+
                 const classeEncontrada = classesSalvas.find(c => c.nome === personagem.classe);
                 
                 if (classeEncontrada) {
-                    // É classe personalizada
+
                     const classeIndex = classesSalvas.findIndex(c => c.nome === personagem.classe);
                     selecionarClassePersonalizada(classeIndex);
                 } else {
-                    // É classe padrão
+
                     selecionarClasse(personagem.classe, 'padrao', true);
                 }
             }
         }
 
-        // Modal Functions
         function abrirModalNovaClasse() {
             document.getElementById('modal-nova-classe').style.display = 'flex';
             setTimeout(() => {
@@ -801,11 +784,9 @@
             }, 300);
         }
 
-        // Criar nova classe personalizada
         function criarNovaClasse(event) {
             event.preventDefault();
-            
-            // Coletar dados do formulário
+
             const nome = document.getElementById('nova-classe-nome').value.trim();
             const combate = document.getElementById('nova-classe-combate').value;
             const armaSelecionada = document.getElementById('nova-classe-arma').value;
@@ -814,23 +795,19 @@
             if (armaSelecionada === 'outra') {
                 arma = document.getElementById('arma-personalizada').value.trim() || 'Arma Personalizada';
             }
-            
-            // Verificar se já existe classe com este nome
+
             if (classesSalvas.some(c => c.nome.toLowerCase() === nome.toLowerCase())) {
                 mostrarErro('Já existe uma classe com este nome!');
                 return;
             }
-            
-            // Pacto
+
             const pactoElement = document.querySelector('input[name="pacto"]:checked');
             const pacto = pactoElement ? pactoElement.value : null;
-            
-            // Elemento
+
             const elementoElement = document.querySelector('input[name="elemento"]:checked');
             const elemento = elementoElement ? elementoElement.value : null;
             const variacaoElemento = document.getElementById('variacao-elemento').value.trim();
-            
-            // Habilidades
+
             const habilidades = [
                 {
                     nome: document.getElementById('habilidade1').value.trim(),
@@ -845,12 +822,10 @@
                     custo: document.getElementById('custo-habilidade3').value.trim() || '0 MP'
                 }
             ];
-            
-            // Funções
+
             const funcoesElements = document.querySelectorAll('input[name="funcao"]:checked');
             const funcoes = Array.from(funcoesElements).map(el => el.value);
-            
-            // Criar objeto da classe
+
             const novaClasse = {
                 id: Date.now().toString(),
                 nome: nome,
@@ -867,20 +842,17 @@
                 bonusPontos: 2, // +2 pontos ao escolher esta classe
                 habilidadesExclusivas: habilidades.map(h => h.nome) // 3 habilidades exclusivas
             };
-            
-            // Adicionar à lista de classes
+
             classesSalvas.push(novaClasse);
             salvarClassesPersonalizadas();
             
             mostrarFeedbackSucesso(`Classe "${nome}" criada com sucesso!`);
             fecharModal('modal-nova-classe');
             carregarClassesPersonalizadas();
-            
-            // Selecionar automaticamente a nova classe
+
             const ultimaClasseIndex = classesSalvas.length - 1;
             selecionarClassePersonalizada(ultimaClasseIndex);
-            
-            // Resetar formulário
+
             document.getElementById('form-nova-classe').reset();
             document.getElementById('arma-personalizada-container').classList.add('hidden');
         }
@@ -890,8 +862,7 @@
                 const classeRemovida = classesSalvas[index];
                 classesSalvas.splice(index, 1);
                 salvarClassesPersonalizadas();
-                
-                // Se esta classe estava selecionada no personagem, limpar
+
                 const personagem = GrimorioSystem.carregarPersonagem();
                 if (personagem.classe === classeRemovida.nome) {
                     personagem.classe = 'Não Escolhida';
@@ -901,8 +872,7 @@
                 
                 carregarClassesPersonalizadas();
                 mostrarFeedbackSucesso(`Classe "${classeRemovida.nome}" removida!`);
-                
-                // Se não há mais classes selecionadas, limpar seleção
+
                 if (classeSelecionada === classeRemovida.nome) {
                     classeSelecionada = null;
                     tipoClasseSelecionada = null;
@@ -924,7 +894,6 @@
             return icons[tipoCombate] || 'user';
         }
 
-        // Selecionar classe padrão
         function selecionarClasse(nomeClasse, tipo = 'padrao', naoAtualizarUI = false) {
             classeSelecionada = nomeClasse;
             tipoClasseSelecionada = tipo;
@@ -937,7 +906,6 @@
             habilitarBotoesConfirmacao();
         }
 
-        // Selecionar classe personalizada
         function selecionarClassePersonalizada(index) {
             if (index >= 0 && index < classesSalvas.length) {
                 classeSelecionada = classesSalvas[index].nome;
@@ -950,19 +918,18 @@
         }
 
         function atualizarUI() {
-            // Remover seleção de todas as classes
+
             document.querySelectorAll('.class-card').forEach(card => {
                 card.classList.remove('selected');
             });
-            
-            // Adicionar seleção à classe clicada
+
             if (tipoClasseSelecionada === 'padrao') {
                 const cardSelecionado = document.querySelector(`[data-classe="${classeSelecionada.toLowerCase()}"]`);
                 if (cardSelecionado) {
                     cardSelecionado.classList.add('selected');
                 }
             } else if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
-                // Encontrar o card da classe personalizada
+
                 const cards = document.querySelectorAll('#container-classes-personalizadas .class-card');
                 cards.forEach((card, index) => {
                     if (card.querySelector('h3').textContent === dadosClassePersonalizada.nome) {
@@ -970,8 +937,7 @@
                     }
                 });
             }
-            
-            // Atualizar painel de classe selecionada
+
             atualizarPainelSelecionado();
         }
 
@@ -1251,7 +1217,6 @@
             document.getElementById('btn-confirmar-final').classList.add('cursor-pointer');
         }
 
-        // Salvar classe na ficha - INTEGRADO COM GRIMORIO-CORE.JS
         function salvarClasseNoPersonagem() {
             if (!classeSelecionada) {
                 mostrarErro('Por favor, selecione uma classe antes de confirmar.');
@@ -1264,14 +1229,11 @@
                 mostrarErro('Erro ao carregar personagem. Tente recarregar a página.');
                 return;
             }
-            
-            // Verificar se está mudando de classe
+
             const mudandoClasse = personagem.classe && personagem.classe !== classeSelecionada;
-            
-            // Atualizar informações da classe no personagem
+
             personagem.classe = classeSelecionada;
-            
-            // Se for classe personalizada, adicionar detalhes e aplicar bônus
+
             if (tipoClasseSelecionada === 'personalizada' && dadosClassePersonalizada) {
                 personagem.detalhesClasse = {
                     tipoCombate: dadosClassePersonalizada.tipoCombate,
@@ -1283,36 +1245,32 @@
                     funcoes: dadosClassePersonalizada.funcoes,
                     icone: dadosClassePersonalizada.icone
                 };
-                
-                // Aplicar bônus de pontos (+2 pontos para classes personalizadas)
+
                 if (dadosClassePersonalizada.bonusPontos) {
                     if (mudandoClasse) {
-                        // Se está mudando de classe, não acumula pontos
+
                         personagem.pontosDisponiveis += dadosClassePersonalizada.bonusPontos;
                         console.log(`[Classe] +${dadosClassePersonalizada.bonusPontos} pontos concedidos`);
                     } else if (!personagem.classeAnterior) {
-                        // Se é a primeira vez escolhendo classe
+
                         personagem.pontosDisponiveis += dadosClassePersonalizada.bonusPontos;
                         console.log(`[Classe] +${dadosClassePersonalizada.bonusPontos} pontos concedidos`);
                     }
                 }
             } else {
-                // Para classes padrão, remover detalhes se existirem
+
                 delete personagem.detalhesClasse;
             }
-            
-            // Salvar personagem atualizado
+
             GrimorioSystem.salvarPersonagem(personagem);
             
             mostrarFeedbackSucesso(`Classe "${classeSelecionada}" salva na ficha! ${tipoClasseSelecionada === 'personalizada' ? '(+2 pontos adicionados)' : ''}`);
-            
-            // Redirecionar após breve delay
+
             setTimeout(() => {
                 window.location.href = 'index.html?classe=' + encodeURIComponent(classeSelecionada);
             }, 1500);
         }
 
-        // Feedback visual
         function mostrarFeedbackSucesso(mensagem) {
             const feedback = document.createElement('div');
             feedback.className = 'fixed top-4 right-4 p-4 bg-green-900/20 border border-green-800 rounded-lg shadow-lg z-50 slide-in';
@@ -1363,9 +1321,8 @@
             }, 3000);
         }
 
-        // Inicializar quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
-            // Configurar evento para arma personalizada
+
             document.getElementById('nova-classe-arma').addEventListener('change', function() {
                 const container = document.getElementById('arma-personalizada-container');
                 if (this.value === 'outra') {

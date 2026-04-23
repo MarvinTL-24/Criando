@@ -8,12 +8,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    
-    <!-- Sistema Grimório -->
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -64,22 +69,20 @@
         }
     </script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Scrollbar Customizada */
+
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0a0a0c; }
         ::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #4a9eff; }
 
-        /* Avatar Placeholder */
         .avatar-placeholder {
             background: linear-gradient(135deg, #2a2a2e 0%, #1a1a1e 100%);
             border: 2px dashed #4a9eff;
         }
-        
-        /* Cards */
+
         .card-hover {
             transition: all 0.3s ease;
         }
@@ -88,8 +91,7 @@
             transform: translateY(-5px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
-        
-        /* Badges */
+
         .badge {
             padding: 4px 12px;
             border-radius: 20px;
@@ -102,8 +104,7 @@
         .badge-orange { background: rgba(255, 107, 53, 0.15); color: #ff6b35; border: 1px solid rgba(255, 107, 53, 0.3); }
         .badge-green { background: rgba(34, 197, 94, 0.15); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3); }
         .badge-purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; border: 1px solid rgba(139, 92, 246, 0.3); }
-        
-        /* Seção Explicativa */
+
         .feature-card {
             background: linear-gradient(135deg, rgba(15, 15, 18, 0.8) 0%, rgba(10, 10, 12, 0.9) 100%);
             border: 1px solid #2a2a2e;
@@ -123,20 +124,20 @@
         }
     </style>
 </head>
+
+    <!-- =====================================================/////////////====================================================== -->
 <body class="min-h-screen font-sans flex flex-col">
 
-    <!-- Navbar -->
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex items-center justify-center flex-wrap" id="nav-container">
-                
-                <!-- Página Atual (Home) -->
+
                 <a href="index.html" class="flex items-center gap-2 px-5 py-4 text-theme-blue font-medium tracking-wide transition-all duration-300 bg-[#1a1a1e] border-b-2 border-[#4a9eff]">
                     <i data-lucide="home" class="w-4 h-4"></i>
                     <span class="font-cinzel">Home</span>
                 </a>
 
-                <!-- Personagem Dropdown -->
                 <div class="relative group dropdown-container">
                     <button onclick="toggleMenu('menu-personagem', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
                         <i data-lucide="user" class="w-4 h-4"></i>
@@ -153,25 +154,21 @@
                     </div>
                 </div>
 
-                <!-- Classe -->
                 <a href="classe.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
                     <i data-lucide="crown" class="w-4 h-4"></i>
                     <span class="font-cinzel">Classe</span>
                 </a>
 
-                <!-- Inventário -->
                 <a href="inventario.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
                     <i data-lucide="backpack" class="w-4 h-4"></i>
                     <span class="font-cinzel">Inventário</span>
                 </a>
 
-                <!-- Mascote -->
                 <a href="mascote.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
                     <i data-lucide="dog" class="w-4 h-4"></i>
                     <span class="font-cinzel">Mascote</span>
                 </a>
 
-                <!-- Habilidades Dropdown -->
                 <div class="relative group dropdown-container">
                     <button onclick="toggleMenu('menu-habil', this)" class="nav-btn flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
                         <i data-lucide="sword" class="w-4 h-4"></i>
@@ -188,7 +185,6 @@
                     </div>
                 </div>
 
-                <!-- Ordem  -->
                 <a href="ordem.html" class="flex items-center gap-2 px-5 py-4 text-[#e8e4dc] font-medium tracking-wide transition-all duration-300 hover:text-[#4a9eff] hover:bg-[#1a1a1e] border-b-2 border-transparent hover:border-[#4a9eff]">
                     <i data-lucide="flame" class="w-4 h-4"></i>
                     <span class="font-cinzel">Ordem paranormal</span>
@@ -198,8 +194,9 @@
         <div class="h-[2px] bg-gradient-to-r from-transparent via-[#4a9eff] to-transparent"></div>
     </nav>
 
+    <!-- =====================================================/////////////====================================================== -->
     <main class="flex-grow">
-        <!-- Hero Banner -->
+        
         <div class="relative w-full h-[30vh] min-h-[250px] overflow-hidden animate-fade-in">
             <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1600&q=80'); filter: brightness(0.6);"></div>
             <div class="absolute inset-0 bg-gradient-to-t from-[#0a0a0c] via-[#0a0a0c]/60 to-transparent"></div>
@@ -213,9 +210,8 @@
             </div>
         </div>
 
-        <!-- SEÇÃO PRINCIPAL: SEU PERSONAGEM -->
         <div class="max-w-7xl mx-auto px-4 py-8">
-            <!-- Cabeçalho da Seção -->
+            
             <div class="flex items-center justify-between mb-6 animate-slide-up">
                 <div>
                     <h2 class="font-cinzel text-2xl font-bold text-white flex items-center gap-2">
@@ -237,10 +233,8 @@
                 </div>
             </div>
 
-            <!-- Grid Principal: Avatar + Informações -->
             <div class="grid lg:grid-cols-3 gap-6 animate-slide-up" style="animation-delay: 0.1s">
-                
-                <!-- COLUNA 1: Avatar e Imagem -->
+
                 <div class="lg:col-span-1">
                     <div class="card-hover bg-theme-panel border border-theme-border rounded-xl p-6 h-full">
                         <div class="flex items-center gap-3 mb-6">
@@ -249,13 +243,12 @@
                         </div>
                         
                         <div class="flex flex-col items-center">
-                            <!-- Container da Imagem -->
+                            
                             <div id="avatar-container" class="w-48 h-48 rounded-full avatar-placeholder mb-4 overflow-hidden border-4 border-theme-border flex items-center justify-center">
-                                <!-- Imagem será carregada aqui -->
+                                
                                 <i data-lucide="user" class="w-20 h-20 text-[#606060]" id="avatar-icon"></i>
                             </div>
-                            
-                            <!-- Nome e Classe -->
+
                             <div class="text-center w-full mb-4">
                                 <div id="display-nome" class="text-xl font-cinzel font-bold text-white mb-2">Carregando...</div>
                                 <div id="display-classe" class="text-sm text-theme-orange font-medium">Classe não escolhida</div>
@@ -267,8 +260,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- COLUNA 2: Informações e Introdução -->
+
                 <div class="lg:col-span-2">
                     <div class="card-hover info-section rounded-xl p-6 h-full">
                         <div class="flex items-center gap-3 mb-6">
@@ -308,7 +300,6 @@
             </div>
         </div>
 
-        <!-- SEÇÃO: Features Principais -->
         <div class="max-w-7xl mx-auto px-4 pb-12">
             <div class="animate-slide-up" style="animation-delay: 0.3s">
                 <div class="flex items-center gap-3 mb-6">
@@ -317,7 +308,7 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Ficha Completa -->
+                    
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 rounded-lg bg-[#4a9eff]/10">
@@ -335,7 +326,6 @@
                         </div>
                     </div>
 
-                    <!-- Status e Atributos -->
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 rounded-lg bg-[#ff6b35]/10">
@@ -353,7 +343,6 @@
                         </div>
                     </div>
 
-                    <!-- Sistema de Classes -->
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 rounded-lg bg-[#8b5cf6]/10">
@@ -371,7 +360,6 @@
                         </div>
                     </div>
 
-                    <!-- Inventário -->
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 rounded-lg bg-[#4a9eff]/10">
@@ -389,7 +377,6 @@
                         </div>
                     </div>
 
-                    <!-- Mascote -->
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 rounded-lg bg-[#22c55e]/10">
@@ -407,7 +394,6 @@
                         </div>
                     </div>
 
-                    <!-- Habilidades -->
                     <div class="feature-card rounded-xl p-6">
                         <div class="flex items-center gap-3 mb-4">
                             <div class="p-2 rounded-lg bg-[#ff6b35]/10">
@@ -427,7 +413,7 @@
                 </div>
             </div>
         </div>
-            <!-- SEÇÃO: Ordem Paranormal -->
+            
             <div class="max-w-screen-2xl mx-auto px-6 pb-16">
                 <div class="animate-slide-up flex justify-center" style="animation-delay: 0.5s">
                     <div class="grid grid-cols-1 gap-8 w-full max-w-3xl">
@@ -461,8 +447,6 @@
             </div>
         </div>
 
-
-        <!-- SEÇÃO: Ações Rápidas -->
         <div class="max-w-7xl mx-auto px-4 pb-12">
             <div class="animate-slide-up" style="animation-delay: 0.5s">
                 <div class="flex items-center gap-3 mb-6">
@@ -471,7 +455,7 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Crie sua Ficha -->
+                    
                     <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
                         <div class="p-3 rounded-full bg-[#4a9eff]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
                             <i data-lucide="pencil" class="w-8 h-8 text-theme-blue"></i>
@@ -483,7 +467,6 @@
                         </button>
                     </div>
 
-                    <!-- Escolha sua Classe -->
                     <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
                         <div class="p-3 rounded-full bg-[#8b5cf6]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
                             <i data-lucide="crown" class="w-8 h-8 text-theme-purple"></i>
@@ -495,7 +478,6 @@
                         </button>
                     </div>
 
-                    <!-- Veja seu Status -->
                     <div class="bg-gradient-to-br from-theme-panel to-[#0a0a0c] border border-theme-border rounded-xl p-6 text-center">
                         <div class="p-3 rounded-full bg-[#22c55e]/20 mx-auto mb-4 w-16 h-16 flex items-center justify-center">
                             <i data-lucide="user-check" class="w-8 h-8 text-theme-green"></i>
@@ -511,6 +493,7 @@
         </div>
     </main>
 
+    <!-- =====================================================/////////////====================================================== -->
     <footer class="border-t border-theme-border py-8 mt-auto">
         <div class="flex justify-center items-center gap-4">
             <div class="w-16 h-[1px] bg-gradient-to-r from-transparent to-[#4a9eff]/50"></div>
@@ -520,13 +503,13 @@
         <p class="text-center text-[#606060] text-xs mt-4">Grimório Digital - Sistema de RPG v2.0</p>
     </footer>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
-        // 1. Inicializar Ícones Lucide
+
         if (window.lucide) {
             lucide.createIcons();
         }
 
-        // 2. Lógica dos Dropdowns
         function toggleMenu(menuId, btnElement) {
             const menu = document.getElementById(menuId);
             const chevron = btnElement.querySelector('.chevron');
@@ -555,21 +538,18 @@
             }
         });
 
-        // 3. CARREGAR DADOS DO PERSONAGEM (apenas nome, classe e avatar)
         function carregarDadosPersonagem() {
             try {
-                // Usa o sistema centralizado
+
                 const personagem = GrimorioSystem.carregarPersonagem();
                 
                 if (!personagem) {
                     return;
                 }
-                
-                // Atualizar apenas nome e classe
+
                 document.getElementById('display-nome').textContent = personagem.nome || 'Sem Nome';
                 document.getElementById('display-classe').textContent = personagem.classe || 'Classe não escolhida';
-                
-                // Carregar avatar
+
                 carregarAvatarIndex();
                 
             } catch (error) {
@@ -577,7 +557,6 @@
             }
         }
 
-        // 4. CARREGAR AVATAR
         function carregarAvatarIndex() {
             try {
                 const personagem = GrimorioSystem.carregarPersonagem();
@@ -591,11 +570,10 @@
                 
                 if (personagem.avatar && personagem.avatar.trim() !== '' && personagem.avatar !== 'null') {
                     console.log('Carregando avatar no index:', personagem.avatar.substring(0, 50) + '...');
-                    
-                    // Tentar carregar a imagem primeiro
+
                     const img = new Image();
                     img.onload = function() {
-                        // Imagem carregada com sucesso
+
                         avatarContainer.style.backgroundImage = `url('${personagem.avatar}')`;
                         avatarContainer.style.backgroundSize = 'cover';
                         avatarContainer.style.backgroundPosition = 'center';
@@ -603,7 +581,7 @@
                     };
                     
                     img.onerror = function() {
-                        // Erro ao carregar imagem
+
                         console.error('Erro ao carregar imagem do avatar');
                         avatarContainer.style.backgroundImage = '';
                         if (avatarIcon) avatarIcon.style.display = 'block';
@@ -625,7 +603,6 @@
             }
         }
 
-        // 5. MENSAGENS DE FEEDBACK
         function mostrarMensagem(mensagem, tipo = 'info') {
             const feedback = document.createElement('div');
             feedback.className = `fixed top-4 right-4 px-4 py-3 rounded-lg z-50 animate-fade-in`;
@@ -648,35 +625,29 @@
             }, 3000);
         }
 
-        // 6. ATUALIZAÇÃO PERIÓDICA (para sincronizar entre abas)
         function iniciarAtualizacaoPeriodica() {
-            // Atualizar a cada 2 segundos
+
             setInterval(carregarDadosPersonagem, 2000);
-            
-            // Ouvir eventos do sistema
+
             window.addEventListener('grimorio:personagemAtualizado', carregarDadosPersonagem);
         }
 
-        // 7. INICIALIZAÇÃO DA PÁGINA
         document.addEventListener('DOMContentLoaded', function() {
-            // Verificar se o sistema está carregado
+
             if (typeof GrimorioSystem === 'undefined') {
                 mostrarMensagem('Sistema Grimório não carregado!', 'error');
                 return;
             }
-            
-            // Inicializar ícones
+
             if (window.lucide) {
                 lucide.createIcons();
             }
-            
-            // Carregar dados após breve delay
+
             setTimeout(() => {
                 carregarDadosPersonagem();
                 iniciarAtualizacaoPeriodica();
             }, 100);
-            
-            // Adicionar classe de animação inicial
+
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.5s ease';
             setTimeout(() => {
@@ -684,7 +655,6 @@
             }, 100);
         });
 
-        // 8. Adicionar estilos para dropdowns
         const estiloDropdown = document.createElement('style');
         estiloDropdown.textContent = `
             .dropdown-content {

@@ -8,12 +8,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
-    <!-- SEU SISTEMA DE ARMAZENAMENTO -->
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
         tailwind.config = {
             theme: {
@@ -36,13 +44,12 @@
                 }
             }
         }
-        // Verificar se há perfil ativo
+
         window.addEventListener('load', function() {
             if (window.hasActiveProfile && window.hasActiveProfile()) {
                 const profileInfo = window.getActiveProfileInfo();
                 console.log('Trabalhando no perfil:', profileInfo.name);
-                
-                // Carregar dados específicos desta página
+
                 const dados = window.loadFromProfile('status'); // 'status' muda por página
                 if (dados) {
                     preencherCampos(dados);
@@ -50,14 +57,11 @@
             }
         });
 
-        // Ao salvar na página
         function salvarNaPagina() {
             const dados = coletarDadosDaPagina();
-            
-            // Salvar localmente (compatibilidade com versão antiga)
+
             localStorage.setItem('grimorio_status_data', JSON.stringify(dados));
-            
-            // Salvar no perfil ativo (novo sistema)
+
             if (window.saveToProfile) {
                 const success = window.saveToProfile('status', dados);
                 if (success) {
@@ -67,24 +71,21 @@
         }
     </script>
 
+    <!-- =====================================================/////////////====================================================== -->
     <style>
         body { background-color: #0a0a0c; color: #e8e4dc; }
-        
-        /* Animações */
+
         .anim-entry { animation: fadeInUp 0.4s ease-out forwards; opacity: 0; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-        /* Modal Transitions */
         #modal-overlay { transition: opacity 0.3s ease; }
         #modal-overlay.hidden { pointer-events: none; opacity: 0; }
         #modal-overlay:not(.hidden) { pointer-events: auto; opacity: 1; }
 
-        /* Scrollbar */
         textarea::-webkit-scrollbar { width: 6px; }
         textarea::-webkit-scrollbar-track { background: #0f0f12; }
         textarea::-webkit-scrollbar-thumb { background: #2a2a2e; border-radius: 3px; }
-        
-        /* Estilos para cards de item */
+
         .item-card {
             border-left: 3px solid;
             transition: all 0.3s ease;
@@ -94,8 +95,7 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
-        
-        /* Barra de progresso personalizada */
+
         .progress-bar {
             transition: width 0.5s ease;
             border-radius: 9999px;
@@ -106,8 +106,11 @@
         .progress-bar-safe { background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%); }
     </style>
 </head>
+
+    <!-- =====================================================/////////////====================================================== -->
 <body class="min-h-screen font-sans pb-12">
 
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/95 backdrop-blur-sm border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
         <div class="max-w-screen-2xl mx-auto px-6 h-full flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
@@ -130,6 +133,7 @@
 
     <div class="max-w-6xl mx-auto px-4 space-y-6">
 
+    <!-- =====================================================/////////////====================================================== -->
         <header class="flex items-center gap-4 mb-6 anim-entry">
             <div class="p-3 rounded-lg bg-yellow-600/10 border border-yellow-600/20">
                 <i data-lucide="backpack" class="w-8 h-8 text-yellow-600"></i>
@@ -140,7 +144,6 @@
             </div>
         </header>
 
-        <!-- Estatísticas Rápidas -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 anim-entry" style="animation-delay: 0.1s;">
             <div class="bg-theme-panel border border-theme-border p-4 flex items-center gap-3 rounded">
                 <i data-lucide="package" class="w-8 h-8 text-theme-blue"></i>
@@ -172,7 +175,6 @@
             </div>
         </div>
 
-        <!-- Barra de Progresso do Peso -->
         <div class="bg-theme-panel border border-theme-border p-4 rounded-lg anim-entry" style="animation-delay: 0.15s;">
             <div class="flex justify-between items-center mb-2">
                 <div class="flex items-center gap-2">
@@ -194,29 +196,25 @@
             </div>
         </div>
 
-        <!-- Filtros de Categorias -->
         <div id="filter-container" class="flex flex-wrap gap-2 anim-entry" style="animation-delay: 0.2s;">
-            <!-- Filtros serão renderizados aqui -->
+            
         </div>
 
-        <!-- Alertas de Limite -->
         <div id="alerts-container" class="space-y-2 anim-entry" style="animation-delay: 0.25s;">
-            <!-- Alertas serão renderizados aqui -->
+            
         </div>
 
-        <!-- Grid de Itens -->
         <div id="items-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 anim-entry p-2" style="animation-delay: 0.3s;">
-            <!-- Itens serão renderizados aqui -->
+            
         </div>
 
-        <!-- Carteira -->
         <div class="bg-theme-panel border border-theme-border p-6 rounded-lg anim-entry" style="animation-delay: 0.35s;">
             <h3 class="flex items-center gap-2 font-cinzel text-lg font-semibold text-yellow-500 mb-4">
                 <i data-lucide="coins" class="w-4 h-4"></i> Carteira
             </h3>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Ouro -->
+                
                 <div class="bg-[#0a0a0c] border border-yellow-600/30 p-4 rounded-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
@@ -246,7 +244,6 @@
                     </div>
                 </div>
 
-                <!-- Prata -->
                 <div class="bg-[#0a0a0c] border border-gray-500/30 p-4 rounded-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
@@ -276,7 +273,6 @@
                     </div>
                 </div>
 
-                <!-- Cobre -->
                 <div class="bg-[#0a0a0c] border border-orange-600/30 p-4 rounded-lg">
                     <div class="flex items-center justify-between mb-3">
                         <div class="flex items-center gap-2">
@@ -307,7 +303,6 @@
                 </div>
             </div>
 
-            <!-- Total -->
             <div class="mt-4 pt-4 border-t border-theme-border">
                 <div class="flex justify-between items-center">
                     <div>
@@ -337,7 +332,6 @@
 
     </div>
 
-    <!-- Modal para Adicionar/Editar Item -->
     <div id="modal-overlay" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
         <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
             <div class="flex justify-between items-center mb-6">
@@ -401,7 +395,6 @@
         </div>
     </div>
 
-    <!-- Modal de Configurações -->
     <div id="configModal" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center hidden p-4">
         <div class="bg-theme-panel border border-theme-border w-full max-w-md rounded-lg shadow-2xl p-6 relative anim-entry">
             <div class="flex justify-between items-center mb-6">
@@ -454,8 +447,9 @@
         </div>
     </div>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
-        // Configuração de categorias
+
         const categoriesConfig = {
             'arma': { label: "Armas", icon: "sword", color: "#dc2626" },
             'armadura': { label: "Armaduras", icon: "shield", color: "#f59e0b" },
@@ -465,14 +459,12 @@
             'outro': { label: "Outros", icon: "box", color: "#606060" }
         };
 
-        // Configuração de tipos
         const typesConfig = {
             'normal': { label: "Normal", icon: "box", color: "#606060" },
             'usavel': { label: "Usável", icon: "flask-conical", color: "#22c55e" },
             'carregavel': { label: "Carregável", icon: "shield", color: "#8b5cf6" }
         };
 
-        // Dados do inventário
         let inventario = [];
         let limites = {
             pesoMaximo: 50.0,
@@ -487,7 +479,6 @@
 
         let currentFilter = 'todos';
 
-        // Funções de persistência
         function loadFromStorage() {
             try {
                 const savedData = localStorage.getItem('rpg_inventario');
@@ -521,7 +512,6 @@
             }
         }
 
-        // Funções de cálculo
         function calculateStats() {
             let totalPeso = 0;
             let totalItens = inventario.length;
@@ -553,33 +543,27 @@
 
         function updateAllStats() {
             const stats = calculateStats();
-            
-            // Atualizar displays
+
             document.getElementById('stat-total-itens').textContent = stats.itemCount;
             document.getElementById('stat-peso-total').textContent = `${stats.totalPeso} kg`;
             document.getElementById('stat-ouro').textContent = moedas.gold;
-            
-            // Atualizar barra de progresso
+
             const pesoPercent = Math.min((stats.totalPeso / limites.pesoMaximo) * 100, 100);
             document.getElementById('stat-limite').textContent = `${Math.round(pesoPercent)}%`;
             
             const weightBar = document.getElementById('weight-progress');
             weightBar.style.width = `${pesoPercent}%`;
             weightBar.className = `h-full progress-bar ${pesoPercent >= 90 ? 'progress-bar-danger' : pesoPercent >= 70 ? 'progress-bar-warning' : 'progress-bar-safe'}`;
-            
-            // Atualizar displays de limites
+
             document.getElementById('current-weight').textContent = stats.totalPeso;
             document.getElementById('max-weight').textContent = limites.pesoMaximo;
-            
-            // Atualizar moedas
+
             updateMoneyDisplay();
             updateTotalCopper();
-            
-            // Verificar limites
+
             checkLimits();
         }
 
-        // Funções de moedas
         function adjustMoney(type, amount) {
             const newAmount = moedas[type] + amount;
             if (newAmount >= 0) {
@@ -615,7 +599,6 @@
             document.getElementById('total-copper').textContent = `${totalCopper.toLocaleString()} cp`;
         }
 
-        // Funções de renderização
         function renderFilters() {
             const container = document.getElementById('filter-container');
             let html = `<button onclick="setFilter('todos')" class="px-4 py-2 text-sm font-cinzel transition-all border rounded border-theme-border ${currentFilter === 'todos' ? 'bg-theme-blue text-[#0a0a0c] border-theme-blue' : 'bg-[#0f0f12] text-[#606060] hover:text-white'}">Todos</button>`;
@@ -735,8 +718,7 @@
             const stats = calculateStats();
             const alertsContainer = document.getElementById('alerts-container');
             let alerts = [];
-            
-            // Verificar peso
+
             const pesoPercent = (stats.totalPeso / limites.pesoMaximo) * 100;
             if (pesoPercent >= 90) {
                 alerts.push({
@@ -753,8 +735,7 @@
                     color: 'orange'
                 });
             }
-            
-            // Verificar limites de tipos
+
             if (stats.usaveisCount > limites.itensUsaveisMax) {
                 alerts.push({
                     type: 'danger',
@@ -772,8 +753,7 @@
                     color: 'red'
                 });
             }
-            
-            // Renderizar alertas
+
             let html = '';
             if (alerts.length > 0) {
                 alerts.forEach(alert => {
@@ -790,14 +770,13 @@
             alertsContainer.innerHTML = html;
         }
 
-        // Funções de manipulação de itens
         function openModal(itemId = null) {
             const modal = document.getElementById('modal-overlay');
             const title = document.getElementById('modal-title');
             const form = document.getElementById('form-item');
             
             if (itemId) {
-                // Modo edição
+
                 const item = inventario.find(i => i.id === itemId);
                 if (item) {
                     title.textContent = 'Editar Item';
@@ -811,7 +790,7 @@
                     document.getElementById('item-desc').value = item.descricao || '';
                 }
             } else {
-                // Modo novo
+
                 title.textContent = 'Novo Item';
                 form.reset();
                 document.getElementById('item-id').value = '';
@@ -844,8 +823,7 @@
             const stats = calculateStats();
             const novoItemPeso = peso * quantidade;
             const pesoTotalEstimado = stats.totalPeso + (id ? 0 : novoItemPeso); // Se for edição, não soma novamente
-            
-            // Verificar se excede o limite
+
             if (pesoTotalEstimado > limites.pesoMaximo) {
                 document.getElementById('weight-warning').classList.remove('hidden');
                 document.getElementById('weight-warning-text').textContent = 
@@ -856,10 +834,10 @@
             const itemIndex = inventario.findIndex(item => item.id === id);
             
             if (itemIndex > -1) {
-                // Editar item existente
+
                 inventario[itemIndex] = { id, nome, categoria, tipo, quantidade, peso, valor, descricao };
             } else {
-                // Adicionar novo item
+
                 inventario.unshift({ id, nome, categoria, tipo, quantidade, peso, valor, descricao });
             }
             
@@ -903,8 +881,7 @@
         function updateItemType() {
             const categoria = document.getElementById('item-categoria').value;
             const tipoSelect = document.getElementById('item-tipo');
-            
-            // Sugerir tipo baseado na categoria
+
             if (categoria === 'consumivel') {
                 tipoSelect.value = 'usavel';
             } else if (categoria === 'arma' || categoria === 'armadura') {
@@ -932,7 +909,6 @@
             }
         }
 
-        // Funções de configuração
         function openConfigModal() {
             const modal = document.getElementById('configModal');
             document.getElementById('config-max-weight').value = limites.pesoMaximo;
@@ -962,7 +938,6 @@
             closeConfigModal();
         }
 
-        // Funções de exportação
         function exportTXT() {
             const stats = calculateStats();
             let text = `=== INVENTÁRIO RPG ===\n`;
@@ -1018,36 +993,31 @@
             }
         }
 
-        // Utilitários
         function generateId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
 
-        // Event Listeners
         document.getElementById('item-peso').addEventListener('input', validateWeight);
         document.getElementById('item-qtd').addEventListener('input', validateWeight);
 
-        // Inicialização
         document.addEventListener('DOMContentLoaded', () => {
             loadFromStorage();
             renderFilters();
             renderGrid();
             lucide.createIcons();
-            
-            // Adicionar animação de entrada
+
             const animElements = document.querySelectorAll('.anim-entry');
             animElements.forEach((el, index) => {
                 el.style.animationDelay = `${index * 0.05}s`;
             });
         });
 
-        // Prevenir eventos padrão de formulário
         document.addEventListener('submit', e => {
             if (e.target.tagName === 'FORM') {
                 e.preventDefault();
             }
         });
-        // shared.js - Coloque em todas as páginas
+
         class GrimorioSaveSystem {
             static saveCharacter(data) {
                 localStorage.setItem('grimorio_character_data', JSON.stringify(data));
@@ -1080,7 +1050,7 @@
             }
             
             static notifyUpdate(type) {
-                // Dispara evento customizado
+
                 const event = new CustomEvent('grimorio-update', {
                     detail: { type: type, timestamp: Date.now() }
                 });
@@ -1121,14 +1091,12 @@
             }
         }
 
-        // Listener para atualizações em tempo real
         window.addEventListener('grimorio-update', function(event) {
             console.log('Dados atualizados:', event.detail.type);
-            // Atualiza a página atual com os novos dados
+
             refreshCurrentPage();
         });
 
-        // Função para detectar mudanças no localStorage de outras abas
         window.addEventListener('storage', function(event) {
             if (event.key.startsWith('grimorio_')) {
                 location.reload(); // Recarrega para mostrar dados atualizados

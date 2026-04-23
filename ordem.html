@@ -7,14 +7,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/global.css">
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="grimorio-core.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="js/tailwind-config.js"></script>
+
+    <!-- =====================================================/////////////====================================================== -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
 </head>
+
+    <!-- =====================================================/////////////====================================================== -->
 <body class="font-sans flex flex-col min-h-screen pb-20 bg-theme-bg text-theme-text overflow-x-hidden">
-    <!-- NAVBAR -->
+
+    <!-- =====================================================/////////////====================================================== -->
     <nav class="w-full bg-[#0f0f12]/90 backdrop-blur-md border-b border-theme-border sticky top-0 z-50 mb-8 shadow-glass transition-all">
         <div class="container-adaptive flex items-center justify-between py-4">
             <div class="flex items-center gap-4">
@@ -43,11 +54,10 @@
         <div class="h-[1px] bg-gradient-to-r from-transparent via-theme-blue/50 to-transparent"></div>
     </nav>
 
-    <!-- CONTAINER PRINCIPAL -->
     <div class="container-adaptive max-w-7xl 2xl:max-w-[1600px] flex-grow space-y-6 2xl:space-y-10">
-        <!-- SEÇÃO 1: INFORMAÇÕES + IMAGENS -->
+        
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 2xl:gap-8 mb-8 2xl:mb-12">
-            <!-- IMAGENS DO PERSONAGEM -->
+            
             <div class="section-panel shadow-glass flex flex-col h-full lg:col-span-1">
                 <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-4 2xl:mb-6 pb-2 border-b border-theme-border/50">
                     <i data-lucide="user" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
@@ -98,7 +108,6 @@
                 </div>
             </div>
 
-            <!-- INFORMAÇÕES DO PERSONAGEM -->
             <div class="lg:col-span-2 flex flex-col">
                 <div class="flex border-b border-theme-border/50 mb-6 font-cinzel">
                     <button class="main-tab active px-6 py-3 2xl:px-8 2xl:py-4 text-theme-muted font-bold hover:text-theme-text transition-colors border-b-2 border-transparent" data-tab="info">Informações</button>
@@ -196,9 +205,8 @@
             </div>
         </div>
 
-        <!-- SEÇÃO 2: ATRIBUTOS E DEFESAS -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 2xl:gap-8 mb-8 2xl:mb-12">
-            <!-- ATRIBUTOS -->
+            
             <div class="lg:col-span-2 section-panel shadow-glass flex flex-col">
                 <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-6 pb-2 border-b border-theme-border/50">
                     <i data-lucide="brain" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
@@ -209,7 +217,7 @@
                 </h3>
                 
                 <div class="grid grid-cols-2 sm:grid-cols-5 gap-4 2xl:gap-6 flex-grow items-center">
-                    <!-- FORÇA -->
+                    
                     <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
                         <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Força</div>
                         <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-for">0</div>
@@ -219,7 +227,7 @@
                             <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="for" data-action="increase">+</button>
                         </div>
                     </div>
-                    <!-- AGILIDADE -->
+                    
                     <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
                         <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Agilidade</div>
                         <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-agi">0</div>
@@ -229,7 +237,7 @@
                             <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="agi" data-action="increase">+</button>
                         </div>
                     </div>
-                    <!-- INTELECTO -->
+                    
                     <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
                         <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Intelecto</div>
                         <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-int">0</div>
@@ -239,7 +247,7 @@
                             <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="int" data-action="increase">+</button>
                         </div>
                     </div>
-                    <!-- VIGOR -->
+                    
                     <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center">
                         <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Vigor</div>
                         <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-vig">0</div>
@@ -249,7 +257,7 @@
                             <button class="w-8 h-8 2xl:w-10 2xl:h-10 rounded-full bg-theme-input text-white flex items-center justify-center hover:bg-theme-border transition-all hover:scale-110 font-bold" data-attr="vig" data-action="increase">+</button>
                         </div>
                     </div>
-                    <!-- PRESENÇA -->
+                    
                     <div class="bg-gradient-to-br from-white/5 to-black/20 border border-theme-border rounded-xl p-4 2xl:p-6 text-center sm:col-span-1 col-span-2">
                         <div class="text-xs 2xl:text-sm text-theme-muted mb-2 uppercase tracking-wider font-semibold">Presença</div>
                         <div class="text-3xl 2xl:text-4xl font-bold text-white mb-4" id="attr-pre">0</div>
@@ -262,7 +270,6 @@
                 </div>
             </div>
 
-            <!-- DEFESAS E RESISTÊNCIAS -->
             <div class="section-panel shadow-glass lg:col-span-1">
                 <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-6 pb-2 border-b border-theme-border/50">
                     <i data-lucide="shield" class="mr-2 2xl:mr-3 w-5 h-5 2xl:w-6 2xl:h-6"></i>
@@ -295,9 +302,8 @@
             </div>
         </div>
 
-        <!-- SEÇÃO 3: RECURSOS -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 2xl:gap-8 mb-8 2xl:mb-12">
-            <!-- VIDA -->
+            
             <div class="section-panel shadow-glass">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-red font-bold">
@@ -330,7 +336,6 @@
                 </div>
             </div>
 
-            <!-- SANIDADE -->
             <div class="section-panel shadow-glass">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue font-bold">
@@ -363,7 +368,6 @@
                 </div>
             </div>
 
-            <!-- ESFORÇO -->
             <div class="section-panel shadow-glass">
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-gold font-bold">
@@ -397,7 +401,6 @@
             </div>
         </div>
 
-        <!-- SEÇÃO 4: PERÍCIAS E RITUAIS -->
         <div class="flex flex-col flex-grow">
             <div class="flex border-b border-theme-border/50 mb-6 font-cinzel">
                 <button class="main-tab active px-6 py-3 2xl:px-8 2xl:py-4 text-theme-muted font-bold hover:text-theme-text transition-colors border-b-2 border-transparent" data-tab="skills">Perícias</button>
@@ -405,16 +408,14 @@
                 <button class="main-tab px-6 py-3 2xl:px-8 2xl:py-4 text-theme-muted font-bold hover:text-theme-text transition-colors border-b-2 border-transparent" data-tab="inventory">Inventário & Armas</button>
             </div>
 
-            <!-- PERÍCIAS -->
             <div id="tab-skills" class="main-content active flex-grow">
                 <div class="section-panel shadow-glass h-full">
                     <div id="skills-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 2xl:gap-6">
-                        <!-- Perícias serão geradas por JavaScript -->
+                        
                     </div>
                 </div>
             </div>
 
-            <!-- RITUAIS -->
             <div id="tab-rituals" class="main-content hidden flex-grow">
                 <div class="section-panel shadow-glass h-full">
                     <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-purple mb-6 pb-2 border-b border-theme-border/50">
@@ -434,7 +435,6 @@
                 </div>
             </div>
 
-            <!-- INVENTÁRIO E ARMAS -->
             <div id="tab-inventory" class="main-content hidden flex-grow space-y-6 2xl:space-y-8">
                 <div class="section-panel shadow-glass">
                     <h3 class="flex items-center text-lg 2xl:text-xl font-cinzel text-theme-blue mb-4 pb-2 border-b border-theme-border/50">
@@ -453,7 +453,7 @@
                     </div>
                     
                     <div id="inventory-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 2xl:gap-6">
-                        <!-- Itens serão gerados por JavaScript -->
+                        
                     </div>
                 </div>
 
@@ -470,14 +470,13 @@
                     </h3>
                     
                     <div id="weapons-list" class="grid grid-cols-1 lg:grid-cols-2 gap-4 2xl:gap-6">
-                        <!-- Armas serão geradas por JavaScript -->
+                        
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL DE RESISTÊNCIAS -->
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="resistances-modal">
         <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
@@ -515,7 +514,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE AJUDA -->
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="help-modal">
         <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-lg overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
@@ -525,7 +523,7 @@
                 </button>
             </div>
             <div class="p-6 text-theme-muted space-y-3 leading-relaxed" id="help-content">
-                <!-- Conteúdo será preenchido por JavaScript -->
+                
             </div>
             <div class="p-4 border-t border-theme-border bg-theme-bg/50 flex justify-end">
                 <button class="px-6 py-2 bg-theme-blue text-white rounded-lg hover:bg-opacity-90 transition-colors font-medium" onclick="hideModal('help-modal')">Entendi</button>
@@ -533,7 +531,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE ITEM -->
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="item-modal">
         <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
@@ -577,7 +574,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE ARMA -->
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="weapon-modal">
         <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
@@ -632,7 +628,6 @@
         </div>
     </div>
 
-    <!-- MODAL DE RITUAL -->
     <div class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex-col items-center justify-center p-4 opacity-0 transition-opacity duration-300" id="ritual-modal">
         <div class="bg-theme-bg border border-theme-border rounded-xl shadow-glass w-full max-w-md overflow-hidden transform scale-95 transition-transform duration-300">
             <div class="flex items-center justify-between p-4 border-b border-theme-border bg-theme-bg/50">
@@ -699,11 +694,11 @@
         </div>
     </div>
 
+    <!-- =====================================================/////////////====================================================== -->
     <script>
-        // Inicializar ícones do Lucide
+
         lucide.createIcons();
 
-        // Dados do sistema
         const systemData = {
             skills: [
                 "Acrobacia", "Adestramento", "Artes", "Atletismo", "Atualidades",
@@ -715,7 +710,6 @@
             ]
         };
 
-        // Estado da aplicação
         let appState = {
             character: {
                 name: "",
@@ -765,7 +759,6 @@
             currentImage: "normal"
         };
 
-        // Inicialização
         document.addEventListener('DOMContentLoaded', function() {
             initApp();
             setupEventListeners();
@@ -773,23 +766,20 @@
         });
 
         function initApp() {
-            // Inicializar perícias
+
             systemData.skills.forEach(skill => {
                 appState.skills[skill] = 0;
             });
-            
-            // Renderizar perícias
+
             renderSkills();
-            
-            // Carregar dados salvos
+
             loadSavedData();
-            
-            // Atualizar contador de itens
+
             updateItemCounter();
         }
 
         function setupEventListeners() {
-            // Tabs principais
+
             document.querySelectorAll('.main-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
@@ -797,7 +787,6 @@
                 });
             });
 
-            // Atributos
             document.querySelectorAll('.attr-btn').forEach(btn => {
                 btn.addEventListener('click', function() {
                     const attr = this.getAttribute('data-attr');
@@ -813,7 +802,6 @@
                 });
             });
 
-            // Recursos - inputs
             document.getElementById('vida-input').addEventListener('change', function() {
                 const value = parseInt(this.value) || 0;
                 setResource('vida', value);
@@ -829,29 +817,25 @@
                 setResource('esforco', value);
             });
 
-            // Botões de navegação
             document.getElementById('btn-save-all').addEventListener('click', saveAll);
             document.getElementById('btn-export').addEventListener('click', exportData);
             document.getElementById('btn-import').addEventListener('click', importData);
 
-            // Inputs de informações
             document.querySelectorAll('#char-name, #player-name, #char-class, #char-origin, #char-nex, #char-age, #char-nationality, #char-rank').forEach(input => {
                 input.addEventListener('change', updateCharacterInfo);
             });
 
-            // Inputs de história
             document.querySelectorAll('#char-appearance, #char-personality, #char-history, #char-first-encounter').forEach(input => {
                 input.addEventListener('change', updateCharacterHistory);
             });
 
-            // Defesas
             document.querySelectorAll('#defense, #block, #dodge').forEach(input => {
                 input.addEventListener('change', updateDefenses);
             });
         }
 
         function switchTab(tabId) {
-            // Remover active de todas as tabs
+
             document.querySelectorAll('.main-tab').forEach(tab => {
                 tab.classList.remove('active');
             });
@@ -859,7 +843,6 @@
                 content.classList.remove('active');
             });
 
-            // Adicionar active à tab selecionada
             document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
             document.getElementById(`tab-${tabId}`).classList.add('active');
         }
@@ -879,34 +862,28 @@
         function setAttribute(attr, value) {
             value = Math.max(0, Math.min(5, value));
             appState.attributes[attr] = value;
-            
-            // Atualizar UI
+
             document.getElementById(`attr-${attr}`).textContent = value;
             document.getElementById(`input-${attr}`).value = value;
-            
-            // Calcular valores derivados
+
             calculateDerivedValues();
         }
 
         function calculateDerivedValues() {
-            // Vida baseada em Vigor
+
             const vigor = appState.attributes.vig || 0;
             const vidaMax = 20 + (vigor * 5);
-            
-            // Sanidade baseada em Presença
+
             const presenca = appState.attributes.pre || 0;
             const sanidadeMax = 16 + (presenca * 3);
-            
-            // Esforço baseado em NEX (simplificado)
+
             const nex = appState.character.nex || 5;
             const esforcoMax = 4 + Math.floor(nex / 15);
-            
-            // Atualizar máximos
+
             appState.resources.vida.max = vidaMax;
             appState.resources.sanidade.max = sanidadeMax;
             appState.resources.esforco.max = esforcoMax;
-            
-            // Atualizar UI
+
             updateResourceDisplay('vida');
             updateResourceDisplay('sanidade');
             updateResourceDisplay('esforco');
@@ -946,13 +923,11 @@
             if (element) element.textContent = resource.current;
             if (maxElement) maxElement.textContent = resource.max;
             if (inputElement) inputElement.value = resource.current;
-            
-            // Atualizar barra de progresso
+
             if (progressElement) {
                 const percentage = (resource.current / resource.max) * 100;
                 progressElement.style.width = `${percentage}%`;
-                
-                // Mudar cor baseada na porcentagem
+
                 if (percentage <= 25) {
                     progressElement.className = 'progress-fill progress-danger';
                 } else if (percentage <= 50) {
@@ -984,14 +959,12 @@
                 newImage = 'cansado';
                 statusText = 'Cansado';
             }
-            
-            // Atualizar imagem principal
+
             const portrait = document.getElementById('character-portrait');
             if (portrait && appState.images[newImage]) {
                 portrait.src = appState.images[newImage];
             }
-            
-            // Atualizar status
+
             const statusElement = document.getElementById('current-status');
             if (statusElement) {
                 statusElement.textContent = `Status: ${statusText}`;
@@ -1001,23 +974,20 @@
         }
 
         function selectImage(imgElement, status) {
-            // Atualizar todas as imagens para borda normal
+
             document.querySelectorAll('.image-preview').forEach(img => {
                 img.style.borderColor = 'var(--border-color)';
                 img.style.transform = 'scale(1)';
             });
-            
-            // Destacar imagem selecionada
+
             imgElement.style.borderColor = 'var(--accent-blue)';
             imgElement.style.transform = 'scale(1.05)';
-            
-            // Atualizar imagem principal
+
             const portrait = document.getElementById('character-portrait');
             if (portrait) {
                 portrait.src = imgElement.src;
                 appState.currentImage = status;
-                
-                // Atualizar status
+
                 const statusText = getStatusText(status);
                 document.getElementById('current-status').textContent = `Status: ${statusText}`;
             }
@@ -1044,15 +1014,13 @@
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(event) {
-                        // Atualizar imagem principal
+
                         const portrait = document.getElementById('character-portrait');
                         portrait.src = event.target.result;
-                        
-                        // Salvar no estado
+
                         appState.images.custom = event.target.result;
                         appState.currentImage = 'custom';
-                        
-                        // Atualizar status
+
                         document.getElementById('current-status').textContent = 'Status: Personalizado';
                     };
                     reader.readAsDataURL(file);
@@ -1077,8 +1045,7 @@
                            min="-5" max="10">
                 `;
                 container.appendChild(skillItem);
-                
-                // Event listener
+
                 const input = skillItem.querySelector('input');
                 input.addEventListener('change', function() {
                     appState.skills[skill] = parseInt(this.value) || 0;
@@ -1116,8 +1083,7 @@
             renderInventory();
             hideModal('item-modal');
             updateItemCounter();
-            
-            // Limpar formulário
+
             document.getElementById('item-name').value = '';
             document.getElementById('item-description').value = '';
             document.getElementById('item-quantity').value = '1';
@@ -1152,8 +1118,7 @@
             appState.weapons.push(newWeapon);
             renderWeapons();
             hideModal('weapon-modal');
-            
-            // Limpar formulário
+
             document.getElementById('weapon-name').value = '';
             document.getElementById('weapon-damage').value = '';
             document.getElementById('weapon-range').value = '';
@@ -1192,8 +1157,7 @@
             appState.rituals.push(newRitual);
             renderRituals();
             hideModal('ritual-modal');
-            
-            // Limpar formulário
+
             document.getElementById('ritual-name').value = '';
             document.getElementById('ritual-execution').value = '';
             document.getElementById('ritual-range').value = '';
@@ -1300,7 +1264,7 @@
             }
             
             appState.rituals.forEach((ritual, index) => {
-                // Determinar cor baseada no elemento
+
                 let elementColorClass = 'text-theme-purple';
                 if (ritual.element === 'sangue') elementColorClass = 'text-theme-red';
                 if (ritual.element === 'morte') elementColorClass = 'text-theme-muted';
@@ -1380,8 +1344,7 @@
             const countElement = document.getElementById('item-count');
             if (countElement) {
                 countElement.textContent = appState.inventory.length;
-                
-                // Mudar cor se atingir limite
+
                 if (appState.inventory.length >= 5) {
                     countElement.style.color = 'var(--accent-red)';
                     countElement.style.fontWeight = 'bold';
@@ -1401,8 +1364,7 @@
             appState.character.age = parseInt(document.getElementById('char-age').value) || 25;
             appState.character.nationality = document.getElementById('char-nationality').value;
             appState.character.rank = document.getElementById('char-rank').value;
-            
-            // Recalcular valores baseados em NEX
+
             calculateDerivedValues();
         }
 
@@ -1579,12 +1541,11 @@
         }
 
         function saveAll() {
-            // Atualizar todos os dados antes de salvar
+
             updateCharacterInfo();
             updateCharacterHistory();
             updateDefenses();
-            
-            // Salvar no localStorage
+
             try {
                 localStorage.setItem('ordemParanormalCharacter', JSON.stringify(appState));
                 alert('Personagem salvo com sucesso!');
@@ -1598,11 +1559,9 @@
                 const saved = localStorage.getItem('ordemParanormalCharacter');
                 if (saved) {
                     const data = JSON.parse(saved);
-                    
-                    // Mesclar dados salvos com estado atual
+
                     appState = { ...appState, ...data };
-                    
-                    // Atualizar UI
+
                     updateUIFromState();
                     
                     alert('Personagem carregado com sucesso!');
@@ -1613,7 +1572,7 @@
         }
 
         function updateUIFromState() {
-            // Informações básicas
+
             document.getElementById('char-name').value = appState.character.name || '';
             document.getElementById('player-name').value = appState.character.player || '';
             document.getElementById('char-class').value = appState.character.class || '';
@@ -1622,49 +1581,41 @@
             document.getElementById('char-age').value = appState.character.age || 25;
             document.getElementById('char-nationality').value = appState.character.nationality || '';
             document.getElementById('char-rank').value = appState.character.rank || '';
-            
-            // História
+
             document.getElementById('char-appearance').value = appState.character.appearance || '';
             document.getElementById('char-personality').value = appState.character.personality || '';
             document.getElementById('char-history').value = appState.character.history || '';
             document.getElementById('char-first-encounter').value = appState.character.firstEncounter || '';
-            
-            // Atributos
+
             for (const attr in appState.attributes) {
                 document.getElementById(`attr-${attr}`).textContent = appState.attributes[attr];
                 document.getElementById(`input-${attr}`).value = appState.attributes[attr];
             }
-            
-            // Defesas
+
             document.getElementById('defense').value = appState.defenses.defesa || 10;
             document.getElementById('block').value = appState.defenses.bloqueio || 0;
             document.getElementById('dodge').value = appState.defenses.esquiva || 0;
-            
-            // Resistências
+
             document.getElementById('resist-sangue').value = appState.resistances.sangue || 0;
             document.getElementById('resist-morte').value = appState.resistances.morte || 0;
             document.getElementById('resist-conhecimento').value = appState.resistances.conhecimento || 0;
             document.getElementById('resist-energia').value = appState.resistances.energia || 0;
             document.getElementById('resist-medo').value = appState.resistances.medo || 0;
-            
-            // Recursos
+
             updateResourceDisplay('vida');
             updateResourceDisplay('sanidade');
             updateResourceDisplay('esforco');
-            
-            // Perícias
+
             systemData.skills.forEach(skill => {
                 const input = document.getElementById(`skill-${skill}`);
                 if (input) input.value = appState.skills[skill] || 0;
             });
-            
-            // Inventário, armas e rituais
+
             renderInventory();
             renderWeapons();
             renderRituals();
             updateItemCounter();
-            
-            // Imagem
+
             updateCharacterImage();
         }
 
