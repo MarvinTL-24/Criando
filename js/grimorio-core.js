@@ -15,7 +15,6 @@ class Core {
             next: 1000,
             points: 0,
             god: false,
-            // Status Dinâmico (Compatibilidade com status.html)
             status: {
                 cats: [
                     { name: "Vida", val: 100, max: 100, color: "red", active: true, lock: false },
@@ -37,7 +36,6 @@ class Core {
                 luck: { val: 50, sentiments: [] },
                 dice: { qty: 1, type: 20, useStatus: true, useLuck: true, last: "-", details: "" }
             },
-            // Atributos Estáticos (Sistema do Usuário)
             stats: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
             res: { hp: 100, hpMax: 100, mp: 50, mpMax: 50, sta: 50, staMax: 50 },
             items: [],
@@ -68,7 +66,6 @@ class Core {
                 resistances: { blood: 0, death: 0, knowledge: 0, energy: 0, fear: 0 },
                 rituals: [], skills: {}
             },
-            // Roleplay (Ficha)
             head: '', torso: '', arms: '', legs: '',
             bio: '', motives: '', fears: '', traits: '', ideals: '', flaws: '', habits: '', allies: '', enemies: '',
             avatar: '',
@@ -116,7 +113,7 @@ class Core {
 
     static notify(msg, type = 'info') {
         const el = document.createElement('div');
-        el.className = `fixed top-4 right-4 px-4 py-3 rounded-lg z-50 bg-[#0f0f12] border border-theme-border text-white shadow-lg anim-fade-in`;
+        el.className = `fixed top-4 right-4 px-4 py-3 rounded-lg z-50 bg-[#0f0f12] border border-theme-border text-white shadow-lg`;
         el.style.borderColor = type === 'success' ? '#22c55e' : (type === 'error' ? '#ef4444' : '#2a2a2e');
         el.textContent = msg;
         document.body.appendChild(el);
@@ -129,5 +126,4 @@ class Core {
 document.addEventListener('DOMContentLoaded', () => {
     Core.init();
     window.Core = Core;
-    window.GrimorioSystem = Core;
 });
