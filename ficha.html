@@ -1027,7 +1027,6 @@
             const dados = coletarTodosDados();
             const campos = getCamposFicha(dados);
 
-
             const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
             const link = document.createElement('a');
             const nomeArquivo = `ficha_${(dados.nome || 'personagem').toLowerCase().replace(/\s+/g, '_')}.txt`;
