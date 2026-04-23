@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grimório Digital - Sistema de Status Avançado</title>
-
-    <!-- =====================================================/////////////====================================================== -->
     <script src="js/grimorio-core.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-    <!-- =====================================================/////////////====================================================== -->
+    
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <!-- =====================================================/////////////====================================================== -->
     <style>
         :root {
             --bg-primary: #0a0a0c;
@@ -58,7 +54,8 @@
             font-family: 'Cinzel', serif; 
             font-weight: 600;
         }
-
+        
+        /* NAVBAR */
         .navbar {
             background: var(--bg-panel);
             border-bottom: 1px solid var(--border-color);
@@ -135,7 +132,8 @@
         .nav-button-export {
             background: var(--accent-purple);
         }
-
+        
+        /* LAYOUT PRINCIPAL */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -151,7 +149,8 @@
             font-family: 'Cinzel', serif;
             font-size: 1.25rem;
         }
-
+        
+        /* SESSÕES */
         .section-panel {
             background: var(--bg-panel);
             border: 1px solid var(--border-color);
@@ -161,7 +160,8 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             position: relative;
         }
-
+        
+        /* CONTROLE DE CATEGORIAS */
         .categories-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -251,7 +251,8 @@
         .btn-inactive { background: var(--accent-red); color: white; }
         .btn-lock { background: var(--accent-yellow); color: white; }
         .btn-unlock { background: var(--accent-blue); color: white; }
-
+        
+        /* SISTEMA DE ATRIBUTOS */
         .attributes-section {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -313,7 +314,8 @@
             text-align: center;
             font-size: 1rem;
         }
-
+        
+        /* DERIVADOS */
         .derived-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -336,7 +338,8 @@
             background: rgba(0, 0, 0, 0.3);
             border-radius: 0.25rem;
         }
-
+        
+        /* SISTEMA DE SORTE */
         .sorcery-system {
             background: linear-gradient(135deg, rgba(26, 21, 16, 0.9), rgba(42, 35, 24, 0.9));
             border: 1px solid rgba(212, 167, 106, 0.3);
@@ -372,7 +375,8 @@
             gap: 0.5rem;
             margin-top: 0.5rem;
         }
-
+        
+        /* UTILITIES */
         .flex { display: flex; }
         .items-center { align-items: center; }
         .justify-between { justify-content: space-between; }
@@ -389,7 +393,8 @@
         .text-center { text-align: center; }
         .text-sm { font-size: 0.875rem; }
         .text-lg { font-size: 1.125rem; }
-
+        
+        /* BOTÕES */
         .btn {
             padding: 0.5rem 1rem;
             border: none;
@@ -432,7 +437,8 @@
             transform: translateY(-1px);
             filter: brightness(110%);
         }
-
+        
+        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -509,7 +515,8 @@
             color: var(--text-primary);
             padding: 0.5rem;
         }
-
+        
+        /* ALERTAS */
         .alert {
             padding: 1rem;
             border-radius: 0.5rem;
@@ -524,7 +531,8 @@
             border: 1px solid rgba(245, 158, 11, 0.3);
             color: var(--accent-yellow);
         }
-
+        
+        /* CORES PARA CATEGORIAS */
         .color-red { color: var(--accent-red); }
         .color-blue { color: var(--accent-blue); }
         .color-green { color: var(--accent-green); }
@@ -557,7 +565,8 @@
         .border-cyan { border-color: var(--accent-cyan); }
         .border-emerald { border-color: var(--accent-emerald); }
         .border-indigo { border-color: var(--accent-indigo); }
-
+        
+        /* RESPONSIVO */
         @media (max-width: 768px) {
             .container {
                 padding: 1rem;
@@ -578,7 +587,8 @@
                 display: none;
             }
         }
-
+        
+        /* PAINEL DE ROLAGEM PREMIUM */
         .dice-dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -651,6 +661,7 @@
             .dice-dashboard { grid-template-columns: 1fr; }
         }
 
+        /* ANIMAÇÕES */
         @keyframes dice-pop {
             0% { transform: scale(0.8); opacity: 0; }
             50% { transform: scale(1.1); }
@@ -662,11 +673,8 @@
         }
     </style>
 </head>
-
-    <!-- =====================================================/////////////====================================================== -->
 <body>
-
-    <!-- =====================================================/////////////====================================================== -->
+    <!-- NAVBAR -->
     <nav class="navbar">
         <div class="nav-container">
             <div class="flex items-center gap-3">
@@ -694,14 +702,15 @@
         </div>
     </nav>
 
+    <!-- CONTEÚDO PRINCIPAL -->
     <div class="container">
-        
+        <!-- ALERTA DE INFORMAÇÃO -->
         <div class="alert alert-warning mb-6">
             <i data-lucide="alert-triangle"></i>
             Sistema em desenvolvimento - Algumas funcionalidades podem estar em incremento
         </div>
 
-    <!-- =====================================================/////////////====================================================== -->
+        <!-- 1. CATEGORIAS DE CONTROLE -->
         <section class="section-panel">
             <div class="section-title">
                 <div class="flex items-center gap-3">
@@ -715,11 +724,11 @@
             </div>
             
             <div class="categories-grid" id="categories-container">
-                
+                <!-- Categorias serão geradas dinamicamente -->
             </div>
         </section>
 
-    <!-- =====================================================/////////////====================================================== -->
+        <!-- 2. SISTEMA DE ATRIBUTOS -->
         <section class="section-panel">
             <div class="section-title">
                 <div class="flex items-center gap-3">
@@ -733,10 +742,11 @@
             </div>
             
             <div class="attributes-section">
-                
+                <!-- CONTROLES DE DISTRIBUIÇÃO -->
                 <div class="attributes-controls">
                     <h3 class="mb-4" style="color: var(--accent-blue);">Opções de Distribuição</h3>
-
+                    
+                    <!-- Opção 1: Sorteio Aleatório -->
                     <div class="mb-4">
                         <h4 class="mb-2">1. Sorteio Aleatório</h4>
                         <div class="flex gap-2 mb-2">
@@ -747,14 +757,16 @@
                             </button>
                         </div>
                     </div>
-
+                    
+                    <!-- Opção 2: Valor Manual -->
                     <div class="mb-4">
                         <h4 class="mb-2">2. Valor Manual</h4>
                         <div class="text-sm mb-2">
                             Defina manualmente e use o cadeado para fixar
                         </div>
                     </div>
-
+                    
+                    <!-- Controles Gerais -->
                     <div class="mt-6">
                         <div class="flex gap-2">
                             <button onclick="saveAttributes()" class="btn btn-success flex-1">
@@ -768,14 +780,15 @@
                         </div>
                     </div>
                 </div>
-
+                
+                <!-- LISTA DE ATRIBUTOS -->
                 <div class="attributes-grid" id="attributes-container">
-                    
+                    <!-- Atributos serão gerados dinamicamente -->
                 </div>
             </div>
         </section>
 
-    <!-- =====================================================/////////////====================================================== -->
+        <!-- 3. ATRIBUTOS DERIVADOS -->
         <section class="section-panel">
             <div class="section-title">
                 <div class="flex items-center gap-3">
@@ -789,11 +802,11 @@
             </div>
             
             <div class="derived-grid" id="derived-container">
-                
+                <!-- Derivados serão gerados dinamicamente -->
             </div>
         </section>
 
-    <!-- =====================================================/////////////====================================================== -->
+        <!-- 4. SISTEMA DE SORTE -->
         <section class="section-panel">
             <div class="section-title">
                 <div class="flex items-center gap-3">
@@ -807,7 +820,7 @@
             </div>
             
             <div class="sorcery-system">
-                
+                <!-- DISPLAY DA SORTE -->
                 <div class="text-center mb-6">
                     <div class="text-lg mb-2">Sorte Atual</div>
                     <div class="sorcery-display" id="luck-value">50</div>
@@ -822,15 +835,16 @@
                         </button>
                     </div>
                 </div>
-
+                
+                <!-- SENTIMENTOS -->
                 <h3 class="mb-3" style="color: var(--destiny-gold);">Modificadores de Sorte</h3>
                 <div class="sentiments-grid" id="sentiments-container">
-                    
+                    <!-- Sentimentos base serao gerados -->
                 </div>
             </div>
         </section>
 
-    <!-- =====================================================/////////////====================================================== -->
+        <!-- 5. SISTEMA DE ROLAGEM DE DADOS -->
         <section class="section-panel" id="dice-system-section">
             <div class="section-title">
                 <div class="flex items-center gap-3">
@@ -840,7 +854,7 @@
             </div>
             
             <div class="dice-dashboard">
-                
+                <!-- Coluna de Configuracao -->
                 <div class="space-y-6">
                     <div>
                         <h3 class="font-cinzel text-sm uppercase tracking-widest text-accent-blue mb-4 opacity-70">Configuracao de Teste</h3>
@@ -912,6 +926,7 @@
                     </div>
                 </div>
 
+                <!-- Coluna de Resultado -->
                 <div class="result-orb-container">
                     <h3 class="font-cinzel text-sm uppercase tracking-widest text-accent-blue mb-8 opacity-70">Manifestacao do Destino</h3>
                     
@@ -924,13 +939,13 @@
                     </div>
 
                     <div id="dice-log" class="w-full mt-8 pt-6 border-t border-white/5 space-y-2 max-h-32 overflow-y-auto pr-2 custom-scrollbar">
-                        
+                        <!-- Historico rapido aqui -->
                     </div>
                 </div>
             </div>
         </section>
 
-    <!-- =====================================================/////////////====================================================== -->
+        <!-- CONTROLES FINAIS -->
         <section class="section-panel text-center">
             <h2 class="mb-4" style="color: var(--accent-blue);">Controles do Sistema</h2>
             <div class="flex gap-3 justify-center flex-wrap">
@@ -950,6 +965,7 @@
         </section>
     </div>
 
+    <!-- MODAL: ADICIONAR CATEGORIA -->
     <div id="modal-category" class="modal">
         <div class="modal-content">
             <h3 class="modal-title">Adicionar Categoria</h3>
@@ -996,6 +1012,7 @@
         </div>
     </div>
 
+    <!-- MODAL: ADICIONAR ATRIBUTO -->
     <div id="modal-attribute" class="modal">
         <div class="modal-content">
             <h3 class="modal-title">Adicionar Atributo</h3>
@@ -1026,6 +1043,7 @@
         </div>
     </div>
 
+    <!-- MODAL: ADICIONAR DERIVADO -->
     <div id="modal-derived" class="modal">
         <div class="modal-content">
             <h3 class="modal-title">Adicionar Atributo Derivado</h3>
@@ -1038,7 +1056,7 @@
             <div class="form-group">
                 <label class="form-label">Atributo Base</label>
                 <select id="derived-base" class="form-select">
-                    
+                    <!-- Opções serão preenchidas dinamicamente -->
                 </select>
             </div>
             
@@ -1075,6 +1093,7 @@
         </div>
     </div>
 
+    <!-- MODAL: CONFIGURAR SENTIMENTO -->
     <div id="modal-sentiment" class="modal">
         <div class="modal-content">
             <h3 class="modal-title">Configurar Sentimento</h3>
@@ -1127,6 +1146,7 @@
         </div>
     </div>
 
+    <!-- MODAL: IMPORTAR DADOS -->
     <div id="modal-import" class="modal">
         <div class="modal-content">
             <h3 class="modal-title">Importar Dados</h3>
@@ -1158,17 +1178,17 @@ Inteligência: 18
         </div>
     </div>
 
-    <!-- =====================================================/////////////====================================================== -->
     <script>
-
+    // =========== SISTEMA DE DADOS ===========
     const systemData = {
-
+        // Categorias (máx 8)
         categories: [
             { id: 1, name: "Vida", value: 100, max: 100, color: "red", active: true, locked: false },
             { id: 2, name: "Mana", value: 100, max: 100, color: "blue", active: true, locked: false },
             { id: 3, name: "Estamina", value: 100, max: 100, color: "green", active: true, locked: false }
         ],
-
+        
+        // Atributos (máx 8)
         attributes: [
             { id: 1, name: "Força", value: 0, max: 100, locked: false, active: true },
             { id: 2, name: "Destreza", value: 0, max: 100, locked: false, active: true },
@@ -1177,7 +1197,8 @@ Inteligência: 18
             { id: 5, name: "Sabedoria", value: 0, max: 100, locked: false, active: true },
             { id: 6, name: "Carisma", value: 0, max: 100, locked: false, active: true }
         ],
-
+        
+        // Atributos derivados (máx 8)
         derived: [
             { 
                 id: 1, 
@@ -1200,7 +1221,8 @@ Inteligência: 18
                 active: true 
             }
         ],
-
+        
+        // Sistema de sorte
         luck: {
             value: 50,
             rollHistory: [],
@@ -1231,7 +1253,8 @@ Inteligência: 18
             lastString: `<div class="text-center italic opacity-70">Role os dados para ver o resultado da performance</div>`
         }
     };
-
+    
+    // =========== FUNÇÕES DE UTILIDADE ===========
     function showNotification(message, type = "info") {
         const notification = document.createElement("div");
         notification.className = `alert alert-${type}`;
@@ -1255,7 +1278,8 @@ Inteligência: 18
     function closeModal(id) {
         document.getElementById(id).classList.remove("active");
     }
-
+    
+    // =========== SISTEMA DE CATEGORIAS ===========
     function openCategoryModal() {
         if (systemData.categories.length >= systemData.config.maxCategories) {
             showNotification(`Limite de ${systemData.config.maxCategories} categorias atingido!`, "error");
@@ -1373,7 +1397,8 @@ Inteligência: 18
         
         lucide.createIcons();
     }
-
+    
+    // =========== SISTEMA DE ATRIBUTOS ===========
     function openAttributeModal() {
         if (systemData.attributes.length >= systemData.config.maxAttributes) {
             showNotification(`Limite de ${systemData.config.maxAttributes} atributos atingido!`, "error");
@@ -1419,16 +1444,19 @@ Inteligência: 18
             showNotification("Nenhum atributo ativo para distribuir!", "error");
             return;
         }
-
+        
+        // Resetar valores
         activeAttributes.forEach(attr => {
             if (!attr.locked) {
                 attr.value = 0;
             }
         });
-
+        
+        // Distribuir aleatoriamente
         let pointsLeft = totalPoints;
         const distribution = {};
-
+        
+        // Primeiro, distribuir para atributos destrancados
         const unlockedAttributes = activeAttributes.filter(attr => !attr.locked);
         
         while (pointsLeft > 0 && unlockedAttributes.length > 0) {
@@ -1441,13 +1469,15 @@ Inteligência: 18
                 distribution[attr.id]++;
                 attr.value = Math.min(attr.max, attr.value + 1);
                 pointsLeft--;
-
+                
+                // Se atingiu o máximo, remover da lista
                 if (attr.value >= attr.max) {
                     unlockedAttributes.splice(randomIndex, 1);
                 }
             }
         }
-
+        
+        // Se ainda sobraram pontos, mostrar aviso
         if (pointsLeft > 0) {
             showNotification(`${pointsLeft} pontos não puderam ser distribuídos (limites máximos atingidos)`, "warning");
         }
@@ -1477,32 +1507,36 @@ Inteligência: 18
             showNotification("Nenhum atributo destrancado para distribuir!", "error");
             return;
         }
-
+        
+        // Calcular pontos necessários para o mínimo
         let pointsNeeded = 0;
         unlockedAttributes.forEach(attr => {
             if (attr.value < minValue) {
                 pointsNeeded += (minValue - attr.value);
             }
         });
-
+        
+        // Verificar se há pontos suficientes (considerando máximo 100 por atributo)
         const maxPossiblePoints = unlockedAttributes.length * 100;
         if (minValue * unlockedAttributes.length > maxPossiblePoints) {
             showNotification(`Valor mínimo muito alto para ${unlockedAttributes.length} atributos!`, "error");
             return;
         }
-
+        
+        // Aplicar mínimo primeiro
         unlockedAttributes.forEach(attr => {
             if (attr.value < minValue) {
                 attr.value = minValue;
             }
         });
-
+        
+        // Calcular pontos restantes para distribuição aleatória
         const currentTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.value, 0);
         const maxTotal = unlockedAttributes.reduce((sum, attr) => sum + attr.max, 0);
         const remainingCapacity = maxTotal - currentTotal;
         
         if (remainingCapacity > 0) {
-
+            // Distribuir pontos aleatórios extras
             let extraPoints = Math.floor(remainingCapacity * 0.3); // 30% da capacidade restante
             
             while (extraPoints > 0) {
@@ -1528,7 +1562,7 @@ Inteligência: 18
     }
     
     function saveAttributes() {
-
+        // Salvar os valores atuais dos atributos
         saveToStorage();
         showNotification("Atributos salvos com sucesso!", "success");
     }
@@ -1628,13 +1662,15 @@ Inteligência: 18
         
         lucide.createIcons();
     }
-
+    
+    // =========== ATRIBUTOS DERIVADOS ===========
     function openDerivedModal() {
         if (systemData.derived.length >= systemData.config.maxDerived) {
             showNotification(`Limite de ${systemData.config.maxDerived} atributos derivados atingido!`, "error");
             return;
         }
-
+        
+        // Preencher opções de atributos base
         const baseSelect = document.getElementById("derived-base");
         baseSelect.innerHTML = "";
         
@@ -1788,7 +1824,8 @@ Inteligência: 18
         
         lucide.createIcons();
     }
-
+    
+    // =========== SISTEMA DE SORTE ===========
     function addSentiment() {
         if (systemData.luck.sentiments.length >= systemData.config.maxSentiments) {
             showNotification(`Limite de ${systemData.config.maxSentiments} sentimentos atingido!`, "error");
@@ -1824,9 +1861,10 @@ Inteligência: 18
     }
     
     function rollLuck() {
-
+        // Sorte base aleatória 1-100
         const baseLuck = Math.floor(Math.random() * 100) + 1;
-
+        
+        // Aplicar modificadores dos sentimentos ativos
         let finalLuck = baseLuck;
         let modifiersText = [];
         
@@ -1842,19 +1880,23 @@ Inteligência: 18
                 modifiersText.push(`-${modifier.toFixed(1)} (${sentiment.type})`);
             }
         });
-
+        
+        // Garantir limites 1-100
         finalLuck = Math.max(1, Math.min(100, Math.round(finalLuck)));
-
+        
+        // Salvar no histórico
         systemData.luck.rollHistory.push({
             base: baseLuck,
             final: finalLuck,
             modifiers: modifiersText,
             timestamp: new Date().toLocaleString()
         });
-
+        
+        // Atualizar display
         systemData.luck.value = finalLuck;
         document.getElementById("luck-value").textContent = finalLuck;
-
+        
+        // Mostrar resultado
         let message = `Sorte: ${finalLuck}%`;
         if (modifiersText.length > 0) {
             message += `\nModificadores: ${modifiersText.join(", ")}`;
@@ -1865,7 +1907,7 @@ Inteligência: 18
     }
     
     function saveLuck() {
-
+        // Salvar configurações de sorte
         saveToStorage();
         showNotification("Configurações de sorte salvas!", "success");
     }
@@ -1930,7 +1972,8 @@ Inteligência: 18
         
         lucide.createIcons();
     }
-
+    
+    // =========== SISTEMA DE ROLAGEM DE DADOS ===========
     function saveDiceConfig() {
         if (!systemData.diceSystem) return;
         const typeMatch = parseInt(document.getElementById("dice-type").value);
@@ -1979,7 +2022,8 @@ Inteligência: 18
                 <span class="font-mono text-blue-300 tracking-wider">[ ${rollsValues.join(' | ')} ] = <b class="text-white">${baseRollTotal}</b></span>
             </div>
         `;
-
+        
+        // 1. Modificadores de Status
         if (systemData.diceSystem.useStatus) {
             const activeAttrs = systemData.attributes.filter(a => a.active);
             if(activeAttrs.length > 0) {
@@ -1997,7 +2041,8 @@ Inteligência: 18
                 }
             }
         }
-
+        
+        // 2. Modificadores do Mascote
         if (systemData.diceSystem.useMascot) {
             try {
                 const mascotDataJson = localStorage.getItem('grimorio_mascote_completo');
@@ -2023,7 +2068,8 @@ Inteligência: 18
                 }
             } catch(e) {}
         }
-
+        
+        // 3. Modificadores de Sorte e Humor
         if (systemData.diceSystem.useLuck) {
             const luckValue = systemData.luck.value; 
             let mod = 0;
@@ -2041,7 +2087,8 @@ Inteligência: 18
                 `;
             }
         }
-
+        
+        // Update DOM
         document.getElementById("dice-result-value").textContent = totalVal;
         document.getElementById("dice-result-details").innerHTML = detailsHtml;
         lucide.createIcons();
@@ -2051,6 +2098,7 @@ Inteligência: 18
         saveToStorage();
     }
 
+    // =========== SISTEMA DE IMPORTAR ===========
     function openImportModal() {
         openModal("modal-import");
     }
@@ -2070,13 +2118,15 @@ Inteligência: 18
         items.forEach(item => {
             const itemName = getNameFn(item);
             const normalizedItemName = normalizeText(itemName);
-
+            
+            // Verificar correspondência exata
             if (normalizedItemName === normalizedValue) {
                 bestMatch = item;
                 bestScore = 100;
                 return;
             }
-
+            
+            // Verificar se contém
             if (normalizedValue.includes(normalizedItemName) || normalizedItemName.includes(normalizedValue)) {
                 const score = Math.min(normalizedValue.length, normalizedItemName.length) / 
                              Math.max(normalizedValue.length, normalizedItemName.length) * 100;
@@ -2086,7 +2136,8 @@ Inteligência: 18
                 }
             }
         });
-
+        
+        // Aceitar se score for maior que 60%
         return bestScore > 60 ? bestMatch : null;
     }
     
@@ -2104,22 +2155,25 @@ Inteligência: 18
         lines.forEach(line => {
             const trimmedLine = line.trim();
             if (!trimmedLine) return;
-
+            
+            // Procurar padrões como "Nome: Valor" ou "Nome: Valor/Max"
             const match = trimmedLine.match(/^([^:]+):\s*(.+)$/);
             if (!match) return;
             
             const name = match[1].trim();
             const valuePart = match[2].trim();
-
+            
+            // Tentar extrair valor (e possível máximo)
             let value = 0;
             let max = null;
-
+            
+            // Padrão: "85/100"
             const valueMaxMatch = valuePart.match(/^(\d+)\s*\/\s*(\d+)$/);
             if (valueMaxMatch) {
                 value = parseInt(valueMaxMatch[1]);
                 max = parseInt(valueMaxMatch[2]);
             } else {
-
+                // Apenas valor
                 const numMatch = valuePart.match(/^(\d+)$/);
                 if (numMatch) {
                     value = parseInt(numMatch[1]);
@@ -2127,11 +2181,12 @@ Inteligência: 18
             }
             
             if (isNaN(value)) return;
-
+            
+            // Primeiro, tentar encontrar em categorias
             let matchedItem = findBestMatch(name, systemData.categories, item => item.name);
             
             if (matchedItem) {
-
+                // Atualizar categoria
                 matchedItem.value = Math.min(value, matchedItem.max);
                 if (max !== null && max > 0) {
                     matchedItem.max = max;
@@ -2139,11 +2194,12 @@ Inteligência: 18
                 importedCount++;
                 return;
             }
-
+            
+            // Tentar em atributos
             matchedItem = findBestMatch(name, systemData.attributes, item => item.name);
             
             if (matchedItem) {
-
+                // Atualizar atributo
                 matchedItem.value = Math.min(value, matchedItem.max);
                 if (max !== null && max > 0) {
                     matchedItem.max = max;
@@ -2151,18 +2207,22 @@ Inteligência: 18
                 importedCount++;
                 return;
             }
-
+            
+            // Se não encontrou, adicionar à lista de não encontrados
             notFoundItems.push(name);
         });
-
+        
+        // Atualizar visualizações
         renderCategories();
         renderAttributes();
         updateDerivedAttributes();
         renderDerived();
         saveToStorage();
-
+        
+        // Fechar modal
         closeModal("modal-import");
-
+        
+        // Mostrar resultado
         let message = `${importedCount} valores importados com sucesso!`;
         if (notFoundItems.length > 0) {
             message += `\nNão encontrados: ${notFoundItems.join(", ")}`;
@@ -2170,7 +2230,8 @@ Inteligência: 18
         
         showNotification(message, importedCount > 0 ? "success" : "warning");
     }
-
+    
+    // =========== CONTROLES GERAIS ===========
     function saveAll() {
         saveToStorage();
         showNotification("Todos os dados foram salvos no storage!", "success");
@@ -2179,21 +2240,24 @@ Inteligência: 18
     function exportToTXT() {
         let txtContent = "=== FICHA DO PERSONAGEM ===\n";
         txtContent += `Gerado em: ${new Date().toLocaleString()}\n\n`;
-
+        
+        // Categorias
         txtContent += "--- CATEGORIAS ---\n";
         systemData.categories.forEach(cat => {
             if (cat.active) {
                 txtContent += `${cat.name}: ${cat.value}/${cat.max} ${cat.locked ? "(Trancado)" : ""}\n`;
             }
         });
-
+        
+        // Atributos
         txtContent += "\n--- ATRIBUTOS ---\n";
         systemData.attributes.forEach(attr => {
             if (attr.active) {
                 txtContent += `${attr.name}: ${attr.value}/${attr.max} ${attr.locked ? "(Trancado)" : ""}\n`;
             }
         });
-
+        
+        // Derivados
         txtContent += "\n--- ATRIBUTOS DERIVADOS ---\n";
         systemData.derived.forEach(derived => {
             if (derived.active) {
@@ -2201,7 +2265,8 @@ Inteligência: 18
                 txtContent += `  Fórmula: ${derived.formula}\n`;
             }
         });
-
+        
+        // Sorte
         txtContent += "\n--- SISTEMA DE SORTE ---\n";
         txtContent += `Sorte Atual: ${systemData.luck.value}%\n`;
         txtContent += "Modificadores Ativos:\n";
@@ -2210,7 +2275,8 @@ Inteligência: 18
                 txtContent += `  ${sent.type}: ${sent.effect} (${sent.intensity.toFixed(1)})\n`;
             }
         });
-
+        
+        // Histórico
         if (systemData.luck.rollHistory.length > 0) {
             txtContent += "\nÚltimas Rolagens de Sorte:\n";
             const lastRolls = systemData.luck.rollHistory.slice(-3);
@@ -2218,7 +2284,8 @@ Inteligência: 18
                 txtContent += `  ${roll.timestamp}: ${roll.final}% (Base: ${roll.base}%)\n`;
             });
         }
-
+        
+        // Configurações do Dado
         if (systemData.diceSystem) {
             txtContent += `\n--- SISTEMA DE ROLAGEM ---\n`;
             txtContent += `Tipo de Dado: ${systemData.diceSystem.quantity}D${systemData.diceSystem.type}\n`;
@@ -2227,7 +2294,8 @@ Inteligência: 18
             txtContent += `Usa Condições/Sorte: ${systemData.diceSystem.useLuck ? "Sim" : "Não"}\n`;
             txtContent += `Último Resultado Exato (Total): ${systemData.diceSystem.lastResult}\n`;
         }
-
+        
+        // Criar e baixar arquivo
         const blob = new Blob([txtContent], { type: "text/plain" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -2243,9 +2311,10 @@ Inteligência: 18
     
     function generateVisualSheet() {
         showNotification("Funcionalidade em desenvolvimento - Em breve!", "warning");
-
+        // Aqui seria implementada a geração de uma ficha visual em PDF/HTML
     }
-
+    
+    // =========== PERSISTÊNCIA ===========
     function saveToStorage() {
         try {
             localStorage.setItem("grimorio_advanced_status", JSON.stringify(systemData));
@@ -2267,33 +2336,40 @@ Inteligência: 18
             console.error("Erro ao carregar:", error);
         }
     }
-
+    
+    // =========== INICIALIZAÇÃO ===========
     document.addEventListener("DOMContentLoaded", function() {
-
+        // Inicializar ícones
         lucide.createIcons();
-
+        
+        // Carregar dados salvos
         loadFromStorage();
-
+        
+        // Renderizar todos os componentes
         renderCategories();
         renderAttributes();
         updateDerivedAttributes();
         renderDerived();
         renderSentiments();
         initDiceSystem();
-
+        
+        // Atualizar display da sorte
         document.getElementById("luck-value").textContent = systemData.luck.value;
-
+        
+        // Configurar eventos
         document.getElementById("btn-save-all").addEventListener("click", saveAll);
         document.getElementById("btn-import").addEventListener("click", openImportModal);
         document.getElementById("btn-export").addEventListener("click", exportToTXT);
-
+        
+        // Configurar slider de intensidade
         const intensitySlider = document.getElementById("sentiment-intensity");
         const intensityValue = document.getElementById("intensity-value");
         
         intensitySlider.addEventListener("input", function() {
             intensityValue.textContent = (this.value / 10).toFixed(1);
         });
-
+        
+        // Configurar campo personalizado
         const sentimentType = document.getElementById("sentiment-type");
         sentimentType.addEventListener("change", function() {
             const customGroup = document.getElementById("custom-sentiment-group");
@@ -2303,7 +2379,8 @@ Inteligência: 18
         console.log("Sistema de Status Avançado carregado!");
         showNotification("Sistema carregado com sucesso!", "success");
     });
-
+    
+    // =========== EVENT LISTENERS ADICIONAIS ===========
     document.addEventListener("keydown", function(e) {
         if (e.key === "Escape") {
             document.querySelectorAll(".modal.active").forEach(modal => {
